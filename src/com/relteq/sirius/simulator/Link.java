@@ -111,9 +111,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     	// sample the fundamental digram
     	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
     		FDfromProfile[e] = fd.perturb();
-    	
-//    	if(!activeFDevent)				
-//    		FD = FDfromProfile;				// point to the profile
     }
 
 	/** @throws SiriusException 
@@ -132,7 +129,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			throw new SiriusException("ERROR: Fundamental diagram event could not be validated");
 		
 		activeFDevent = true;
-//	    FD = FDfromEvent;
     }
 
 	/** @throws SiriusException 
@@ -141,7 +137,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
     	if(!activeFDevent)
     		return;
     	activeFDevent = false;
-//		FD = FDfromProfile;				// point the fd back at the profile    	
     }
 
 	/** @throws SiriusException 
@@ -154,7 +149,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
 		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
 			FDfromProfile[e].setLanes(newlanes);
-//		FD.setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
 	
@@ -341,9 +335,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */
 	protected void resetFD(){
-//    	FD = new FundamentalDiagram(this);
- //       FD.settoDefault();		// set to default
 		FDfromProfile = new FundamentalDiagram [myNetwork.myScenario.numEnsemble];
+		for(int i=0;i<FDfromProfile.length;i++){
+			FDfromProfile[i] = new FundamentalDiagram(this);
+			FDfromProfile[i].settoDefault();
+		}
     	activeFDevent = false;
 	}
 
