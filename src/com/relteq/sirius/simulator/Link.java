@@ -5,6 +5,8 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.ArrayList;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -23,12 +25,16 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected boolean activeFDevent;					// true if an FD event is active on this link,
 																			// true  means FD points to FDfromEvent 
 																			// false means FD points to FDfromprofile
-    // flow into the link
+    // destinations used by this link
+	/** @y.exclude */ 	protected int numDestination;	// number of destinations that use this link
+	/** @y.exclude */ 	protected ArrayList<Integer> destination = new  ArrayList<Integer>();	// map to global destination index
+	
+	// flow into the link
 	/** @y.exclude */ 	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	numVehTypes
     
     // demand and actual flow out of the link   
-	/** @y.exclude */ 	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [][][] outflowDemand;  // [veh] 	numEnsemble x numDestination x numVehTypes
 	/** @y.exclude */ 	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
     
     // contoller
@@ -37,10 +43,12 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Controller myFlowController;
 	/** @y.exclude */ 	protected Controller mySpeedController;
    
-	/** @y.exclude */ 	protected Double [][] density;    		// [veh]	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double []spaceSupply;        	// [veh]	numEnsemble
-	/** @y.exclude */ 	protected boolean issource; 			// [boolean]
-	/** @y.exclude */ 	protected boolean issink;     			// [boolean]
+	/** @y.exclude */ 	private Double [][][] density;    	// [veh]	numEnsemble x numDestination x numVehTypes
+	/** @y.exclude */ 	private Double [] totaldensity;    	// [veh]	numEnsemble
+	
+	/** @y.exclude */ 	protected Double []spaceSupply;     // [veh]	numEnsemble
+	/** @y.exclude */ 	protected boolean issource; 		// [boolean]
+	/** @y.exclude */ 	protected boolean issink;     		// [boolean]
 	/** @y.exclude */ 	protected Double [][] cumulative_density;	// [veh] 	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [][] cumulative_inflow;	// [veh] 	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [][] cumulative_outflow;	// [veh] 	numEnsemble x numVehTypes
@@ -161,6 +169,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			FDfromEvent._capacity = FDfromEvent._capacity<c ? FDfromEvent._capacity : c;
 	}
 	
+	protected void addDestination(int dest_index){
+		numDestination++;
+		destination.add(dest_index);
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// supply and demand calculation
 	/////////////////////////////////////////////////////////////////////
@@ -170,7 +183,6 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 		
-		double totaldensity;
         double totaloutflow;
         double control_maxspeed;
         double control_maxflow;
@@ -181,23 +193,21 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
         	FD = currentFD(e);
         	
-            totaldensity = SiriusMath.sum(density[e]);
-
             // case empty link
-            if( SiriusMath.lessorequalthan(totaldensity,0d) ){
+            if( SiriusMath.lessorequalthan(totaldensity[e],0d) ){
             	outflowDemand[e] =  SiriusMath.zeros(numVehicleTypes);        		
             	continue;
             }
 
             // compute total flow leaving the link in the absence of flow control
-            if( totaldensity < FD.getDensityCriticalInVeh() ){
+            if( totaldensity[e] < FD.getDensityCriticalInVeh() ){
             	if(mySpeedController!=null && mySpeedController.ison){
             		// speed control sets a bound on freeflow speed
                 	control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
-            		totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
+            		totaloutflow = totaldensity[e] * Math.min(FD.getVfNormalized(),control_maxspeed);	
             	}
             	else
-            		totaloutflow = totaldensity * FD.getVfNormalized();
+            		totaloutflow = totaldensity[e] * FD.getVfNormalized();
             }
             else{
             	totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
@@ -214,7 +224,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
             }    
 
             // split among types
-            outflowDemand[e] = SiriusMath.times(density[e],totaloutflow/totaldensity);
+            outflowDemand[e] = SiriusMath.times(density[e],totaloutflow/totaldensity[e]);
         }
 
         return;
@@ -222,12 +232,10 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 	/** @y.exclude */
     protected void updateSpaceSupply(){
-		double totaldensity;
 		FundamentalDiagram FD;
     	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
     		FD = currentFD(e);
-        	totaldensity = SiriusMath.sum(density[e]);
-            spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
+            spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity[e]);
             spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
     	}
     }
@@ -240,6 +248,12 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
+        
+        // add background destination
+        if(myNetwork.myScenario.has_background_flow){
+        	numDestination++;
+        	destination.add(0,-1); // -1 means background flow
+        }
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -289,23 +303,28 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		
 		Scenario myScenario = myNetwork.myScenario;
 		
-		int n1 = myScenario.numEnsemble;
-		int n2 = myScenario.getNumVehicleTypes();
+		int numEnsemble = myScenario.numEnsemble;
+		int numVehicleTypes = myScenario.getNumVehicleTypes();
 		
 		switch(simulationMode){
 		
 		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
-			density = SiriusMath.zeros(n1,n2);
+			density = SiriusMath.zeros(numEnsemble,numDestination,numVehicleTypes);
+			totaldensity = SiriusMath.zeros(numEnsemble);
 			break;
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
-			density = new Double[n1][n2];
-			for(int i=0;i<n1;i++)
-				if(myScenario.getInitialDensitySet()!=null)
-					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
-				else 
-					density[i] = SiriusMath.zeros(myScenario.getNumVehicleTypes());
+			density = new Double[numEnsemble][numDestination][numVehicleTypes];
+			if(myScenario.getInitialDensitySet()!=null)
+				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
+			else 
+				density[0] = SiriusMath.zeros(myScenario.getNumVehicleTypes());
+			totaldensity[0] = SiriusMath.sum(density[0]);
+			for(int e=1;e<numEnsemble;e++){
+				density[e] = density[0].clone();
+				totaldensity[e] = totaldensity[0];
+			}
 			break;
 			
 		default:
@@ -314,16 +333,16 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		}
 
 		// reset other quantities
-        inflow 				= SiriusMath.zeros(n1,n2);
-        outflow 			= SiriusMath.zeros(n1,n2);
-        sourcedemand 		= SiriusMath.zeros(n2);
-        outflowDemand 		= SiriusMath.zeros(n1,n2);
-        spaceSupply 		= SiriusMath.zeros(n1);
+        inflow 				= SiriusMath.zeros(numEnsemble,numVehicleTypes);
+        outflow 			= SiriusMath.zeros(numEnsemble,numVehicleTypes);
+        sourcedemand 		= SiriusMath.zeros(numVehicleTypes);
+        outflowDemand 		= SiriusMath.zeros(numEnsemble,numVehicleTypes);
+        spaceSupply 		= SiriusMath.zeros(numEnsemble);
         
         // for correct export of initial condition
         cumulative_density 	= SiriusMath.makecopy(density);
-        cumulative_inflow 	= SiriusMath.zeros(n1,n2);
-        cumulative_outflow 	= SiriusMath.zeros(n1,n2);
+        cumulative_inflow 	= SiriusMath.zeros(numEnsemble,numVehicleTypes);
+        cumulative_outflow 	= SiriusMath.zeros(numEnsemble,numVehicleTypes);
 
 		return;
 	}
@@ -361,6 +380,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
               	cumulative_inflow[e][j] += inflow[e][j];
               	cumulative_outflow[e][j] += outflow[e][j];
               }
+        	  totaldensity[e] = SiriusMath.sum(density[e]);
         }
 	}
 
@@ -419,6 +439,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		} catch(Exception e){
 			return null;
 		}
+		return null;
 	}
 
 	/** Total of vehicles in normalized units (vehicles/link). 
@@ -427,10 +448,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 */
 	public double getTotalDensityInVeh(int ensemble) {
 		try{
-			if(density!=null)
-				return SiriusMath.sum(density[ensemble]);
-			else
-				return 0d;
+			return totaldensity[ensemble];
 		} catch(Exception e){
 			return 0d;
 		}
@@ -478,10 +496,9 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 */
 	public double computeSpeedInMPH(int ensemble){
 		try{
-			double totaldensity = SiriusMath.sum(density[ensemble]);
 			double speed;
-			if( SiriusMath.greaterthan(totaldensity,0d) )
-				speed = SiriusMath.sum(outflow[ensemble])/totaldensity;
+			if( SiriusMath.greaterthan(totaldensity[ensemble],0d) )
+				speed = SiriusMath.sum(outflow[ensemble])/totaldensity[ensemble];
 			else
 				speed = currentFD(ensemble).getVfNormalized();
 			return speed*_length/myNetwork.myScenario.getSimDtInHours();

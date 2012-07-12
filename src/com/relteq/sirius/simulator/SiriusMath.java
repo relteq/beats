@@ -23,6 +23,16 @@ public final class SiriusMath {
 				answ[i][j] = 0.0;
 		return answ;
 	}
+ 	
+ 	public static Double [][][] zeros(int n1,int n2,int n3){
+		Double [][][] answ = new Double [n1][n2][n3];
+		int i,j,k;
+		for(i=0;i<n1;i++)
+			for(j=0;j<n2;j++)
+				for(k=0;k<n3;k++)
+					answ[i][j][k] = 0.0;
+		return answ;
+	}
 	
 	public static Double sum(Double [] V){
 		Double answ = 0d;
@@ -32,49 +42,56 @@ public final class SiriusMath {
 		return answ;
 	}
 	
-	public static Double sum(Collection<Double> V) {
-		if (null == V) return null;
-		Double ans = .0d;
-		Iterator<Double> iter = V.iterator();
-		while (iter.hasNext()) ans += iter.next();
-		return ans;
-	}
+//	public static Double sum(Collection<Double> V) {
+//		if (null == V) return null;
+//		Double ans = .0d;
+//		Iterator<Double> iter = V.iterator();
+//		while (iter.hasNext()) ans += iter.next();
+//		return ans;
+//	}
 
-	public static Double [] sum(Double [][] V,int dim){
-		if(V==null)
-			return null;
-		if(V.length==0)
-			return null;
-		if(V[0].length==0)
-			return null;
-		Double [] answ;
-		int i,j;
-		int n1 = V.length;
-		int n2 = V[0].length;
-		switch(dim){
-		case 1:
-			answ = new Double[n2];
-			for(i=0;i<V.length;i++)
-				for(j=0;j<V[i].length;j++)
-					if(V[i][j]!=null)
-						answ[j] += V[i][j];
-			return answ;
-		case 2:
-			answ = new Double[n1];
-			for(i=0;i<V.length;i++)
-				for(j=0;j<V[i].length;j++)
-					if(V[i][j]!=null)
-						answ[i] += V[i][j];
-			return answ;
-		default:
-			return null;
-		}
-	}
+//	public static Double [] sum(Double [][] V,int dim){
+//		if(V==null)
+//			return null;
+//		if(V.length==0)
+//			return null;
+//		if(V[0].length==0)
+//			return null;
+//		Double [] answ;
+//		int i,j;
+//		int n1 = V.length;
+//		int n2 = V[0].length;
+//		switch(dim){
+//		case 1:
+//			answ = new Double[n2];
+//			for(i=0;i<V.length;i++)
+//				for(j=0;j<V[i].length;j++)
+//					if(V[i][j]!=null)
+//						answ[j] += V[i][j];
+//			return answ;
+//		case 2:
+//			answ = new Double[n1];
+//			for(i=0;i<V.length;i++)
+//				for(j=0;j<V[i].length;j++)
+//					if(V[i][j]!=null)
+//						answ[i] += V[i][j];
+//			return answ;
+//		default:
+//			return null;
+//		}
+//	}
 
 	public static Double [] times(Double [] V,double a){
 		Double [] answ = new Double [V.length];
 		for(int i=0;i<V.length;i++)
 			answ[i] = a*V[i];
+		return answ;
+	}
+	
+	public static Double [][] times(Double [][] V,double a){
+		Double [][] answ = new Double [V.length][];
+		for(int i=0;i<V.length;i++)
+			answ[i] = SiriusMath.times(V[i],a);
 		return answ;
 	}
 	

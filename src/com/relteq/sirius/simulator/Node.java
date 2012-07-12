@@ -203,12 +203,12 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
         int numEnsemble = myNetwork.myScenario.numEnsemble;
         
         // collect input demands and output supplies ...................
-        for(e=0;e<numEnsemble;e++){        
-    		for(i=0;i<nIn;i++)
-    			inDemand[e][i] = input_link[i].outflowDemand[e];
-    		for(j=0;j<nOut;j++)
-    			outSupply[e][j] = output_link[j].spaceSupply[e];
-        }
+//        for(e=0;e<numEnsemble;e++){        
+//    		for(i=0;i<nIn;i++)
+//    			inDemand[e][i] = input_link[i].outflowDemand[e];
+//    		for(j=0;j<nOut;j++)
+//    			outSupply[e][j] = output_link[j].spaceSupply[e];
+//        }
 
 		// solve unknown split ratios if they are non-trivial ..............
 		if(!istrivialsplit){	

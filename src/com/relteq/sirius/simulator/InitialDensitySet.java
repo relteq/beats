@@ -8,8 +8,9 @@ package com.relteq.sirius.simulator;
 final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
-	private Double [][] initial_density; 	// [veh/mile] indexed by link and type
-	private Link [] link;					// ordered array of references
+	private Double [][] initial_density; 	// [veh/mile] link x type
+	private Link [] link;					// ordered array of link references
+	private Link [] destination_link;		// ordered array of destination references
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
 
@@ -22,33 +23,21 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		int i;
 		
 		this.myScenario = myScenario;
-		
-		// count links in initial density list that are also in the scenario
-		int numLinks = getDensity().size();
-		int numLinks_exist = 0;
-		Link [] templink = new Link[numLinks];
-		for(i=0;i<numLinks;i++){
-			com.relteq.sirius.jaxb.Density density = getDensity().get(i);
-			templink[i] = myScenario.getLinkWithId(density.getLinkId());
-			if(templink[i]!=null)
-				numLinks_exist++;
-		}
+		int numDensity = getDensity().size();
 		
 		// allocate
-		initial_density = new Double [numLinks_exist][];
-		link = new Link [numLinks_exist];
+		initial_density = new Double [numDensity][];
+		link = new Link [numDensity];
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 
 		// copy profile information to arrays in extended object
-		int c = 0;
-		for(i=0;i<numLinks;i++){
-			if(templink[i]!=null){
-				com.relteq.sirius.jaxb.Density density = getDensity().get(i);
-				link[c] = templink[i];
-				Double1DVector D = new Double1DVector(density.getContent(),":");
-				initial_density[c] = D.getData();
-				c++;
-			}
+		for(i=0;i<numDensity;i++){
+			com.relteq.sirius.jaxb.Density d = getDensity().get(i);
+			link[i] = myScenario.getLinkWithId(d.getLinkId());
+			if(link[i]!=null){
+				Double1DVector D = new Double1DVector(d.getContent(),":");
+				initial_density[i] = D.getData();
+			}	
 		}
 		
 		// round to the nearest decisecond
@@ -79,10 +68,11 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		
 		// check size of data
 		for(i=0;i<link.length;i++){
-			if(initial_density[i].length!=vehicletypeindex.length){
-				SiriusErrorLog.addErrorMessage("Wrong number of data points.");
-				return false;
-			}
+			if(link[i]!=null)
+				if(initial_density[i].length!=vehicletypeindex.length){
+					SiriusErrorLog.addErrorMessage("Wrong number of data points.");
+					return false;
+				}
 		}
 
 		// check that values are between 0 and jam density
@@ -90,6 +80,9 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		Double sum;
 		Double x;
 		for(i=0;i<initial_density.length;i++){
+			
+			if(link[i]==null)
+				continue;
 			
 			if(link[i].issource)	// does not apply to source links
 				continue;
@@ -115,24 +108,19 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		return true;
 	}
 
-	protected void reset() {
-	}
-
-	protected void update() {
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double [] getDensityForLinkIdInVeh(String network_id,String linkid){
+	public Double [] getDensityForLinkIdInVeh(String linkid){
 		Double [] d = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 		for(int i=0;i<link.length;i++){
-			if(link[i].getId().equals(linkid) && link[i].myNetwork.getId().equals(network_id)){
-				for(int j=0;j<vehicletypeindex.length;j++)
-					d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
-				return d;
-			}
+			if(link[i]!=null)
+				if(link[i].getId().equals(linkid)){
+					for(int j=0;j<vehicletypeindex.length;j++)
+						d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
+					return d;
+				}
 		}
 		return d;
 	}

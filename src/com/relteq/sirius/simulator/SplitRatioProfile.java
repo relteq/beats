@@ -46,23 +46,6 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myNode==null)
 			return;
 
-		// optional dt
-		if(getDt()!=null){
-			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
-		}
-		else{ 	// only allow if it contains only one fd
-			if(getSplitratio().size()==1){
-				dtinseconds = Double.POSITIVE_INFINITY;
-				samplesteps = Integer.MAX_VALUE;
-			}
-			else{
-				dtinseconds = -1.0;		// this triggers the validation error
-				samplesteps = -1;
-				return;
-			}
-		}
-		
 		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
 		int in_index,out_index;
 		laststep = 0;
@@ -74,6 +57,23 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			profile[in_index][out_index] = new Double2DMatrix(sr.getContent());
 			if(!profile[in_index][out_index].isEmpty())
 				laststep = Math.max(laststep,profile[in_index][out_index].getnTime());
+		}
+		
+		// optional dt
+		if(getDt()!=null){
+			dtinseconds = getDt().floatValue();					// assume given in seconds
+			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+		}
+		else{ 	// only allow if it contains only one fd
+			if(laststep<=1){
+				dtinseconds = Double.POSITIVE_INFINITY;
+				samplesteps = Integer.MAX_VALUE;
+			}
+			else{
+				dtinseconds = -1d;		// this triggers the validation error
+				samplesteps = -1;
+				return;
+			}
 		}
 		
 		currentSplitRatio = new Double3DMatrix(myNode.nIn,myNode.nOut,myScenario.getNumVehicleTypes(),Double.NaN);
@@ -130,6 +130,8 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		// check split ratio dimensions and values
 		for(in_index=0;in_index<profile.length;in_index++){
 			for(out_index=0;out_index<profile[in_index].length;out_index++){
+				if(profile[in_index][out_index]==null)
+					continue;
 				if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes()){
 					SiriusErrorLog.addErrorMessage("Split ratio profile does not contain values for all vehicle types: " + getNodeId());
 					return false;

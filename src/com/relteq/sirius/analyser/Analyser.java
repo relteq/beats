@@ -87,8 +87,8 @@ public class Analyser {
 											Double v = attrs.containsKey("v") ? Double.valueOf(attrs.get("v")) : null;
 											Double fv = attrs.containsKey("fv") ? Double.valueOf(attrs.get("fv")) : null;
 											Double mf = attrs.containsKey("mf") ? Double.valueOf(attrs.get("mf")) : null;
-											Double cum_f = null != f ? SiriusMath.sum(f) : null;
-											Double cum_d = null != d ? SiriusMath.sum(d) : null;
+											Double cum_f = null != f ? 0d : null; //SiriusMath.sum(f) : null;
+											Double cum_d = null != d ? 0d : null; //SiriusMath.sum(d) : null;
 											if (null == v && null != cum_d && cum_d <= 0) v = fv;
 											if (null != f && null != d) {
 												if (f.size() > 1 && cum_d > 0) {

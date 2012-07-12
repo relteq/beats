@@ -9,8 +9,8 @@ import java.util.StringTokenizer;
 
 final class Double2DMatrix {
 	
-	private int nTime;			// number of time slices
-	private int nVTypes;		// number of vehicle types
+	private int nTime;			// number of time slices (1st dimension)
+	private int nVTypes;		// number of vehicle types (2nd dimension)
 	private boolean isempty;	// true if there is no data;
 	private Double [][] data;
     
@@ -30,6 +30,8 @@ final class Double2DMatrix {
     
     // initialize a 2D matrix from comma/colon separated string of positive numbers
     // negative numbers get replaced with nan.
+    // Example: "0.1:0.2:0.3,0.4:0.5:0.6" defines profiles for 3 vehicle types and
+    // 2 time intervals. type 1: [0.1 0.4], type 2: [0.2 0.5], type 3: [0.3 0.6]
     public Double2DMatrix(String str) {
 
     	int numtokens,i,j;

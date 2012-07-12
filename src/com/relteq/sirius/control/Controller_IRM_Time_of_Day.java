@@ -10,7 +10,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	/////////////////////////////////////////////////////////////////////
 
 	public Controller_IRM_Time_of_Day() {
-		// TODO Auto-generated constructor stub
+		return;
 	}
 	
 	public Controller_IRM_Time_of_Day(Scenario myScenario) {

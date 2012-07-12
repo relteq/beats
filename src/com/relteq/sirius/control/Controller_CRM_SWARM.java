@@ -14,7 +14,7 @@ public class Controller_CRM_SWARM extends Controller {
 	}
 
 	public Controller_CRM_SWARM(Scenario myScenario) {
-		// TODO Auto-generated constructor stub
+		return;
 	}
 
 	/////////////////////////////////////////////////////////////////////

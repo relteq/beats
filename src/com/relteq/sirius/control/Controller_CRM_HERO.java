@@ -10,11 +10,11 @@ public class Controller_CRM_HERO extends Controller {
 	/////////////////////////////////////////////////////////////////////
 
 	public Controller_CRM_HERO() {
-		// TODO Auto-generated constructor stub
+		return;
 	}
 
 	public Controller_CRM_HERO(Scenario myScenario) {
-		// TODO Auto-generated constructor stub
+		return;
 	}
 
 	/////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@ package com.relteq.sirius.simulator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -58,6 +59,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected int numEnsemble;
 
+	// TEMPORARY!!
+	protected ArrayList<DestinationNetworkBLA> destination_networks;
+	protected boolean has_background_flow;
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
@@ -76,6 +81,24 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @y.exclude
 	 */
 	protected void populate() throws SiriusException {
+
+		// check for background flow
+		has_background_flow = false;
+		if(getDemandProfileSet()!=null)
+			for(com.relteq.sirius.jaxb.DemandProfile demprofile : getDemandProfileSet().getDemandProfile() )
+				has_background_flow |= demprofile.getLinkIdDestination()==null;
+		
+		// background and destination networks
+		// NOTE: PUT THIS INTO AN EXTENSION CLASS
+		if(getDestinationNetworks()!=null){
+			destination_networks = new ArrayList<DestinationNetworkBLA>();
+			for(int i=0;i<getDestinationNetworks().getDestinationNetwork().size();i++){
+				com.relteq.sirius.jaxb.DestinationNetwork dnetwork = getDestinationNetworks().getDestinationNetwork().get(i);
+				DestinationNetworkBLA x = new DestinationNetworkBLA(dnetwork,this,i);
+				x.populate();
+				destination_networks.add(x);
+			}
+		}
 		
 		// network list
 		if(getNetworkList()!=null)
@@ -541,7 +564,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	/** End time of the simulation.
 	 * @return End time in seconds. 
-	 * @return			XXX
 	 */
 	public double getTimeEnd() {
 		if(clock==null)

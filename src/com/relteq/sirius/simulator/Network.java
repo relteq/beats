@@ -39,7 +39,7 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				((Link) link).populate(this);
 		
 	}
-	
+
 	protected boolean validate() {
 
 		if(myScenario.getSimDtInSeconds()<=0){

@@ -533,7 +533,7 @@ public final class ObjectFactory {
 	 * @param myScenario		The scenario.
 	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return					_Sensor object
+	 * @return					Sensor object
 	 */
 	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
 		return new com.relteq.sirius.sensor.SensorLoopStation(myScenario,linkId);
@@ -548,7 +548,7 @@ public final class ObjectFactory {
 	 * @param myScenario		The scenario.
 	 * @param networkId			The id of the network that contains the link.
 	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return			XXX
+	 * @return Sensor object
 	 */
 	public static Sensor createSensor_Floating(Scenario myScenario,String linkId){
 		Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,linkId);
