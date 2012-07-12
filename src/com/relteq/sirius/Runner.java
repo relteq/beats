@@ -1,5 +1,13 @@
 package com.relteq.sirius;
 
+import com.relteq.sirius.db.OutputToCSV;
+import com.relteq.sirius.om.LinkDataDetailed;
+import com.relteq.sirius.om.LinkDataTotal;
+import com.relteq.sirius.om.LinkDataTotalPeer;
+import com.relteq.sirius.om.LinkPerformanceDetailed;
+import com.relteq.sirius.om.LinkPerformanceTotal;
+import com.relteq.sirius.om.SignalData;
+import com.relteq.sirius.om.SignalPhasePerformance;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 
 /**
@@ -17,6 +25,50 @@ public class Runner {
 			String cmd = args[0];
 			String[] arguments = new String[args.length - 1];
 			System.arraycopy(args, 1, arguments, 0, args.length - 1);
+			
+			// Aggregate data
+			if (cmd.equals("process") || cmd.equals("p")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+	//			LinkDataTotalPeer.doAggregate(arguments);
+				
+			} else
+			
+			// CSV output
+			if (cmd.equals("link_data_total") || cmd.equals("ldt")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("link_data_total",LinkDataTotal.getFieldNames(), arguments);
+				
+			} else if (cmd.equals("link_data_detailed") || cmd.equals("ldd")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("link_data_detailed",LinkDataDetailed.getFieldNames(), arguments);
+				
+			} else if (cmd.equals("link_performance_total") || cmd.equals("lpt")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("link_performance_total", LinkPerformanceTotal.getFieldNames(), arguments);
+				
+			} else if (cmd.equals("link_performance_detailed") || cmd.equals("lpd")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("link_performance_detailed", LinkPerformanceDetailed.getFieldNames(), arguments);
+				
+			} else if (cmd.equals("signal_data") || cmd.equals("sd")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("signal_data", SignalData.getFieldNames(), arguments);
+				
+			} else if (cmd.equals("signal_phase_performance") || cmd.equals("spp")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("signal_phase_performance", SignalPhasePerformance.getFieldNames(), arguments);
+				
+			} else
+			
+			// End of CSV output
+						
 			if (cmd.equals("import") || cmd.equals("i")) {
 				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
 				com.relteq.sirius.db.importer.ScenarioLoader.load(arguments[0]);

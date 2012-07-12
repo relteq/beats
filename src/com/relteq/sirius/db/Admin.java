@@ -9,6 +9,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.sql.*;
 
+import org.apache.torque.Torque;
+import org.apache.torque.TorqueException;
+
 import com.relteq.sirius.simulator.SiriusErrorLog;
 
 /**
@@ -116,5 +119,20 @@ public class Admin {
 			} catch (IOException exc) {
 				SiriusErrorLog.addErrorMessage(exc.getMessage());
 			}
+	}
+	
+	public static void initTorqueAPI() throws Exception 
+	{
+
+		com.relteq.sirius.db.Parameters params = com.relteq.sirius.db.Parameters.fromEnvironment();
+		try 
+		{
+			Torque.init(params.toConfiguration());
+
+		} 
+		catch (TorqueException exc) 
+		{
+			exc.printStackTrace();
+		}
 	}
 }
