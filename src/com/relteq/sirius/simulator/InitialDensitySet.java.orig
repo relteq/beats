@@ -62,12 +62,20 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 				SiriusErrorLog.addError("Bad vehicle type name in initial density profile id=" + getId());
 		
 		// check size of data
+<<<<<<< HEAD
+		for(i=0;i<link.length;i++){
+			if(link[i]!=null)
+				if(initial_density[i].length!=vehicletypeindex.length){
+					SiriusErrorLog.addErrorMessage("Wrong number of data points.");
+					return false;
+				}
+		}
+=======
 		if(link!=null)
 			for(i=0;i<link.length;i++)
-				if(link[i]!=null)
-					if(initial_density[i].length!=vehicletypeindex.length)
-						SiriusErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
-
+				if(initial_density[i].length!=vehicletypeindex.length)
+					SiriusErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
+>>>>>>> master
 
 		// check that values are between 0 and jam density
 		int j;
@@ -75,10 +83,15 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		Double x;
 		for(i=0;i<initial_density.length;i++){
 			
+<<<<<<< HEAD
+			if(link[i]==null)
+				continue;
+=======
 			if(link[i]==null){
 				SiriusErrorLog.addWarning("Unknown link id in initial density profile");
 				continue;
 			}
+>>>>>>> master
 			
 			if(link[i].issource)	// does not apply to source links
 				continue;

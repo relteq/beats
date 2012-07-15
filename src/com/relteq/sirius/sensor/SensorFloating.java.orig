@@ -31,7 +31,12 @@ public class SensorFloating extends Sensor {
 	}
 	
 	@Override
+<<<<<<< HEAD
+	public boolean validate() {
+		return false;
+=======
 	public void validate() {
+>>>>>>> master
 	}
 
 	@Override
