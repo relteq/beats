@@ -39,13 +39,8 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				((Link) link).populate(this);
 		
 	}
-<<<<<<< HEAD
 
-	protected boolean validate() {
-=======
-	
 	protected void validate() {
->>>>>>> master
 
 		if(myScenario.getSimDtInSeconds()<=0)
 			SiriusErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
