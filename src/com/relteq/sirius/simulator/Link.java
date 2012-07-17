@@ -34,7 +34,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	numVehTypes
     
     // demand and actual flow out of the link   
-	/** @y.exclude */ 	protected Double [][][] outflowDemand;  // [veh] 	numEnsemble x numDestination x numVehTypes
+	/** @y.exclude */ 	protected Double [][] outflowDemand;  	// [veh] 	numEnsemble x numDestination x numVehTypes
 	/** @y.exclude */ 	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
     
     // contoller
@@ -49,7 +49,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Double []spaceSupply;     // [veh]	numEnsemble
 	/** @y.exclude */ 	protected boolean issource; 		// [boolean]
 	/** @y.exclude */ 	protected boolean issink;     		// [boolean]
-	/** @y.exclude */ 	protected Double [][] cumulative_density;	// [veh] 	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [][][] cumulative_density;	// [veh] 	numEnsemble x numDestination x numVehTypes
 	/** @y.exclude */ 	protected Double [][] cumulative_inflow;	// [veh] 	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [][] cumulative_outflow;	// [veh] 	numEnsemble x numVehTypes
 	       
@@ -308,11 +308,12 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
 			density = new Double[numEnsemble][numDestination][numVehicleTypes];
+			totaldensity = SiriusMath.zeros(numEnsemble);
 			if(myScenario.getInitialDensitySet()!=null)
-				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
+				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(getId(),destination);	
 			else 
-				density[0] = SiriusMath.zeros(myScenario.getNumVehicleTypes());
-			totaldensity[0] = SiriusMath.sum(density[0]);
+				density[0] = SiriusMath.zeros(numDestination,myScenario.getNumVehicleTypes());
+			totaldensity[0] = SiriusMath.sumsum(density[0]);
 			for(int e=1;e<numEnsemble;e++){
 				density[e] = density[0].clone();
 				totaldensity[e] = totaldensity[0];

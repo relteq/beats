@@ -41,6 +41,16 @@ public final class SiriusMath {
 				answ += V[i];
 		return answ;
 	}
+
+	public static Double sumsum(Double [][] V){
+		Double answ = 0d;
+		int i,j;
+		for(i=0;i<V.length;i++)
+			if(V[i]!=null)
+				for(j=0;j<V[i].length;j++)
+					answ += V[i][j];
+		return answ;
+	}
 	
 //	public static Double sum(Collection<Double> V) {
 //		if (null == V) return null;
@@ -198,6 +208,26 @@ public final class SiriusMath {
 		for(i=0;i<n1;i++)
 			for(j=0;j<n2;j++)
 				y[i][j]=x[i][j];
+		return y;
+	}
+	
+	// deep copy a triple array
+	public static Double[][][] makecopy(Double [][][]x){
+		if(x.length==0)
+			return null;
+		if(x[0].length==0)
+			return null;
+		if(x[0][0].length==0)
+			return null;
+		int n1 = x.length;
+		int n2 = x[0].length;
+		int n3 = x[0][0].length;
+		Double [][][] y = new Double[n1][n2][n3];
+		int i,j,k;
+		for(i=0;i<n1;i++)
+			for(j=0;j<n2;j++)
+				for(k=0;k<n3;k++)
+					y[i][j][k]=x[i][j][k];
 		return y;
 	}
 }

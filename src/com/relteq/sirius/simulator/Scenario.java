@@ -335,10 +335,9 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			for (com.relteq.sirius.jaxb.Signal signal : getSignalList().getSignal())
 				((Signal) signal).validate();
 		
-		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
-		// validate initial density profile
-//		if(getInitialDensityProfile()!=null)
-//			((_InitialDensityProfile) getInitialDensityProfile()).validate();
+		// validate initial density set
+		if(this.getInitialDensitySet()!=null)
+			((InitialDensitySet) getInitialDensitySet()).validate();
 
 		// validate capacity profiles	
 		if(getDownstreamBoundaryCapacityProfileSet()!=null)

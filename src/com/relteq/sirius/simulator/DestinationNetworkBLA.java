@@ -5,9 +5,9 @@ import java.util.HashMap;
 
 public final class DestinationNetworkBLA {
 	
-	private com.relteq.sirius.jaxb.DestinationNetwork dnetwork;
-	private Scenario myScenario;
-	private int myIndex;
+	protected com.relteq.sirius.jaxb.DestinationNetwork dnetwork;
+	protected Scenario myScenario;
+	protected int myIndex;
 	
 	public DestinationNetworkBLA(com.relteq.sirius.jaxb.DestinationNetwork dnetwork,Scenario myScenario,int myIndex){
 		this.dnetwork = dnetwork;
