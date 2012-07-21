@@ -1,5 +1,6 @@
 package com.relteq.sirius;
 
+import com.relteq.sirius.db.AggregateData;
 import com.relteq.sirius.db.OutputToCSV;
 import com.relteq.sirius.om.LinkDataDetailed;
 import com.relteq.sirius.om.LinkDataTotal;
@@ -30,7 +31,8 @@ public class Runner {
 			if (cmd.equals("process") || cmd.equals("p")) 
 			{
 				com.relteq.sirius.db.Admin.initTorqueAPI();
-	//			LinkDataTotalPeer.doAggregate(arguments);
+				//AggregateData.doAggregate("link_data_total",arguments, "5min");
+				AggregateData.doAggregateAllTables(arguments);
 				
 			} else
 			
