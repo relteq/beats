@@ -340,10 +340,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	
 	private void computeLinkFlows(){
-
-        // There should be no unknown splits by now ....................
-        //if(any(any(any(SR<0))) || any(any(any(isnan(SR))))  )
-        //    error('!!!')
         
     	int e,i,j,k;
     	int numEnsemble = myNetwork.myScenario.numEnsemble;
@@ -370,7 +366,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	            		outDemandKnown[e][j] += inDemand[e][i][k]*splitratio.get(i,j,k);
 	            
 	            // compute and sort output demand/supply ratio .............
-	            dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
+	            if(SiriusMath.greaterthan(outSupply[e][j],0d))
+	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
+	            else
+	            	dsratio[e][j] = 1d;
 	            
 	            // reflect ratios back on inputs
 	            for(i=0;i<nIn;i++)
@@ -384,14 +383,14 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        for(i=0;i<nIn;i++)
 	            for(k=0;k<numVehicleTypes;k++)
 	                inDemand[e][i][k] /= applyratio[e][i];
-
+        
         // compute out flows ...........................................   
         for(e=0;e<numEnsemble;e++)
 	        for(j=0;j<nOut;j++){
 	        	for(k=0;k<numVehicleTypes;k++){
 	        		outFlow[e][j][k] = 0d;
 	            	for(i=0;i<nIn;i++){
-	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);
+	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);	            		
 	            	}
 	        	}
 	        }
