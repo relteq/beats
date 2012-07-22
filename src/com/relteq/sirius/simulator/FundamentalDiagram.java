@@ -23,6 +23,11 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 
 	public FundamentalDiagram(){};
 	
+	public FundamentalDiagram(Link myLink){
+		this.myLink       = myLink;
+		this.lanes 		  = myLink==null ? Double.NaN : myLink._lanes;
+	}
+	
 	// fundamental diagram created from jaxb objects must have all values filled in. 
 	public FundamentalDiagram(Link myLink,com.relteq.sirius.jaxb.FundamentalDiagram jaxbfd){
 		this.myLink       = myLink;

@@ -1,8 +1,6 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Random;
 
 public final class SiriusMath {
@@ -197,6 +195,18 @@ public final class SiriusMath {
 		return gcd(q, p % q);
 	}
 
+	// deep copy an array
+	public static Double[] makecopy(Double [] x){
+		if(x.length==0)
+			return null;
+		int n1 = x.length;
+		Double [] y = new Double[n1];
+		int i;
+		for(i=0;i<n1;i++)
+			y[i]=x[i];
+		return y;
+	}
+	
 	// deep copy a double array
 	public static Double[][] makecopy(Double [][]x){
 		if(x.length==0)

@@ -1,8 +1,5 @@
 package com.relteq.sirius.simulator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public final class DestinationNetworkBLA {
 	
 	protected com.relteq.sirius.jaxb.DestinationNetwork dnetwork;
