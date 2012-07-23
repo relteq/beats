@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
+
+import com.relteq.sirius.processor.AggregateData;
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
 

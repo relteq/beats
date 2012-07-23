@@ -1,14 +1,13 @@
 package com.relteq.sirius;
 
-import com.relteq.sirius.db.AggregateData;
 import com.relteq.sirius.db.OutputToCSV;
 import com.relteq.sirius.om.LinkDataDetailed;
 import com.relteq.sirius.om.LinkDataTotal;
-import com.relteq.sirius.om.LinkDataTotalPeer;
 import com.relteq.sirius.om.LinkPerformanceDetailed;
 import com.relteq.sirius.om.LinkPerformanceTotal;
 import com.relteq.sirius.om.SignalData;
 import com.relteq.sirius.om.SignalPhasePerformance;
+import com.relteq.sirius.processor.AggregateData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 
 /**

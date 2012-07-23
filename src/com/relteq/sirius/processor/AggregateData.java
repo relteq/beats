@@ -1,4 +1,4 @@
-package com.relteq.sirius.db;
+package com.relteq.sirius.processor;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -8,6 +8,7 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 
 
+import com.relteq.sirius.db.OutputToCSV;
 import com.relteq.sirius.processor.*;
 
 import com.workingdogs.village.DataSetException;
