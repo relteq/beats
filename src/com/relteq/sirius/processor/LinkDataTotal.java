@@ -10,10 +10,8 @@ import com.workingdogs.village.Record;
 
 public class LinkDataTotal extends com.relteq.sirius.om.LinkDataTotal {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 7572652113762860553L;
 
 	/**
 	 * populates aggregated object, sets calculated data and insert

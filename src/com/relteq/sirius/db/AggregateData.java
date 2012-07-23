@@ -7,10 +7,8 @@ import java.util.List;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 
-import com.relteq.sirius.om.LinkDataDetailed;
-import com.relteq.sirius.om.LinkPerformanceDetailed;
-import com.relteq.sirius.om.LinkPerformanceTotal;
-import com.relteq.sirius.processor.LinkDataTotal;
+
+import com.relteq.sirius.processor.*;
 
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
