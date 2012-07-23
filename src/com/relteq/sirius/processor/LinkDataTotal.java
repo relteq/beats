@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
-import com.relteq.sirius.om.LinkDataTotal;
+
 import com.relteq.sirius.om.LinkDataTotalPeer;
 import com.workingdogs.village.Record;
 
-public class LinkDataTotalChild extends LinkDataTotal {
+public class LinkDataTotal extends com.relteq.sirius.om.LinkDataTotal {
 
 	/**
 	 * 

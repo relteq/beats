@@ -10,7 +10,8 @@ import org.apache.torque.util.BasePeer;
 import com.relteq.sirius.om.LinkDataDetailed;
 import com.relteq.sirius.om.LinkPerformanceDetailed;
 import com.relteq.sirius.om.LinkPerformanceTotal;
-import com.relteq.sirius.processor.LinkDataTotalChild;
+import com.relteq.sirius.processor.LinkDataTotal;
+
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
 import com.workingdogs.village.Value;
@@ -177,7 +178,7 @@ public static long getAggregationInMilliseconds(String aggregation) {
 		
 		if ( table.equals("link_data_total") ) {		
 
-			LinkDataTotalChild row = new LinkDataTotalChild();
+			LinkDataTotal row = new LinkDataTotal();
 			return row.saveAggregated(table, aggregation, time, originalData, aggregatedData);	
 			
 		} else
