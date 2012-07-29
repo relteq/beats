@@ -3,19 +3,16 @@ package com.relteq.sirius.processor;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
-
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 
 
 import com.relteq.sirius.db.OutputToCSV;
-import com.relteq.sirius.processor.*;
-
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
 import com.workingdogs.village.Value;
 
-public class AggregateData {
+public class AggregateData extends OutputToCSV {
 
 	
 	public static void reportToStandard(String s) {
@@ -64,28 +61,26 @@ public class AggregateData {
 		reportToStandard("Table: " +table + " Aggregation: " + aggregation);
 		
 		
-		// get a list of LinkID and NetworkID pairs for the selection
-		String query = OutputToCSV.getScenarioAndRunSelection("select distinct link_id, network_id, data_source_id from "  + table ,arguments, "raw" );
+		// get a list of keys for the selection
+		String query = getScenarioAndRunSelection("select distinct " + getListOfKeys(table) + " from "  + table ,arguments, "raw" );
+
+		
 		List listOfKeys = BasePeer.executeQuery(query);		
 		
 		// define main query
-		query = OutputToCSV.getScenarioAndRunSelection(" FROM " +table ,arguments, "raw" );
+		query = getScenarioAndRunSelection(" FROM " +table ,arguments, "raw" );
 		int numOfAggregatedRows = 0;
 		
 		// perform aggregation
 		
 		reportToStandard("Unique key combinations: " + listOfKeys.size());
 		
-		// Loop by key combinations LinkID,NetworkID, SourceID
+		// Loop by key combinations 
 		// need to estimate performance for large tables and decide whether the loop by time should be outer or inner
 			
 		for (int i=0; i < listOfKeys.size(); i++ ) {
-			
-			String linkId = 	((Record)listOfKeys.get(i)).getValue(1).asString();
-			String networkId = 	((Record)listOfKeys.get(i)).getValue(2).asString();
-			String sourceId = 	((Record)listOfKeys.get(i)).getValue(3).asString();
-			
-			if ( getValueFromDB("COUNT(ts)", table, arguments, linkId, networkId, sourceId, aggregation).asInt() > 0 ) {
+		
+			if ( getValueFromDB("COUNT(ts)", table, arguments, (Record)listOfKeys.get(i), aggregation).asInt()  > 0 ) {
 				
 				reportToStandard("Key combination " + (i+1) + " of " + listOfKeys.size() + " has been previously aggregated");
 			} 
@@ -95,8 +90,8 @@ public class AggregateData {
 				
 				// Loop by time increment
 				// Get min and max time stamp
-				Timestamp minTimestamp = getValueFromDB("MIN(ts)", table, arguments, linkId, networkId,sourceId).asTimestamp();
-				Timestamp maxTimestamp = getValueFromDB("MAX(ts)", table, arguments, linkId, networkId,sourceId).asTimestamp();
+				Timestamp minTimestamp = getValueFromDB("MIN(ts)", table, arguments, (Record)listOfKeys.get(i), "raw").asTimestamp();
+				Timestamp maxTimestamp = getValueFromDB("MAX(ts)", table, arguments, (Record)listOfKeys.get(i), "raw").asTimestamp();
 
 				
 				Long delta = getAggregationInMilliseconds(aggregation);
@@ -109,20 +104,20 @@ public class AggregateData {
 					delta  = stop - start;
 			
 				}
-				
+
 				
 				for (Long time = start; time < stop; time += delta) {
 				
 					List originalData;
 					List aggregatedData;	
 					
-					String currentQuery = setTimeInterval(setKeys(query,linkId,networkId), time, time+delta);
+					String currentQuery = setTimeInterval(setKeys(query,table,(Record)listOfKeys.get(i)), time, time+delta);
 					
 					try {
 						
 						// Get aggregated data for aggregation
 						originalData = BasePeer.executeQuery("SELECT * " + currentQuery + " FETCH FIRST ROW ONLY");
-						aggregatedData = BasePeer.executeQuery("SELECT SUM(in_flow),SUM(out_flow),AVG(density),AVG(occupancy),AVG(speed) " + currentQuery);
+						aggregatedData = BasePeer.executeQuery("SELECT" + getAggregationColumns(table ) + currentQuery);
 						
 						if (originalData.size() > 0 && aggregatedData.size() > 0 ) {
 							
@@ -140,7 +135,7 @@ public class AggregateData {
 				}
 				
 				numOfAggregatedRows += nAggregated;
-				reportToStandard("Key combination " + (i+1) + " of " + listOfKeys.size() + ": added " +nAggregated + " aggregated records");
+				reportToStandard("Key combination " + (i+1) + " of " + listOfKeys.size() + ": added " +nAggregated + " aggregated records" + " delta " + delta);
 			}
 
 		}
@@ -173,7 +168,7 @@ public static long getAggregationInMilliseconds(String aggregation) {
 	 * @throws Exception
 	 */
 			
-	private static int saveAggregated(String table, String aggregation, Long time, List originalData, List aggregatedData )  {
+	protected static int saveAggregated(String table, String aggregation, Long time, List originalData, List aggregatedData )  {
 		
 		if ( table.equals("link_data_total") ) {		
 
@@ -202,7 +197,39 @@ public static long getAggregationInMilliseconds(String aggregation) {
 		return 0;
 	}
 	
+	/**
+	 * Save aggregated data
+	 * @param query
+	 * @param table
+	 * @return
+	 * @throws Exception
+	 */
+			
+	public static String getAggregationColumns(String table )  {
+		
+		if ( table.equals("link_data_total") ) {		
 
+			return " SUM(in_flow), SUM(out_flow), AVG(density), AVG(occupancy), AVG(speed), SUM(in_flow_worst), SUM(out_flow_worst), AVG(density_worst), AVG(occupancy_worst), AVG(speed_worst) ";
+			
+		} else
+		if ( table.equals("link_data_detailed") ) {
+
+			return " SUM(in_flow), SUM(out_flow), AVG(density), AVG(occupancy), AVG(speed), SUM(in_flow_worst), SUM(out_flow_worst), AVG(density_worst), AVG(occupancy_worst), AVG(speed_worst) ";
+			
+		} else
+		if ( table.equals("link_performance_detailed") ) {
+
+			return " AVG(vmt), AVG(vht), AVG(delay), AVG(vmt_worst), AVG(vht_worst), AVG(delay_worst) ";			
+			
+		} else
+		if ( table.equals("link_performance_total") ) {
+
+			
+			return " AVG(vmt), AVG(vht), AVG(delay), AVG(travel_time), AVG(productivity_loss), AVG(los), AVG(vc_ratio), AVG(vmt_worst), AVG(vht_worst), AVG(delay_worst), AVG(travel_time_worst), AVG(productivity_loss_worst), AVG(los_worst), AVG(vc_ratio_worst) ";				
+		} 
+		
+		return "*";
+	}
 	
 	/**
 	 * add time interval to the query condition
@@ -228,74 +255,140 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 	}
 	
 }
-	/**
-	 * adds link_id, network_id, and data_source_id to the selection statement
-	 * @param query
-	 * @param linkId
-	 * @param networkId
-	 * @return
-	 */
-	public static String setKeys(String query,String linkId, String networkId) {
-		
-		if ( query.indexOf("WHERE") < 0 ) {
-			
-			return query + " WHERE link_id=\'" + linkId + "\'" + " AND network_id=\'" + networkId + "\'";
-			
-		} else {			
-		
-			return query + " AND link_id=\'" + linkId + "\'" + " AND network_id=\'" + networkId + "\'";
-		}
-	}
+
 	
 	/**
 	 * adds link_id and network_id to the selection where statement
 	 * @param query
-	 * @param linkId
-	 * @param networkId
+	 * @param table
+	 * @param record
 	 * @return
 	 */
-	public static String setKeys(String query,String linkId, String networkId, String sourceId) {
+	public static String setKeys(String query,String table, Record rec) {
 		
-		if ( query.indexOf("WHERE") < 0 ) {
+		if ( query.indexOf("WHERE") < 0 ) return query += " WHERE ";
 			
-			return query + " WHERE link_id=\'" + linkId + "\' AND network_id=\'" + networkId + "\' AND data_source_id=\'" +sourceId + "\'";
-			
-		} else {			
+			return query + getListOfKeys(table, rec);
 		
-			return query + " AND link_id=\'" + linkId + "\' AND network_id=\'" + networkId + "\' AND data_source_id=\'" +sourceId + "\'";
-		}
 	}
 	
 	/**
   * execute query returning the first value from the first record
-  * @param commnad, table name, array of arguments. link_id, network_id, data_source_id, aggregation
+  * @param commnad, table name, array of arguments, list of keys, aggregation
   * @return string
 	 * @throws DataSetException 
   */
-	private static Value getValueFromDB(String cmd, String table, String[] arguments, String linkId, String networkId, String sourceId, String aggregation) throws TorqueException, DataSetException {	
+	protected static Value getValueFromDB(String cmd, String table, String[] arguments, Record rec, String aggregation) throws TorqueException, DataSetException {	
 		
-		String query = OutputToCSV.getScenarioAndRunSelection("SELECT " + cmd +" FROM " + table, arguments, aggregation);
+		String query = getScenarioAndRunSelection("SELECT " + cmd +" FROM " + table, arguments, aggregation);
 		
-		query = setKeys(query, linkId, networkId);
+		query = setKeys(query, table, rec);
 		
     	return ((Record) BasePeer.executeQuery(query).get(0)).getValue(1);
 	}
+				
+			
+
+
 	
+	/**
+	 * returns list of keys for SELECT statement
+	 * @param table
+	 * @return String
+	 */
+	public static String getListOfKeys(String table)  {
+		
+		try {	
+			
+			if ( table.equals("link_data_total") ) {		
+	
+				LinkDataTotal row = new LinkDataTotal();
+	
+					return row.getListOfKeys();
+	
+				
+			} else
+			if ( table.equals("link_data_detailed") ) {
+	
+				LinkDataDetailed row = new LinkDataDetailed();
+				return row.getListOfKeys();
+				
+			} else
+			if ( table.equals("link_performance_detailed") ) {
+	
+				LinkPerformanceDetailed row = new LinkPerformanceDetailed();
+				return row.getListOfKeys();
+				
+			} else
+			if ( table.equals("link_performance_total") ) {
+	
+				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys();
+			} 
+		
+		} catch (TorqueException e) {
+
+
+			return "*";
+		}
+		
+		return "*";
+		
+	}
 	
 	
 	/**
-	  * execute query returning the first value from the first record
-	  * @param commnad, table name, array of arguments. link_id, network_id, data_source_id
-	  * @return string
-		 * @throws DataSetException 
-	  */
-		private static Value getValueFromDB(String cmd, String table, String[] arguments, String linkId, String networkId, String sourceId ) throws TorqueException, DataSetException {	
+	 * returns list of keys for WHERE statement
+	 * @param table
+	 * @return String
+	 */
+	public static String getListOfKeys(String table, Record rec)  {
+		
+		try {	
 			
-			return getValueFromDB(cmd, table, arguments, linkId, networkId, sourceId, "raw");
+			if ( table.equals("link_data_total") ) {		
+	
+				LinkDataTotal row = new LinkDataTotal();
+	
+				
+					return row.getListOfKeys(rec);
+				
+				
+			} else
+			if ( table.equals("link_data_detailed") ) {
+	
+				LinkDataDetailed row = new LinkDataDetailed();
+				return row.getListOfKeys(rec);
+				
+			} else
+			if ( table.equals("link_performance_detailed") ) {
+	
+				LinkPerformanceDetailed row = new LinkPerformanceDetailed();
+				return row.getListOfKeys(rec);
+				
+			} else
+			if ( table.equals("link_performance_total") ) {
+	
+				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys(rec);
+			} 
+		
+		} catch (TorqueException e) {
 
+
+			return " ";
 		}
-			
+		catch (DataSetException e) {
+			return " ";
+		}
 
+		
+		return " ";
+		
+	}
+	
+		
+	
 }
 
 

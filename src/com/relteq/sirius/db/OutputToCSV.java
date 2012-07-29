@@ -132,7 +132,7 @@ public static String getSQLQueryForCSV(String table, String[] arguments) {
 	
 	// Form a query
 	 
-	 return getScenarioAndRunSelection("SELECT * FROM " + table, arguments, "5min");
+	 return getScenarioAndRunSelection("SELECT * FROM " + table, arguments, "5min");  
 
 	} 
 	

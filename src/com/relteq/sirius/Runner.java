@@ -8,6 +8,7 @@ import com.relteq.sirius.om.LinkPerformanceTotal;
 import com.relteq.sirius.om.SignalData;
 import com.relteq.sirius.om.SignalPhasePerformance;
 import com.relteq.sirius.processor.AggregateData;
+import com.relteq.sirius.processor.PerformanceData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 
 /**
@@ -30,7 +31,11 @@ public class Runner {
 			if (cmd.equals("process") || cmd.equals("p")) 
 			{
 				com.relteq.sirius.db.Admin.initTorqueAPI();
-				//AggregateData.doAggregate("link_data_total",arguments, "5min");
+				
+				// Calculate performance measures
+				PerformanceData.doPerformance(arguments);
+				
+				//Aggregate data
 				AggregateData.doAggregateAllTables(arguments);
 				
 			} else
