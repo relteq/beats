@@ -170,7 +170,7 @@ protected static long calculateAndSaved(String table, int recordNumber, List dat
 	 */
 	public static BigDecimal productivityLoss(BigDecimal out_flow, BigDecimal capacity, int lanes, double length, long timeDelta) {
 		
-		
+
 		if ( capacity.doubleValue() <= 0 )  return null;
 		else {
 			// need to ad logic for  v and V

@@ -5,9 +5,10 @@ import java.sql.Timestamp;
 import java.util.List;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
-
+import org.apache.torque.util.Criteria;
 
 import com.relteq.sirius.db.OutputToCSV;
+import com.relteq.sirius.om.LinkDataTotalPeer;
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
 import com.workingdogs.village.Value;
@@ -60,6 +61,7 @@ public class AggregateData extends OutputToCSV {
 
 		reportToStandard("Table: " +table + " Aggregation: " + aggregation);
 		
+		long readStartTime=0, readAverage=0, numOfReads=0;
 		
 		// get a list of keys for the selection
 		String query = getScenarioAndRunSelection("select distinct " + getListOfKeys(table) + " from "  + table ,arguments, "raw" );
@@ -105,6 +107,17 @@ public class AggregateData extends OutputToCSV {
 			
 				}
 
+				// Check if we have data for the second time interval
+				// We test just one interval and assume it represents the entire set of data
+				// This check may change in the future
+				
+				if ( ((Record)BasePeer.executeQuery("SELECT COUNT(TS) " + setTimeInterval(setKeys(query,table,(Record)listOfKeys.get(i)), start+delta, start+2*delta) ).get(0)).getValue(1).asInt() < 1 )  {
+					// No data for this interval
+					// We assume all intervals are like this one
+					reportToStandard("Not enough data for aggregation: " + aggregation);
+					break;					
+				}
+					
 				
 				for (Long time = start; time < stop; time += delta) {
 				
@@ -114,13 +127,17 @@ public class AggregateData extends OutputToCSV {
 					String currentQuery = setTimeInterval(setKeys(query,table,(Record)listOfKeys.get(i)), time, time+delta);
 					
 					try {
+											
+						readStartTime = System.currentTimeMillis();
+						originalData = BasePeer.executeQuery("SELECT * " + currentQuery + " FETCH FIRST ROW ONLY");  	// typical execution time 4 ms
 						
-						// Get aggregated data for aggregation
-						originalData = BasePeer.executeQuery("SELECT * " + currentQuery + " FETCH FIRST ROW ONLY");
-						aggregatedData = BasePeer.executeQuery("SELECT" + getAggregationColumns(table ) + currentQuery);
+						aggregatedData = BasePeer.executeQuery("SELECT" + getAggregationColumns(table ) + currentQuery); // typical execution time 6 ms
+						
+						readAverage += (System.currentTimeMillis()- readStartTime);
+						numOfReads++;
 						
 						if (originalData.size() > 0 && aggregatedData.size() > 0 ) {
-							
+	
 							// Save aggregated
 							nAggregated += saveAggregated(table, aggregation, time+delta ,originalData, aggregatedData );
 							
@@ -135,11 +152,12 @@ public class AggregateData extends OutputToCSV {
 				}
 				
 				numOfAggregatedRows += nAggregated;
-				reportToStandard("Key combination " + (i+1) + " of " + listOfKeys.size() + ": added " +nAggregated + " aggregated records" + " delta " + delta);
+				reportToStandard("Key combination " + (i+1) + " of " + listOfKeys.size() + ": added " +nAggregated + " aggregated records" );
 			}
 
 		}
 		
+		if ( numOfReads > 0  ) reportToStandard("Average read time: " + (double)(readAverage/numOfReads) + " ms");
 		reportToStandard("Aggregated records: " + numOfAggregatedRows+ "\n");
 		
 	}

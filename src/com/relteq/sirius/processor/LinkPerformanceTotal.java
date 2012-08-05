@@ -83,12 +83,22 @@ public class LinkPerformanceTotal extends com.relteq.sirius.om.LinkPerformanceTo
 			if ( obj.getSpeedWorst() != null && getVhtWorst() !=null && getVmtWorst() !=null )
 				setDelayWorst(PerformanceData.delay(getVhtWorst(), getVmtWorst(), obj.getSpeedWorst()));
 			
-			if ( obj.getOutFlow() != null && obj.getCapacity() != null)
-				setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) ); 
+			if (obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) == 0)
+				setProductivityLoss(BigDecimal.valueOf(0.0));
+			else {
+					
+				if ( obj.getOutFlow() != null && obj.getCapacity() != null)
+					setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) ); 
+			}	
 			
-			if ( obj.getOutFlowWorst() != null && obj.getCapacity() != null)
-				setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlowWorst(), obj.getCapacity(), lanes, linkLength, timeDelta) ); 
-				
+			if (obj.getSpeedWorst().compareTo(obj.getFreeFlowSpeed()) == 0)
+				setProductivityLoss(BigDecimal.valueOf(0.0));
+			
+			else {
+				if ( obj.getOutFlowWorst() != null && obj.getCapacity() != null)
+					setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlowWorst(), obj.getCapacity(), lanes, linkLength, timeDelta) ); 
+			}
+			
 			setTravelTime(PerformanceData.actualTravelTime(recordNumber, data, linkLength, getColumnNumber("speed"), getColumnNumber("ts") ));
 			setTravelTimeWorst(PerformanceData.actualTravelTime(recordNumber, data, linkLength, getColumnNumber("speed_worst"), getColumnNumber("ts") ));
 			
