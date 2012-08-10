@@ -44,6 +44,12 @@ public class AggregateData extends OutputToCSV {
 	
 	public static void doAggregateAllTables(String[] arguments) throws IOException, TorqueException, DataSetException {
 		
+		
+		Criteria crit = new Criteria();
+		
+		crit.add(LinkDataTotalPeer.AGGREGATION, "5min");
+		LinkDataTotalPeer.doDelete(crit);
+		
 		doAggregateAllIntervals("link_data_total", arguments);
 		doAggregateAllIntervals("link_data_detailed", arguments);
 		doAggregateAllIntervals("link_performance_detailed", arguments);
@@ -284,7 +290,7 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 	 */
 	public static String setKeys(String query,String table, Record rec) {
 		
-		if ( query.indexOf("WHERE") < 0 ) return query += " WHERE ";
+		if ( query.indexOf("WHERE") < 0 ) return query += " WHERE " + getListOfKeys(table, rec);
 			
 			return query + getListOfKeys(table, rec);
 		
@@ -366,11 +372,8 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 			
 			if ( table.equals("link_data_total") ) {		
 	
-				LinkDataTotal row = new LinkDataTotal();
-	
-				
-					return row.getListOfKeys(rec);
-				
+				LinkDataTotal row = new LinkDataTotal();				
+				return row.getListOfKeys(rec);				
 				
 			} else
 			if ( table.equals("link_data_detailed") ) {

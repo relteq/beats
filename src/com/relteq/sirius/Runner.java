@@ -8,6 +8,7 @@ import com.relteq.sirius.om.LinkPerformanceTotal;
 import com.relteq.sirius.om.SignalData;
 import com.relteq.sirius.om.SignalPhasePerformance;
 import com.relteq.sirius.processor.AggregateData;
+import com.relteq.sirius.processor.PdfReport;
 import com.relteq.sirius.processor.PerformanceData;
 import com.relteq.sirius.simulator.SiriusErrorLog;
 
@@ -27,6 +28,16 @@ public class Runner {
 			String[] arguments = new String[args.length - 1];
 			System.arraycopy(args, 1, arguments, 0, args.length - 1);
 			
+			// Run report
+			if (cmd.equals("report") || cmd.equals("r")) 
+			{
+				com.relteq.sirius.db.Admin.initTorqueAPI();
+				
+				// Calculate performance measures
+				PdfReport.outputPdf("link_data_total");
+				
+			} else
+				
 			// Aggregate data
 			if (cmd.equals("process") || cmd.equals("p")) 
 			{
