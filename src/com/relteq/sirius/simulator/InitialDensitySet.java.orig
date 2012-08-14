@@ -5,14 +5,16 @@
 
 package com.relteq.sirius.simulator;
 
-final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
+import java.util.ArrayList;
+import java.util.Collections;
+//import java.util.List;
+
+public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
-	private Double [][] initial_density; 	// [veh/mile] link x type
-	private Link [] link;					// ordered array of link references
-	private Link [] destination_link;		// ordered array of destination references
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
+	private ArrayList<LinkDestinationIC> data;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -26,19 +28,12 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		int numDensity = getDensity().size();
 		
 		// allocate
-		initial_density = new Double [numDensity][];
-		link = new Link [numDensity];
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
-
+		data = new ArrayList<LinkDestinationIC>();
+		
 		// copy profile information to arrays in extended object
-		for(i=0;i<numDensity;i++){
-			com.relteq.sirius.jaxb.Density d = getDensity().get(i);
-			link[i] = myScenario.getLinkWithId(d.getLinkId());
-			if(link[i]!=null){
-				Double1DVector D = new Double1DVector(d.getContent(),":");
-				initial_density[i] = D.getData();
-			}	
-		}
+		for(i=0;i<numDensity;i++)
+			data.add(new LinkDestinationIC(getDensity().get(i),myScenario));
 		
 		// round to the nearest decisecond
 		if(getTstamp()!=null)
@@ -60,75 +55,284 @@ final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 		for(i=0;i<vehicletypeindex.length;i++)
 			if(vehicletypeindex[i]<0)
 				SiriusErrorLog.addError("Bad vehicle type name in initial density profile id=" + getId());
-		
-		// check size of data
-<<<<<<< HEAD
-		for(i=0;i<link.length;i++){
-			if(link[i]!=null)
-				if(initial_density[i].length!=vehicletypeindex.length){
-					SiriusErrorLog.addErrorMessage("Wrong number of data points.");
-					return false;
-				}
+
+		// check that link/destination pairs are unique.
+		Collections.sort(data);
+	
+		LinkDestinationIC previous = null;
+		for(LinkDestinationIC current : data){	
+			// stop if you get to invalid link ids (at the end of the sorted array)
+			if(current.link==null)
+				break;
+			if(!current.isbackground && current.destination_link==null)
+				break;
+			if(previous!=null)
+				if(current.equals(previous))
+					SiriusErrorLog.addError("Initial density set contains two entries for link id="+ current.link.getId() + " and destination id=" + current.getDestinationId() ); 
+			previous = current;
 		}
-=======
-		if(link!=null)
-			for(i=0;i<link.length;i++)
-				if(initial_density[i].length!=vehicletypeindex.length)
-					SiriusErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
->>>>>>> master
 
-		// check that values are between 0 and jam density
-		int j;
-		Double sum;
-		Double x;
-		for(i=0;i<initial_density.length;i++){
-			
-<<<<<<< HEAD
-			if(link[i]==null)
-				continue;
-=======
-			if(link[i]==null){
-				SiriusErrorLog.addWarning("Unknown link id in initial density profile");
-				continue;
-			}
->>>>>>> master
-			
-			if(link[i].issource)	// does not apply to source links
-				continue;
-			
-			sum = 0.0;
-			for(j=0;j<vehicletypeindex.length;j++){
-				x = initial_density[i][j];
-				if(x<0)
-					SiriusErrorLog.addError("Negative value found in initial density profile for link id=" + link[i].getId());
-				if( x.isNaN())
-					SiriusErrorLog.addError("Invalid value found in initial density profile for link id=" + link[i].getId());
-				sum += x;
-			}
-			
-			// NOTE: REMOVED THIS CHECK TEMPORARILY. NEED TO DECIDE HOW TO DO IT 
-			// WITH ENSEMBLE FUNDAMENTAL DIAGRAMS
-//			if(sum>link[i].getDensityJamInVPMPL())
-//				SiriusErrorLog.addErrorMessage("Initial density exceeds jam density.");
-
-		}		
+		// validate each one
+		for(LinkDestinationIC d : data)
+			d.validate();
 	}
-
+	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double [] getDensityForLinkIdInVeh(String linkid){
-		Double [] d = SiriusMath.zeros(myScenario.getNumVehicleTypes());
-		for(int i=0;i<link.length;i++){
-			if(link[i]!=null)
-				if(link[i].getId().equals(linkid)){
-					for(int j=0;j<vehicletypeindex.length;j++)
-						d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
-					return d;
+	public Double [][] getDensityForLinkIdInVeh(String linkid,ArrayList<Integer> destination){
+		int numDestination = destination.size();
+		Double [][] d = SiriusMath.zeros(numDestination,myScenario.getNumVehicleTypes());
+		for(LinkDestinationIC ld : data){
+			if(ld.hasvalidrefs){				
+				if(ld.link.getId().equals(linkid)){
+					// find ld's destination in the array of destinations
+					int dest_index = destination.indexOf(ld.destination_network_index);
+					if(dest_index>=0)
+						for(int j=0;j<vehicletypeindex.length;j++)
+							d[dest_index][vehicletypeindex[j]] = ld.initial_density[j]*ld.link.getLengthInMiles();
 				}
+			}
 		}
 		return d;
 	}
+
+<<<<<<< HEAD
+	/////////////////////////////////////////////////////////////////////
+	// internal class
+	/////////////////////////////////////////////////////////////////////
+	
+	private class LinkDestinationIC implements Comparable<LinkDestinationIC> {
+		Double [] initial_density; 	// [veh/mile] by type
+		Link link;
+		boolean isbackground;
+		Link destination_link;
+		int destination_network_index;
+		boolean hasvalidrefs;
+
+		public LinkDestinationIC(com.relteq.sirius.jaxb.Density jaxbD,Scenario myScenario){
+			// read destination link.
+			// if not specified, this density applies to background flow.
+			if(jaxbD.getLinkIdDestination()==null){
+				isbackground = true;
+				destination_link = null;
+				destination_network_index = -1;
+			}
+			else{
+				isbackground = false;
+				destination_link = myScenario.getLinkWithId(jaxbD.getLinkIdDestination());
+				destination_network_index = -1;
+				if(destination_link!=null)
+					for(DestinationNetworkBLA destnet : myScenario.destination_networks){
+						if(destnet.dnetwork.getLinkIdDestination().compareTo(destination_link.getId())==0)
+							destination_network_index = destnet.myIndex;
+					}
+				
+			}
+			link = myScenario.getLinkWithId(jaxbD.getLinkId());
+			if(link!=null){
+				Double1DVector D = new Double1DVector(jaxbD.getContent(),":");
+				initial_density = D.getData();
+			}
+
+			// true if it has valid link reference and is either background or
+			// has a valid destination reference
+			hasvalidrefs = link!=null && (isbackground || destination_network_index>=0);
+=======
+	public Double[][] getInitial_density() {
+		return initial_density;
+	}
+
+	public Link[] getLink() {
+		return link;
+	}
+
+	public Integer[] getVehicletypeindex() {
+		return vehicletypeindex;
+	}
+
+	public double getTimestamp() {
+		return timestamp;
+	}
+		
+	/////////////////////////////////////////////////////////////////////
+	// database API
+	/////////////////////////////////////////////////////////////////////
+	
+	public class Tuple {
+		private String link_id;
+		private String network_id;
+		private int vehicle_type_index;
+		private double density;
+		public Tuple(String link_id, String network_id, int vehicle_type_index,
+				double density) {
+			this.link_id = link_id;
+			this.network_id = network_id;
+			this.vehicle_type_index = vehicle_type_index;
+			this.density = density;
+		}
+		/**
+		 * @return the link id
+		 */
+		public String getLinkId() {
+			return link_id;
+		}
+		/**
+		 * @return the network id
+		 */
+		public String getNetworkId() {
+			return network_id;
+>>>>>>> master
+		}
+
+//		public String getLinkId(){
+//			return link==null ? "unknown link id" : link.getId();
+//		}
+		
+		public String getDestinationId(){
+			if(isbackground)
+				return "background";
+			return destination_link==null ? "unknown link id" : destination_link.getId();
+		}
+		
+		protected void validate(){
+
+			
+			// check size of data
+			if(link!=null)
+				if(initial_density.length!=vehicletypeindex.length)
+					SiriusErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
+
+			// check that values are between 0 and jam density			
+			if(link==null)
+				SiriusErrorLog.addWarning("Unknown link id in initial density set.");
+
+			// bad destination link id
+			if(!isbackground && destination_link==null)
+				SiriusErrorLog.addWarning("Destination link not found in destination networks in initial density set.");
+			
+			if(link!=null){
+				Double sum = 0.0;
+				Double x;
+				for(int j=0;j<vehicletypeindex.length;j++){
+					x = initial_density[j];
+					if(x<0)
+						SiriusErrorLog.addError("Negative value found in initial density set for link id=" + link.getId());
+					if( x.isNaN())
+						SiriusErrorLog.addError("Invalid value found in initial density set for link id=" + link.getId());
+					sum += x;
+				}
+			}
+			
+//			if(link!=null)
+//			if(!link.issource){	// does not apply to source links
+				// NOTE: REMOVED THIS CHECK TEMPORARILY. NEED TO DECIDE HOW TO DO IT 
+				// WITH ENSEMBLE FUNDAMENTAL DIAGRAMS
+//					if(sum>link[i].getDensityJamInVPMPL())
+//						SiriusErrorLog.addErrorMessage("Initial density exceeds jam density.");
+//			}
+		
+	
+		}
+
+		@Override
+		public int compareTo(LinkDestinationIC that) {
+
+			if(that==null)
+				return 1;
+			
+			int compare;
+			
+			// first ordering by reference validity
+			Boolean thisisinvalid = !this.hasvalidrefs;
+			Boolean thatisinvalid = !that.hasvalidrefs;
+			compare = thisisinvalid.compareTo(thatisinvalid);
+			if(compare!=0)
+				return compare;
+			
+			if(thisisinvalid && thatisinvalid)
+				return 0;
+			
+			// second ordering by background
+			Boolean thisisbackground = this.isbackground;
+			Boolean thatisbackground = that.isbackground;
+			compare = thisisbackground.compareTo(thatisbackground);
+			if(compare!=0)
+				return compare;
+			
+			// third ordering by link id
+			String thislink = this.link.getId();
+			String thatlink = that.link.getId();
+			compare = thislink.compareTo(thatlink);
+			if(compare!=0)
+				return compare;
+			
+			if(thisisbackground && thatisbackground)
+				return 0;
+			
+			// fourth ordering by destination id
+			String thisdestination = this.destination_link.getId();
+			String thatdestination = that.destination_link.getId();
+			compare = thisdestination.compareTo(thatdestination);
+			if(compare!=0)
+				return compare;
+			
+			return 0;
+		}
+	}	
+	
+//	public class Tuple {
+//		private String link_id;
+//		private String network_id;
+//		private int vehicle_type_index;
+//		private double density;
+//		public Tuple(String link_id, String network_id, int vehicle_type_index,
+//				double density) {
+//			this.link_id = link_id;
+//			this.network_id = network_id;
+//			this.vehicle_type_index = vehicle_type_index;
+//			this.density = density;
+//		}
+//		/**
+//		 * @return the link id
+//		 */
+//		public String getLinkId() {
+//			return link_id;
+//		}
+//		/**
+//		 * @return the network id
+//		 */
+//		public String getNetworkId() {
+//			return network_id;
+//		}
+//		/**
+//		 * @return the vehicle type index
+//		 */
+//		public int getVehicleTypeIndex() {
+//			return vehicle_type_index;
+//		}
+//		/**
+//		 * @return the density, in vehicles
+//		 */
+//		public double getDensity() {
+//			return density;
+//		}
+//	}
+//
+//	/**
+//	 * Constructs a list of initial densities,
+//	 * along with the corresponding link identifiers and vehicle types
+//	 * @return a list of <code/><link id, network id, vehicle type index, density></code> tuples
+//	 */
+//	public List<Tuple> getData() {
+//		List<Tuple> data = new ArrayList<Tuple>(link.length * vehicletypeindex.length);
+//		for (int iii = 0; iii < link.length; ++iii)
+//			for (int jjj = 0; jjj < vehicletypeindex.length; ++jjj)
+//				data.add(new Tuple(link[iii].getId(), link[iii].myNetwork.getId(),
+//						vehicletypeindex[jjj].intValue(),
+//						initial_density[iii][jjj] * link[iii].getLengthInMiles()));
+//		return data;
+//	}
 
 }
