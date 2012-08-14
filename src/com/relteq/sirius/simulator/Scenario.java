@@ -122,18 +122,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			}
 		}
 		
-
-////////////////////////////////////////////
-for(com.relteq.sirius.jaxb.Node jnode : networkList.getNetwork().get(0).getNodeList().getNode()){
-	Node node = (Node) jnode;
-	System.out.println("node " + node.getId() + " dnIndex: " + node.myDNindex);
-}
-for(com.relteq.sirius.jaxb.Link jlink : networkList.getNetwork().get(0).getLinkList().getLink()){
-	Link link = (Link) jlink;
-	System.out.println("link " + link.getId() + " dnIndex: " + link.myDNindex);
-}
-////////////////////////////////////////////
-		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(sensorList!=null){
 			for(int i=0;i<sensorList.getSensor().size();i++){

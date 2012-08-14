@@ -47,8 +47,6 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myNode==null)
 			return;
 		
-		myDestinationNetworkIndex = myNode.getDestinationNetworkIndexFor(getDestinationNetworkId());
-
 		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
 		int in_index,out_index;
 		laststep = 0;
