@@ -28,7 +28,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected boolean istrivialsplit;
 	/** @y.exclude */ 	protected boolean hasSRprofile;
 	
-	// destination networks
+	// destination networks (populated by DestinationNetwork.populate)
+	/** @y.exclude */ 	protected int numDNetworks = 0;
 	/** @y.exclude */ 	protected ArrayList<Integer> myDNindex = new ArrayList<Integer>();	// list of DN that use this node
 	
 	// signal
@@ -42,11 +43,11 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 																// controller split ratios
     // used in update()
-	/** @y.exclude */ 	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
+	/** @y.exclude */ 	protected Double [][][][] inDemand;		// [ensemble][nIn][numDN][nTypes]
 	/** @y.exclude */ 	protected double [][] outSupply;		// [ensemble][nOut]
 	/** @y.exclude */ 	protected double [][] outDemandKnown;	// [ensemble][nOut]
 	/** @y.exclude */ 	protected double [][] dsratio;			// [ensemble][nOut]
-	/** @y.exclude */ 	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	/** @y.exclude */ 	protected Double [][][][] outFlow; 		// [ensemble][nOut][numDN][nTypes]
 	/** @y.exclude */ 	protected boolean [][] iscontributor;	// [nIn][nOut]
 	/** @y.exclude */ 	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
 	/** @y.exclude */ 	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
@@ -64,6 +65,12 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
+	
+	/** @y.exclude */ 
+	protected void addDestinationNetwork(int dest_index){
+		numDNetworks++;
+		myDNindex.add(dest_index);
+	}
 	
 	/** @y.exclude */ 	
 	protected boolean registerController(){
@@ -151,6 +158,12 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
     	if(isTerminal)
     		return;
 
+        // add background destination
+        if(myNetwork.myScenario.has_background_flow){
+        	numDNetworks++;
+        	myDNindex.add(0,-1); // -1 means background flow
+        }
+        
 		iscontributor = new boolean[nIn][nOut];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
@@ -250,11 +263,11 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	protected void reset() {	
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
     	int numEnsemble = myNetwork.myScenario.numEnsemble;		
-    	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
+    	inDemand 		= new Double[numEnsemble][nIn][numDNetworks][numVehicleTypes];
 		outSupply 		= new double[numEnsemble][nOut];
 		outDemandKnown 	= new double[numEnsemble][nOut];
 		dsratio 		= new double[numEnsemble][nOut];
-		outFlow 		= new Double[numEnsemble][nOut][numVehicleTypes];
+		outFlow 		= new Double[numEnsemble][nOut][numDNetworks][numVehicleTypes];
 	}
 
 	/////////////////////////////////////////////////////////////////////

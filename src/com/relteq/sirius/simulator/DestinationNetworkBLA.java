@@ -33,17 +33,26 @@ public final class DestinationNetworkBLA {
 	/** @y.exclude */ 
 	protected void populate() {
 		if(dnetwork.getLinkReferences()!=null){
+			
+			// loop through link references
 			for(com.relteq.sirius.jaxb.LinkReference linkref : dnetwork.getLinkReferences().getLinkReference()){
 				Link link = myScenario.getLinkWithId(linkref.getId());
 				links.add(link);
+				
+				// register valid links and record their nodes
 				if(link!=null){
-					link.addDestination(myIndex);
+					link.addDestinationNetwork(myIndex);
 					if(!link.issource)
 						myOutNodes.add(link.begin_node);
 					if(!link.issink)
 						myInNodes.add(link.end_node);
 				}
 			}
+			
+			// register the nodes
+			// (validation will check that myOutNodes==myInNodes, so we can just register myOutNodes)
+			for(Node node : myOutNodes)
+				node.addDestinationNetwork(myIndex);
 		}
 	}
 

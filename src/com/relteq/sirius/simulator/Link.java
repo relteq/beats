@@ -25,9 +25,10 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected boolean activeFDevent;					// true if an FD event is active on this link,
 																			// true  means FD points to FDfromEvent 
 																			// false means FD points to FDfromprofile
-    // destinations used by this link
-	/** @y.exclude */ 	protected int numDNetworks;	// number of destinations that use this link
-	/** @y.exclude */ 	protected ArrayList<Integer> destination = new  ArrayList<Integer>();	// map to global destination index
+    
+	// destinations used by this link (populated by DestinationNetwork.populate)
+	/** @y.exclude */ 	protected int numDNetworks = 0;	// number of destinations that use this link
+	/** @y.exclude */ 	protected ArrayList<Integer> myDNindex = new  ArrayList<Integer>();	// map to global destination index
 	
 	// flow into the link
 	/** @y.exclude */ 	protected Double [][][] inflow;    		// [veh]	numEnsemble x numDNetworks x numVehTypes
@@ -176,9 +177,9 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			FDfromEvent._capacity = FDfromEvent._capacity<c ? FDfromEvent._capacity : c;
 	}
 	
-	protected void addDestination(int dest_index){
+	protected void addDestinationNetwork(int dest_index){
 		numDNetworks++;
-		destination.add(dest_index);
+		myDNindex.add(dest_index);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -297,7 +298,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         // add background destination
         if(myNetwork.myScenario.has_background_flow){
         	numDNetworks++;
-        	destination.add(0,-1); // -1 means background flow
+        	myDNindex.add(0,-1); // -1 means background flow
         }
 
 		// make network connections
@@ -353,7 +354,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			density = new Double[numEnsemble][numDNetworks][numVehicleTypes];
 			totaldensity = SiriusMath.zeros(numEnsemble);
 			if(myScenario.getInitialDensitySet()!=null)
-				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(getId(),destination);	
+				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(getId(),myDNindex);	
 			else 
 				density[0] = SiriusMath.zeros(numDNetworks,myScenario.getNumVehicleTypes());
 			totaldensity[0] = SiriusMath.sumsum(density[0]);
