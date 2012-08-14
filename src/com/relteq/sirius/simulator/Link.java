@@ -161,6 +161,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 			FDfromProfile[e].setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
+
+	/** @y.exclude */
+	protected void setSourcedemandFromVeh(Double[][] sourcedemand) {
+		this.sourcedemand = sourcedemand;		
+	}
 	
 	// this is used by CapacityProfile only.
 	// no FDs in this link may have capacities that exceed c.
@@ -690,15 +695,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		else
 			return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
 	}
-	
-	/** Set input flow for source links.
-	 *  [This is API call is being made available for implementation of path-based DTA.
-	 *  The goal is to replace it later with an internal solution.]
-	 */
-	public void setSourcedemandFromVeh(Double[][] sourcedemand) {
-		this.sourcedemand = sourcedemand;		
-	}
-	
+		
 	/** Replace link density with given values.
 	 *  [This is API call is being made available for implementation of particle filtering.
 	 *  Use with caution.]

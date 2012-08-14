@@ -132,7 +132,7 @@ public final class SiriusMath {
 	}
 	
 	public static boolean[] not(boolean [] x){
-		boolean [] y = x.clone();
+		boolean [] y = SiriusMath.makecopy(x);
 		for(int i=0;i<y.length;i++)
 			y[i] = !y[i];
 		return y;
@@ -201,6 +201,17 @@ public final class SiriusMath {
 			return null;
 		int n1 = x.length;
 		Double [] y = new Double[n1];
+		int i;
+		for(i=0;i<n1;i++)
+			y[i]=x[i];
+		return y;
+	}
+	
+	public static boolean[] makecopy(boolean [] x){
+		if(x.length==0)
+			return null;
+		int n1 = x.length;
+		boolean [] y = new boolean[n1];
 		int i;
 		for(i=0;i<n1;i++)
 			y[i]=x[i];
