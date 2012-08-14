@@ -753,61 +753,61 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 
-	/** Get the initial density state for the network with given id.
-	 * @param network_id String id of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getInitialDensityForNetwork(String network_id){
-				
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
+//	/** Get the initial density state for the network with given id.
+//	 * @param network_id String id of the network
+//	 * @return A two-dimensional array of doubles where the first dimension is the
+//	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+//	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+//	 */
+//	public double [][] getInitialDensityForNetwork(String network_id){
+//				
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//		
+//		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+//		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
+//
+//		int i,j;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			if(initprofile==null){
+//				for(j=0;j<numVehicleTypes;j++)
+//					density[i][j] = 0d;
+//			}
+//			else{
+//				com.relteq.sirius.jaxb.Link link = network.getLinkList().getLink().get(i);
+//				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
+//				for(j=0;j<numVehicleTypes;j++)
+//					density[i][j] = init_density[j];
+//			}
+//		}
+//		return density;                         
+//	}
 
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			if(initprofile==null){
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = 0d;
-			}
-			else{
-				com.relteq.sirius.jaxb.Link link = network.getLinkList().getLink().get(i);
-				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = init_density[j];
-			}
-		}
-		return density;                         
-	}
-
-	/** Get the current density state for the network with given id.
-	 * @param network_id String id of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getDensityForNetwork(String network_id,int ensemble){
-		
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			Double [] linkdensity = link.getDensityInVeh(ensemble);
-			for(j=0;j<numVehicleTypes;j++)
-				density[i][j] = linkdensity[j];
-		}
-		return density;           
-		
-	}
+//	/** Get the current density state for the network with given id.
+//	 * @param network_id String id of the network
+//	 * @return A two-dimensional array of doubles where the first dimension is the
+//	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+//	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+//	 */
+//	public double [][] getDensityForNetwork(String network_id,int ensemble){
+//		
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//		
+//		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+//
+//		int i,j;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			Link link = (Link) network.getLinkList().getLink().get(i);
+//			Double [] linkdensity = link.getDensityInVeh(ensemble);
+//			for(j=0;j<numVehicleTypes;j++)
+//				density[i][j] = linkdensity[j];
+//		}
+//		return density;           
+//		
+//	}
 		
 	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
 	 * 

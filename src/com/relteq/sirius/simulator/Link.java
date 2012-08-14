@@ -46,12 +46,12 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	private Double [][][] density;    	// [veh]	numEnsemble x numDNetworks x numVehTypes
 	/** @y.exclude */ 	private Double [] totaldensity;    	// [veh]	numEnsemble
 	
-	/** @y.exclude */ 	protected Double []spaceSupply;     // [veh]	numEnsemble
+	/** @y.exclude */ 	protected Double [] spaceSupply;    // [veh]	numEnsemble
 	/** @y.exclude */ 	protected boolean issource; 		// [boolean]
 	/** @y.exclude */ 	protected boolean issink;     		// [boolean]
-	/** @y.exclude */ 	protected Double [][] cumulative_density;	// [veh] 	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double [][] cumulative_inflow;	// [veh] 	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double [][] cumulative_outflow;	// [veh] 	numEnsemble x numVehTypes
+	/** @y.exclude */ 	protected Double [][][] cumulative_density;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected Double [][][] cumulative_inflow;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected Double [][][] cumulative_outflow;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -67,10 +67,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */
 	protected void reset_cumulative(){
 		int n1 = myNetwork.myScenario.numEnsemble;
-		int n2 = myNetwork.myScenario.getNumVehicleTypes();
-    	cumulative_density = SiriusMath.zeros(n1,n2);
-    	cumulative_inflow  = SiriusMath.zeros(n1,n2);
-    	cumulative_outflow = SiriusMath.zeros(n1,n2);
+		int n2 = numDNetworks;
+		int n3 = myNetwork.myScenario.getNumVehicleTypes();
+    	cumulative_density = SiriusMath.zeros(n1,n2,n3);
+    	cumulative_inflow  = SiriusMath.zeros(n1,n2,n3);
+    	cumulative_outflow = SiriusMath.zeros(n1,n2,n3);
 	}
 
 	/** @y.exclude */
@@ -241,7 +242,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 				}
 	            
 				totaloutflow = Math.max( 0d , totaloutflow + delta_flow );
-				totaloutflow = Math.min( totaloutflow , totaldensity );
+				totaloutflow = Math.min( totaloutflow , totaldensity[e] );
             }
 
             // split among types
@@ -370,9 +371,9 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         spaceSupply 		= SiriusMath.zeros(numEnsemble);
         
         // for correct export of initial condition
-//        cumulative_density 	= SiriusMath.makecopy(density);
-        cumulative_inflow 	= SiriusMath.zeros(numEnsemble,numVehicleTypes);
-        cumulative_outflow 	= SiriusMath.zeros(numEnsemble,numVehicleTypes);
+        cumulative_density 	= SiriusMath.makecopy(density);
+        cumulative_inflow 	= SiriusMath.zeros(numEnsemble,numDNetworks,numVehicleTypes);
+        cumulative_outflow 	= SiriusMath.zeros(numEnsemble,numDNetworks,numVehicleTypes);
 
 		return;
 	}
@@ -490,7 +491,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * @return total density of vehicles in the link. 0 if something goes wrong.
 	 */
 	public double getTotalDensityInVPM(int ensemble) {
-		return getTotalDensityInVeh(ensemble)/_length;
+		try{
+			return getTotalDensityInVeh(ensemble)/_length;
+		} catch(Exception e){
+			return 0d;
+		}
 	}
 	
 	/** Number of vehicles per vehicle type exiting the link 
@@ -510,7 +515,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** Total number of vehicles exiting the link during the current
 	 * time step.  The return value equals the sum of 
 	 * {@link Link#getOutflowInVeh}.
-	 * @return total number of vehicles exiting the link in one time step. 0 if something goes wrong.
+	 * @return total number of vehicles exiting the link in one time step.  0 if something goes wrong.
 	 * 
 	 */
 	public double getTotalOutflowInVeh(int ensemble) {
@@ -527,12 +532,12 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * portion of the input file. 
 	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public Double[] getInflowInVeh(int ensemble) {
+	public Double[][] getInflowInVeh(int ensemble) {
 		try{
-			return inflow[ensemble].clone();
+			return SiriusMath.makecopy(inflow[ensemble]);
 		} catch(Exception e){
 			return null;
-		}
+		}	
 	}
 
 	/** Total number of vehicles entering the link during the current
@@ -543,7 +548,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 */
 	public double getTotalInlowInVeh(int ensemble) {
 		try{
-			return SiriusMath.sum(inflow[ensemble]);
+			return SiriusMath.sumsum(inflow[ensemble]);
 		} catch(Exception e){
 			return 0d;
 		}
