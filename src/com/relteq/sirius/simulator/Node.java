@@ -15,18 +15,23 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		   
 	/** @y.exclude */ 	protected Network myNetwork;
 
-	// network references
+	// connectivity
 	/** @y.exclude */ 	protected Link [] output_link;
 	/** @y.exclude */ 	protected Link [] input_link;
-	
-	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
-	/** @y.exclude */ 	protected Double3DMatrix splitratio;
-	/** @y.exclude */ 	protected boolean istrivialsplit;
-	/** @y.exclude */ 	protected boolean hasSRprofile;
 	/** @y.exclude */ 	protected int nIn;
 	/** @y.exclude */ 	protected int nOut;
 	/** @y.exclude */ 	protected boolean isTerminal;
 	
+	// split ratios
+	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
+	/** @y.exclude */ 	protected Double3DMatrix splitratio;
+	/** @y.exclude */ 	protected boolean istrivialsplit;
+	/** @y.exclude */ 	protected boolean hasSRprofile;
+	
+	// destination networks
+	/** @y.exclude */ 	protected ArrayList<Integer> myDNindex = new ArrayList<Integer>();	// list of DN that use this node
+	
+	// signal
 	/** @y.exclude */ 	protected Signal mySignal = null;
 
     // controller

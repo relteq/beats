@@ -387,7 +387,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// API
+	// public API: run
 	/////////////////////////////////////////////////////////////////////
 	
 	/** Run the scenario <code>numRepetitions</code> times, save output to text files.
@@ -461,6 +461,11 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
 	}
 
+
+	/////////////////////////////////////////////////////////////////////
+	// public API: save
+	/////////////////////////////////////////////////////////////////////
+	
 	/** Save the scenario to XML.
 	 * 
 	 * @param filename The name of the configuration file.
@@ -478,6 +483,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         	throw new SiriusException(e.getMessage());
         }
 	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// public API: get
+	/////////////////////////////////////////////////////////////////////
 	
 	/** Current simulation time in seconds.
 	 * @return Simulation time in seconds after midnight.
@@ -693,70 +702,28 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 
-	/** Get a reference to a signal by the composite id of its node.
-	 * 
-	 * @param network_id String id of the network containing the node. 
-	 * @param node_id String id of the node. 
-	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-	 */
-	public Signal getSignalWithCompositeNodeId(String network_id,String node_id){
-		if(signalList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(com.relteq.sirius.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getNodeId().equals(node_id))
-				return (Signal)signal;
-		}
-		return null;
+	/** Get configuration file name */
+	public String getConfigFilename() {
+		return configfilename;
 	}
+	
+//	/** Get a reference to a signal by the composite id of its node.
+//	 * 
+//	 * @param network_id String id of the network containing the node. 
+//	 * @param node_id String id of the node. 
+//	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+//	 */
+//	public Signal getSignalWithCompositeNodeId(String network_id,String node_id){
+//		if(signalList==null)
+//			return null;
+//		id.replaceAll("\\s","");
+//		for(com.relteq.sirius.jaxb.Signal signal : signalList.getSignal()){
+//			if(signal.getNodeId().equals(node_id))
+//				return (Signal)signal;
+//		}
+//		return null;
+//	}
 
-	/** Add a controller to the scenario.
-	 * 
-	 * <p>Controllers can only be added if a) the scenario is not currently running, and
-	 * b) the controller is valid. 
-	 * @param C The controller
-	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
-	 */
-	public boolean addController(Controller C){
-		if(scenariolocked)
-			return false;
-		if(C==null)
-			return false;
-		if(C.myType==null)
-			return false;
-		
-		// validate
-		SiriusErrorLog.clearErrorMessage();
-		C.validate();
-		SiriusErrorLog.print();
-		if(SiriusErrorLog.haserror())
-			return false;
-		
-		// add
-		controllerset.controllers.add(C);
-		
-		return true;
-	}
-
-	/** Add an event to the scenario.
-	 * 
-	 * <p>Events are not added if the scenario is running. This method does not validate the event.
-	 * @param E The event
-	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
-	 */
-	public boolean addEvent(Event E){
-		if(scenariolocked)
-			return false;
-		if(E==null)
-			return false;
-		if(E.myType==null)
-			return false;
-		
-		// add event to list
-		eventset.addEvent(E);
-		
-		return true;
-	}
 
 //	/** Get the initial density state for the network with given id.
 //	 * @param network_id String id of the network
@@ -813,7 +780,59 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 //		return density;           
 //		
 //	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// public API: add / override
+	/////////////////////////////////////////////////////////////////////
+	
+	/** Add a controller to the scenario.
+	 * 
+	 * <p>Controllers can only be added if a) the scenario is not currently running, and
+	 * b) the controller is valid. 
+	 * @param C The controller
+	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
+	 */
+	public boolean addController(Controller C){
+		if(scenariolocked)
+			return false;
+		if(C==null)
+			return false;
+		if(C.myType==null)
+			return false;
 		
+		// validate
+		SiriusErrorLog.clearErrorMessage();
+		C.validate();
+		SiriusErrorLog.print();
+		if(SiriusErrorLog.haserror())
+			return false;
+		
+		// add
+		controllerset.controllers.add(C);
+		
+		return true;
+	}
+
+	/** Add an event to the scenario.
+	 * 
+	 * <p>Events are not added if the scenario is running. This method does not validate the event.
+	 * @param E The event
+	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
+	 */
+	public boolean addEvent(Event E){
+		if(scenariolocked)
+			return false;
+		if(E==null)
+			return false;
+		if(E.myType==null)
+			return false;
+		
+		// add event to list
+		eventset.addEvent(E);
+		
+		return true;
+	}
+	
 	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
 	 * 
 	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
@@ -859,10 +878,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		// lock the scenario
         scenariolocked = true;	
 	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// override profiles
-	/////////////////////////////////////////////////////////////////////	
 	
 	/** Add a demand profile to the scenario. If a profile already exists for the 
 	 * origin link, then replace it.
@@ -1058,7 +1073,11 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(returnstate)
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
 	}
-	
+
+	/////////////////////////////////////////////////////////////////////
+	// nested classes
+	/////////////////////////////////////////////////////////////////////	
+
 	private class RunParameters{
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
@@ -1113,11 +1132,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				timeend = timestart;
 		}
 
-	}
-
-	/** Get configuration file name */
-	public String getConfigFilename() {
-		return configfilename;
 	}
 
 }
