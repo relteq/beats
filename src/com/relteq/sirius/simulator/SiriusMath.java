@@ -1,6 +1,7 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 public final class SiriusMath {
@@ -261,4 +262,13 @@ public final class SiriusMath {
 	public static double sampleZeroMeanGaussian(double std_dev){
 		return std_dev*SiriusMath.random.nextGaussian();
 	}
+	
+	// set ooperations
+	public static boolean setEquals(Collection a, Collection b){
+		if(a==null || b==null)
+			return false;
+		else
+			return org.apache.commons.collections.CollectionUtils.isEqualCollection(a, b);
+	}
+	
 }

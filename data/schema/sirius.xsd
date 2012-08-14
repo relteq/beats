@@ -572,7 +572,7 @@
 				<xs:element ref="splitratio" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
 			  <xs:attribute name="node_id" type="xs:string" use="required" />
-			  <xs:attribute name="link_id_destination" type="xs:string" use="optional" />
+			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
 			</xs:complexType>
@@ -692,11 +692,11 @@
 			  
 		  <xs:element name="demandProfile">									<!-- content in [veh/hr/vehicle type] -->
 			<xs:complexType mixed="true">
-			  <xs:attribute name="knob" type="xs:decimal" use="required" />
+			  <xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
 			  <xs:attribute name="link_id_origin" type="xs:string" use="required" />
-			  <xs:attribute name="link_id_destination" type="xs:string" use="optional" />
+			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
 			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/hr/vehicle type] -->
 			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
 			</xs:complexType>

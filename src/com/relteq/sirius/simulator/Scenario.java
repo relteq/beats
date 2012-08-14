@@ -103,24 +103,24 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		has_background_flow = false;
 		if(getDemandProfileSet()!=null)
 			for(com.relteq.sirius.jaxb.DemandProfile demprofile : getDemandProfileSet().getDemandProfile() )
-				has_background_flow |= demprofile.getLinkIdDestination()==null;
-		
-		// background and destination networks
-		// NOTE: PUT THIS INTO AN EXTENSION CLASS
-		if(getDestinationNetworks()!=null){
-			destination_networks = new ArrayList<DestinationNetworkBLA>();
-			for(int i=0;i<getDestinationNetworks().getDestinationNetwork().size();i++){
-				com.relteq.sirius.jaxb.DestinationNetwork dnetwork = getDestinationNetworks().getDestinationNetwork().get(i);
-				DestinationNetworkBLA x = new DestinationNetworkBLA(dnetwork,this,i);
-				x.populate();
-				destination_networks.add(x);
-			}
-		}
+				has_background_flow |= demprofile.getDestinationNetworkId()==null;
 		
 		// network list
 		if(networkList!=null)
 			for( com.relteq.sirius.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).populate(this);
+		
+		// background and destination networks
+		// NOTE: PUT THIS INTO AN EXTENSION CLASS
+		if(destinationNetworks!=null){
+			destination_networks = new ArrayList<DestinationNetworkBLA>();
+			for(int i=0;i<destinationNetworks.getDestinationNetwork().size();i++){
+				com.relteq.sirius.jaxb.DestinationNetwork dnetwork = destinationNetworks.getDestinationNetwork().get(i);
+				DestinationNetworkBLA x = new DestinationNetworkBLA(dnetwork,this,i);
+				x.populate();
+				destination_networks.add(x);
+			}
+		}
 		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(sensorList!=null){
@@ -172,6 +172,11 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			for(com.relteq.sirius.jaxb.Network network : networkList.getNetwork())
 				((Network)network).validate();
 
+		// destination networks
+		if(destinationNetworks!=null)
+			for(DestinationNetworkBLA destnet : destination_networks)
+				destnet.validate();
+		
 		// sensor list
 		if(sensorList!=null)
 			for (com.relteq.sirius.jaxb.Sensor sensor : sensorList.getSensor())

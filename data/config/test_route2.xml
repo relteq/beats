@@ -58,26 +58,31 @@
          <splitratio link_in="5" link_out="10">0.2</splitratio>
          <splitratio link_in="9" link_out="10">0.0</splitratio>
       </splitratioProfile>
-      <splitratioProfile node_id="1" link_id_destination="d1">
+      <splitratioProfile node_id="1" destination_network_id="d1">
          <splitratio link_in="1" link_out="7">0.2</splitratio>
          <splitratio link_in="8" link_out="7">0.0</splitratio>
       </splitratioProfile>
-      <splitratioProfile node_id="3" link_id_destination="d1"> 
+      <splitratioProfile node_id="3" destination_network_id="d1"> 
          <splitratio link_in="4" link_out="8">0.2</splitratio>
          <splitratio link_in="7" link_out="8">0.0</splitratio>
       </splitratioProfile>
-      <splitratioProfile node_id="1" link_id_destination="d2">
+      <splitratioProfile node_id="1" destination_network_id="d2">
          <splitratio link_in="1" link_out="7">0.2</splitratio>
          <splitratio link_in="8" link_out="7">0.0</splitratio>
       </splitratioProfile>
-      <splitratioProfile node_id="3" link_id_destination="d2"> 
+      <splitratioProfile node_id="3" destination_network_id="d2"> 
          <splitratio link_in="4" link_out="8">0.2</splitratio>
          <splitratio link_in="7" link_out="8">0.0</splitratio>
       </splitratioProfile>
    </SplitRatioProfileSet>
    <DemandProfileSet>
-      <demandProfile dt="300" knob="1" link_id_origin="1">400.000000</demandProfile>
-      <demandProfile dt="300" knob="1" link_id_origin="4">100.000000</demandProfile>
+      <demandProfile knob="1" link_id_origin="1">100</demandProfile>
+      <demandProfile dt="300" knob="1" link_id_origin="4">100</demandProfile>
+      <demandProfile dt="300" link_id_origin="1" destination_network_id="d1">100</demandProfile>
+      <demandProfile dt="300" knob="1" link_id_origin="1" destination_network_id="d2">100</demandProfile>
+      <demandProfile knob="1" link_id_origin="4" destination_network_id="d1">100</demandProfile>
+      <demandProfile dt="300" knob="1" link_id_origin="4" destination_network_id="d2">100</demandProfile>
+      <demandProfile knob="1" link_id_origin="4" destination_network_id="d3">100</demandProfile>
    </DemandProfileSet>
    <NetworkList>
       <network dt="5" id="0" name="New Network">
