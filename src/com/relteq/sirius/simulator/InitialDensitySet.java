@@ -7,7 +7,6 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-//import java.util.List;
 
 public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
 
@@ -98,6 +97,37 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		return d;
 	}
 
+	public Double[][] getInitial_density() {
+		return initial_density;
+	}
+
+	public Link[] getLink() {
+		return link;
+	}
+
+	public Integer[] getVehicletypeindex() {
+		return vehicletypeindex;
+	}
+
+	public double getTimestamp() {
+		return timestamp;
+	}
+		
+	/////////////////////////////////////////////////////////////////////
+	// database API
+	/////////////////////////////////////////////////////////////////////
+	
+	public class Tuple {
+		private String link_id;
+		private String network_id;
+		private int vehicle_type_index;
+		private double density;
+		public Tuple(String link_id, String network_id, int vehicle_type_index,
+				double density) {
+			this.link_id = link_id;
+			this.network_id = network_id;
+			this.vehicle_type_index = vehicle_type_index;
+			this.density = density;
 	/////////////////////////////////////////////////////////////////////
 	// internal class
 	/////////////////////////////////////////////////////////////////////

@@ -8,6 +8,10 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/** Signal class.
+*
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
+*/
 public final class Signal extends com.relteq.sirius.jaxb.Signal {
 
 	public static enum CommandType {hold,forceoff};
@@ -311,8 +315,9 @@ public final class Signal extends com.relteq.sirius.jaxb.Signal {
 		@Override
 		public boolean register() {
 	        for(Link link : target2index.keySet())
-	        	if(!link.registerFlowController(this,target2index.get(link)))
-	        		return false;
+				if(link!=null)
+		        	if(!link.registerFlowController(this,target2index.get(link)))
+		        		return false;
 			return true;
 		}
 		
