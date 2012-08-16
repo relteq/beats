@@ -7,8 +7,10 @@ package com.relteq.sirius.simulator;
 
 import java.util.StringTokenizer;
 
-// 3D matrix class used for representing time-invariant split ratio matrices.
-
+/** 3D matrix class used for representing time-invariant split ratio matrices.
+ * 
+* @author Gabriel Gomes
+*/
 final class Double3DMatrix {
 	
 	private int nIn;			// [1st dimension] number of input links

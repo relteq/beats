@@ -7,6 +7,13 @@ package com.relteq.sirius.simulator;
 
 import java.util.StringTokenizer;
 
+/** Matrix class for reading and manipulating data read from ":," format. The hierarchy of delimiters is first ":"
+ * then ",". The convention is to use ":" for vehicle types and "," for time. For example the "1:1:1,2:2:2" 
+ * assigns the value 1 to three vehicle types for the first time interval, and 2 to three vehicle types for the 
+ * second time interval. 
+ * 
+* @author Gabriel Gomes
+*/
 public final class Double2DMatrix {
 	
 	private int nTime;			// number of time slices
