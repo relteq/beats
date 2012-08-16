@@ -14,9 +14,8 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;
 	
-	protected Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
-												// input link i, output link j. The first dimension 
-												// of the Double2DMatrix is time, the second in vehicle type.
+	protected Double2DMatrix [][] profile;	// [dest network][input link][output link]
+												// Double2DMatrix is [time][vehicle type]
 	
 	protected Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
 	
@@ -159,7 +158,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 	/////////////////////////////////////////////////////////////////////
 	// private methods
 	/////////////////////////////////////////////////////////////////////
-	
+
 	// for time sample k, returns a 3D matrix with dimensions inlink x outlink x vehicle type
 	private Double3DMatrix sampleAtTimeStep(int k){
 		if(myNode==null)
