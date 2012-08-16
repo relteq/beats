@@ -36,7 +36,7 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 
 				// check whether the signal is in the target list
 				com.relteq.sirius.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
-				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
+				Signal mySignal = myScenario.getSignalWithNodeId(jaxbi.getNodeId());
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;

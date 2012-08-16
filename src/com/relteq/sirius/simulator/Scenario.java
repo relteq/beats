@@ -707,22 +707,21 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return configfilename;
 	}
 	
-//	/** Get a reference to a signal by the composite id of its node.
-//	 * 
-//	 * @param network_id String id of the network containing the node. 
-//	 * @param node_id String id of the node. 
-//	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-//	 */
-//	public Signal getSignalWithCompositeNodeId(String network_id,String node_id){
-//		if(signalList==null)
-//			return null;
-//		id.replaceAll("\\s","");
-//		for(com.relteq.sirius.jaxb.Signal signal : signalList.getSignal()){
-//			if(signal.getNodeId().equals(node_id))
-//				return (Signal)signal;
-//		}
-//		return null;
-//	}
+	/** Get a reference to a signal by the composite id of its node.
+	 * 
+	 * @param node_id String id of the node. 
+	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+	 */
+	public Signal getSignalWithNodeId(String node_id){
+		if(signalList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(com.relteq.sirius.jaxb.Signal signal : signalList.getSignal()){
+			if(signal.getNodeId().equals(node_id))
+				return (Signal)signal;
+		}
+		return null;
+	}
 
 
 //	/** Get the initial density state for the network with given id.

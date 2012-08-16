@@ -71,7 +71,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			movB[i] = Signal.String2NEMA(stage.getMovB());
 		}
 		
-		mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
+		mySignal = myScenario.getSignalWithNodeId(jaxbi.getNodeId());
 
 		// Set yellowtimes, redcleartimes, stagelength, totphaselength
 		int k;
