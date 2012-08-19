@@ -14,7 +14,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;
 	
-	protected Double2DMatrix [][] profile;	// [dest network][input link][output link]
+	protected Double2DMatrix [][][] profile;	// [dest network][input link][output link]
 												// Double2DMatrix is [time][vehicle type]
 	
 	protected Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
@@ -46,17 +46,19 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myNode==null)
 			return;
 		
-		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
-		int in_index,out_index;
+		profile = new Double2DMatrix[myNode.numDNetworks][myNode.nIn][myNode.nOut];
+		int in_index,out_index,dn_index;
 		laststep = 0;
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
 			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
 			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-			if(in_index<0 || out_index<0)
+			dn_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId());
+			
+			if(in_index<0 || out_index<0 || dn_index<0)
 				continue; 
-			profile[in_index][out_index] = new Double2DMatrix(sr.getContent());
-			if(!profile[in_index][out_index].isEmpty())
-				laststep = Math.max(laststep,profile[in_index][out_index].getnTime());
+			profile[dn_index][in_index][out_index] = new Double2DMatrix(sr.getContent());
+			if(!profile[dn_index][in_index][out_index].isEmpty())
+				laststep = Math.max(laststep,profile[dn_index][in_index][out_index].getnTime());
 		}
 		
 		// optional dt
@@ -126,16 +128,16 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			SiriusErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
 		
 		// check split ratio dimensions and values
-		int in_index;
-		int out_index;
+		int dn_index, in_index, out_index;
 		if(profile!=null)
-			for(in_index=0;in_index<profile.length;in_index++)
-				if(profile[in_index]!=null)
-					for(out_index=0;out_index<profile[in_index].length;out_index++)
-						if(profile[in_index][out_index]!=null)
-							if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
-								SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
-		
+			for(dn_index=0;dn_index<profile.length;dn_index++)
+				if(profile[dn_index]!=null)
+					for(in_index=0;in_index<profile[dn_index].length;in_index++)
+						if(profile[dn_index][in_index]!=null)
+							for(out_index=0;out_index<profile[dn_index][in_index].length;out_index++)
+								if(profile[dn_index][in_index][out_index]!=null)
+									if(profile[dn_index][in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
+										SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
 	}
 
 	protected void update() {
@@ -182,6 +184,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 				X.setAllVehicleTypes(i,j,profile[i][j].sampleAtTime(lastk,vehicletypeindex));
 			}
 		}
+		
 		return X;
 	}
 

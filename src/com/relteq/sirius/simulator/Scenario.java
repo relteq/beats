@@ -461,7 +461,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
 	}
 
-
 	/////////////////////////////////////////////////////////////////////
 	// public API: save
 	/////////////////////////////////////////////////////////////////////
@@ -722,7 +721,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		return null;
 	}
-
 
 //	/** Get the initial density state for the network with given id.
 //	 * @param network_id String id of the network

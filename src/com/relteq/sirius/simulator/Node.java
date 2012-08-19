@@ -680,6 +680,20 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 	
+    /** Index of link with given id in the list of output links of this node */ 
+	public int getDestinationNetworkIndex(String id){
+		if(myNetwork.myScenario.destination_networks==null)
+			return -1;
+		for(int i=0;i<numDNetworks;i++){
+			if(myDNindex.get(i)<0)
+				continue;
+			String destnetid = myNetwork.myScenario.destination_networks.get(myDNindex.get(i)).dnetwork.getId();
+			if(destnetid.equals(id))
+				return i;
+		}
+		return -1;
+	}
+	
     /** Number of links entering this node */ 
 	public int getnIn() {
 		return nIn;
