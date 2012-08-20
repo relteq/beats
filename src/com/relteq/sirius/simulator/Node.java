@@ -23,14 +23,16 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected boolean isTerminal;
 	
 	// split ratios
-	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
-	/** @y.exclude */ 	protected Double3DMatrix splitratio;
-	/** @y.exclude */ 	protected boolean istrivialsplit;
+	/** @y.exclude */ 	protected Double4DMatrix sampledSRprofile;
+	/** @y.exclude */ 	protected Double4DMatrix splitratio;
 	/** @y.exclude */ 	protected boolean hasSRprofile;
 	
 	// destination networks (populated by DestinationNetwork.populate)
 	/** @y.exclude */ 	protected int numDNetworks = 0;
-	/** @y.exclude */ 	protected ArrayList<Integer> myDNindex = new ArrayList<Integer>();	// list of DN that use this node
+	/** @y.exclude */ 	protected ArrayList<Integer> myDNGlobalIndex = new ArrayList<Integer>();	// list of DN that use this node, including background
+	/** @y.exclude */   protected ArrayList<ArrayList<Integer>> dn2outlinkindex = new ArrayList<ArrayList<Integer>>();	// list of indices to output links in output_link used by each d.n.
+	/** @y.exclude */   protected ArrayList<ArrayList<Integer>> dn2inlinkindex = new ArrayList<ArrayList<Integer>>();		// list of indices to inpt links in input_link used by each d.n.
+	/** @y.exclude */ 	protected ArrayList<Boolean> istrivialsplit = new ArrayList<Boolean>();	// [dnindex] true if there is one in and one out
 	
 	// signal
 	/** @y.exclude */ 	protected Signal mySignal = null;
@@ -67,9 +69,51 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */ 
-	protected void addDestinationNetwork(int dest_index){
+	protected void addDestinationNetwork(int dest_index,ArrayList<Link> inlinks,ArrayList<Link> outlinks){
+		
 		numDNetworks++;
-		myDNindex.add(dest_index);
+		myDNGlobalIndex.add(dest_index);
+		istrivialsplit.add(outlinks.size()==1);
+		
+		// find indices for input and output links in this destination network
+		boolean foundit;
+		
+		// input links
+		ArrayList<Integer> inlink_index = new ArrayList<Integer>();
+		for(Link link : inlinks){
+			foundit=false;
+			for(int i=0;i<input_link.length;i++){
+				if(input_link[i]!=null)
+					if(input_link[i].getId().equals(link.getId())){
+						foundit = true;
+						inlink_index.add(i);
+						break;
+					}
+			}
+			if(!foundit)
+				inlink_index.add(-1);
+		}
+		
+		// output links
+		ArrayList<Integer> outlink_index = new ArrayList<Integer>();
+		for(Link link : outlinks){
+			foundit=false;
+			for(int i=0;i<output_link.length;i++){
+				if(output_link[i]!=null)
+					if(output_link[i].getId().equals(link.getId())){
+						foundit = true;
+						outlink_index.add(i);
+						break;
+					}
+			}
+			if(!foundit)
+				outlink_index.add(-1);
+		}
+
+		// add them to the node
+		dn2inlinkindex.add(inlink_index);
+		dn2outlinkindex.add(outlink_index);
+		
 	}
 	
 	/** @y.exclude */ 	
@@ -84,17 +128,15 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	}
 	
 	/** @y.exclude */ 	
-    protected void setSampledSRProfile(Double3DMatrix s){
+    protected void setSampledSRProfile(Double4DMatrix s){
     	sampledSRprofile = s;
     }
 
     /** @y.exclude */ 	
 	protected void setHasSRprofile(boolean hasSRprofile) {
-		if(!istrivialsplit){
-			this.hasSRprofile = hasSRprofile;
-			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
-			normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
-		}
+		this.hasSRprofile = hasSRprofile;
+		this.sampledSRprofile = new Double4DMatrix(this,0d);
+		normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 	}
 
 	/** @y.exclude */ 	
@@ -108,19 +150,82 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 
 	/** @y.exclude */ 	
     protected void resetSplitRatio(){
-
-		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
-		
-		//////
-		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
+		splitratio = new Double4DMatrix(this,0d);
 		normalizeSplitRatioMatrix(splitratio);
-		//////
     }
     
     /** @y.exclude */ 	
-	protected void setSplitratio(Double3DMatrix x) {
+	protected void setSplitratio(Double4DMatrix x) throws SiriusException {
 		splitratio.copydata(x);
 		normalizeSplitRatioMatrix(splitratio);
+	}
+	
+	/** Returns the index of the link in this.dn2inlinkindex
+	 * 
+	 * @param dn_index
+	 * @param linkid
+	 * @return
+	 */
+	protected int getInputLinkIndex(int dn_index,String linkid){
+		try {
+			for(int i=0;i<dn2inlinkindex.get(dn_index).size();i++){
+				int index = dn2inlinkindex.get(dn_index).get(i);
+				if(input_link[index].getId().equals(linkid))
+					return i;	
+			}
+			return -1;
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+	
+	/** Returns the index of the link in input_link
+	 * 
+	 * @param linkid
+	 * @return
+	 */
+	protected int getInputLinkIndex(String linkid){
+		if(input_link==null)
+			return -1;
+		for(int i=0;i<input_link.length;i++){
+			if(input_link[i].getId().equals(linkid))
+				return i;	
+		}
+		return -1;
+	}
+
+	/** Returns the index of the link in this.dn2outlinkindex
+	 * 
+	 * @param dn_index
+	 * @param linkid
+	 * @return
+	 */
+	protected int getOutputLinkIndex(int dn_index,String linkid){
+		try {
+			for(int i=0;i<dn2outlinkindex.get(dn_index).size();i++){
+				int index = dn2outlinkindex.get(dn_index).get(i);
+				if(output_link[index].getId().equals(linkid))
+					return i;	
+			}
+			return -1;
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+	
+	/** Returns the index of the link in output_link
+	 * 
+	 * @param linkid
+	 * @return
+	 */
+	protected int getOutputLinkIndex(String linkid){
+		if(output_link==null)
+			return -1;
+		for(int i=0;i<output_link.length;i++){
+			if(output_link[i].getId().equals(linkid))
+				return i;	
+		}
+		return -1;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -139,7 +244,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 			output_link = new Link[nOut];
 			for(int i=0;i<nOut;i++){
 				com.relteq.sirius.jaxb.Output output = getOutputs().getOutput().get(i);
-				output_link[i] = myNetwork.getLinkWithId(output.getLinkId());
+				output_link[i] = myNetwork.getLinkWithId(output.getLinkId());				
 			}
 		}
 
@@ -161,19 +266,30 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
         // add background destination
         if(myNetwork.myScenario.has_background_flow){
         	numDNetworks++;
-        	myDNindex.add(0,-1); // -1 means background flow
+        	myDNGlobalIndex.add(-1); // -1 means background flow
+        	
+        	// background has all indices
+        	ArrayList<Integer> outlinks = new ArrayList<Integer>();
+        	for(int i=0;i<output_link.length;i++)
+        		outlinks.add(i);
+        	dn2outlinkindex.add(outlinks);
+
+        	ArrayList<Integer> inlinks = new ArrayList<Integer>();
+        	for(int i=0;i<input_link.length;i++)
+        		inlinks.add(i);
+        	dn2inlinkindex.add(inlinks);
+        	
+        	istrivialsplit.add(output_link.length==1);
         }
         
-		iscontributor = new boolean[nIn][nOut];
-		istrivialsplit = nOut==1;
-		hasSRprofile = false;
-		sampledSRprofile = null;
-		
-		resetSplitRatio();
-		
-		hascontroller = false;
-		controlleron = false;
+		iscontributor 		= new boolean[nIn][nOut];
+		hasSRprofile 		= false;
+		sampledSRprofile 	= null;
+		hascontroller 		= false;
+		controlleron 		= false;
 		hasactivesplitevent = false;
+
+		resetSplitRatio();
 	}
     
 	/** @y.exclude */ 	
@@ -275,82 +391,94 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */ 	
-	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
+	protected boolean validateSplitRatioMatrix(Double4DMatrix SR){
 
-		int i,j,k;
+		int d,i,j,k;
 		Double value;
 		
-		// dimension
-		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
-			return false;
-		}
-		
-		// range
-		for(i=0;i<X.getnIn();i++){
-			for(j=0;j<X.getnOut();j++){
-				for(k=0;k<X.getnVTypes();k++){
-					value = X.get(i,j,k);
-					if( !value.isNaN() && (value>1 || value<0) ){
-						SiriusErrorLog.addError("Invalid split ratio values for node id=" + getId());
-						return false;
+		for(d=0;d<SR.getNumDNetwork();d++){
+			
+			Double3DMatrix X = SR.data[d];
+			
+			// dimension
+			if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
+				SiriusErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
+				return false;
+			}
+			
+			// range
+			for(i=0;i<X.getnIn();i++){
+				for(j=0;j<X.getnOut();j++){
+					for(k=0;k<X.getnVTypes();k++){
+						value = X.get(i,j,k);
+						if( !value.isNaN() && (value>1 || value<0) ){
+							SiriusErrorLog.addError("Invalid split ratio values for node id=" + getId());
+							return false;
+						}
 					}
 				}
 			}
 		}
+		
 		return true;
 	}
 	
 	/** @y.exclude */ 	
-    protected void normalizeSplitRatioMatrix(Double3DMatrix X){
+    protected void normalizeSplitRatioMatrix(Double4DMatrix SR){
 
-    	int i,j,k;
+    	int d,i,j,k;
 		boolean hasNaN;
 		int countNaN;
 		int idxNegative;
 		double sum;
-    	
-    	for(i=0;i<X.getnIn();i++)
-    		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
-				hasNaN = false;
-				countNaN = 0;
-				idxNegative = -1;
-				sum = 0.0f;
-				for (j = 0; j < X.getnOut(); j++)
-					if (X.get(i,j,k).isNaN()) {
-						countNaN++;
-						idxNegative = j;
-						if (countNaN > 1)
-							hasNaN = true;
-					}
-					else
-						sum += X.get(i,j,k);
-				
-				if (countNaN==1) {
-					X.set(i,idxNegative,k,Math.max(0f, (1-sum)));
-					sum += X.get(i,idxNegative,k);
-				}
-				
-				if ( !hasNaN && SiriusMath.equals(sum,0.0) ) {	
-					X.set(i,0,k,1d);
-					//for (j=0; j<n2; j++)			
-					//	data[i][j][k] = 1/((double) n2);
-					continue;
-				}
-				
-				if ((!hasNaN) && (sum<1.0)) {
-					for (j=0;j<X.getnOut();j++)
-						X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
-					continue;
-				}
-				
-				if (sum >= 1.0)
-					for (j=0; j<X.getnOut(); j++)
-						if (X.get(i,j,k).isNaN())
-							X.set(i,j,k,0d);
+		
+		for(d=0;d<SR.getNumDNetwork();d++){
+			Double3DMatrix X = SR.data[d];
+			
+			for(i=0;i<X.getnIn();i++){
+	    		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
+					hasNaN = false;
+					countNaN = 0;
+					idxNegative = -1;
+					sum = 0.0f;
+					for (j = 0; j < X.getnOut(); j++)
+						if (X.get(i,j,k).isNaN()) {
+							countNaN++;
+							idxNegative = j;
+							if (countNaN > 1)
+								hasNaN = true;
+						}
 						else
+							sum += X.get(i,j,k);
+					
+					if (countNaN==1) {
+						X.set(i,idxNegative,k,Math.max(0f, (1-sum)));
+						sum += X.get(i,idxNegative,k);
+					}
+					
+					if ( !hasNaN && SiriusMath.equals(sum,0.0) ) {	
+						X.set(i,0,k,1d);
+						//for (j=0; j<n2; j++)			
+						//	data[i][j][k] = 1/((double) n2);
+						continue;
+					}
+					
+					if ((!hasNaN) && (sum<1.0)) {
+						for (j=0;j<X.getnOut();j++)
 							X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
-    		}
+						continue;
+					}
+					
+					if (sum >= 1.0)
+						for (j=0; j<X.getnOut(); j++)
+							if (X.get(i,j,k).isNaN())
+								X.set(i,j,k,0d);
+							else
+								X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
+	    		}
+			}
+			
+		}
     }
     
 	/////////////////////////////////////////////////////////////////////
@@ -659,35 +787,22 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	public Link[] getInput_link() {
 		return input_link;
 	}
-
-    /** Index of link with given id in the list of input links of this node */ 
-	public int getInputLinkIndex(String id){
-		for(int i=0;i<getnIn();i++){
-			if(input_link[i]!=null)
-				if(input_link[i].getId().equals(id))
-					return i;
-		}
-		return -1;
-	}
-	
-    /** Index of link with given id in the list of output links of this node */ 
-	public int getOutputLinkIndex(String id){
-		for(int i=0;i<getnOut();i++){
-			if(output_link[i]!=null)
-				if(output_link[i].getId().equals(id))
-					return i;
-		}
-		return -1;
-	}
-	
-    /** Index of link with given id in the list of output links of this node */ 
+		
+    /** Index of link with given id in the list of output links of this node 
+     * Returns -1 if the input string is not a valid name.
+     * */ 
 	public int getDestinationNetworkIndex(String id){
+		
+		// background flow
+		if(myNetwork.myScenario.has_background_flow && id==null)
+			return 0;
+		// no destination networks and not background flow (this should never happen)
 		if(myNetwork.myScenario.destination_networks==null)
 			return -1;
 		for(int i=0;i<numDNetworks;i++){
-			if(myDNindex.get(i)<0)
+			if(myDNGlobalIndex.get(i)<0)
 				continue;
-			String destnetid = myNetwork.myScenario.destination_networks.get(myDNindex.get(i)).dnetwork.getId();
+			String destnetid = myNetwork.myScenario.destination_networks.get(myDNGlobalIndex.get(i)).dnetwork.getId();
 			if(destnetid.equals(id))
 				return i;
 		}
@@ -698,10 +813,26 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	public int getnIn() {
 		return nIn;
 	}
-
+	
+	public int getnIn(int dnetwork_index){
+		try {
+			return dn2inlinkindex.get(dnetwork_index).size();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
     /** Number of links exiting this node */ 
 	public int getnOut() {
 		return nOut;
+	}
+	
+	public int getnOut(int dnetwork_index){
+		try {
+			return dn2outlinkindex.get(dnetwork_index).size();
+		} catch (Exception e) {
+			return 0;
+		}
 	}
     
     /** <code>true</code> iff there is a split ratio controller attached to this link */
@@ -711,26 +842,26 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	
 	/** ADDED TEMPORARILY FOR MANUEL'S DTA WORK 
 	 * @throws SiriusException */
-	public void setSplitRatioMatrix(double [][][] x) throws SiriusException {
-		if(x.length!=splitratio.getnIn())
-			throw new SiriusException("Node.setSplitRatioMatrix, bad first dimension.");
-		if(x[0].length!=splitratio.getnOut())
-			throw new SiriusException("Node.setSplitRatioMatrix, bad second dimension.");
-		if(x[0][0].length!=splitratio.getnVTypes())
-			throw new SiriusException("Node.setSplitRatioMatrix, bad third dimension.");
-		int i,j,k;
-		for(i=0;i<splitratio.getnIn();i++)
-			for(j=0;j<splitratio.getnOut();j++)
-				for(k=0;k<splitratio.getnVTypes();k++)
-					splitratio.set(i, j, k, x[i][j][k]);
-		normalizeSplitRatioMatrix(splitratio);
-	}
+//	public void setSplitRatioMatrix(double [][][] x) throws SiriusException {
+//		if(x.length!=splitratio.getnIn())
+//			throw new SiriusException("Node.setSplitRatioMatrix, bad first dimension.");
+//		if(x[0].length!=splitratio.getnOut())
+//			throw new SiriusException("Node.setSplitRatioMatrix, bad second dimension.");
+//		if(x[0][0].length!=splitratio.getnVTypes())
+//			throw new SiriusException("Node.setSplitRatioMatrix, bad third dimension.");
+//		int i,j,k;
+//		for(i=0;i<splitratio.getnIn();i++)
+//			for(j=0;j<splitratio.getnOut();j++)
+//				for(k=0;k<splitratio.getnVTypes();k++)
+//					splitratio.set(i, j, k, x[i][j][k]);
+//		normalizeSplitRatioMatrix(splitratio);
+//	}
 
-	public Double [][][] getSplitRatio(){
-		if(splitratio==null)
-			return null;
-		else{
-			return splitratio.cloneData();
-		}
-	}
+//	public Double [][][] getSplitRatio(){
+//		if(splitratio==null)
+//			return null;
+//		else{
+//			return splitratio.cloneData();
+//		}
+//	}
 }

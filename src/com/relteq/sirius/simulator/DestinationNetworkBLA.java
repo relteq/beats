@@ -1,6 +1,7 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,9 @@ public final class DestinationNetworkBLA {
 	/** @y.exclude */ 
 	protected void populate() {
 		if(dnetwork.getLinkReferences()!=null){
+
+			HashMap<Node,ArrayList<Link>> node2outlinks = new HashMap<Node,ArrayList<Link>>();
+			HashMap<Node,ArrayList<Link>> node2inlinks = new HashMap<Node,ArrayList<Link>>();
 			
 			// loop through link references
 			for(com.relteq.sirius.jaxb.LinkReference linkref : dnetwork.getLinkReferences().getLinkReference()){
@@ -42,17 +46,28 @@ public final class DestinationNetworkBLA {
 				// register valid links and record their nodes
 				if(link!=null){
 					link.addDestinationNetwork(myIndex);
-					if(!link.issource)
-						myOutNodes.add(link.begin_node);
-					if(!link.issink)
-						myInNodes.add(link.end_node);
+					if(!link.issource){
+						Node node = link.begin_node;
+						myOutNodes.add(node);
+						if(!node2outlinks.containsKey(node))
+							node2outlinks.put(node, new ArrayList<Link>());
+						node2outlinks.get(node).add(link);
+					}
+					if(!link.issink){
+						Node node = link.end_node;
+						myInNodes.add(node);
+						if(!node2inlinks.containsKey(node))
+							node2inlinks.put(node, new ArrayList<Link>());
+						node2inlinks.get(node).add(link);
+					}
 				}
 			}
 			
 			// register the nodes
 			// (validation will check that myOutNodes==myInNodes, so we can just register myOutNodes)
 			for(Node node : myOutNodes)
-				node.addDestinationNetwork(myIndex);
+				node.addDestinationNetwork(myIndex,node2inlinks.get(node),node2outlinks.get(node));
+			
 		}
 	}
 

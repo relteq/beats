@@ -179,11 +179,11 @@ final class Double3DMatrix {
 		return cData;
 	}
 
-	public Double get(int i,int j,int k){
+	public Double get(int in_index,int out_index,int vt_index){
     	if(isempty)
     		return Double.NaN;
     	else
-    		return data[i][j][k];
+    		return data[in_index][out_index][vt_index];
     }
 	
 	public Double getSumOverTypes(int i,int j){
@@ -218,10 +218,10 @@ final class Double3DMatrix {
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
 
-	public void set(int i,int j,int k,Double f){
+	public void set(int in_index,int out_index,int vt_index,Double f){
     	if(isempty)
     		return;
-    	data[i][j][k] = f;
+    	data[in_index][out_index][vt_index] = f;
     }
     	
 	public void setAllVehicleTypes(int i,int j,Double [] f){
@@ -251,9 +251,9 @@ final class Double3DMatrix {
     				data[i][j][k] += value;	
     }
     
-    public void copydata(Double3DMatrix in){
+    public void copydata(Double3DMatrix in) throws SiriusException {
     	if(in.nIn!=nIn || in.nOut!=nOut || in.nVTypes!=nVTypes)
-    		return;
+    		throw new SiriusException("Attempt to use copydata with non-commensurate matrices.");
     	int i,j,k;
     	for(i=0;i<nIn;i++)
     		for(j=0;j<nOut;j++)

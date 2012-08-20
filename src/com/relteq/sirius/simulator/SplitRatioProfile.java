@@ -5,6 +5,8 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.ArrayList;
+
 final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 	protected Scenario myScenario;
@@ -14,13 +16,11 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;
 	
-	protected Double2DMatrix [][][] profile;	// [dest network][input link][output link]
-												// Double2DMatrix is [time][vehicle type]
+	protected ArrayList<Double4DMatrix> profile;	// time array of 4D split ratio matrices
+													// each 4D matrix contains information per destination network, inlink, outlink, vehicle type
 	
-	protected Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
-	
-	protected int laststep;
-	
+	protected Double4DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
+		
 	protected boolean isdone; 
 	protected int stepinitial;
 
@@ -46,19 +46,47 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myNode==null)
 			return;
 		
-		profile = new Double2DMatrix[myNode.numDNetworks][myNode.nIn][myNode.nOut];
-		int in_index,out_index,dn_index;
-		laststep = 0;
+		profile = new ArrayList<Double4DMatrix>();
+		
+
+		// get vehicle type order from SplitRatioProfileSet
+		Integer [] vehicletypeindex = null;
+		if(myScenario.getSplitRatioProfileSet()!=null)
+			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
+		
+		int j,k,in_index,out_index,dn_node_index,vt_index;
+		Double value;
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
-			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
-			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-			dn_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId());
 			
-			if(in_index<0 || out_index<0 || dn_index<0)
-				continue; 
-			profile[dn_index][in_index][out_index] = new Double2DMatrix(sr.getContent());
-			if(!profile[dn_index][in_index][out_index].isEmpty())
-				laststep = Math.max(laststep,profile[dn_index][in_index][out_index].getnTime());
+			Double2DMatrix data = new Double2DMatrix(sr.getContent());
+			
+			// extend the profile if necessary
+			int numTime = data.getnTime();
+			if(numTime>profile.size())
+				for(k=profile.size();k<numTime;k++)	
+					profile.add(new Double4DMatrix(myNode,0d));
+			
+			// fold the data into the profile
+			for(k=0;k<numTime;k++){
+				for(j=0;j<data.getnVTypes();j++){
+					
+					value = data.get(k,j);
+					
+					// destination network index in the node
+					dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId());	
+					if(dn_node_index<0)
+						continue; 
+					
+					// input and output link index w.r.t. this node and destination network
+					in_index = myNode.getInputLinkIndex(dn_node_index,sr.getLinkIn());
+					out_index = myNode.getOutputLinkIndex(dn_node_index,sr.getLinkOut());
+					vt_index = vehicletypeindex[j];
+					if(in_index<0 || out_index<0 || vt_index<0)
+						continue; 
+
+					profile.get(k).setValue(dn_node_index,in_index,out_index,vt_index,value);
+				}
+			}
 		}
 		
 		// optional dt
@@ -67,7 +95,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		}
 		else{ 	// only allow if it contains only one fd
-			if(laststep<=1){
+			if(profile.size()<=1){
 				dtinseconds = Double.POSITIVE_INFINITY;
 				samplesteps = Integer.MAX_VALUE;
 			}
@@ -78,7 +106,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			}
 		}
 		
-		currentSplitRatio = new Double3DMatrix(myNode.nIn,myNode.nOut,myScenario.getNumVehicleTypes(),Double.NaN);
+		currentSplitRatio = new Double4DMatrix(myNode,Double.NaN);
 		
 		// inform the node
 		myNode.setHasSRprofile(true);
@@ -127,17 +155,28 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
 			SiriusErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
 		
-		// check split ratio dimensions and values
-		int dn_index, in_index, out_index;
-		if(profile!=null)
-			for(dn_index=0;dn_index<profile.length;dn_index++)
-				if(profile[dn_index]!=null)
-					for(in_index=0;in_index<profile[dn_index].length;in_index++)
-						if(profile[dn_index][in_index]!=null)
-							for(out_index=0;out_index<profile[dn_index][in_index].length;out_index++)
-								if(profile[dn_index][in_index][out_index]!=null)
-									if(profile[dn_index][in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
-										SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+//		// check split ratio dimensions and values
+//		int dn_index, in_index, out_index;
+//		if(profile!=null)
+//			for(Double4DMatrix SR : profile){
+//				for(dn_index=0;dn_index<SR.getNumDNetwork();dn_index++){
+//					Double3DMatrix SR3D = SR.data[dn_index];
+//					
+//					
+//					SiriusErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+//
+//					
+//				}
+//			}
+		
+//		if(profile!=null)
+//			for(dn_index=0;dn_index<profile.length;dn_index++)
+//				if(profile[dn_index]!=null)
+//					
+//						if(profile[dn_index][in_index]!=null)
+//							for(out_index=0;out_index<profile[dn_index][in_index].length;out_index++)
+//								if(profile[dn_index][in_index][out_index]!=null)
+//									if(profile[dn_index][in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
 	}
 
 	protected void update() {
@@ -150,10 +189,10 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
-			currentSplitRatio = sampleAtTimeStep( Math.min( step , laststep-1) );
+			currentSplitRatio = sampleAtTimeStep( Math.min( step ,profile.size()-1) );
 			myNode.normalizeSplitRatioMatrix(currentSplitRatio);
 			myNode.setSampledSRProfile(currentSplitRatio);
-			isdone = step>=laststep-1;
+			isdone = step>=profile.size()-1;
 		}		
 	}
 
@@ -162,30 +201,28 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 	/////////////////////////////////////////////////////////////////////
 
 	// for time sample k, returns a 3D matrix with dimensions inlink x outlink x vehicle type
-	private Double3DMatrix sampleAtTimeStep(int k){
-		if(myNode==null)
+	private Double4DMatrix sampleAtTimeStep(int k){
+		
+		if(profile==null)
 			return null;
-		Double3DMatrix X = new Double3DMatrix(myNode.nIn,myNode.nOut,
-				myScenario.getNumVehicleTypes(),Double.NaN);	// initialize all unknown
+				
+		int step = Math.min( Math.max(k,0) , profile.size()-1 );
 		
-		// get vehicle type order from SplitRatioProfileSet
-		Integer [] vehicletypeindex = null;
-		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
+		return profile.get(step);
 		
-		int i,j,lastk;
-		for(i=0;i<myNode.nIn;i++){
-			for(j=0;j<myNode.nOut;j++){
-				if(profile[i][j]==null)						// nan if not defined
-					continue;
-				if(profile[i][j].isEmpty())					// nan if no data
-					continue;
-				lastk = Math.min(k,profile[i][j].getnTime()-1);	// hold last value
-				X.setAllVehicleTypes(i,j,profile[i][j].sampleAtTime(lastk,vehicletypeindex));
-			}
-		}
-		
-		return X;
+//		
+//		int i,j,lastk;
+//		for(i=0;i<myNode.nIn;i++){
+//			for(j=0;j<myNode.nOut;j++){
+//				if(profile[i][j]==null)						// nan if not defined
+//					continue;
+//				if(profile[i][j].isEmpty())					// nan if no data
+//					continue;
+//				lastk = Math.min(k,profile[i][j].getnTime()-1);	// hold last value
+//				X.setAllVehicleTypes(i,j,profile[i][j].sampleAtTime(lastk,vehicletypeindex));
+//			}
+//		}
+//		return X;
 	}
 
 }

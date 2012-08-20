@@ -5,6 +5,8 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.ArrayList;
+
 final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfileSet {
 
 	protected Scenario myScenario;
@@ -29,6 +31,16 @@ final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfil
 
 	protected void validate() {
 
+		// check that there is at most one profile for each node
+		ArrayList<String> nodeids = new ArrayList<String>();
+		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile()){
+			String newid = sr.getNodeId();
+			if(nodeids.contains(newid))
+				SiriusErrorLog.addError("Multiple split ratio profiles were provided for node " + newid);
+			else
+				nodeids.add(newid);
+		}
+		
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("Vehicle types list in demand profile id=" +getId()+ " does not match that of settings.");

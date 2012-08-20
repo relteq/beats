@@ -1024,19 +1024,17 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return state;
 	}
 	
-	// advance the simulation by n steps.
-	// parameters....
-	// n: number of steps to advance.
-	// doreset: call scenario reset if true
-	// writefiles: write result to text files if true
-	// returnstate: recored and return the state trajectory if true
-	// outputwriter: output writing class 
-	// state: state trajectory container
-	// returns....
-	// true if scenario advanced n steps without error
-	// false if scenario reached t_end without error before completing n steps
-	// throws 
-	// SiriusException for all errors
+	/** advance the simulation by n steps.
+	 * @param simulationMode
+	 * @param n 				number of steps to advance.
+	 * @param writefiles		write result to text files if true
+	 * @param returnstate	 	recored and return the state trajectory if true
+	 * @param outputwriter		output writing class 
+	 * @param state				state trajectory container
+	 * @param outsteps
+	 * @return <code>true</code> if scenario advanced n steps without error, <code>false</code> if scenario reached t_end without error before completing n steps
+	 * @throws SiriusException
+	 */
 	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
 
 		// advance n steps
@@ -1071,6 +1069,16 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
 	}
 
+//	/** Construct the background network. 
+//	 * This 
+//	 * 
+//	 * @return
+//	 */
+//	private DestinationNetworkBLA makeBackgroundNetwork(){
+//		return null;
+//	}
+	
+	
 	/////////////////////////////////////////////////////////////////////
 	// nested classes
 	/////////////////////////////////////////////////////////////////////	
