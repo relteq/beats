@@ -947,27 +947,31 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 	
-    /** Number of links entering this node */ 
+    /** Total number of links entering this node */ 
 	public int getnIn() {
 		return nIn;
 	}
 	
-	public int getnIn(int dnetwork_index){
+	/** Number of links entering this node for a destination network index  */
+	public int getnIn(int dn_global_index){
 		try {
-			return dn2inlinkindex.get(dnetwork_index).size();
+			int dn_node_index = myDNGlobalIndex.indexOf(dn_global_index);
+			return dn2inlinkindex.get(dn_node_index).size();
 		} catch (Exception e) {
 			return 0;
 		}
 	}
 	
-    /** Number of links exiting this node */ 
+    /** Total number of links exiting this node */ 
 	public int getnOut() {
 		return nOut;
 	}
 	
-	public int getnOut(int dnetwork_index){
+	/** Number of links exiting this node for a destination network index  */
+	public int getnOut(int dn_global_index){
 		try {
-			return dn2outlinkindex.get(dnetwork_index).size();
+			int dn_node_index = myDNGlobalIndex.indexOf(dn_global_index);
+			return dn2outlinkindex.get(dn_node_index).size();
 		} catch (Exception e) {
 			return 0;
 		}
