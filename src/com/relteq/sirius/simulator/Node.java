@@ -6,6 +6,9 @@
 package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.relteq.sirius.jaxb.DestinationNetwork;
 
 // NOTE
 // SEE IF THE ENSEMBLE DIMENSION CAN BE ELIMINATED FOR OUTDEMANDKNOWN AND DSRATIO
@@ -75,6 +78,15 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 
 	protected void addDestinationNetwork(int dest_index,ArrayList<Link> inlinks,ArrayList<Link> outlinks){
 		
+		if(isTerminal)
+			return;
+
+		// special case for destination networks (signaled by inlinks==null && outlinks==null)
+		if(inlinks==null)
+			inlinks = new ArrayList<Link>(Arrays.asList(input_link));
+		if(outlinks==null)
+			outlinks = new ArrayList<Link>(Arrays.asList(output_link));
+			
 		numDNetworks++;
 		myDNGlobalIndex.add(dest_index);
 		dn_isSingleOut.add(outlinks.size()==1);
@@ -117,7 +129,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		// add them to the node
 		dn2inlinkindex.add(inlink_index);
 		dn2outlinkindex.add(outlink_index);
-		
 	}
 	
 	/** @y.exclude */ 	
@@ -269,24 +280,24 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
     	
 		isSingleOut = nOut==1;
 
-        // add background destination
-        if(myNetwork.myScenario.has_background_flow){
-        	numDNetworks++;
-        	myDNGlobalIndex.add(-1); // -1 means background flow
-        	
-        	// background has all indices
-        	ArrayList<Integer> outlinks = new ArrayList<Integer>();
-        	for(int i=0;i<output_link.length;i++)
-        		outlinks.add(i);
-        	dn2outlinkindex.add(outlinks);
-
-        	ArrayList<Integer> inlinks = new ArrayList<Integer>();
-        	for(int i=0;i<input_link.length;i++)
-        		inlinks.add(i);
-        	dn2inlinkindex.add(inlinks);
-        	
-        	dn_isSingleOut.add(output_link.length==1);
-        }
+//        // add background destination
+//        if(myNetwork.myScenario.has_background_flow){
+//        	numDNetworks++;
+//        	myDNGlobalIndex.add(-1); // -1 means background flow
+//        	
+//        	// background has all indices
+//        	ArrayList<Integer> outlinks = new ArrayList<Integer>();
+//        	for(int i=0;i<output_link.length;i++)
+//        		outlinks.add(i);
+//        	dn2outlinkindex.add(outlinks);
+//
+//        	ArrayList<Integer> inlinks = new ArrayList<Integer>();
+//        	for(int i=0;i<input_link.length;i++)
+//        		inlinks.add(i);
+//        	dn2inlinkindex.add(inlinks);
+//        	
+//        	dn_isSingleOut.add(output_link.length==1);
+//        }
         
 		iscontributor 		= new boolean[nIn][nOut];
 		hasSRprofile 		= false;
@@ -596,9 +607,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	            		applyratio[i] = Math.max(dsratio[e][j],applyratio[i]);
 	            
 	        }
-	        
-	        if(this.id.equals("2"))
-	        	System.out.println(id);
 	        
 	        // scale down input demands	                               
 	        for(i=0;i<nIn;i++)
@@ -931,11 +939,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		if(myNetwork.myScenario.destination_networks==null)
 			return -1;
 		for(int i=0;i<numDNetworks;i++){
-			if(myDNGlobalIndex.get(i)<0)
-				continue;
-			String destnetid = myNetwork.myScenario.destination_networks.get(myDNGlobalIndex.get(i)).dnetwork.getId();
-			if(destnetid.equals(id))
-				return i;
+			DestinationNetwork dnetwork = myNetwork.myScenario.destination_networks.get(myDNGlobalIndex.get(i)).dnetwork;
+			if(dnetwork!=null)
+				if(dnetwork.getId().equals(id))
+					return i;
 		}
 		return -1;
 	}

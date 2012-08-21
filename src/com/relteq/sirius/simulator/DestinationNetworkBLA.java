@@ -33,6 +33,19 @@ public final class DestinationNetworkBLA {
     
 	/** @y.exclude */ 
 	protected void populate() {
+		
+		// special case for background networks
+		if(dnetwork==null){ 
+			// add it to all links and nodes in the scenario
+			for(com.relteq.sirius.jaxb.Network network : myScenario.getNetworkList().getNetwork()){
+				for(com.relteq.sirius.jaxb.Link jlink : network.getLinkList().getLink() )
+					((Link)jlink).addDestinationNetwork(myIndex);
+				for(com.relteq.sirius.jaxb.Node jnode : network.getNodeList().getNode() )
+					((Node)jnode).addDestinationNetwork(myIndex,null,null);
+			}
+			return;
+		}
+		
 		if(dnetwork.getLinkReferences()!=null){
 
 			HashMap<Node,ArrayList<Link>> node2outlinks = new HashMap<Node,ArrayList<Link>>();
@@ -73,6 +86,10 @@ public final class DestinationNetworkBLA {
 
 	/** @y.exclude */ 	
 	protected void validate() {
+		
+		// dont validate background network
+		if(dnetwork==null)
+			return;
 		
 		// all non-terminal nodes must have inputs and outputs
 		if(!SiriusMath.setEquals(myOutNodes,myInNodes))

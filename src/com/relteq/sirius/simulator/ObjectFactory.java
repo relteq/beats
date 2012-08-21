@@ -289,20 +289,32 @@ public final class ObjectFactory {
 	 * @return the updated scenario or null if an error occurred
 	 */
 	public static Scenario process(Scenario S) {
+		
         // copy data to static variables ..............................................
         S.global_control_on = true;
         S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
         S.simdtinhours = S.simdtinseconds/3600.0;
         S.uncertaintyModel = Scenario.UncertaintyType.uniform;
         S.global_demand_knob = 1d;
-        S.numVehicleTypes = 1;
         S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
         
+        // set numVehicleTypes
+        S.numVehicleTypes = 1;
         if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
 	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
 	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
-	            	
+        
+	    // set has_background_flow     	
+		S.has_background_flow = false;
+		if(S.getDemandProfileSet()!=null)
+			for(com.relteq.sirius.jaxb.DemandProfile demprofile : S.getDemandProfileSet().getDemandProfile() )
+				S.has_background_flow |= demprofile.getDestinationNetworkId()==null;
+		
+		// set numDenstinationNetworks
+        S.numDenstinationNetworks = S.has_background_flow ? 1 : 0;
+        if(S.getDestinationNetworks()!=null)
+        	S.numDenstinationNetworks += S.getDestinationNetworks().getDestinationNetwork().size();
 	            	
         // populate the scenario ....................................................
         try{
@@ -663,7 +675,7 @@ public final class ObjectFactory {
 	 * @throws SiriusException
 	 * @return InitialDensitySet
 	 */
-	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws SiriusException{
+	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,double [][] init_density) throws SiriusException{
 		
 		// check input
 		if(link_id.length!=init_density.length)
@@ -715,13 +727,13 @@ public final class ObjectFactory {
 	 * @param StdDevMult multiplicative uncertainty
 	 * @return DemandProfile
 	 */
-	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,Double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
+	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
 
 		// check input parameters
 		int i,j;
 		for(i=0;i<dem.length;i++)
 			for(j=0;j<dem[i].length;j++){
-				dem[i][j] = dem[i][j]==null ? 0d : dem[i][j];
+//				dem[i][j] = dem[i][j]==null ? 0d : dem[i][j];
 				dem[i][j] = dem[i][j]<0d ? 0d : dem[i][j];
 			}
 		

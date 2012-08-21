@@ -70,6 +70,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	// TEMPORARY!!
 	protected ArrayList<DestinationNetworkBLA> destination_networks;
+	protected int numDenstinationNetworks = 0;
 	protected boolean has_background_flow;
 	
 	// TEMPORARY FOR FLOW UNCERTAINTY MODEL
@@ -98,12 +99,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @y.exclude
 	 */
 	protected void populate() throws SiriusException {
-
-		// check for background flow
-		has_background_flow = false;
-		if(getDemandProfileSet()!=null)
-			for(com.relteq.sirius.jaxb.DemandProfile demprofile : getDemandProfileSet().getDemandProfile() )
-				has_background_flow |= demprofile.getDestinationNetworkId()==null;
 		
 		// network list
 		if(networkList!=null)
@@ -112,11 +107,16 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		// background and destination networks
 		// NOTE: PUT THIS INTO AN EXTENSION CLASS
+		destination_networks = new ArrayList<DestinationNetworkBLA>();
+		if(has_background_flow){ 		// background network
+			DestinationNetworkBLA x = new DestinationNetworkBLA(null,this,0);
+			x.populate();
+			destination_networks.add(x);			
+		}
 		if(destinationNetworks!=null){
-			destination_networks = new ArrayList<DestinationNetworkBLA>();
 			for(int i=0;i<destinationNetworks.getDestinationNetwork().size();i++){
 				com.relteq.sirius.jaxb.DestinationNetwork dnetwork = destinationNetworks.getDestinationNetwork().get(i);
-				DestinationNetworkBLA x = new DestinationNetworkBLA(dnetwork,this,i);
+				DestinationNetworkBLA x = new DestinationNetworkBLA(dnetwork,this,destination_networks.size());
 				x.populate();
 				destination_networks.add(x);
 			}
@@ -126,7 +126,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		if(networkList!=null)
 			for( com.relteq.sirius.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).constructLinkNodeMaps();
-		
 		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(sensorList!=null){
@@ -541,6 +540,19 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return numEnsemble;
 	}
 
+	/** Destination network names.
+	 * @return	Array of strings with the names of the destination networks.
+	 */
+	public String [] getDestinationNetworkNames(){
+		String [] dnnames = new String [asdfdsaf];
+		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+			vehtypenames[0] = Defaults.vehicleType;
+		else
+			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
+		return vehtypenames;
+	}
+	
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
 	 */

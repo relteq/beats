@@ -87,7 +87,7 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	}
 
 	@Override
-	public Double[] getDensityInVPM(int ensemble) {
+	public double[] getDensityInVPM(int ensemble) {
 		return SiriusMath.times(myLink.getDensityInVeh(ensemble),1/myLink.getLengthInMiles());
 	}
 
@@ -102,7 +102,7 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	}
 
 	@Override
-	public Double[] getFlowInVPH(int ensemble) {
+	public double[] getFlowInVPH(int ensemble) {
 		return SiriusMath.times(myLink.getOutflowInVeh(ensemble),1/myScenario.getSimDtInHours());
 	}
 

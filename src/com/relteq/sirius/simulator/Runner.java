@@ -41,7 +41,8 @@ public final class Runner {
 ////////////////////////////////////
 	System.out.println("Destination networks:");
 	for(DestinationNetworkBLA d : scenario.destination_networks){
-		System.out.println("\t" + d.myIndex + "\t" + d.dnetwork.getId());
+		
+		System.out.println("\t" + d.myIndex + "\t" + (d.dnetwork==null?"background":d.dnetwork.getId()) );
 		System.out.print("\t\tLinks: [");
 		for(Link link : d.links)
 			System.out.print(link.getId() + " ");

@@ -81,14 +81,14 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public double [][] getDensityForLinkIdInVeh(String linkid,ArrayList<Integer> destination){
-		int numDestination = destination.size();
+	public double [][] getDensityForLinkIdInVeh(String linkid,ArrayList<Integer> link_global_index){
+		int numDestination = link_global_index.size();
 		double [][] d = SiriusMath.zeros(numDestination,myScenario.getNumVehicleTypes());
 		for(LinkDestinationIC ld : data){
 			if(ld.hasvalidrefs){				
 				if(ld.link.getId().equals(linkid)){
 					// find ld's destination in the array of destinations
-					int dest_index = destination.indexOf(ld.destination_network_index);
+					int dest_index = link_global_index.indexOf(ld.dn_global_index);
 					if(dest_index>=0)
 						for(int j=0;j<vehicletypeindex.length;j++)
 							d[dest_index][vehicletypeindex[j]] = ld.initial_density[j]*ld.link.getLengthInMiles();
@@ -186,7 +186,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		private Link link;
 		private boolean isbackground;
 		private Link destination_link;
-		private int destination_network_index;
+		private int dn_global_index;
 		private boolean hasvalidrefs;
 
 		public LinkDestinationIC(com.relteq.sirius.jaxb.Density jaxbD,Scenario myScenario){
@@ -195,16 +195,18 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 			if(jaxbD.getLinkIdDestination()==null){
 				isbackground = true;
 				destination_link = null;
-				destination_network_index = -1;
+				dn_global_index = 0;
 			}
 			else{
 				isbackground = false;
 				destination_link = myScenario.getLinkWithId(jaxbD.getLinkIdDestination());
-				destination_network_index = -1;
+				dn_global_index = -1;
 				if(destination_link!=null)
 					for(DestinationNetworkBLA destnet : myScenario.destination_networks){
+						if(destnet.dnetwork==null)
+							continue;
 						if(destnet.dnetwork.getLinkIdDestination().compareTo(destination_link.getId())==0)
-							destination_network_index = destnet.myIndex;
+							dn_global_index = destnet.myIndex;
 					}
 				
 			}
@@ -216,7 +218,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 
 			// true if it has valid link reference and is either background or
 			// has a valid destination reference
-			hasvalidrefs = link!=null && (isbackground || destination_network_index>=0);
+			hasvalidrefs = link!=null && (isbackground || dn_global_index>=0);
 		}
 
 		public String destinationIdToString(){

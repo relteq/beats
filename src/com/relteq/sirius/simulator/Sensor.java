@@ -46,7 +46,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>null</code>
 	 * */
 	@Override
-	public Double[] getDensityInVPM(int ensemble) {
+	public double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
@@ -62,7 +62,7 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	 * @return <code>null</code>
 	 * */
 	@Override
-	public Double[] getFlowInVPH(int ensemble) {
+	public double[] getFlowInVPH(int ensemble) {
 		return null;
 	}
 

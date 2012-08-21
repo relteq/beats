@@ -7,6 +7,8 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
+import com.relteq.sirius.jaxb.DestinationNetwork;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -189,13 +191,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected int getDestinationNetworkIdFor(String destnetid){
 		if(destnetid==null && myNetwork.myScenario.has_background_flow)
 			return 0;
-		
 		for(int i=0;i<numDNetworks;i++){
-			if(myDNindex.get(i)<0)
-				continue;
-			DestinationNetworkBLA destnet = myNetwork.myScenario.destination_networks.get(myDNindex.get(i));
-			if(destnet.dnetwork.getId().equals(destnetid))
-				return i;
+			DestinationNetwork destnet = myNetwork.myScenario.destination_networks.get(myDNindex.get(i)).dnetwork;
+			if(destnet!=null)
+				if(destnet.getId().equals(destnetid))
+					return i;
 		}
 		return -1;
 	}
@@ -313,11 +313,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
         this.myNetwork = myNetwork;
         
-        // add background destination
-        if(myNetwork.myScenario.has_background_flow){
-        	numDNetworks++;
-        	myDNindex.add(0,-1); // -1 means background flow
-        }
+//        // add background destination
+//        if(myNetwork.myScenario.has_background_flow){
+//        	numDNetworks++;
+//        	myDNindex.add(0,-1); // -1 means background flow
+//        }
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -490,14 +490,15 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	
 	// Link state .......................
 
-	/** Density of vehicles per vehicle type in normalized units (vehicles/link/type). 
-	 * The return array is indexed by vehicle type in the order given in the 
-	 * <code>settings</code> portion of the input file.
+	/** Density of vehicles per destination network and vehicle type in normalized units [vehicles]. 
+	 * The return matrix is indexed first by destination network in the order given by XXX, and second
+	 * by vehicle type in the order given by XXX. 
 	 * @param ensemble Ensemble number 
 	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
 	 */
 	public double[][] getDensityInVeh(int ensemble) {
 		try{
+			//xxx
 			return SiriusMath.makecopy(density[ensemble]);
 		} catch(Exception e){
 			return null;
