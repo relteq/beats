@@ -19,16 +19,16 @@ public final class Double2DMatrix {
 	private int nTime;			// number of time slices (1st dimension)
 	private int nVTypes;		// number of vehicle types (2nd dimension)
 	private boolean isempty;	// true if there is no data;
-	private Double [][] data;
+	private double [][] data;
     
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
 
-    public Double2DMatrix(int nTime,int nVTypes,Double val) {
+    public Double2DMatrix(int nTime,int nVTypes,double val) {
     	this.nTime = nTime;
     	this.nVTypes = nVTypes;
-    	data = new Double[nTime][nVTypes];
+    	data = new double[nTime][nVTypes];
     	for(int i=0;i<nTime;i++)
         	for(int j=0;j<nVTypes;j++)
         		data[i][j] = val;
@@ -38,7 +38,7 @@ public final class Double2DMatrix {
     public Double2DMatrix(double [][] val) {
     	this.nTime = val.length;
     	this.nVTypes = val.length>0 ? val[0].length : 0;
-    	data = new Double[nTime][nVTypes];
+    	data = new double[nTime][nVTypes];
     	for(int i=0;i<nTime;i++)
         	for(int j=0;j<nVTypes;j++)
         		data[i][j] = val[i][j];
@@ -76,7 +76,7 @@ public final class Double2DMatrix {
 			numtokens = slicesXY.countTokens();
 			if(nVTypes==0){ // first time here
 				nVTypes = numtokens;
-				data = new Double[nTime][nVTypes];
+				data = new double[nTime][nVTypes];
 			}
 			else{
 				if(nVTypes!=numtokens){
@@ -88,7 +88,7 @@ public final class Double2DMatrix {
 			j=0;
 			while (slicesXY.hasMoreTokens() && issquare) {				
 				try {
-					Double value = Double.parseDouble(slicesXY.nextToken());
+					double value = Double.parseDouble(slicesXY.nextToken());
 					if(value>=0){
 						data[i][j] = value;
 						allnan = false;
@@ -136,8 +136,8 @@ public final class Double2DMatrix {
 		return nVTypes;
 	}
 
-	public Double [] sampleAtTime(int k,Integer [] vehicletypeindex){
-		Double [] x = new Double[nVTypes];
+	public double [] sampleAtTime(int k,Integer [] vehicletypeindex){
+		double [] x = new double[nVTypes];
 		if(vehicletypeindex==null){
 			for(int j=0;j<nVTypes;j++){
 				x[j] = data[k][j];
@@ -157,7 +157,7 @@ public final class Double2DMatrix {
 	 * @param vehicletypeindex the vehicle type index
 	 * @return the split ratio
 	 */
-	public Double get(int timeslice, int vehicletypeindex) {
+	public double get(int timeslice, int vehicletypeindex) {
 		return data[timeslice][vehicletypeindex];
 	}
 
@@ -206,8 +206,9 @@ public final class Double2DMatrix {
     	int i,j;
     	for(i=0;i<nTime;i++)
     		for(j=0;j<nVTypes;j++)
-				if(data[i][j].isNaN())
+				if(Double.isNaN(data[i][j]))
 					return true;
+    	
     	return false;
     }
     

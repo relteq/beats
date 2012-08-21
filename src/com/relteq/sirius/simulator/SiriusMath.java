@@ -9,15 +9,15 @@ public final class SiriusMath {
 	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
 	
- 	public static Double [] zeros(int n1){
-		Double [] answ = new Double [n1];
+ 	public static double [] zeros(int n1){
+		double [] answ = new double [n1];
 		for(int i=0;i<n1;i++)
 			answ[i] = 0.0;
 		return answ;	
 	}
  	
- 	public static Double [][] zeros(int n1,int n2){
-		Double [][] answ = new Double [n1][n2];
+ 	public static double [][] zeros(int n1,int n2){
+		double [][] answ = new double [n1][n2];
 		int i,j;
 		for(i=0;i<n1;i++)
 			for(j=0;j<n2;j++)
@@ -25,8 +25,8 @@ public final class SiriusMath {
 		return answ;
 	}
  	
- 	public static Double [][][] zeros(int n1,int n2,int n3){
-		Double [][][] answ = new Double [n1][n2][n3];
+ 	public static double [][][] zeros(int n1,int n2,int n3){
+		double [][][] answ = new double [n1][n2][n3];
 		int i,j,k;
 		for(i=0;i<n1;i++)
 			for(j=0;j<n2;j++)
@@ -34,17 +34,28 @@ public final class SiriusMath {
 					answ[i][j][k] = 0.0;
 		return answ;
 	}
+ 	
+ 	public static double [][][][] zeros(int n1,int n2,int n3,int n4){
+		double [][][][] answ = new double [n1][n2][n3][n4];
+		int i,j,k,m;
+		for(i=0;i<n1;i++)
+			for(j=0;j<n2;j++)
+				for(k=0;k<n3;k++)
+					for(m=0;m<n4;m++)
+						answ[i][j][k][m] = 0.0;
+		return answ;
+	}
+ 	
 	
-	public static Double sum(Double [] V){
-		Double answ = 0d;
+	public static double sum(double [] V){
+		double answ = 0d;
 		for(int i=0;i<V.length;i++)
-			if(V[i]!=null)
-				answ += V[i];
+			answ += V[i];
 		return answ;
 	}
 
-	public static Double sumsum(Double [][] V){
-		Double answ = 0d;
+	public static double sumsum(double [][] V){
+		double answ = 0d;
 		int i,j;
 		for(i=0;i<V.length;i++)
 			if(V[i]!=null)
@@ -92,15 +103,15 @@ public final class SiriusMath {
 //		}
 //	}
 
-	public static Double [] times(Double [] V,double a){
-		Double [] answ = new Double [V.length];
+	public static double [] times(double [] V,double a){
+		double [] answ = new double [V.length];
 		for(int i=0;i<V.length;i++)
 			answ[i] = a*V[i];
 		return answ;
 	}
 	
-	public static Double [][] times(Double [][] V,double a){
-		Double [][] answ = new Double [V.length][];
+	public static double [][] times(double [][] V,double a){
+		double [][] answ = new double [V.length][];
 		for(int i=0;i<V.length;i++)
 			answ[i] = SiriusMath.times(V[i],a);
 		return answ;
@@ -155,8 +166,8 @@ public final class SiriusMath {
 		return r;
 	}
 	
-	public static boolean isintegermultipleof(Double A,Double a){
-		if(A.isInfinite())
+	public static boolean isintegermultipleof(double A,double a){
+		if(Double.isInfinite(A))
 			return true;
 		if(A==0)
 			return true;
@@ -205,8 +216,6 @@ public final class SiriusMath {
 		return true;
 	}
 	
-	
-	
 	public static boolean greaterthan(double a,double b){
 		return a > b + SiriusMath.EPSILON;
 	}
@@ -232,11 +241,11 @@ public final class SiriusMath {
 	}
 
 	// deep copy an array
-	public static Double[] makecopy(Double [] x){
+	public static double[] makecopy(double [] x){
 		if(x.length==0)
 			return null;
 		int n1 = x.length;
-		Double [] y = new Double[n1];
+		double [] y = new double[n1];
 		int i;
 		for(i=0;i<n1;i++)
 			y[i]=x[i];
@@ -255,14 +264,14 @@ public final class SiriusMath {
 	}
 	
 	// deep copy a double array
-	public static Double[][] makecopy(Double [][]x){
+	public static double[][] makecopy(double [][]x){
 		if(x.length==0)
 			return null;
 		if(x[0].length==0)
 			return null;
 		int n1 = x.length;
 		int n2 = x[0].length;
-		Double [][] y = new Double[n1][n2];
+		double [][] y = new double[n1][n2];
 		int i,j;
 		for(i=0;i<n1;i++)
 			for(j=0;j<n2;j++)
@@ -271,7 +280,7 @@ public final class SiriusMath {
 	}
 	
 	// deep copy a triple array
-	public static Double[][][] makecopy(Double [][][]x){
+	public static double[][][] makecopy(double [][][]x){
 		if(x.length==0)
 			return null;
 		if(x[0].length==0)
@@ -281,7 +290,7 @@ public final class SiriusMath {
 		int n1 = x.length;
 		int n2 = x[0].length;
 		int n3 = x[0][0].length;
-		Double [][][] y = new Double[n1][n2][n3];
+		double [][][] y = new double[n1][n2][n3];
 		int i,j,k;
 		for(i=0;i<n1;i++)
 			for(j=0;j<n2;j++)

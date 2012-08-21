@@ -9,15 +9,16 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 
 	protected Scenario myScenario;
 	protected Link myLinkOrigin;
-	protected double dtinseconds;			// not really necessary
+	protected int myDestinationIndexInLink;
+	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;
 	protected Double2DMatrix demand_nominal;	// [veh]
 	protected boolean isdone; 
 	protected int stepinitial;
 	protected double _knob;
 	protected Double std_dev_add;				// [veh]
-	protected Double std_dev_mult;			// [veh]
-	protected boolean isdeterministic;		// true if the profile is deterministic
+	protected Double std_dev_mult;				// [veh]
+	protected boolean isdeterministic;			// true if the profile is deterministic
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -43,6 +44,9 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		// required
 		if(getLinkIdOrigin()!=null)
 			myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
+		
+		if(myLinkOrigin!=null)
+			myDestinationIndexInLink = myLinkOrigin.getDestinationNetworkIdFor(getDestinationNetworkId());
 
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
@@ -137,9 +141,9 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
 			if(step<n)
-				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
+				myLinkOrigin.setSourcedemandFromVeh( myDestinationIndexInLink , sampleAtTimeStep(step) );
 			if( forcesample || (step>=n && !isdone) ){
-				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(n) );
+				myLinkOrigin.setSourcedemandFromVeh( myDestinationIndexInLink , sampleAtTimeStep(n) );
 				isdone = true;
 			}
 		}
@@ -149,14 +153,14 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	// private methods
 	/////////////////////////////////////////////////////////////////////
 	
-	private Double [] sampleAtTimeStep(int k){
+	private double [] sampleAtTimeStep(int k){
 		
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
 			vehicletypeindex = ((DemandProfileSet)myScenario.getDemandProfileSet()).vehicletypeindex;
 		
-		Double [] demandvalue = demand_nominal.sampleAtTime(k,vehicletypeindex);
+		double [] demandvalue = demand_nominal.sampleAtTime(k,vehicletypeindex);
 		
 		if(!isdeterministic){
 			

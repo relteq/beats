@@ -81,9 +81,9 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double [][] getDensityForLinkIdInVeh(String linkid,ArrayList<Integer> destination){
+	public double [][] getDensityForLinkIdInVeh(String linkid,ArrayList<Integer> destination){
 		int numDestination = destination.size();
-		Double [][] d = SiriusMath.zeros(numDestination,myScenario.getNumVehicleTypes());
+		double [][] d = SiriusMath.zeros(numDestination,myScenario.getNumVehicleTypes());
 		for(LinkDestinationIC ld : data){
 			if(ld.hasvalidrefs){				
 				if(ld.link.getId().equals(linkid)){
@@ -98,7 +98,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		return d;
 	}
 
-//	public Double[][] getInitial_density() {
+//	public double[][] getInitial_density() {
 //		return initial_density;
 //	}
 
@@ -182,7 +182,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 	/////////////////////////////////////////////////////////////////////
 	
 	private class LinkDestinationIC implements Comparable<LinkDestinationIC> {
-		private Double [] initial_density; 	// [veh/mile] by type
+		private double [] initial_density; 	// [veh/mile] by type
 		private Link link;
 		private boolean isbackground;
 		private Link destination_link;
@@ -242,13 +242,13 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 				SiriusErrorLog.addWarning("Destination link not found in destination networks in initial density set.");
 			
 			if(link!=null){
-				Double sum = 0.0;
-				Double x;
+				double sum = 0.0;
+				double x;
 				for(int j=0;j<vehicletypeindex.length;j++){
 					x = initial_density[j];
 					if(x<0)
 						SiriusErrorLog.addError("Negative value found in initial density set for link id=" + link.getId());
-					if( x.isNaN())
+					if( Double.isNaN(x) )
 						SiriusErrorLog.addError("Invalid value found in initial density set for link id=" + link.getId());
 					sum += x;
 				}

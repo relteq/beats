@@ -39,6 +39,22 @@ public final class Network extends com.relteq.sirius.jaxb.Network {
 				((Link) link).populate(this);
 		
 	}
+	
+	protected void constructLinkNodeMaps(){
+		Node node;
+		if(getLinkList()!=null)
+			for (com.relteq.sirius.jaxb.Link jlink : getLinkList().getLink()){
+				Link link = (Link) jlink;
+				node = link.end_node;
+				if(!node.isTerminal)
+					for(Integer x : link.myDNindex)
+						link.dn_endNodeMap.add(node.myDNGlobalIndex.indexOf(x));
+				node = link.begin_node;
+				if(!node.isTerminal)
+					for(Integer x : link.myDNindex)
+						link.dn_beginNodeMap.add(node.myDNGlobalIndex.indexOf(x));
+			}
+	}
 
 	protected void validate() {
 

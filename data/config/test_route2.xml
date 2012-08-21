@@ -63,10 +63,10 @@
       <splitratioProfile node_id="3"> 
          <splitratio link_in="4" link_out="8">0.2:0.3</splitratio>
          <splitratio link_in="7" link_out="8">0.0:0.0</splitratio>
-         <splitratio link_in="4" link_out="8" destination_network_id="d1">0.2:0.3</splitratio>
-         <splitratio link_in="7" link_out="8" destination_network_id="d1">0.0:0.0</splitratio>
-         <splitratio link_in="4" link_out="8" destination_network_id="d2">0.2:0.3</splitratio>
-         <splitratio link_in="7" link_out="8" destination_network_id="d2">0.0:0.0</splitratio>
+         <splitratio link_in="4" link_out="8" destination_network_id="d1">0.8:0.7</splitratio>
+         <splitratio link_in="7" link_out="8" destination_network_id="d1">1.0:1.0</splitratio>
+         <splitratio link_in="4" link_out="8" destination_network_id="d2">0.5:0.5</splitratio>
+         <splitratio link_in="7" link_out="8" destination_network_id="d2">0.5:0.5</splitratio>
       </splitratioProfile>
       <splitratioProfile node_id="4"> 
          <splitratio link_in="5" link_out="10">0.2:0.3</splitratio>

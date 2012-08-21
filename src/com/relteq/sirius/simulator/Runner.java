@@ -5,6 +5,7 @@
 
 package com.relteq.sirius.simulator;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -36,6 +37,50 @@ public final class Runner {
 		// load configuration file ................................
 		scenario = ObjectFactory.createAndLoadScenario(configfilename);
 
+		
+////////////////////////////////////
+	System.out.println("Destination networks:");
+	for(DestinationNetworkBLA d : scenario.destination_networks){
+		System.out.println("\t" + d.myIndex + "\t" + d.dnetwork.getId());
+		System.out.print("\t\tLinks: [");
+		for(Link link : d.links)
+			System.out.print(link.getId() + " ");
+		System.out.println("]");
+
+
+		System.out.print("\t\tNodes: [");
+		for(Node nodes : d.myInNodes)
+			System.out.print(nodes.getId() + " ");
+		System.out.println("]");
+	}
+
+	System.out.print("\nNodes:");
+	for(com.relteq.sirius.jaxb.Node jnode : scenario.getNetworkList().getNetwork().get(0).getNodeList().getNode()){
+		Node node = (Node) jnode;
+		System.out.println("\n\tid=" + node.getId());
+		System.out.println("\toutlinks: " + Arrays.asList(node.output_link).toString());
+		System.out.println("\tinlinks: " + Arrays.asList(node.input_link).toString());		
+		System.out.println("\tnumDNetworks=" + node.numDNetworks);
+		System.out.println("\tmyDNGlobalIndex=" + node.myDNGlobalIndex.toString());
+		System.out.println("\tdn2outlinkindex=" + node.dn2outlinkindex.toString());
+		System.out.println("\tdn2inlinkindex=" + node.dn2inlinkindex.toString());
+		System.out.println("\tistrivialsplit=" + node.dn_isSingleOut.toString());
+	}
+
+	System.out.print("\nLinks:");
+	for(com.relteq.sirius.jaxb.Link jlink : scenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()){
+		Link link = (Link) jlink;
+		System.out.println("\n\tid=" + link.getId());
+		System.out.println("\tnumDNetworks=" + link.numDNetworks);
+		System.out.println("\tmyDNindex=" + link.myDNindex.toString());
+		
+		System.out.println("\tdn_beginNodeMap=" + link.dn_beginNodeMap.toString());
+		System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
+	}
+		
+////////////////////////////////////
+		
+		
 		// check if it loaded
 		if(scenario==null)
 			return;

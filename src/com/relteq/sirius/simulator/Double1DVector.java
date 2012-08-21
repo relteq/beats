@@ -9,14 +9,14 @@ import java.util.StringTokenizer;
 
 public final class Double1DVector {
 	
-	private Double [] data;
+	private double [] data;
     
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
     
-    public Double1DVector(int n,Double val) {
-    	data = new Double[n];
+    public Double1DVector(int n,double val) {
+    	data = new double[n];
     	for(int i=0;i<n;i++)
             data[i] = val;
     }
@@ -33,10 +33,10 @@ public final class Double1DVector {
 		StringTokenizer slicesX = new StringTokenizer(str,delim);
 		int i=0;
 		boolean allnan = true;
-		data = new Double[slicesX.countTokens()];
+		data = new double[slicesX.countTokens()];
 		while (slicesX.hasMoreTokens()) {			
 			try {
-				Double value = Double.parseDouble(slicesX.nextToken());
+				double value = Double.parseDouble(slicesX.nextToken());
 				if(value>=0){
 					data[i] = value;
 					allnan = false;
@@ -64,11 +64,11 @@ public final class Double1DVector {
 		return data.length;
 	}
 	
-    public Double [] getData(){
+    public double [] getData(){
     	return data;
     }
     
-    public Double get(int i){
+    public double get(int i){
     	if(data.length==0)
     		return Double.NaN;
     	else
@@ -79,7 +79,7 @@ public final class Double1DVector {
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
     
-    public void set(int i,Double f){
+    public void set(int i,double f){
     	data[i] = f;
     }
     
@@ -112,7 +112,7 @@ public final class Double1DVector {
     		return false;
     	int i;
     	for(i=0;i<data.length;i++)
-			if(data[i].isNaN())
+			if(Double.isNaN(data[i]))
 				return true;
     	return false;
     }

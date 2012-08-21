@@ -64,7 +64,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			int numTime = data.getnTime();
 			if(numTime>profile.size())
 				for(k=profile.size();k<numTime;k++)	
-					profile.add(new Double4DMatrix(myNode,0d));
+					profile.add(new Double4DMatrix(myNode,Double.NaN));
 			
 			// fold the data into the profile
 			for(k=0;k<numTime;k++){
@@ -89,6 +89,10 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			}
 		}
 		
+		// normalize
+		for(k=0;k<profile.size();k++)
+			myNode.normalizeSplitRatioMatrix(profile.get(k));
+		
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
@@ -110,6 +114,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		
 		// inform the node
 		myNode.setHasSRprofile(true);
+		
 		
 	}
 
@@ -190,7 +195,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
 			currentSplitRatio = sampleAtTimeStep( Math.min( step ,profile.size()-1) );
-			myNode.normalizeSplitRatioMatrix(currentSplitRatio);
+			//myNode.normalizeSplitRatioMatrix(currentSplitRatio);
 			myNode.setSampledSRProfile(currentSplitRatio);
 			isdone = step>=profile.size()-1;
 		}		

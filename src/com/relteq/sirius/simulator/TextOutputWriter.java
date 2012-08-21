@@ -48,7 +48,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 		if(scenario==null)
 			return;
 		
-		Double [][] matrix;
+		double [][] matrix;
 		double invsteps;
 		
 		if(scenario.clock.getCurrentstep()==1)

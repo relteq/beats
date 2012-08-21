@@ -25,13 +25,17 @@ public class Double4DMatrix {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// protected
+	// public get/set
 	/////////////////////////////////////////////////////////////////////
     
-	protected void setValue(int dn_node_index,int in_index,int out_index,int vt_index,double value){
+	public void setValue(int dn_node_index,int in_index,int out_index,int vt_index,double value){
 		data[dn_node_index].set(in_index,out_index,vt_index,value);
 	}
 
+	public double getValue(int dn_node_index,int in_index,int out_index,int vt_index){
+		return data[dn_node_index].get(in_index,out_index,vt_index);
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// public
 	/////////////////////////////////////////////////////////////////////
@@ -40,10 +44,16 @@ public class Double4DMatrix {
 		return data.length;
 	}
 
-    public void copydata(Double4DMatrix in) throws SiriusException {
+    public void copydata(Double4DMatrix in) {
     	if(in.getNumDNetwork()!=getNumDNetwork())
-    		throw new SiriusException("Attempt to use copydata with non-commensurate matrices.");
+    		return;
     	for(int i=0;i<getNumDNetwork();i++)
     		data[i].copydata(in.data[i]);	  
-    }	
+    }
+    
+	public double getSumOverTypes(int dn_index,int in_index,int out_index){
+		return data[dn_index].getSumOverTypes(in_index,out_index);
+	}
+
+
 }

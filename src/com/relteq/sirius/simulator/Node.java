@@ -7,6 +7,9 @@ package com.relteq.sirius.simulator;
 
 import java.util.ArrayList;
 
+// NOTE
+// SEE IF THE ENSEMBLE DIMENSION CAN BE ELIMINATED FOR OUTDEMANDKNOWN AND DSRATIO
+
 /** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -21,6 +24,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected int nIn;
 	/** @y.exclude */ 	protected int nOut;
 	/** @y.exclude */ 	protected boolean isTerminal;
+	/** @y.exclude */ 	protected boolean isSingleOut;
 	
 	// split ratios
 	/** @y.exclude */ 	protected Double4DMatrix sampledSRprofile;
@@ -32,7 +36,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected ArrayList<Integer> myDNGlobalIndex = new ArrayList<Integer>();	// list of DN that use this node, including background
 	/** @y.exclude */   protected ArrayList<ArrayList<Integer>> dn2outlinkindex = new ArrayList<ArrayList<Integer>>();	// list of indices to output links in output_link used by each d.n.
 	/** @y.exclude */   protected ArrayList<ArrayList<Integer>> dn2inlinkindex = new ArrayList<ArrayList<Integer>>();		// list of indices to inpt links in input_link used by each d.n.
-	/** @y.exclude */ 	protected ArrayList<Boolean> istrivialsplit = new ArrayList<Boolean>();	// [dnindex] true if there is one in and one out
+	/** @y.exclude */ 	protected ArrayList<Boolean> dn_isSingleOut = new ArrayList<Boolean>();	// [dnindex] true if there is one in and one out
 	
 	// signal
 	/** @y.exclude */ 	protected Signal mySignal = null;
@@ -45,11 +49,11 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 																// controller split ratios
     // used in update()
-	/** @y.exclude */ 	protected Double [][][][] inDemand;		// [ensemble][nIn][numDN][nTypes]
+	/** @y.exclude */ 	protected double [][][][] inDemand;		// [ensemble][nIn][numDN][nTypes]
 	/** @y.exclude */ 	protected double [][] outSupply;		// [ensemble][nOut]
 	/** @y.exclude */ 	protected double [][] outDemandKnown;	// [ensemble][nOut]
 	/** @y.exclude */ 	protected double [][] dsratio;			// [ensemble][nOut]
-	/** @y.exclude */ 	protected Double [][][][] outFlow; 		// [ensemble][nOut][numDN][nTypes]
+	/** @y.exclude */ 	protected double [][][][] outFlow; 		// [ensemble][nOut][numDN][nTypes]
 	/** @y.exclude */ 	protected boolean [][] iscontributor;	// [nIn][nOut]
 	/** @y.exclude */ 	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
 	/** @y.exclude */ 	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
@@ -73,7 +77,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		
 		numDNetworks++;
 		myDNGlobalIndex.add(dest_index);
-		istrivialsplit.add(outlinks.size()==1);
+		dn_isSingleOut.add(outlinks.size()==1);
 		
 		// find indices for input and output links in this destination network
 		boolean foundit;
@@ -135,8 +139,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
     /** @y.exclude */ 	
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		this.hasSRprofile = hasSRprofile;
-		this.sampledSRprofile = new Double4DMatrix(this,0d);
-		normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+		this.sampledSRprofile = new Double4DMatrix(this,Double.NaN);
+		//normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 	}
 
 	/** @y.exclude */ 	
@@ -150,8 +154,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 
 	/** @y.exclude */ 	
     protected void resetSplitRatio(){
-		splitratio = new Double4DMatrix(this,0d);
-		normalizeSplitRatioMatrix(splitratio);
+		splitratio = new Double4DMatrix(this,Double.NaN);
+		//normalizeSplitRatioMatrix(splitratio);
     }
     
     /** @y.exclude */ 	
@@ -262,6 +266,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 
     	if(isTerminal)
     		return;
+    	
+		isSingleOut = nOut==1;
 
         // add background destination
         if(myNetwork.myScenario.has_background_flow){
@@ -279,7 +285,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
         		inlinks.add(i);
         	dn2inlinkindex.add(inlinks);
         	
-        	istrivialsplit.add(output_link.length==1);
+        	dn_isSingleOut.add(output_link.length==1);
         }
         
 		iscontributor 		= new boolean[nIn][nOut];
@@ -288,8 +294,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		hascontroller 		= false;
 		controlleron 		= false;
 		hasactivesplitevent = false;
-
-		resetSplitRatio();
 	}
     
 	/** @y.exclude */ 	
@@ -322,25 +326,40 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
         if(isTerminal)
             return;
 
-        int e,i,j,k;        
+        int e,d,i,j,k;  
+        int node_dn_index;
         int numEnsemble = myNetwork.myScenario.numEnsemble;
         
         // collect input demands and output supplies ...................
-        for(e=0;e<numEnsemble;e++){        
-    		for(i=0;i<nIn;i++)
-    			inDemand[e][i] = input_link[i].outflowDemand[e];
+        for(e=0;e<numEnsemble;e++){     
+
+        	// step through input links, attach the flow demand to the appropriate node channel
+    		for(i=0;i<nIn;i++){
+    			for(d=0;d<input_link[i].numDNetworks;d++){
+    				node_dn_index = input_link[i].dn_endNodeMap.get(d);
+    				inDemand[e][i][node_dn_index] = input_link[i].outflowDemand[e][d];
+    			}
+    		}
+ 
+        	// same for output links and supplies
     		for(j=0;j<nOut;j++)
     			outSupply[e][j] = output_link[j].spaceSupply[e];
         }
 
+        // Take current split ratio from the profile if the node is
+		// not actively controlled. Otherwise the mat has already been 
+		// set by the controller.
+		if(!isSingleOut && hasSRprofile && !controlleron && !hasactivesplitevent)
+			splitratio.copydata(sampledSRprofile);
+		
 		// solve unknown split ratios if they are non-trivial ..............
+        /* 
+         * NOTE (GG,8/20/2012): TEMPORARILY COMMENTED OUT. 
+         * STILL NEED TO THINK ABOUT HOW TO DO THIS WITH DESTINATION NETWORKS. 
+         * 
 		if(!istrivialsplit){	
 
-	        // Take current split ratio from the profile if the node is
-			// not actively controlled. Otherwise the mat has already been 
-			// set by the controller.
-			if(hasSRprofile && !controlleron && !hasactivesplitevent)
-				splitratio.copydata(sampledSRprofile);
+
 			
 	        // compute known output demands ................................
 			for(e=0;e<numEnsemble;e++)
@@ -360,37 +379,66 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        // fill in unassigned split ratios .............................
 	        resolveUnassignedSplits_A();
 		}
+		*/
 		
         // compute node flows ..........................................
         computeLinkFlows();
         
-        // assign flow to input links ..................................
-		for(e=0;e<numEnsemble;e++)
-	        for(i=0;i<nIn;i++)
-	            input_link[i].outflow[e]=inDemand[e][i];
+        // assign flow to input and output links ..................................
+		for(e=0;e<numEnsemble;e++){
+
+			for(i=0;i<nIn;i++){
+				for(d=0;d<input_link[i].numDNetworks;d++){
+					node_dn_index = input_link[i].dn_endNodeMap.get(d);							
+					input_link[i].outflow[e][d] = inDemand[e][i][node_dn_index];
+				}
+			}
+			
+	        for (j=0;j<nOut;j++){
+				for(d=0;d<output_link[j].numDNetworks;d++){
+					node_dn_index = output_link[j].dn_beginNodeMap.get(d);
+		            output_link[j].inflow[e][d] = outFlow[e][j][node_dn_index];
+				}
+	        }
+			
+		}
         
-        // assign flow to output links .................................
-		for(e=0;e<numEnsemble;e++)
-	        for (j=0;j<nOut;j++)
-	            output_link[j].inflow[e] = outFlow[e][j];
+//        // assign flow to input and output links ..................................
+//		for(e=0;e<numEnsemble;e++)
+//	        for(i=0;i<nIn;i++)
+//	            input_link[i].outflow[e]=inDemand[e][i];
+//        
+//        // assign flow to output links .................................
+//		for(e=0;e<numEnsemble;e++)
+//	        for (j=0;j<nOut;j++)
+//	            output_link[j].inflow[e] = outFlow[e][j];
 	}
 
 	/** @y.exclude */ 	
 	protected void reset() {	
+
+        if(isTerminal)
+            return;
+        
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
-    	int numEnsemble = myNetwork.myScenario.numEnsemble;		
-    	inDemand 		= new Double[numEnsemble][nIn][numDNetworks][numVehicleTypes];
-		outSupply 		= new double[numEnsemble][nOut];
-		outDemandKnown 	= new double[numEnsemble][nOut];
-		dsratio 		= new double[numEnsemble][nOut];
-		outFlow 		= new Double[numEnsemble][nOut][numDNetworks][numVehicleTypes];
+    	int numEnsemble = myNetwork.myScenario.numEnsemble;	
+    	
+    	inDemand 		= SiriusMath.zeros(numEnsemble,nIn,numDNetworks,numVehicleTypes);
+		outSupply 		= SiriusMath.zeros(numEnsemble,nOut);
+		outDemandKnown 	= SiriusMath.zeros(numEnsemble,nOut);
+		dsratio 		= SiriusMath.zeros(numEnsemble,nOut);
+		outFlow 		= SiriusMath.zeros(numEnsemble,nOut,numDNetworks,numVehicleTypes);
+		resetSplitRatio();
 	}
 
 	/////////////////////////////////////////////////////////////////////
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */ 	
+	/** Used to check slit ratio events.
+	 * Check a split ratio matrix for dimencios and range.
+	 * I am removing it because it does not work in the context of destination networks, since the dimension check no longer applies;
+	 * @y.exclude 
 	protected boolean validateSplitRatioMatrix(Double4DMatrix SR){
 
 		int d,i,j,k;
@@ -422,8 +470,11 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		
 		return true;
 	}
+	*/
 	
-	/** @y.exclude */ 	
+	/** Goes through the 4D matrix and replaces single NaNs in each row with 
+	 * 1-sum(row). Also it scales the row sum to 1. Multiple NaNs are left unaltered.
+	 * @y.exclude */ 	
     protected void normalizeSplitRatioMatrix(Double4DMatrix SR){
 
     	int d,i,j,k;
@@ -442,7 +493,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 					idxNegative = -1;
 					sum = 0.0f;
 					for (j = 0; j < X.getnOut(); j++)
-						if (X.get(i,j,k).isNaN()) {
+						if (Double.isNaN(X.get(i,j,k))) {
 							countNaN++;
 							idxNegative = j;
 							if (countNaN > 1)
@@ -471,7 +522,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 					
 					if (sum >= 1.0)
 						for (j=0; j<X.getnOut(); j++)
-							if (X.get(i,j,k).isNaN())
+							if (Double.isNaN(X.get(i,j,k)))
 								X.set(i,j,k,0d);
 							else
 								X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
@@ -487,30 +538,52 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	
 	private void computeLinkFlows(){
         
-    	int e,i,j,k;
+    	int e,d,i,j,k;
+        int i_index,o_index;
+
     	int numEnsemble = myNetwork.myScenario.numEnsemble;
     	int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 
         // input i contributes to output j .............................
-    	for(i=0;i<splitratio.getnIn();i++)
-        	for(j=0;j<splitratio.getnOut();j++)
-        		iscontributor[i][j] = splitratio.getSumOverTypes(i,j)>0;
-	
-        double [][] applyratio = new double[numEnsemble][nIn];
-
-        for(e=0;e<numEnsemble;e++)
-	        for(i=0;i<nIn;i++)
-	        	applyratio[e][i] = Double.NEGATIVE_INFINITY;
+    	for(i=0;i<nIn;i++)
+        	for(j=0;j<nOut;j++)
+        		iscontributor[i][j] = false;
+    	
+        for(d=0;d<numDNetworks;d++){
+        	for(j=0;j<dn2outlinkindex.get(d).size();j++){
+        		o_index = dn2outlinkindex.get(d).get(j);
+        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
+        			i_index = dn2inlinkindex.get(d).get(i);
+        			double value = splitratio.getSumOverTypes(d,i,j);
+        			iscontributor[i_index][o_index] |= value>0;
+        		}
+        	}
+        }   
         
-        for(e=0;e<numEnsemble;e++)
-	        for(j=0;j<nOut;j++){
-	        	
-	        	// re-compute known output demands .........................
+        double [] applyratio = new double[nIn];
+
+        // for each ensemble...
+        for(e=0;e<numEnsemble;e++){
+
+        	// initialize applyratio
+	        for(i=0;i<nIn;i++)
+	        	applyratio[i] = Double.NEGATIVE_INFINITY;
+	        
+	        // compute total demand on each output
+	        for(j=0;j<nOut;j++)        	
 				outDemandKnown[e][j] = 0d;
-	            for(i=0;i<nIn;i++)
-	            	for(k=0;k<numVehicleTypes;k++)
-	            		outDemandKnown[e][j] += inDemand[e][i][k]*splitratio.get(i,j,k);
-	            
+	        for(d=0;d<numDNetworks;d++){
+	        	for(j=0;j<dn2outlinkindex.get(d).size();j++){
+	        		o_index = dn2outlinkindex.get(d).get(j);
+	        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
+	        			i_index = dn2inlinkindex.get(d).get(i);
+		            	for(k=0;k<numVehicleTypes;k++)
+		            		outDemandKnown[e][o_index] += inDemand[e][i_index][d][k]*splitratio.getValue(d,i,j,k);
+	        		}
+	        	}
+	        }
+
+	        for(j=0;j<nOut;j++){
 	            // compute and sort output demand/supply ratio .............
 	            if(SiriusMath.greaterthan(outSupply[e][j],0d))
 	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
@@ -520,28 +593,83 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	            // reflect ratios back on inputs
 	            for(i=0;i<nIn;i++)
 	            	if(iscontributor[i][j])
-	            		applyratio[e][i] = Math.max(dsratio[e][j],applyratio[e][i]);
-	            	
+	            		applyratio[i] = Math.max(dsratio[e][j],applyratio[i]);
+	            
 	        }
-
-        // scale down input demands
-        for(e=0;e<numEnsemble;e++)
+	        
+	        if(this.id.equals("2"))
+	        	System.out.println(id);
+	        
+	        // scale down input demands	                               
 	        for(i=0;i<nIn;i++)
-	            for(k=0;k<numVehicleTypes;k++)
-	                inDemand[e][i][k] /= applyratio[e][i];
-        
-        // compute out flows ...........................................   
-        for(e=0;e<numEnsemble;e++)
-	        for(j=0;j<nOut;j++){
-	        	for(k=0;k<numVehicleTypes;k++){
-	        		outFlow[e][j][k] = 0d;
-	            	for(i=0;i<nIn;i++){
-	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);	            		
-	            	}
+	        	for(d=0;d<numDNetworks;d++)
+		            for(k=0;k<numVehicleTypes;k++)
+		                inDemand[e][i][d][k] /= applyratio[i];
+        	
+	        // compute out flows ...........................................  
+	        for(j=0;j<nOut;j++)
+	        	for(d=0;d<numDNetworks;d++)
+		        	for(k=0;k<numVehicleTypes;k++)
+		        		outFlow[e][j][d][k] = 0d;
+	        
+	        for(d=0;d<numDNetworks;d++){
+	        	for(j=0;j<dn2outlinkindex.get(d).size();j++){
+	        		o_index = dn2outlinkindex.get(d).get(j);
+	        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
+	        			i_index = dn2inlinkindex.get(d).get(i);	
+	        			for(k=0;k<numVehicleTypes;k++)
+	        				outFlow[e][o_index][d][k] += inDemand[e][i_index][d][k]*splitratio.getValue(d,i,j,k);
+	        		}
 	        	}
 	        }
+        }
+        
+        
+//        for(e=0;e<numEnsemble;e++)
+//	        for(i=0;i<nIn;i++)
+//	        	applyratio[e][i] = Double.NEGATIVE_INFINITY;
+        
+//        for(e=0;e<numEnsemble;e++)
+//	        for(j=0;j<nOut;j++){
+//	        	
+//	        	// re-compute known output demands .........................
+//				outDemandKnown[e][j] = 0d;
+//	            for(i=0;i<nIn;i++)
+//	            	for(k=0;k<numVehicleTypes;k++)
+//	           		outDemandKnown[e][j] += inDemand[e][i][k]*splitratio.get(i,j,k);
+//	            
+//	            // compute and sort output demand/supply ratio .............
+//	            if(SiriusMath.greaterthan(outSupply[e][j],0d))
+//	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
+//	            else
+//	            	dsratio[e][j] = 1d;
+//	            
+//	            // reflect ratios back on inputs
+//	            for(i=0;i<nIn;i++)
+//	            	if(iscontributor[i][j])
+//	            		applyratio[e][i] = Math.max(dsratio[e][j],applyratio[e][i]);
+//	            	
+//	        }
+//
+//        // scale down input demands
+//        for(e=0;e<numEnsemble;e++)
+//	        for(i=0;i<nIn;i++)
+//	            for(k=0;k<numVehicleTypes;k++)
+//	                inDemand[e][i][k] /= applyratio[e][i];
+        
+//        // compute out flows ...........................................   
+//        for(e=0;e<numEnsemble;e++)
+//	        for(j=0;j<nOut;j++){
+//	        	for(k=0;k<numVehicleTypes;k++){
+//	        		outFlow[e][j][k] = 0d;
+//	            	for(i=0;i<nIn;i++){
+//	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);	            		
+//	            	}
+//	        	}
+//	        }
     }
 
+	/** REMOVING THIS TEMPORARILY 
     private void resolveUnassignedSplits_A(){
     	
     	int e,i,j,k;
@@ -633,18 +761,18 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		            
 		            // distribute remaining splits proportionally to supplies
 		            if(remainingSplit>0){
-		            	/*
-		            	double totalcapacity = 0f;
-		            	double splitforeach;
-	                    for(Integer jj : unknownind)
-	                    	totalcapacity += output_link[jj].capacity;
-	                    for(Integer jj : unknownind){
-	                    	splitforeach = remainingSplit*output_link[jj].capacity/totalcapacity;
-	                    	sr_new[jj] += splitforeach;
-	                    	outDemandKnown[jj] += inDemand[i][k]*splitforeach;
-	                    }
-	                    remainingSplit = 0;
-	                    */
+		            	
+//		            	double totalcapacity = 0f;
+//		            	double splitforeach;
+//	                    for(Integer jj : unknownind)
+//	                    	totalcapacity += output_link[jj].capacity;
+//	                    for(Integer jj : unknownind){
+//	                    	splitforeach = remainingSplit*output_link[jj].capacity/totalcapacity;
+//	                    	sr_new[jj] += splitforeach;
+//	                    	outDemandKnown[jj] += inDemand[i][k]*splitforeach;
+//	                    }
+//	                    remainingSplit = 0;
+	                    
 		            	double totalsupply = 0f;
 		            	double splitforeach;
 	                    for(Integer jj : unknownind)
@@ -665,6 +793,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
     	}
     
     }
+    */
 
     /*
     private Float3DMatrix resolveUnassignedSplits_B(SR){
@@ -753,7 +882,8 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
     }
 */
     
-    /*
+
+/*
     private Float3DMatrix resolveUnassignedSplits_C(SR){
     	for(int i=0;i<nIn;i++){
 	        for(int k=0;k<nTypes;k++){
@@ -768,6 +898,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
     	}
     }    
     */
+	
     
 	/////////////////////////////////////////////////////////////////////
 	// public API

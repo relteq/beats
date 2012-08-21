@@ -17,17 +17,17 @@ final class Double3DMatrix {
 	private int nOut;			// [2nd dimension] number of columns
 	private int nVTypes;		// [3rd dimension] number of slices
 	private boolean isempty;	// true if there is no data;
-	private Double [][][] data;
+	private double [][][] data;
     
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
     
-    public Double3DMatrix(int nIn,int nOut,int nVTypes,Double val) {
+    public Double3DMatrix(int nIn,int nOut,int nVTypes,double val) {
     	this.nIn = nIn;
     	this.nOut = nOut;
     	this.nVTypes = nVTypes;
-    	data = new Double[nIn][nOut][nVTypes];
+    	data = new double[nIn][nOut][nVTypes];
     	for(int i=0;i<nIn;i++)
         	for(int j=0;j<nOut;j++)
             	for(int k=0;k<nVTypes;k++)
@@ -79,7 +79,7 @@ final class Double3DMatrix {
 				numtokens = slicesXYZ.countTokens();
 				if(nVTypes==0){ // first time here
 					nVTypes = numtokens;
-					data = new Double[nIn][nOut][nVTypes];
+					data = new double[nIn][nOut][nVTypes];
 				}
 				else{
 					if(nVTypes!=numtokens){
@@ -91,7 +91,7 @@ final class Double3DMatrix {
 				k=0;
 				while (slicesXYZ.hasMoreTokens() && issquare) {
 					try {
-						Double value = Double.parseDouble(slicesXYZ.nextToken());
+						double value = Double.parseDouble(slicesXYZ.nextToken());
 						if(value>=0){
 							data[i][j][k] = value;
 							allnan = false;
@@ -137,7 +137,7 @@ final class Double3DMatrix {
     	nVTypes = x[0][0].length;
     	if(nVTypes==0)
     		return;
-    	data = new Double[nIn][nOut][nVTypes];
+    	data = new double[nIn][nOut][nVTypes];
     	for(int i=0;i<nIn;i++)
         	for(int j=0;j<nOut;j++)
             	for(int k=0;k<nVTypes;k++)
@@ -165,12 +165,12 @@ final class Double3DMatrix {
 		return nVTypes;
 	}
 
-	public Double [][][] getData() {
+	public double [][][] getData() {
 		return data;
 	}
 	
-	public Double [][][] cloneData() {
-		Double [][][] cData = new Double [nIn][nOut][nVTypes];
+	public double [][][] cloneData() {
+		double [][][] cData = new double [nIn][nOut][nVTypes];
 		int i,j,k;
 		for(i=0;i<nIn;i++)
 			for(j=0;j<nOut;j++)
@@ -179,14 +179,14 @@ final class Double3DMatrix {
 		return cData;
 	}
 
-	public Double get(int in_index,int out_index,int vt_index){
+	public double get(int in_index,int out_index,int vt_index){
     	if(isempty)
     		return Double.NaN;
     	else
     		return data[in_index][out_index][vt_index];
     }
 	
-	public Double getSumOverTypes(int i,int j){
+	public double getSumOverTypes(int i,int j){
 		double sum = 0.0;
 		for(int k=0;k<data[i][j].length;k++)
 			sum += data[i][j][k];
@@ -224,7 +224,7 @@ final class Double3DMatrix {
     	data[in_index][out_index][vt_index] = f;
     }
     	
-	public void setAllVehicleTypes(int i,int j,Double [] f){
+	public void setAllVehicleTypes(int i,int j,double [] f){
     	if(isempty)
     		return;
 		for(int k=0;k<nVTypes;k++)
@@ -251,9 +251,9 @@ final class Double3DMatrix {
     				data[i][j][k] += value;	
     }
     
-    public void copydata(Double3DMatrix in) throws SiriusException {
+    public void copydata(Double3DMatrix in) {
     	if(in.nIn!=nIn || in.nOut!=nOut || in.nVTypes!=nVTypes)
-    		throw new SiriusException("Attempt to use copydata with non-commensurate matrices.");
+    		return;
     	int i,j,k;
     	for(i=0;i<nIn;i++)
     		for(j=0;j<nOut;j++)
@@ -272,7 +272,7 @@ final class Double3DMatrix {
     	for(i=0;i<nIn;i++)
     		for(j=0;j<nOut;j++)
     			for(k=0;k<nVTypes;k++)
-    				if(data[i][j][k].isNaN())
+    				if(Double.isNaN(data[i][j][k]))
     					return true;
     	return false;
     }

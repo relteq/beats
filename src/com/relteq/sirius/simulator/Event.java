@@ -195,6 +195,9 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 			return;
 		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		X.copydata(node.splitratio);
+		
+		// NOTE: DO WE NEED TO NORMALIZE THIS SR MATRIX?
+		
 		for(int j=0;j<node.getnOut();j++)
 			X.set(inputindex, j,vehicletypeindex,splitrow.get(j));
 		if(!node.validateSplitRatioMatrix(X))

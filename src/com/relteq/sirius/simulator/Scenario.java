@@ -121,6 +121,12 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 				destination_networks.add(x);
 			}
 		}
+
+		// construct maps between link and node flow channels
+		if(networkList!=null)
+			for( com.relteq.sirius.jaxb.Network network : networkList.getNetwork() )
+				((Network) network).constructLinkNodeMaps();
+		
 		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(sensorList!=null){

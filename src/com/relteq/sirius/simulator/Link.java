@@ -29,14 +29,16 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	// destinations used by this link (populated by DestinationNetwork.populate)
 	/** @y.exclude */ 	protected int numDNetworks = 0;	// number of destinations that use this link
 	/** @y.exclude */ 	protected ArrayList<Integer> myDNindex = new  ArrayList<Integer>();	// map to global destination index
+	/** @y.exclude */ 	protected ArrayList<Integer> dn_endNodeMap = new  ArrayList<Integer>();	// map to channel in the end node
+	/** @y.exclude */ 	protected ArrayList<Integer> dn_beginNodeMap = new  ArrayList<Integer>();	// map to channel in the begin node
 	
 	// flow into the link
-	/** @y.exclude */ 	protected Double [][][] inflow;    		// [veh]	numEnsemble x numDNetworks x numVehTypes
-	/** @y.exclude */ 	protected Double [][] sourcedemand;		// [veh] 	numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][][] inflow;    		// [veh]	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][] sourcedemand;		// [veh] 	numDNetworks x numVehTypes
     
     // demand and actual flow out of the link   
-	/** @y.exclude */ 	protected Double [][][] outflowDemand;  // [veh] 	numEnsemble x numDNetworks x numVehTypes
-	/** @y.exclude */ 	protected Double [][][] outflow;    	// [veh]	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][][] outflowDemand;  // [veh] 	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][][] outflow;    	// [veh]	numEnsemble x numDNetworks x numVehTypes
     
     // contoller
 	/** @y.exclude */ 	protected int control_maxflow_index;
@@ -44,15 +46,15 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Controller myFlowController;
 	/** @y.exclude */ 	protected Controller mySpeedController;
    
-	/** @y.exclude */ 	private Double [][][] density;    	// [veh]	numEnsemble x numDNetworks x numVehTypes
-	/** @y.exclude */ 	private Double [] totaldensity;    	// [veh]	numEnsemble
+	/** @y.exclude */ 	private double [][][] density;    	// [veh]	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	private double [] totaldensity;    	// [veh]	numEnsemble
 	
-	/** @y.exclude */ 	protected Double [] spaceSupply;    // [veh]	numEnsemble
+	/** @y.exclude */ 	protected double [] spaceSupply;    // [veh]	numEnsemble
 	/** @y.exclude */ 	protected boolean issource; 		// [boolean]
 	/** @y.exclude */ 	protected boolean issink;     		// [boolean]
-	/** @y.exclude */ 	protected Double [][][] cumulative_density;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
-	/** @y.exclude */ 	protected Double [][][] cumulative_inflow;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
-	/** @y.exclude */ 	protected Double [][][] cumulative_outflow;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][][] cumulative_density;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][][] cumulative_inflow;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
+	/** @y.exclude */ 	protected double [][][] cumulative_outflow;	// [veh] 	numEnsemble x numDNetworks x numVehTypes
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -164,8 +166,10 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected void setSourcedemandFromVeh(Double[][] sourcedemand) {
-		this.sourcedemand = sourcedemand;		
+	protected void setSourcedemandFromVeh(int destnetindex , double[] value) {
+		if(destnetindex<0 || destnetindex>numDNetworks-1)
+			return;
+		sourcedemand[destnetindex] = value;		
 	}
 	
 	// this is used by CapacityProfile only.
@@ -180,6 +184,20 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void addDestinationNetwork(int dest_index){
 		numDNetworks++;
 		myDNindex.add(dest_index);
+	}
+	
+	protected int getDestinationNetworkIdFor(String destnetid){
+		if(destnetid==null && myNetwork.myScenario.has_background_flow)
+			return 0;
+		
+		for(int i=0;i<numDNetworks;i++){
+			if(myDNindex.get(i)<0)
+				continue;
+			DestinationNetworkBLA destnet = myNetwork.myScenario.destination_networks.get(myDNindex.get(i));
+			if(destnet.dnetwork.getId().equals(destnetid))
+				return i;
+		}
+		return -1;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -351,7 +369,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
-			density = new Double[numEnsemble][numDNetworks][numVehicleTypes];
+			density = new double[numEnsemble][numDNetworks][numVehicleTypes];
 			totaldensity = SiriusMath.zeros(numEnsemble);
 			if(myScenario.getInitialDensitySet()!=null)
 				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(getId(),myDNindex);	
@@ -428,6 +446,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return this.getId();
+	}	
+
 	// Link geometry ....................
 	
 	/** network that contains this link */
@@ -473,7 +496,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * @param ensemble Ensemble number 
 	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
 	 */
-	public Double[][] getDensityInVeh(int ensemble) {
+	public double[][] getDensityInVeh(int ensemble) {
 		try{
 			return SiriusMath.makecopy(density[ensemble]);
 		} catch(Exception e){
@@ -510,7 +533,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * portion of the input file. 
 	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public Double[][] getOutflowInVeh(int ensemble) {
+	public double[][] getOutflowInVeh(int ensemble) {
 		try{
 			return SiriusMath.makecopy(outflow[ensemble]);
 		} catch(Exception e){
@@ -538,7 +561,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * portion of the input file. 
 	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public Double[][] getInflowInVeh(int ensemble) {
+	public double[][] getInflowInVeh(int ensemble) {
 		try{
 			return SiriusMath.makecopy(inflow[ensemble]);
 		} catch(Exception e){

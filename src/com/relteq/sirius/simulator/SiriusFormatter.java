@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class SiriusFormatter {
 
-	public static String csv(Double [] V,String delim){
+	public static String csv(double [] V,String delim){
 		String str="";
 		if(V.length==0)
 			return str;
@@ -17,7 +17,7 @@ public class SiriusFormatter {
 		return str;
 	}
 
-	public static String csv(Double [][] V,String delim1,String delim2){
+	public static String csv(double [][] V,String delim1,String delim2){
 		String str="";
 		if(V.length==0)
 			return str;
