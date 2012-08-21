@@ -11,15 +11,15 @@ package com.relteq.sirius.simulator;
 */
 public interface InterfaceSensor {
 
-	/** Measured density per vehicle type in veh/mile. 
-	 * 
-	 * <p> The output array contains measured densities.
-	 * The array is organized by vehicle type in the order in which they appear in the 
-	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
-	 * 
-	 * @return Array of densities.
-	 */
-	public double[] getDensityInVPM(int ensemble);
+//	/** Measured density per vehicle type in veh/mile. 
+//	 * 
+//	 * <p> The output array contains measured densities.
+//	 * The array is organized by vehicle type in the order in which they appear in the 
+//	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
+//	 * 
+//	 * @return Array of densities.
+//	 */
+//	public double[] getDensityInVPM(int ensemble);
 	
 	/** Measured total density in veh/mile. 
 	 * 
@@ -38,15 +38,15 @@ public interface InterfaceSensor {
 	 */
 	public double getTotalDensityInVeh(int ensemble);
 	
-	/** Measured flow per vehicle type in veh/hr. 
-	 * 
-	 * <p> The output array contains measured flows.
-	 * The array is organized by vehicle type in the order in which they appear in the 
-	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
-	 * 
-	 * @return Array of flows.
-	 */
-	public double[] getFlowInVPH(int ensemble);
+//	/** Measured flow per vehicle type in veh/hr. 
+//	 * 
+//	 * <p> The output array contains measured flows.
+//	 * The array is organized by vehicle type in the order in which they appear in the 
+//	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
+//	 * 
+//	 * @return Array of flows.
+//	 */
+//	public double[] getFlowInVPH(int ensemble);
 	
 	/** Measured total flow in veh/hr. 
 	 * 

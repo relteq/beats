@@ -540,17 +540,19 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return numEnsemble;
 	}
 
+	
 	/** Destination network names.
 	 * @return	Array of strings with the names of the destination networks.
 	 */
 	public String [] getDestinationNetworkNames(){
-		String [] dnnames = new String [asdfdsaf];
-		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-			vehtypenames[0] = Defaults.vehicleType;
-		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
-		return vehtypenames;
+		String [] dnnames = new String [numDenstinationNetworks];
+		for(int i=0;i<destination_networks.size();i++){
+			if(destination_networks.get(i).dnetwork==null)
+				dnnames[i] = "background";
+			else
+				dnnames[i] = destination_networks.get(i).dnetwork.getId();
+		}
+		return dnnames;
 	}
 	
 	/** Vehicle type names.

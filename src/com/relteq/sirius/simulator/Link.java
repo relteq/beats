@@ -491,15 +491,21 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	// Link state .......................
 
 	/** Density of vehicles per destination network and vehicle type in normalized units [vehicles]. 
-	 * The return matrix is indexed first by destination network in the order given by XXX, and second
-	 * by vehicle type in the order given by XXX. 
+	 * The return matrix is indexed first by destination network in the order given by Scenaroi.getDestinationNetworkNames(), and second
+	 * by vehicle type in the order given by Scenario.getVehicleTypeNames(). 
 	 * @param ensemble Ensemble number 
 	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
 	 */
 	public double[][] getDensityInVeh(int ensemble) {
 		try{
-			//xxx
-			return SiriusMath.makecopy(density[ensemble]);
+			int numDN = myNetwork.myScenario.numDenstinationNetworks;
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [][] dens = SiriusMath.zeros(numDN,numVT);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					dens[myDNindex.get(d)][k] = density[ensemble][d][k];
+			return dens;
 		} catch(Exception e){
 			return null;
 		}
@@ -534,9 +540,16 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 * portion of the input file. 
 	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public double[][] getOutflowInVeh(int ensemble) {
+	public double [][] getOutflowInVeh(int ensemble) {
 		try{
-			return SiriusMath.makecopy(outflow[ensemble]);
+			int numDN = myNetwork.myScenario.numDenstinationNetworks;
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [][] f = SiriusMath.zeros(numDN,numVT);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					f[myDNindex.get(d)][k] = outflow[ensemble][d][k];
+			return f;
 		} catch(Exception e){
 			return null;
 		}
@@ -564,7 +577,14 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	 */
 	public double[][] getInflowInVeh(int ensemble) {
 		try{
-			return SiriusMath.makecopy(inflow[ensemble]);
+			int numDN = myNetwork.myScenario.numDenstinationNetworks;
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [][] f = SiriusMath.zeros(numDN,numVT);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					f[myDNindex.get(d)][k] = inflow[ensemble][d][k];
+			return f;
 		} catch(Exception e){
 			return null;
 		}	

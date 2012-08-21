@@ -42,13 +42,13 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
 
-	/** Default implementation of {@link InterfaceSensor#getDensityInVPM()} 
-	 * @return <code>null</code>
-	 * */
-	@Override
-	public double[] getDensityInVPM(int ensemble) {
-		return null;
-	}
+//	/** Default implementation of {@link InterfaceSensor#getDensityInVPM()} 
+//	 * @return <code>null</code>
+//	 * */
+//	@Override
+//	public double[] getDensityInVPM(int ensemble) {
+//		return null;
+//	}
 
 	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVPM()} 
 	 * @return <code>Double.NaN</code>
@@ -58,13 +58,13 @@ public class Sensor extends com.relteq.sirius.jaxb.Sensor implements InterfaceCo
 		return Double.NaN;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getFlowInVPH()} 
-	 * @return <code>null</code>
-	 * */
-	@Override
-	public double[] getFlowInVPH(int ensemble) {
-		return null;
-	}
+//	/** Default implementation of {@link InterfaceSensor#getFlowInVPH()} 
+//	 * @return <code>null</code>
+//	 * */
+//	@Override
+//	public double[] getFlowInVPH(int ensemble) {
+//		return null;
+//	}
 
 	/** Default implementation of {@link InterfaceSensor#getTotalFlowInVPH()} 
 	 * @return <code>Double.NaN</code>
