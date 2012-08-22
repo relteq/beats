@@ -20,8 +20,9 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 													// each 4D matrix contains information per destination network, inlink, outlink, vehicle type
 	
 	protected Double4DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
-		
-	protected boolean isdone; 
+
+	protected boolean isdone; 						// true once the last time step has been reached
+	protected boolean has_unknown_splits;			// true if the profile contains unknown splits
 	protected int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
@@ -48,7 +49,6 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		
 		profile = new ArrayList<Double4DMatrix>();
 		
-
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
@@ -59,6 +59,9 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
 			
 			Double2DMatrix data = new Double2DMatrix(sr.getContent());
+			
+			if(data.isEmpty())
+				continue;
 			
 			// extend the profile if necessary
 			int numTime = data.getnTime();
@@ -90,9 +93,10 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		}
 		
 		// normalize
+		has_unknown_splits = false;
 		for(k=0;k<profile.size();k++)
-			myNode.normalizeSplitRatioMatrix(profile.get(k));
-		
+			has_unknown_splits |= myNode.normalizeSplitRatioMatrix(profile.get(k));
+
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
@@ -113,7 +117,8 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		currentSplitRatio = new Double4DMatrix(myNode,Double.NaN);
 		
 		// inform the node
-		myNode.setHasSRprofile(true);
+		if(!profile.isEmpty())
+			myNode.setHasSRprofile(true);
 		
 		
 	}
@@ -139,7 +144,11 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			SiriusErrorLog.addWarning("Unknown node with id=" + getNodeId() + " in split ratio profile.");
 			return; // this profile will be skipped but does not cause invalidation.
 		}
-		
+	
+		// TEMPORARY UNTIL WE PUT UNKNOWN SPLIT CALCULATION BACK IN 
+		if(has_unknown_splits)
+			SiriusErrorLog.addError("The split ratio profile for node id=" + getNodeId() + " contains unknown values.");
+
 		// check link ids
 		int index;
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
@@ -186,6 +195,8 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 	protected void update() {
 		if(profile==null)
+			return;
+		if(profile.isEmpty())
 			return;
 		if(myNode==null)
 			return;

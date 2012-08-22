@@ -133,6 +133,8 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	protected void update(boolean forcesample) {
 		if(myLinkOrigin==null)
 			return;
+		if(demand_nominal.isEmpty())
+			return;
 		if(!forcesample)
 			if(isdone || demand_nominal.isEmpty())
 				return;

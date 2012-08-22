@@ -35,97 +35,98 @@ final class Double3DMatrix {
     	this.isempty = nIn==0 && nOut==0 && nVTypes==0;
     }
     
-    public Double3DMatrix(String str) {
-
-    	int numtokens,i,j,k;
-		boolean issquare = true;
-    	nIn = 0;
-    	nOut = 0;
-    	nVTypes = 0;
-    	
-    	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
-    		isempty = true;
-			return;
-    	}
-    	
-    	str.replaceAll("\\s","");
-    	
-    	// populate data
-		StringTokenizer slicesX = new StringTokenizer(str, ";");
-		nIn = slicesX.countTokens();
-		i=0;
-		boolean allnan = true;
-		while (slicesX.hasMoreTokens() && issquare) {
-			String sliceX = slicesX.nextToken();
-			StringTokenizer slicesXY = new StringTokenizer(sliceX, ",");
-			
-			// evaluate nOut, check squareness
-			numtokens = slicesXY.countTokens();
-			if(nOut==0) // first time here
-				nOut = numtokens;
-			else{
-				if(nOut!=numtokens){
-					issquare = false;
-					break;
-				}
-			}
-			
-			j=0;
-			while (slicesXY.hasMoreTokens() && issquare) {
-				String sliceXY = slicesXY.nextToken();
-				StringTokenizer slicesXYZ = new StringTokenizer(sliceXY,":");
-				
-				// evaluate nVTypes, check squareness
-				numtokens = slicesXYZ.countTokens();
-				if(nVTypes==0){ // first time here
-					nVTypes = numtokens;
-					data = new double[nIn][nOut][nVTypes];
-				}
-				else{
-					if(nVTypes!=numtokens){
-						issquare = false;
-						break;
-					}
-				}
-				
-				k=0;
-				while (slicesXYZ.hasMoreTokens() && issquare) {
-					try {
-						double value = Double.parseDouble(slicesXYZ.nextToken());
-						if(value>=0){
-							data[i][j][k] = value;
-							allnan = false;
-						}
-						else
-							data[i][j][k] = Double.NaN;
-					} catch (NumberFormatException e) {
-						data[i][j][k] = Double.NaN;
-					}
-					k++;
-				}
-				j++;
-			}
-			i++;
-		}
-
-		if(allnan){
-			nIn=0;
-			nOut=0;
-			nVTypes=0;
-			data = null;
-		}
-		
-		if(!issquare){
-			SiriusErrorLog.addError("Data is not square.");
-			nIn=0;
-			nOut=0;
-			nVTypes=0;
-			data = null;
-		}
-
-    	this.isempty = nIn==0 && nOut==0 && nVTypes==0;
-		
-    }
+// THIS SHOULD NOT BE USED.
+//    public Double3DMatrix(String str) {
+//
+//    	int numtokens,i,j,k;
+//		boolean issquare = true;
+//    	nIn = 0;
+//    	nOut = 0;
+//    	nVTypes = 0;
+//    	
+//    	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
+//    		isempty = true;
+//			return;
+//    	}
+//    	
+//    	str.replaceAll("\\s","");
+//    	
+//    	// populate data
+//		StringTokenizer slicesX = new StringTokenizer(str, ";");
+//		nIn = slicesX.countTokens();
+//		i=0;
+//		boolean allnan = true;
+//		while (slicesX.hasMoreTokens() && issquare) {
+//			String sliceX = slicesX.nextToken();
+//			StringTokenizer slicesXY = new StringTokenizer(sliceX, ",");
+//			
+//			// evaluate nOut, check squareness
+//			numtokens = slicesXY.countTokens();
+//			if(nOut==0) // first time here
+//				nOut = numtokens;
+//			else{
+//				if(nOut!=numtokens){
+//					issquare = false;
+//					break;
+//				}
+//			}
+//			
+//			j=0;
+//			while (slicesXY.hasMoreTokens() && issquare) {
+//				String sliceXY = slicesXY.nextToken();
+//				StringTokenizer slicesXYZ = new StringTokenizer(sliceXY,":");
+//				
+//				// evaluate nVTypes, check squareness
+//				numtokens = slicesXYZ.countTokens();
+//				if(nVTypes==0){ // first time here
+//					nVTypes = numtokens;
+//					data = new double[nIn][nOut][nVTypes];
+//				}
+//				else{
+//					if(nVTypes!=numtokens){
+//						issquare = false;
+//						break;
+//					}
+//				}
+//				
+//				k=0;
+//				while (slicesXYZ.hasMoreTokens() && issquare) {
+//					try {
+//						double value = Double.parseDouble(slicesXYZ.nextToken());
+//						if(value>=0){
+//							data[i][j][k] = value;
+//							allnan = false;
+//						}
+//						else
+//							data[i][j][k] = Double.NaN;
+//					} catch (NumberFormatException e) {
+//						data[i][j][k] = Double.NaN;
+//					}
+//					k++;
+//				}
+//				j++;
+//			}
+//			i++;
+//		}
+//
+//		if(allnan){
+//			nIn=0;
+//			nOut=0;
+//			nVTypes=0;
+//			data = null;
+//		}
+//		
+//		if(!issquare){
+//			SiriusErrorLog.addError("Data is not square.");
+//			nIn=0;
+//			nOut=0;
+//			nVTypes=0;
+//			data = null;
+//		}
+//
+//    	this.isempty = nIn==0 && nOut==0 && nVTypes==0;
+//		
+//    }
      
     public Double3DMatrix(double [][][] x){
     	nIn = x.length;

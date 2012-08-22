@@ -45,14 +45,15 @@ public final class Double2DMatrix {
     	this.isempty = nTime==0 && nVTypes==0;
     }
     
-    // initialize a 2D matrix from comma/colon separated string of positive numbers
-    // negative numbers get replaced with nan.
-    // Example: "0.1:0.2:0.3,0.4:0.5:0.6" defines profiles for 3 vehicle types and
-    // 2 time intervals. type 1: [0.1 0.4], type 2: [0.2 0.5], type 3: [0.3 0.6]
+    /** initialize a 2D matrix from comma/colon separated string of positive number 
+     * negative numbers get replaced with nan.
+     * Example: "0.1:0.2:0.3,0.4:0.5:0.6" defines profiles for 3 vehicle types and
+     * 2 time intervals. type 1: [0.1 0.4], type 2: [0.2 0.5], type 3: [0.3 0.6]
+     */
     public Double2DMatrix(String str) {
 
     	int numtokens,i,j;
-		boolean issquare = true;
+		boolean isrectangular = true;
     	nTime = 0;
     	nVTypes = 0;
     	
@@ -68,7 +69,7 @@ public final class Double2DMatrix {
 		nTime = slicesX.countTokens();
 		i=0;
 		boolean allnan = true;
-		while (slicesX.hasMoreTokens() && issquare) {
+		while (slicesX.hasMoreTokens() && isrectangular) {
 			String sliceX = slicesX.nextToken();
 			StringTokenizer slicesXY = new StringTokenizer(sliceX, ":");
 			
@@ -80,13 +81,13 @@ public final class Double2DMatrix {
 			}
 			else{
 				if(nVTypes!=numtokens){
-					issquare = false;
+					isrectangular = false;
 					break;
 				}
 			}
 			
 			j=0;
-			while (slicesXY.hasMoreTokens() && issquare) {				
+			while (slicesXY.hasMoreTokens() && isrectangular) {				
 				try {
 					double value = Double.parseDouble(slicesXY.nextToken());
 					if(value>=0){
@@ -103,20 +104,21 @@ public final class Double2DMatrix {
 			i++;
 		}
 		
-		if(allnan){
-			data = null;
-	    	isempty = true;
-			return;
-		}
-		
-		if(!issquare){
-			SiriusErrorLog.addError("Data is not square.");
-			data = null;
-	    	isempty = true;
-			return;
-		}
-		
     	isempty = nTime==0 && nVTypes==0;
+		
+		if(allnan)
+	    	isempty = true;
+		
+		if(!isrectangular){
+			SiriusErrorLog.addError("Data is not square.");
+	    	isempty = true;
+		}
+		
+    	if(isempty){
+    		data = null;
+	    	nTime = 0;
+	    	nVTypes = 0;	
+    	}
 		
     }
      

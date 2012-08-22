@@ -486,10 +486,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** Goes through the 4D matrix and replaces single NaNs in each row with 
 	 * 1-sum(row). Also it scales the row sum to 1. Multiple NaNs are left unaltered.
 	 * @y.exclude */ 	
-    protected void normalizeSplitRatioMatrix(Double4DMatrix SR){
+    protected boolean normalizeSplitRatioMatrix(Double4DMatrix SR){
 
     	int d,i,j,k;
-		boolean hasNaN;
+		boolean anyHasNaN = false;
 		int countNaN;
 		int idxNegative;
 		double sum;
@@ -499,48 +499,52 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 			
 			for(i=0;i<X.getnIn();i++){
 	    		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
-					hasNaN = false;
+	    			boolean thisHasNaN = false;
 					countNaN = 0;
 					idxNegative = -1;
 					sum = 0.0f;
-					for (j = 0; j < X.getnOut(); j++)
+					for (j = 0; j < X.getnOut(); j++){
 						if (Double.isNaN(X.get(i,j,k))) {
 							countNaN++;
 							idxNegative = j;
 							if (countNaN > 1)
-								hasNaN = true;
+								thisHasNaN = true;
 						}
 						else
 							sum += X.get(i,j,k);
+					}
+					
+					anyHasNaN |= thisHasNaN;
 					
 					if (countNaN==1) {
 						X.set(i,idxNegative,k,Math.max(0f, (1-sum)));
 						sum += X.get(i,idxNegative,k);
 					}
 					
-					if ( !hasNaN && SiriusMath.equals(sum,0.0) ) {	
+					if ( !thisHasNaN && SiriusMath.equals(sum,0.0) ) {	
 						X.set(i,0,k,1d);
 						//for (j=0; j<n2; j++)			
 						//	data[i][j][k] = 1/((double) n2);
 						continue;
 					}
 					
-					if ((!hasNaN) && (sum<1.0)) {
+					if ((!thisHasNaN) && (sum<1.0)) {
 						for (j=0;j<X.getnOut();j++)
 							X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
 						continue;
 					}
 					
-					if (sum >= 1.0)
+					if (sum >= 1.0){
 						for (j=0; j<X.getnOut(); j++)
 							if (Double.isNaN(X.get(i,j,k)))
 								X.set(i,j,k,0d);
 							else
 								X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));
+					}
 	    		}
 			}
-			
 		}
+		return anyHasNaN;
     }
     
 	/////////////////////////////////////////////////////////////////////

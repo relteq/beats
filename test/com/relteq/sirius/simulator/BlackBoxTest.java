@@ -10,9 +10,9 @@ import org.junit.Test;
 public class BlackBoxTest {
 	
 	private static String [] config_names = {
-											 "_scenario_2009_02_12",
-											 "Albany & Berkeley_sirius",
-										 	 "_smalltest_multipletypes",
+											 //"_scenario_2009_02_12",
+											 //"Albany & Berkeley_sirius",
+										 	 //"_smalltest_multipletypes",
 											 "complete",
 											 "test_event",
 		                                     "_scenario_constantsplits" };

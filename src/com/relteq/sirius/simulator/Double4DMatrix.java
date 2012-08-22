@@ -55,5 +55,4 @@ public class Double4DMatrix {
 		return data[dn_index].getSumOverTypes(in_index,out_index);
 	}
 
-
 }
