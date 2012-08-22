@@ -76,7 +76,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 					value = data.get(k,j);
 					
 					// destination network index in the node
-					dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId());	
+					dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
 					if(dn_node_index<0)
 						continue; 
 					

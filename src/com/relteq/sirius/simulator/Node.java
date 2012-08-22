@@ -313,6 +313,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		if(isTerminal)
 			return;
 		
+		// TEMPORARY WHILE THERE IS NO PROCEDURE FOR UNKNOWN SPLITS
+		if(!isSingleOut && !hasSRprofile)
+			SiriusErrorLog.addError("No split ratio profile assigned to node id=" + getId());
+
 		if(output_link!=null)
 			for(Link link : output_link)
 				if(link==null)
@@ -562,18 +566,19 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
         // input i contributes to output j .............................
     	for(i=0;i<nIn;i++)
         	for(j=0;j<nOut;j++)
-        		iscontributor[i][j] = false;
+        		iscontributor[i][j] = isSingleOut ? true : false;
     	
-        for(d=0;d<numDNetworks;d++){
-        	for(j=0;j<dn2outlinkindex.get(d).size();j++){
-        		o_index = dn2outlinkindex.get(d).get(j);
-        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
-        			i_index = dn2inlinkindex.get(d).get(i);
-        			double value = splitratio.getSumOverTypes(d,i,j);
-        			iscontributor[i_index][o_index] |= value>0;
-        		}
-        	}
-        }   
+    	if(!isSingleOut)
+	        for(d=0;d<numDNetworks;d++){
+	        	for(j=0;j<dn2outlinkindex.get(d).size();j++){
+	        		o_index = dn2outlinkindex.get(d).get(j);
+	        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
+	        			i_index = dn2inlinkindex.get(d).get(i);
+	        			double value = splitratio.getSumOverTypes(d,i,j);
+	        			iscontributor[i_index][o_index] |= value>0;
+	        		}
+	        	}
+	        }   
         
         double [] applyratio = new double[nIn];
 
@@ -593,7 +598,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
 	        			i_index = dn2inlinkindex.get(d).get(i);
 		            	for(k=0;k<numVehicleTypes;k++)
-		            		outDemandKnown[e][o_index] += inDemand[e][i_index][d][k]*splitratio.getValue(d,i,j,k);
+		            		if(dn_isSingleOut.get(d))
+		            			outDemandKnown[e][o_index] += inDemand[e][i_index][d][k];
+		            		else
+		            			outDemandKnown[e][o_index] += inDemand[e][i_index][d][k]*splitratio.getValue(d,i,j,k);
 	        		}
 	        	}
 	        }
@@ -630,7 +638,10 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        		for(i=0;i<dn2inlinkindex.get(d).size();i++){
 	        			i_index = dn2inlinkindex.get(d).get(i);	
 	        			for(k=0;k<numVehicleTypes;k++)
-	        				outFlow[e][o_index][d][k] += inDemand[e][i_index][d][k]*splitratio.getValue(d,i,j,k);
+	        				if(dn_isSingleOut.get(d))
+	        					outFlow[e][o_index][d][k] += inDemand[e][i_index][d][k];
+	        				else
+	        					outFlow[e][o_index][d][k] += inDemand[e][i_index][d][k]*splitratio.getValue(d,i,j,k);
 	        		}
 	        	}
 	        }
