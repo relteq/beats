@@ -79,11 +79,11 @@
 		<vehicle_type name="type1"/>
 	  </VehicleTypeOrder>
       <demandProfile knob="1" link_id_origin="1">50:50</demandProfile>
-      <demandProfile dt="300" knob="1" link_id_origin="4">50:50</demandProfile>
       <demandProfile dt="300" link_id_origin="1" destination_network_id="d1">50:50</demandProfile>
-      <demandProfile dt="300" knob="1" link_id_origin="1" destination_network_id="d2">50:50</demandProfile>
+      <demandProfile dt="300" link_id_origin="1" destination_network_id="d2" knob="1">50:50</demandProfile>
+	  <demandProfile dt="300" link_id_origin="4" knob="1" >50:50</demandProfile>
       <demandProfile knob="1" link_id_origin="4" destination_network_id="d1">50:50</demandProfile>
-      <demandProfile dt="300" knob="1" link_id_origin="4" destination_network_id="d2">50:50</demandProfile>
+      <demandProfile dt="300" link_id_origin="4" destination_network_id="d2" knob="1">50:50</demandProfile>
       <demandProfile knob="1" link_id_origin="4" destination_network_id="d3">50:50</demandProfile>
    </DemandProfileSet>
    <NetworkList>
