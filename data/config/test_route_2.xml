@@ -244,30 +244,15 @@
 		    <link_reference id="1" />
 		    <link_reference id="2" />
 		    <link_reference id="3" />
-		    <link_reference id="4" />
-		    <link_reference id="5" />
-		    <link_reference id="7" />
-		    <link_reference id="8" />
-		    <link_reference id="10" />
 		 </link_references>
 	  </destination_network>
-      <destination_network id="d2" link_id_destination="6">
+      <destination_network id="d2" link_id_destination="3">
 	     <link_references>
 		    <link_reference id="1" />
-		    <link_reference id="2" />
-		    <link_reference id="4" />
+		    <link_reference id="3" />
 		    <link_reference id="5" />
-		    <link_reference id="6" />
 		    <link_reference id="7" />
-		    <link_reference id="8" />
-		    <link_reference id="9" />
-		 </link_references>
-	  </destination_network>
-      <destination_network id="d3" link_id_destination="6">
-	     <link_references>
-		    <link_reference id="4" />
-		    <link_reference id="5" />
-		    <link_reference id="6" />
+		    <link_reference id="10" />
 		 </link_references>
 	  </destination_network>
    </DestinationNetworks>

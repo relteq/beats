@@ -220,7 +220,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 
 	}
 	
-	
 	/** Prepare scenario for simulation:
 	 * set the state of the scenario to the initial condition
 	 * sample profiles
@@ -316,7 +315,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -343,7 +341,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// excluded from API
 	/////////////////////////////////////////////////////////////////////
@@ -394,7 +391,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return vehicletypeindex;
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// public API: run
 	/////////////////////////////////////////////////////////////////////
@@ -419,7 +415,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		run_internal(param,numRepetitions,true,false,owr_props);
 	}
 	
-	
 	/** Run the scenario once, save output to text files.
 	 * 
 	 * <p> The scenario is reset and run once. Output files are
@@ -441,7 +436,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		run_internal(param,1,true,false,owr_props);
 	}
 
-	
 	/** Run the scenario once, return the state trajectory.
 	 * <p> The scenario is reset and run once. 
 	 * @return An object with the history of densities and flows for all links in the scenario.
@@ -452,7 +446,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		numEnsemble = 1;
 		return run_internal(param,1,false,true,null);
 	}
-	
 	
 	/** Advance the simulation <i>nsec</i> seconds.
 	 * 
@@ -473,7 +466,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// public API: save
 	/////////////////////////////////////////////////////////////////////
@@ -495,7 +487,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         	throw new SiriusException(e.getMessage());
         }
 	}
-	
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API: get
@@ -510,7 +502,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return clock.getT();
 	}
 	
-	
 	/** Time elapsed since the beginning of the simulation in seconds.
 	 * @return Simulation time in seconds after start time.
 	 */
@@ -519,7 +510,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return Double.NaN;
 		return clock.getTElapsed();
 	}
-	
 	
 	/** Current simulation time step.
 	 * @return	Integer number of time steps since the start of the simulation. 
@@ -530,14 +520,12 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return clock.getCurrentstep();
 	}
 
-	
 	/** Total number of time steps that will be simulated, regardless of the simulation mode.
 	 * @return	Integer number of time steps to simulate.
 	 */
 	public int getTotalTimeStepsToSimulate(){
 		 return clock.getTotalSteps();
 	}
-	
 	
 	/** Number of vehicle types included in the scenario.
 	 * @return Integer number of vehicle types
@@ -553,7 +541,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return numEnsemble;
 	}
 
-	
 	/** Destination network names.
 	 * @return	Array of strings with the names of the destination networks.
 	 */
@@ -609,7 +596,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return -1;
 	}
 	
-	
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 
 	 */
@@ -617,7 +603,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return simdtinseconds;
 	}
 
-	
 	/** Size of the simulation time step in hours.
 	 * @return Simulation time step in hours. 
 	 */
@@ -625,7 +610,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return simdtinhours;
 	}
 
-	
 	/** Start time of the simulation.
 	 * @return Start time in seconds. 
 	 */
@@ -636,7 +620,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			return this.clock.getStartTime();
 	}
 
-	
 	/** End time of the simulation.
 	 * @return End time in seconds. 
 	 */
@@ -646,13 +629,14 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		else
 			return this.clock.getEndTime();
 	}
-
 	
 	/** Get a reference to a controller by its id.
 	 * @param id Id of the controller.
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
 	public Controller getControllerWithId(String id){
+		if(id==null)
+			return null;
 		if(controllerset==null)
 			return null;
 		for(Controller c : controllerset.get_Controllers()){
@@ -662,12 +646,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 	
-	
 	/** Get a reference to an event by its id.
 	 * @param id Id of the event.
 	 * @return A reference to the event if it exists, <code>null</code> otherwise.
 	 */
 	public Event getEventWithId(String id){
+		if(id==null)
+			return null;
 		if(eventset==null)
 			return null;
 		for(Event e : eventset.sortedevents){
@@ -683,6 +668,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
 	public Node getNodeWithId(String id){
+		if(id==null)
+			return null;
 		if(networkList==null)
 			return null;
 		for(com.relteq.sirius.jaxb.Network network : networkList.getNetwork()){
@@ -693,13 +680,14 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 
-	
 	/** Get a reference to a link by its composite id.
 	 * 
 	 * @param id String id of the link. 
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
 	public Link getLinkWithId(String id){
+		if(id==null)
+			return null;
 		if(networkList==null)
 			return null;
 		for(com.relteq.sirius.jaxb.Network network : networkList.getNetwork()){
@@ -711,12 +699,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 
-	
 	/** Get sensor with given id.
 	 * @param id String id of the sensor.
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(String id){
+		if(id==null)
+			return null;
 		if(sensorList==null)
 			return null;
 		id.replaceAll("\\s","");
@@ -727,12 +716,13 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 	
-	
 	/** Get signal with given id.
 	 * @param id String id of the signal.
 	 * @return Signal object.
 	 */
 	public Signal getSignalWithId(String id){
+		if(id==null)
+			return null;
 		if(signalList==null)
 			return null;
 		id.replaceAll("\\s","");
@@ -743,12 +733,29 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return null;
 	}
 
-	/** Get configuration file name */
+	/** Get destination network with given id.
+	 * @param id String id of the destination network.
+	 * @return Destination netework object.
+	 */
+	public DestinationNetworkBLA getDestinationNetworkWithId(String id){
+		if(id==null)
+			return null;
+		if(destination_networks==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(DestinationNetworkBLA des : destination_networks){
+			if(des.dnetwork==null)
+				continue;
+			if(des.dnetwork.getId().equals(id))
+				return des;
+		}
+		return null;
+	}	
 	
+	/** Get configuration file name */
 	public String getConfigFilename() {
 		return configfilename;
 	}
-	
 	
 	/** Get a reference to a signal by the composite id of its node.
 	 * 
@@ -765,7 +772,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		return null;
 	}
-
 
 //	/** Get the initial density state for the network with given id.
 //	 * @param network_id String id of the network
@@ -855,7 +861,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 
-	
 	/** Add an event to the scenario.
 	 * 
 	 * <p>Events are not added if the scenario is running. This method does not validate the event.
@@ -875,8 +880,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 		return true;
 	}
-	
-	
+		
 	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
 	 * 
 	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
@@ -923,7 +927,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
         scenariolocked = true;	
 	}
 	
-	
 	/** Add a demand profile to the scenario. If a profile already exists for the 
 	 * origin link, then replace it.
 	 * @throws SiriusException 
@@ -961,7 +964,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 			demandProfileSet.getDemandProfile().add(dem);
 
 	}
-	
 	
 	/////////////////////////////////////////////////////////////////////
 	// data and calibration
@@ -1024,12 +1026,10 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		
 	}
 
-	
 	public void calibrate_fundamental_diagrams() throws SiriusException {
 		FDCalibrator.calibrate(this);
 	}
-	
-	
+		
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////	
@@ -1075,7 +1075,6 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return state;
 	}
 	
-	
 	/** advance the simulation by n steps.
 	 * @param simulationMode
 	 * @param n 				number of steps to advance.
@@ -1114,14 +1113,12 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		return true;
 	}
 	
-	
 	private void recordstate(boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
 	}
-
 
 	/////////////////////////////////////////////////////////////////////
 	// nested classes
@@ -1182,6 +1179,5 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 
 	}
-
 
 }

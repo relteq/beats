@@ -43,7 +43,7 @@ public class _test {
 			for(com.relteq.sirius.jaxb.Link jlink : scenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()){
 				Link link = (Link) jlink;
 				if(link.issource){
-					Double [][] demand = new Double [numTimes][numVehTypes];  // number of time intervals X number of vehicle types
+					double [][] demand = new double [numTimes][numVehTypes];  // number of time intervals X number of vehicle types
 					DemandProfile d = ObjectFactory.createDemandProfile(scenario,link.getId(),demand,0f,30f,1f,0f,0f);
 					demands.add(d);
 					scenario.addDemandProfile(d);
@@ -52,7 +52,7 @@ public class _test {
 			
 			// create my initial condition object
 			String [] a_link_ids = link_ids.toArray(new String[link_ids.size()]);
-			Double [][] init_density = new Double[numLinks][numVehTypes];
+			double [][] init_density = new double[numLinks][numVehTypes];
 			int i,j;
 			for(i=0;i<init_density.length;i++)
 				for(j=0;j<init_density[0].length;j++)
