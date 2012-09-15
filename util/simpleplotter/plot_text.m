@@ -1,7 +1,5 @@
 function []=plot_text(configfile,outprefix)
 
-fnformat = sprintf('%s_%%s_0.txt',outprefix);
-
 fprintf('Reading %s\n', configfile);
 scenario = xml_read(configfile);
 
@@ -16,14 +14,14 @@ outdt = dt/3600;
 clear dt
 
 % density in veh/mile
-density = load(sprintf(fnformat, 'density'));
+density = load([outprefix '_density_0.txt']);
 for i=1:length(scenario.NetworkList.network(1).LinkList.link)
     lgth = scenario.NetworkList.network(1).LinkList.link(i).ATTRIBUTE.length;
     density(:,i) = density(:,i)/lgth;
 end
 
 % flow in veh/hr
-flow = load(sprintf(fnformat, 'outflow'));
+flow = load([outprefix '_outflow_0.txt']);
 flow = flow/outdt;
 
 % speed in mile/hr

@@ -22,26 +22,26 @@
       <density link_id="8" >1.5:2.5</density>
       <density link_id="9" >1.5:2.5</density>
       <density link_id="10" >1.5:2.5</density>
-      <density link_id="1" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="2" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="3" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="4" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="5" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="6" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="7" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="8" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="9" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="10" dest_net_id="d1">1.5:2.5</density>
-      <density link_id="1" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="2" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="3" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="4" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="5" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="6" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="7" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="8" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="9" dest_net_id="d2">1.5:2.5</density>
-      <density link_id="10" dest_net_id="d2">1.5:2.5</density>
+      <density link_id="1" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="2" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="3" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="4" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="5" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="6" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="7" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="8" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="9" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="10" destination_network_id="d1">1.5:2.5</density>
+      <density link_id="1" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="2" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="3" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="4" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="5" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="6" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="7" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="8" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="9" destination_network_id="d2">1.5:2.5</density>
+      <density link_id="10" destination_network_id="d2">1.5:2.5</density>
    </InitialDensitySet>
    <SplitRatioProfileSet>
 	  <VehicleTypeOrder>

@@ -193,7 +193,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 			// read destination link.
 			// if not specified, this density applies to background flow.
 			
-			String dest_net_id = jaxbD.getDestNetId();
+			String dest_net_id = jaxbD.getDestinationNetworkId();
 			isbackground = dest_net_id==null;
 			destination_network = myScenario.getDestinationNetworkWithId(dest_net_id);
 			
