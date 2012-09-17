@@ -41,12 +41,15 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		isdone = false;
 		
 		// required
-		myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
+		if(getLinkIdOrigin()!=null)
+			myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
 
 		// sample demand distribution, convert to vehicle units
-		demand_nominal = new Double2DMatrix(getContent());
-		demand_nominal.multiplyscalar(myScenario.getSimDtInHours());
-
+		if(getContent()!=null){
+			demand_nominal = new Double2DMatrix(getContent());
+			demand_nominal.multiplyscalar(myScenario.getSimDtInHours());
+		}
+		
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
@@ -82,40 +85,29 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		
 	}
 
-	protected boolean validate() {
+	protected void validate() {
 		
 		if(demand_nominal.isEmpty())
-			return true;
+			return;
 		
-		if(myLinkOrigin==null){
-			SiriusErrorLog.addErrorMessage("Bad link id in demand profile: " + getLinkIdOrigin());
-			return false;
-		}
+		if(myLinkOrigin==null)
+			SiriusErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
 		// check dtinseconds
-		if( dtinseconds<=0 ){
-			SiriusErrorLog.addErrorMessage("Demand profile dt should be positive: " + getLinkIdOrigin());
-			return false;	
-		}
+		if( dtinseconds<=0 )
+			SiriusErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds())){
-			SiriusErrorLog.addErrorMessage("Demand dt should be multiple of sim dt: " + getLinkIdOrigin());
-			return false;	
-		}
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			SiriusErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
 		
 		// check dimensions
-		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addErrorMessage("Incorrect dimensions for demand on link " + getLinkIdOrigin());
-			return false;
-		}
+		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes())
+			SiriusErrorLog.addError("Incorrect dimensions for demand for link id=" + getLinkIdOrigin());
 		
 		// check non-negative
-		if(demand_nominal.hasNaN()){
-			SiriusErrorLog.addErrorMessage("Illegal values in demand profile for link " + getLinkIdOrigin());
-			return false;
-		}
+		if(demand_nominal.hasNaN())
+			SiriusErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrigin());
 
-		return true;
 	}
 
 	protected void reset() {
@@ -135,12 +127,14 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 	}
 	
 	protected void update(boolean forcesample) {
+		if(myLinkOrigin==null)
+			return;
 		if(!forcesample)
 			if(isdone || demand_nominal.isEmpty())
 				return;
 		if(forcesample || myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = demand_nominal.getnTime()-1;
-			int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
+			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
 			step = Math.max(0,step);
 			if(step<n)
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
@@ -175,12 +169,12 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			switch(myScenario.uncertaintyModel){
 			case uniform:
 				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-					demandvalue[j] += std_dev_apply[j]*Math.sqrt(3)*(2*myScenario.random.nextDouble()-1);
+					demandvalue[j] += SiriusMath.sampleZeroMeanUniform(std_dev_apply[j]);
 				break;
 	
 			case gaussian:
 				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-					demandvalue[j] += std_dev_apply[j]*myScenario.random.nextGaussian();
+					demandvalue[j] += SiriusMath.sampleZeroMeanGaussian(std_dev_apply[j]);
 				break;
 			}
 		}
@@ -190,6 +184,14 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 			demandvalue[j] = Math.max(0.0,myScenario.global_demand_knob*demandvalue[j]*_knob);
 		
 		return demandvalue;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Double2DMatrix get_demand_nominal(){
+		return demand_nominal;
 	}
 	
 }

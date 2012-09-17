@@ -224,7 +224,7 @@ protected static long calculateAndSaved(String table, int recordNumber, List dat
 			}
 		
 		
-		} catch (TorqueException | DataSetException e) {
+		} catch (Exception e) {
 			
 			return 0;
 		}		
@@ -233,7 +233,7 @@ protected static long calculateAndSaved(String table, int recordNumber, List dat
 			
 			return ((Record) BasePeer.executeQuery("SELECT lanes FROM links WHERE length>0 "+ twoKeys).get(0)).getValue(1).asInt();
 					
-		} catch (TorqueException | DataSetException e) {
+		} catch (Exception e) {
 			
 			return 0;
 		}
@@ -280,7 +280,7 @@ protected static long calculateAndSaved(String table, int recordNumber, List dat
 					return 0.0;
 				}
 					
-			} catch (TorqueException | DataSetException e) {
+			} catch (Exception e) {
 				
 				return 0.0;
 			}
@@ -290,7 +290,7 @@ protected static long calculateAndSaved(String table, int recordNumber, List dat
 				return ((Record) BasePeer.executeQuery("SELECT length FROM links WHERE length>0"+ twoKeys).get(0)).getValue(1).asDouble();
 				
 				
-			} catch (TorqueException | DataSetException e) {
+			} catch (Exception e) {
 				
 				return 0.0;
 			}

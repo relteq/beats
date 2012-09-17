@@ -13,16 +13,21 @@ import org.apache.torque.util.BasePeer;
 
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
+import com.itextpdf.awt.geom.Rectangle;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.ExceptionConverter;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -45,13 +50,99 @@ public class PdfReport {
 
 	private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 9,
 			Font.NORMAL);
+	private static Font smallFont = new Font(Font.FontFamily.HELVETICA, 9,
+			Font.NORMAL);
 	private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
 			Font.BOLD);
-
-	public static void outputPdf(String table) {
+	/**
+     * Inner class to add a table as header.
+     */
+    class TableHeader extends PdfPageEventHelper {
+        /** The header text. */
+        String header;
+        /** The template with the total number of pages. */
+        PdfTemplate total;
+ 
+        /**
+         * Allows us to change the content of the header.
+         * @param header The new header String
+         */
+        public void setHeader(String header) {
+            this.header = header;
+        }
+ 
+        /**
+         * Creates the PdfTemplate that will hold the total number of pages.
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+         */
+        public void onOpenDocument(PdfWriter writer, Document document) {
+            total = writer.getDirectContent().createTemplate(30, 16);
+        }
+ 
+        /**
+         * Adds a header to every page
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+         */
+        public void onEndPage(PdfWriter writer, Document document) {
+        	
+        	if (writer.getPageNumber() < 2 ) return;
+        	
+            PdfPTable table = new PdfPTable(3);
+            try {
+                table.setWidths(new int[]{24, 24, 2});
+                table.setTotalWidth(527);
+                table.setLockedWidth(true);
+                //table.getDefaultCell().setFixedHeight(12);
+                
+                table.getDefaultCell().setBorder(0);
+                table.addCell(header);
+                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+                table.getDefaultCell().setVerticalAlignment(Element.ALIGN_BOTTOM);
+                table.addCell(new Phrase("Page "+writer.getPageNumber()+" of",smallFont));
+                //table.addCell(String.format("Page %d of", writer.getPageNumber()));
+                PdfPCell cell = new PdfPCell(Image.getInstance(total));
+                
+                cell.setBorder(0);
+                cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cell);
+                table.writeSelectedRows(0, -1, 48, 824, writer.getDirectContent());
+            }
+            catch(DocumentException de) {
+                throw new ExceptionConverter(de);
+            }
+        }
+ 
+        /**
+         * Fills out the total number of pages before the document is closed.
+         * @see com.itextpdf.text.pdf.PdfPageEventHelper#onCloseDocument(
+         *      com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
+         */
+        public void onCloseDocument(PdfWriter writer, Document document) {
+            ColumnText.showTextAligned(total, Element.ALIGN_LEFT,
+                    new Phrase(String.valueOf(writer.getPageNumber() - 1)),
+                    2, 2, 0);
+        }
+    }
+ 
+    
+    
+	public void outputPdf(String table) {
+		
+		ReportRequest rr = new  ReportRequest();
+		rr.readXMLFile("report_request.xml");
+		
 		try {
 			Document document = new Document();
-			PdfWriter.getInstance(document, new FileOutputStream(table+".pdf"));
+			//PdfWriter.getInstance(document, new FileOutputStream(table+".pdf"));
+			
+			PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(table+".pdf"));
+	        
+			
+			TableHeader event = new TableHeader();
+	        writer.setPageEvent(event);
+	        
 			document.open();
 			addMetaData(document);
 			addTitlePage(document, table);
@@ -161,7 +252,7 @@ public class PdfReport {
 				query =  AggregateData.setKeys("select * from " + table + " WHERE aggregation=\'15min\'", table, (Record)listOfKeys.get(i) );				
 				
 				java.util.List data = BasePeer.executeQuery(query);
-				AggregateData.reportToStandard("Size " + data.size() );
+				//AggregateData.reportToStandard("Size " + data.size() );
 				
 				// Add generated chart and table
 				contentPage.add(createTable(listOfColumnNames, data));
@@ -330,7 +421,7 @@ public class PdfReport {
 	        chart.getXYPlot().getRenderer().setSeriesOutlineStroke(1, new BasicStroke(4f));
 	        chart.getXYPlot().setWeight(1);
 	        
-	        AggregateData.reportToStandard("Weight: " +  chart.getXYPlot().getWeight() );
+	        //AggregateData.reportToStandard("Weight: " +  chart.getXYPlot().getWeight() );
 	       
 
 		java.io.File chartFile = new File("chart.jpg");

@@ -3,9 +3,11 @@ package com.relteq.sirius.simulator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 
 public final class SiriusMath {
 	
+	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
 	
  	public static Double [] zeros(int n1){
@@ -142,7 +144,42 @@ public final class SiriusMath {
 	
 	public static boolean equals(double a,double b){
 		return Math.abs(a-b) < SiriusMath.EPSILON;
+	}	
+	
+	public static boolean equals1D(ArrayList<Double> a,ArrayList<Double> b){
+		if(a==null || b==null)
+			return false;
+		if(a.size()!=b.size())
+			return false;
+		for(int i=0;i<a.size();i++)
+			if( !SiriusMath.equals(a.get(i), b.get(i)) )
+				return false;
+		return true;
 	}
+	
+	public static boolean equals2D(ArrayList<ArrayList<Double>> a,ArrayList<ArrayList<Double>> b){
+		if(a==null || b==null)
+			return false;
+		if(a.size()!=b.size())
+			return false;
+		for(int i=0;i<a.size();i++)
+			if( !SiriusMath.equals1D(a.get(i), b.get(i)) )
+				return false;
+		return true;
+	}
+	
+	public static boolean equals3D(ArrayList<ArrayList<ArrayList<Double>>> a,ArrayList<ArrayList<ArrayList<Double>>> b){
+		if(a==null || b==null)
+			return false;
+		if(a.size()!=b.size())
+			return false;
+		for(int i=0;i<a.size();i++)
+			if( !SiriusMath.equals2D(a.get(i), b.get(i)) )
+				return false;
+		return true;
+	}
+	
+	
 	
 	public static boolean greaterthan(double a,double b){
 		return a > b + SiriusMath.EPSILON;
@@ -182,5 +219,13 @@ public final class SiriusMath {
 			for(j=0;j<n2;j++)
 				y[i][j]=x[i][j];
 		return y;
+	}
+
+	public static double sampleZeroMeanUniform(double std_dev){
+		return std_dev*Math.sqrt(3)*(2*SiriusMath.random.nextDouble()-1);
+	}
+	
+	public static double sampleZeroMeanGaussian(double std_dev){
+		return std_dev*SiriusMath.random.nextGaussian();
 	}
 }

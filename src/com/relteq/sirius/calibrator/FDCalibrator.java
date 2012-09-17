@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import com.relteq.sirius.jaxb.FundamentalDiagramProfileSet;
-import com.relteq.sirius.sensor.DataSource;
 import com.relteq.sirius.sensor.SensorLoopStation;
 import com.relteq.sirius.simulator.*;
 
@@ -15,85 +14,40 @@ import com.relteq.sirius.simulator.*;
 * @version VERSION NUMBER
 */
 public class FDCalibrator {
-	protected String configfilename;
-	protected String outputfilename;
-	protected ArrayList<DataSource> datasources = new ArrayList<DataSource>();
-	protected Scenario scenario;
-	protected HashMap <Integer,FiveMinuteData> data = new HashMap <Integer,FiveMinuteData> ();
 	
-	public FDCalibrator(String configfilename,String outputfilename){
-		this.configfilename = configfilename;
-		this.outputfilename = outputfilename;
-	}
+	/////////////////////////////////////////////////////////////////////////////////
+	// API
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	/** run calibration on all sensors and propagate result to links.
+	 * 
+	 */
+	public static void calibrate(Scenario scenario) throws SiriusException {
 
-	// execution .................................
-	public void run() throws Exception{
+		HashMap <SensorLoopStation,FDParameters> sensorFD = new HashMap <SensorLoopStation,FDParameters> ();
 		
-		if(!readScenario())									// 1. read the original network file 
-			return;	
+		// read pems 5 minute file
+		scenario.loadSensorData();
 		
-		loadTrafficData();									// 2. read pems 5 minute file
-		
-															// 3. run calibration routine
+		// run calibration routine
 		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			if(S.getMyType().compareTo(Sensor.Type.static_point)!=0)
 				continue;
-			calibrate(S);
+			sensorFD.put(S,calibrate_sensor(S));
 		}
 		
-		propagate();									// 4. extend parameters to the rest of the network
-		export(); 										// 5. export to configuration file
-		
-		System.out.println("done");
+		// extend parameters to the rest of the network
+		propagate(scenario,sensorFD);
+
 	}
 
-	// step 1
-	private boolean readScenario() {
-		scenario = ObjectFactory.createAndLoadScenario(configfilename);
-		if(scenario==null || SiriusErrorLog.haserror()){
-			SiriusErrorLog.printErrorMessage();
-			return false;
-		}
-		return true;
-	}
-
-	// step 2
-	public void loadTrafficData() throws Exception {
-		
-		ArrayList<String> uniqueurls  = new ArrayList<String>();
-		
-		// construct list of stations to extract from datafile 
-		for(com.relteq.sirius.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
-			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
-				continue;
-			SensorLoopStation S = (SensorLoopStation) sensor;
-			int myVDS = S.getVDS();				
-			data.put(myVDS, new FiveMinuteData(myVDS,true));	
-			for(com.relteq.sirius.sensor.DataSource d : S.get_datasources()){
-				String myurl = d.getUrl();
-				int indexOf = uniqueurls.indexOf(myurl);
-				if( indexOf<0 ){
-					DataSource newdatasource = new DataSource(d);
-					newdatasource.add_to_for_vds(myVDS);
-					datasources.add(newdatasource);
-					uniqueurls.add(myurl);
-				}
-				else{
-					datasources.get(indexOf).add_to_for_vds(myVDS);
-				}
-			}
-		}
-		
-		// Read 5 minute data to "data"
-		DataReader P = new DataReader();
-		P.Read5minData(data,datasources);
-	}
-
-	// step 3
-	public void calibrate(SensorLoopStation S) {
+	/////////////////////////////////////////////////////////////////////////////////
+	// private methods
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	private static FDParameters calibrate_sensor(SensorLoopStation S) {
 		int i;
-		int vds = S.getVDS();
 
 		// output:
 		float vf;			// [mph]
@@ -105,17 +59,16 @@ public class FDCalibrator {
 		float w_max = 19;			// [mph]
 
 		// get data
-		FiveMinuteData D = data.get(vds);
-		int numdatapoints = D.time.size();
+		int numdatapoints = S.getNumDataPoints();
 
 		// degenerate case
 		if(numdatapoints==0)
-			return;  
+			return new FDParameters();  
 
 		// organize into an array of DataPoint
 		ArrayList<DataPoint> datavec = new ArrayList<DataPoint>();
 		for(i=0;i<numdatapoints;i++)
-			datavec.add(new DataPoint(D.getAggDty(i),D.getAggFlw(i),D.getAggSpd(i)));
+			datavec.add(new DataPoint(S.getDataAggDtyInVPMPL(i),S.getDataAggFlwInVPHPL(i),S.getDataAggSpdInMPH(i)));
 		
 		// Find free-flow velocity ...............................
 
@@ -191,12 +144,10 @@ public class FDCalibrator {
 		}
 
 		// store parameters in sensor
-		S.setFD(vf,w,q_max);
-		
+		return new FDParameters(vf,w,q_max);
 	}
   
-	// step 4
-	public void propagate(){
+	private static void propagate(Scenario scenario,HashMap<SensorLoopStation,FDParameters> sensorFD){
 		int i;
 		boolean done;
 		
@@ -258,15 +209,16 @@ public class FDCalibrator {
 
 				FDprof.setLinkId(G.link.getId());
 				FDprof.setDt(new BigDecimal(300));
-//				FDprof.setNetworkId(G.link.getMyNetwork().getId());
 				FDprof.setStartTime(new BigDecimal(0));
 				
 				SensorLoopStation S = (SensorLoopStation) G.sensor;
-				FD.setCapacity(new BigDecimal(S.getQ_max()));
+				FDParameters FDp = (FDParameters) sensorFD.get(S);
+				
+				FD.setCapacity(new BigDecimal(FDp.getQ_max()));
 				FD.setCapacityDrop(new BigDecimal(0));
-				FD.setCongestionSpeed(new BigDecimal(S.getW()));
-				FD.setJamDensity(new BigDecimal(S.getRho_jam()));
-				FD.setJamDensity(new BigDecimal(S.getVf()));
+				FD.setCongestionSpeed(new BigDecimal(FDp.getW()));
+				FD.setJamDensity(new BigDecimal(FDp.getRho_jam()));
+				FD.setJamDensity(new BigDecimal(FDp.getVf()));
 				FD.setStdDevCapacity(new BigDecimal(0));
 				
 				FDprof.getFundamentalDiagram().add(FD);
@@ -277,15 +229,8 @@ public class FDCalibrator {
 		scenario.setFundamentalDiagramProfileSet(FDprofileset);
 	}
 
-	// step 5
-	private void export() throws Exception{
-		scenario.saveToXML(outputfilename);
-	}
-	
-	// private routines.................................
-
 	// compute the p'th percentile qty (p in [0,1])
-	private float percentile(String qty,List<DataPoint> x,float p){
+	private static float percentile(String qty,List<DataPoint> x,float p){
 		ArrayList<Float> values = new ArrayList<Float>();
 		int numdata = x.size();
 		if(qty.equals("spd"))
@@ -312,7 +257,7 @@ public class FDCalibrator {
 			return values.get(z);
 	}
 
-	private void growout(String upordn,GrowLink G,HashMap<String,GrowLink> H){
+	private static void growout(String upordn,GrowLink G,HashMap<String,GrowLink> H){
 		Node node;
 		Link [] newlinks = null;
 		if(upordn.equals("up")){			// grow in upstream direction
@@ -341,8 +286,11 @@ public class FDCalibrator {
 		}
 	}
 
-	// internal classes ...............................
-	public class DataPoint implements Comparable<Object> {
+	/////////////////////////////////////////////////////////////////////////////////
+	// nested classes
+	/////////////////////////////////////////////////////////////////////////////////
+	
+	private static class DataPoint implements Comparable<Object> {
 		float dty;
 		float flw;
 		float spd;
@@ -372,7 +320,7 @@ public class FDCalibrator {
 		}
 	}
 
-	public class GrowLink {
+	private static class GrowLink {
 		public Link link;
 		public Sensor sensor;
 		public boolean isgrowable = false; // link possibly connected to unassigned links
@@ -380,6 +328,10 @@ public class FDCalibrator {
 		public GrowLink(Link l){link=l;}
 	}
 
+	/////////////////////////////////////////////////////////////////////////////////
+	// main
+	/////////////////////////////////////////////////////////////////////////////////
+	
 	public static void main(String[] args) {
 		if(args.length<2){
 			String str;
@@ -391,13 +343,29 @@ public class FDCalibrator {
 			return;
 		}
 		
-		FDCalibrator C = new FDCalibrator(args[0],args[1]);
+		String configfilename = args[0];
+		String outputfilename = args[1];
+		Scenario scenario;
+		
 		try {
-			C.run();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+
+			
+			// read the original network file 
+			scenario = ObjectFactory.createAndLoadScenario(configfilename);
+			if(scenario==null)
+				return;	
+			
+			// run calibrator
+			calibrate(scenario);
+
+			// export to configuration file
+			scenario.saveToXML(outputfilename);
+			
+			System.out.println("done");
+			
+		} catch (SiriusException e) {
 			e.printStackTrace();
 		}
-	}
-			
+	}	
+
 }

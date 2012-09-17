@@ -83,7 +83,7 @@ public class LinkPerformanceTotal extends com.relteq.sirius.om.LinkPerformanceTo
 			if ( obj.getSpeedWorst() != null && getVhtWorst() !=null && getVmtWorst() !=null )
 				setDelayWorst(PerformanceData.delay(getVhtWorst(), getVmtWorst(), obj.getSpeedWorst()));
 			
-			if (obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) == 0)
+			if (obj.getSpeed() != null && obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) == 0)
 				setProductivityLoss(BigDecimal.valueOf(0.0));
 			else {
 					
@@ -91,7 +91,7 @@ public class LinkPerformanceTotal extends com.relteq.sirius.om.LinkPerformanceTo
 					setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) ); 
 			}	
 			
-			if (obj.getSpeedWorst().compareTo(obj.getFreeFlowSpeed()) == 0)
+			if (obj.getSpeedWorst() != null && obj.getFreeFlowSpeed() != null && obj.getSpeedWorst().compareTo(obj.getFreeFlowSpeed()) == 0)
 				setProductivityLoss(BigDecimal.valueOf(0.0));
 			
 			else {

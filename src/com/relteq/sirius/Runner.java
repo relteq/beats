@@ -34,7 +34,8 @@ public class Runner {
 				com.relteq.sirius.db.Admin.initTorqueAPI();
 				
 				// Calculate performance measures
-				PdfReport.outputPdf("link_data_total");
+				PdfReport pdf = new PdfReport();
+				pdf.outputPdf("link_data_total");
 				
 			} else
 				
@@ -96,7 +97,7 @@ public class Runner {
 					throw new InvalidUsageException("Usage: export|e scenario_id [output_file_name]");
 				else {
 					String filename = 1 == arguments.length ? arguments[0] + ".xml" : arguments[1];
-					com.relteq.sirius.db.exporter.ScenarioRestorer.export(arguments[0], filename);
+					com.relteq.sirius.db.exporter.ScenarioRestorer.export(Integer.parseInt(arguments[0]), filename);
 				}
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				com.relteq.sirius.calibrator.FDCalibrator.main(arguments);
@@ -112,7 +113,7 @@ public class Runner {
 				com.relteq.sirius.db.Lister.listScenarios();
 			} else if (cmd.equals("list_runs") || cmd.equals("lr")) {
 				if (1 == arguments.length)
-					com.relteq.sirius.db.Lister.listRuns(arguments[0]);
+					com.relteq.sirius.db.Lister.listRuns(Integer.parseInt(arguments[0]));
 				else
 					throw new InvalidUsageException("Usage: list_runs|lr scenario_id");
 			} else if (cmd.equals("load") || cmd.equals("l")) {
@@ -144,7 +145,10 @@ public class Runner {
 			} else if (cmd.equals("clear_data") || cmd.equals("cld")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					com.relteq.sirius.db.Cleaner.clearProcessed(Integer.parseInt(arguments[0]));
+				else
+					throw new InvalidUsageException("Usage: clear_processed|clp scenario_id");
 			} else if (cmd.equals("clear_scenario") || cmd.equals("cls")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_all") || cmd.equals("cla")) {
@@ -152,7 +156,7 @@ public class Runner {
 			} else if (cmd.equals("version") || cmd.equals("v")) {
 				printVersion();
 			} else throw new InvalidCommandException(cmd);
-			if (SiriusErrorLog.haserror()) SiriusErrorLog.printErrorMessage();
+			if (SiriusErrorLog.haserror()) SiriusErrorLog.print();
 		} catch (InvalidUsageException exc) {
 			String msg = exc.getMessage();
 			if (null == msg) msg = "Usage: command [parameters]";
