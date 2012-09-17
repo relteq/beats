@@ -34,6 +34,9 @@ final class DemandProfileSet extends com.relteq.sirius.jaxb.DemandProfileSet {
 	
 	protected void validate() {
 
+		if(getDemandProfile().isEmpty())
+			return;
+		
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");

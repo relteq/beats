@@ -33,6 +33,8 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected ArrayList<Integer> myDNindex = new  ArrayList<Integer>();	// map to global destination index
 	/** @y.exclude */ 	protected ArrayList<Integer> dn_endNodeMap = new  ArrayList<Integer>();	// map to channel in the end node
 	/** @y.exclude */ 	protected ArrayList<Integer> dn_beginNodeMap = new  ArrayList<Integer>();	// map to channel in the begin node
+	/** @y.exclude */ 	protected boolean link_used;
+	
 	
 	// flow into the link
 	/** @y.exclude */ 	protected double [][][] inflow;    		// [veh]	numEnsemble x numDNetworks x numVehTypes
@@ -69,6 +71,45 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
+	/** get the cumulative density indexed by global destination network and 
+	 * vehicle types **/
+	public double[][] getCumulative_density(int ensemble) {
+		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
+		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
+		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
+		int i,j;
+		for(i=0;i<numDNetworks;i++)
+			for(j=0;j<numVehicleTypes;j++)
+				X[myDNindex.get(i)][j] = cumulative_density[ensemble][i][j];
+		return X;
+	}
+
+	/** get the cumulative inflow indexed by global destination network and 
+	 * vehicle types **/
+	public double[][] getCumulative_inflow(int ensemble) {
+		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
+		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
+		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
+		int i,j;
+		for(i=0;i<numDNetworks;i++)
+			for(j=0;j<numVehicleTypes;j++)
+				X[myDNindex.get(i)][j] = cumulative_inflow[ensemble][i][j];
+		return X;
+	}
+
+	/** get the cumulative outflow indexed by global destination network and 
+	 * vehicle types **/
+	public double[][] getCumulative_outflow(int ensemble) {
+		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
+		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
+		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
+		int i,j;
+		for(i=0;i<numDNetworks;i++)
+			for(j=0;j<numVehicleTypes;j++)
+				X[myDNindex.get(i)][j] = cumulative_outflow[ensemble][i][j];
+		return X;
+	}	
+	
 	/** @y.exclude */
 	protected void reset_cumulative(){
 		int n1 = myNetwork.myScenario.numEnsemble;
@@ -186,6 +227,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void addDestinationNetwork(int dest_index){
 		numDNetworks++;
 		myDNindex.add(dest_index);
+		link_used = true;
 	}
 	
 	protected int getDestinationNetworkIdFor(String destnetid){
@@ -312,12 +354,7 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
-        
-//        // add background destination
-//        if(myNetwork.myScenario.has_background_flow){
-//        	numDNetworks++;
-//        	myDNindex.add(0,-1); // -1 means background flow
-//        }
+        this.link_used = false;
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());

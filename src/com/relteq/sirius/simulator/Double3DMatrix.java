@@ -28,9 +28,10 @@ final class Double3DMatrix {
     	this.nOut = nOut;
     	this.nVTypes = nVTypes;
     	data = new double[nIn][nOut][nVTypes];
-    	for(int i=0;i<nIn;i++)
-        	for(int j=0;j<nOut;j++)
-            	for(int k=0;k<nVTypes;k++)
+    	int i,j,k;
+    	for(i=0;i<nIn;i++)
+        	for(j=0;j<nOut;j++)
+            	for(k=0;k<nVTypes;k++)
             		data[i][j][k] = val;
     	this.isempty = nIn==0 && nOut==0 && nVTypes==0;
     }

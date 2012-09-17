@@ -19,17 +19,20 @@ final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfil
 	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
-		
+
 		if(getSplitratioProfile().isEmpty())
 			return;
-
-		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
+		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
+
 		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
 			((SplitRatioProfile) sr).populate(myScenario);
 	}
 
 	protected void validate() {
+
+		if(getSplitratioProfile().isEmpty())
+			return;
 
 		// check that there is at most one profile for each node
 		ArrayList<String> nodeids = new ArrayList<String>();

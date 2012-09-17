@@ -7,7 +7,7 @@ package com.relteq.sirius.simulator;
 public class Double4DMatrix {
 	
 	protected Node myNode;	
-	protected boolean isempty;		// true if there is no data;
+//	protected boolean isempty;			// true if there is no data;
 	protected Double3DMatrix [] data;	// indexed by destination network (node index)
 
 	/////////////////////////////////////////////////////////////////////
@@ -16,12 +16,15 @@ public class Double4DMatrix {
     
 	public Double4DMatrix(Node myNode,double value) {
 		this.myNode = myNode;
-		this.isempty = true;
+//		this.isempty = true;
 		this.data = new Double3DMatrix[myNode.numDNetworks];
 		
 		int numVTypes = myNode.myNetwork.myScenario.getNumVehicleTypes();
-		for(int i=0;i<myNode.numDNetworks;i++)
-			data[i] = new Double3DMatrix(myNode.getnIn(i),myNode.getnOut(i),numVTypes,value);
+		int dn_network_index;
+		for(int i=0;i<myNode.numDNetworks;i++){
+			dn_network_index = myNode.myDNGlobalIndex.get(i);
+			data[i] = new Double3DMatrix(myNode.getnIn(dn_network_index),myNode.getnOut(dn_network_index),numVTypes,value);
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////////////

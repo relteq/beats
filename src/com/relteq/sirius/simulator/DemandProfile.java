@@ -97,6 +97,10 @@ final class DemandProfile extends com.relteq.sirius.jaxb.DemandProfile {
 		if(myLinkOrigin==null)
 			SiriusErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
+		// check myLinkOrigin belongs to destination network
+		if(myDestinationIndexInLink<0)
+			SiriusErrorLog.addError("The origin link does not belong to the destination network.");
+		
 		// check dtinseconds
 		if( dtinseconds<=0 )
 			SiriusErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());

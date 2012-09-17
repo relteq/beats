@@ -166,7 +166,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	/** @y.exclude */ 	
     protected void resetSplitRatio(){
 		splitratio = new Double4DMatrix(this,Double.NaN);
-		//normalizeSplitRatioMatrix(splitratio);
+		normalizeSplitRatioMatrix(splitratio);
     }
     
     /** @y.exclude */ 	
@@ -209,6 +209,14 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return -1;
 	}
 
+	protected int getNumInputLink(int dn_index){
+		try{
+			return dn2inlinkindex.get(dn_index).size();
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+	
 	/** Returns the index of the link in this.dn2outlinkindex
 	 * 
 	 * @param dn_index
@@ -241,6 +249,14 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 				return i;	
 		}
 		return -1;
+	}
+	
+	protected int getNumOutputLink(int dn_index){
+		try{
+			return dn2outlinkindex.get(dn_index).size();
+		} catch (Exception e) {
+			return -1;
+		}
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -314,9 +330,11 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 			return;
 		
 		// TEMPORARY WHILE THERE IS NO PROCEDURE FOR UNKNOWN SPLITS
-		if(!isSingleOut && !hasSRprofile)
-			SiriusErrorLog.addError("No split ratio profile assigned to node id=" + getId());
-
+		if(!hasSRprofile)
+			for(Boolean b:dn_isSingleOut)
+				if(!b)
+					SiriusErrorLog.addError("No split ratio profile assigned to node id=" + getId());
+		
 		if(output_link!=null)
 			for(Link link : output_link)
 				if(link==null)
@@ -341,7 +359,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
         if(isTerminal)
             return;
 
-        int e,d,i,j,k;  
+        int e,d,i,j;  
         int node_dn_index;
         int numEnsemble = myNetwork.myScenario.numEnsemble;
         
@@ -578,7 +596,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	        			iscontributor[i_index][o_index] |= value>0;
 	        		}
 	        	}
-	        }   
+	        }
         
         double [] applyratio = new double[nIn];
 
@@ -948,8 +966,11 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 	public int getDestinationNetworkIndex(String id){
 		
 		// background flow
-		if(myNetwork.myScenario.has_background_flow && id==null)
-			return 0;
+		if(id==null)
+			if(myNetwork.myScenario.has_background_flow)
+				return 0;
+			else
+				return -1;
 		// no destination networks and not background flow (this should never happen)
 		if(myNetwork.myScenario.destination_networks==null)
 			return -1;
@@ -967,7 +988,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return nIn;
 	}
 	
-	/** Number of links entering this node for a destination network index  */
+	/** Number of links entering this node for a global destination network index  */
 	public int getnIn(int dn_global_index){
 		try {
 			int dn_node_index = myDNGlobalIndex.indexOf(dn_global_index);
@@ -982,7 +1003,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return nOut;
 	}
 	
-	/** Number of links exiting this node for a destination network index  */
+	/** Number of links exiting this node for aglobal  destination network index  */
 	public int getnOut(int dn_global_index){
 		try {
 			int dn_node_index = myDNGlobalIndex.indexOf(dn_global_index);

@@ -11,7 +11,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 	protected Scenario myScenario;
 	protected Node myNode;
-	protected int myDestinationNetworkIndex;	// index in myNode
+	//protected int myDestinationNetworkIndex;	// index in myNode
 	
 	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;
@@ -31,6 +31,8 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 	
 	protected void populate(Scenario myScenario) {
 
+		int j,k,in_index,out_index,dn_node_index,vt_index;
+		
 		if(getSplitratio().isEmpty())
 			return;
 		
@@ -54,9 +56,18 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myScenario.getSplitRatioProfileSet()!=null)
 			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
 		
-		int j,k,in_index,out_index,dn_node_index,vt_index;
-		Double value;
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
+
+			// destination network index in the node
+			dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
+			if(dn_node_index<0)
+				continue; 
+			
+			// input and output link index w.r.t. this node and destination network
+			in_index = myNode.getInputLinkIndex(dn_node_index,sr.getLinkIn());
+			out_index = myNode.getOutputLinkIndex(dn_node_index,sr.getLinkOut());
+			if(in_index<0 || out_index<0 )
+				continue; 
 			
 			Double2DMatrix data = new Double2DMatrix(sr.getContent());
 			
@@ -70,26 +81,14 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 					profile.add(new Double4DMatrix(myNode,Double.NaN));
 			
 			// fold the data into the profile
-			for(k=0;k<numTime;k++){
-				for(j=0;j<data.getnVTypes();j++){
-					
-					value = data.get(k,j);
-					
-					// destination network index in the node
-					dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
-					if(dn_node_index<0)
-						continue; 
-					
-					// input and output link index w.r.t. this node and destination network
-					in_index = myNode.getInputLinkIndex(dn_node_index,sr.getLinkIn());
-					out_index = myNode.getOutputLinkIndex(dn_node_index,sr.getLinkOut());
-					vt_index = vehicletypeindex[j];
-					if(in_index<0 || out_index<0 || vt_index<0)
-						continue; 
-
-					profile.get(k).setValue(dn_node_index,in_index,out_index,vt_index,value);
-				}
+			for(j=0;j<data.getnVTypes();j++){
+				vt_index = vehicletypeindex[j];
+				if(vt_index<0)
+					continue; 
+				for(k=0;k<numTime;k++)
+					profile.get(k).setValue(dn_node_index,in_index,out_index,vt_index,data.get(k,j));
 			}
+			
 		}
 		
 		// normalize
@@ -119,8 +118,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		// inform the node
 		if(!profile.isEmpty())
 			myNode.setHasSRprofile(true);
-		
-		
+	
 	}
 
 	protected void reset() {
@@ -150,17 +148,27 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 			SiriusErrorLog.addError("The split ratio profile for node id=" + getNodeId() + " contains unknown values.");
 
 		// check link ids
-		int index;
+		int dn_node_index,in_index,out_index;
 		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
-			index = myNode.getInputLinkIndex(sr.getLinkIn());
-			if(index<0)
+
+			// destination network 
+			dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
+			if(dn_node_index<0)
+				SiriusErrorLog.addError("Bad destination network id=" + sr.getDestinationNetworkId() + " in split ratio profile with node id=" + getNodeId());
+
+			// check in and out links are on node and destination network
+			in_index = myNode.getInputLinkIndex(dn_node_index,sr.getLinkIn());
+			if(in_index<0)
 				SiriusErrorLog.addError("Bad input link id=" + sr.getLinkIn() + " in split ratio profile with node id=" + getNodeId());
 
-			index = myNode.getOutputLinkIndex(sr.getLinkOut());
-			if(index<0)
+			out_index = myNode.getOutputLinkIndex(dn_node_index,sr.getLinkOut());
+			if(out_index<0)
 				SiriusErrorLog.addError("Bad output link id=" + sr.getLinkOut() + " in split ratio profile with node id=" + getNodeId());
-
-		}
+			
+			// check that values are not set for trivial nodes
+			if(myNode.getNumOutputLink(dn_node_index)<=1)
+				SiriusErrorLog.addError("Split ratios cannot be specified for node/destination network with single output. ");
+		}		
 
 		// check dtinhours
 		if( dtinseconds<=0 )

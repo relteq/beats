@@ -65,24 +65,24 @@ public final class TextOutputWriter extends OutputWriterBase {
 				Link link;
 				for(int i=0;i<n-1;i++){
 					link = (Link) links.get(i);
-					matrix = SiriusMath.times(link.cumulative_density[0],invsteps);
+					matrix = SiriusMath.times(link.getCumulative_density(0),invsteps);
 					out_density.write(SiriusFormatter.csv(matrix,":",",")+TextOutputWriter.delim);
 					if(exportflows){
-						matrix = SiriusMath.times(link.cumulative_outflow[0],invsteps);
+						matrix = SiriusMath.times(link.getCumulative_outflow(0),invsteps);
 						out_outflow.write(SiriusFormatter.csv(matrix,":",",")+TextOutputWriter.delim);
-						matrix = SiriusMath.times(link.cumulative_inflow[0],invsteps);
+						matrix = SiriusMath.times(link.getCumulative_inflow(0),invsteps);
 						out_inflow.write(SiriusFormatter.csv(matrix,":",",")+TextOutputWriter.delim);
 					}
 					link.reset_cumulative();
 				}
 				
 				link = (Link) links.get(n-1);
-				matrix = SiriusMath.times(link.cumulative_density[0],invsteps);
+				matrix = SiriusMath.times(link.getCumulative_density(0),invsteps);
 				out_density.write(SiriusFormatter.csv(matrix,":",",")+"\n");
 				if(exportflows){
-					matrix = SiriusMath.times(link.cumulative_outflow[0],invsteps);
+					matrix = SiriusMath.times(link.getCumulative_outflow(0),invsteps);
 					out_outflow.write(SiriusFormatter.csv(matrix,":",",")+"\n");
-					matrix = SiriusMath.times(link.cumulative_inflow[0],invsteps);
+					matrix = SiriusMath.times(link.getCumulative_inflow(0),invsteps);
 					out_inflow.write(SiriusFormatter.csv(matrix,":",",")+"\n");
 				}
 				link.reset_cumulative();	
