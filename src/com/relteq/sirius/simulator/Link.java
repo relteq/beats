@@ -15,6 +15,7 @@ import com.relteq.sirius.jaxb.DestinationNetwork;
 */
 public final class Link extends com.relteq.sirius.jaxb.Link {
 
+	/** @y.exclude */ 	protected int my_global_index;						// used to write matrix output
 	/** @y.exclude */ 	protected Network myNetwork;
 	/** @y.exclude */ 	protected Node begin_node;
 	/** @y.exclude */ 	protected Node end_node;
@@ -71,44 +72,44 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
-	/** get the cumulative density indexed by global destination network and 
-	 * vehicle types **/
-	public double[][] getCumulative_density(int ensemble) {
-		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
-		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
-		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
-		int i,j;
-		for(i=0;i<numDNetworks;i++)
-			for(j=0;j<numVehicleTypes;j++)
-				X[myDNindex.get(i)][j] = cumulative_density[ensemble][i][j];
-		return X;
-	}
-
-	/** get the cumulative inflow indexed by global destination network and 
-	 * vehicle types **/
-	public double[][] getCumulative_inflow(int ensemble) {
-		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
-		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
-		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
-		int i,j;
-		for(i=0;i<numDNetworks;i++)
-			for(j=0;j<numVehicleTypes;j++)
-				X[myDNindex.get(i)][j] = cumulative_inflow[ensemble][i][j];
-		return X;
-	}
-
-	/** get the cumulative outflow indexed by global destination network and 
-	 * vehicle types **/
-	public double[][] getCumulative_outflow(int ensemble) {
-		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
-		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
-		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
-		int i,j;
-		for(i=0;i<numDNetworks;i++)
-			for(j=0;j<numVehicleTypes;j++)
-				X[myDNindex.get(i)][j] = cumulative_outflow[ensemble][i][j];
-		return X;
-	}	
+//	/** get the cumulative density indexed by global destination network and 
+//	 * vehicle types **/
+//	public double[][] getCumulative_density(int ensemble) {
+//		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
+//		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
+//		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
+//		int i,j;
+//		for(i=0;i<numDNetworks;i++)
+//			for(j=0;j<numVehicleTypes;j++)
+//				X[myDNindex.get(i)][j] = cumulative_density[ensemble][i][j];
+//		return X;
+//	}
+//
+//	/** get the cumulative inflow indexed by global destination network and 
+//	 * vehicle types **/
+//	public double[][] getCumulative_inflow(int ensemble) {
+//		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
+//		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
+//		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
+//		int i,j;
+//		for(i=0;i<numDNetworks;i++)
+//			for(j=0;j<numVehicleTypes;j++)
+//				X[myDNindex.get(i)][j] = cumulative_inflow[ensemble][i][j];
+//		return X;
+//	}
+//
+//	/** get the cumulative outflow indexed by global destination network and 
+//	 * vehicle types **/
+//	public double[][] getCumulative_outflow(int ensemble) {
+//		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
+//		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
+//		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
+//		int i,j;
+//		for(i=0;i<numDNetworks;i++)
+//			for(j=0;j<numVehicleTypes;j++)
+//				X[myDNindex.get(i)][j] = cumulative_outflow[ensemble][i][j];
+//		return X;
+//	}
 	
 	/** @y.exclude */
 	protected void reset_cumulative(){
@@ -354,6 +355,8 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
+        this.my_global_index = myNetwork.myScenario.numLinks;
+        myNetwork.myScenario.numLinks++;
         this.link_used = false;
 
 		// make network connections

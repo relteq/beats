@@ -17,9 +17,9 @@ import com.relteq.sirius.simulator.Link;
 
 public final class TextOutputWriter extends OutputWriterBase {
 	protected Writer out_time = null;
-	protected Writer out_density = null;
-	protected Writer out_outflow = null;
-	protected Writer out_inflow = null;
+	protected Writer [][] out_density;
+	protected Writer [][] out_outflow;
+	protected Writer [][] out_inflow;
 	protected static String delim = "\t";
 	private String prefix;
 
@@ -31,12 +31,26 @@ public final class TextOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void open(int run_id) throws SiriusException {
-		String suffix = String.format("_%d.txt", run_id);
 		try {
-			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));
-			out_density = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));
-			out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));
-			out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));
+			String suffix;
+			int numDN = scenario.numDenstinationNetworks;
+			int numVT = scenario.numVehicleTypes;
+			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+String.format("_%d.txt",run_id)));
+			
+			out_density = new OutputStreamWriter[numDN][numVT];
+			out_outflow = new OutputStreamWriter[numDN][numVT];
+			out_inflow = new OutputStreamWriter[numDN][numVT];
+			
+			int i,j;
+			String [] dnnames = scenario.getDestinationNetworkNames();
+			String [] vtnames = scenario.getVehicleTypeNames();
+			for(i=0;i<numDN;i++)
+				for(j=0;j<numVT;j++){
+					suffix = String.format("_%s_%s_%d.txt",dnnames[i],vtnames[j],run_id);
+					out_density[i][j] = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));
+					out_outflow[i][j] = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));
+					out_inflow[i][j] = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));
+				}
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc);
 		}
@@ -48,7 +62,6 @@ public final class TextOutputWriter extends OutputWriterBase {
 		if(scenario==null)
 			return;
 		
-		double [][] matrix;
 		double invsteps;
 		
 		if(scenario.clock.getCurrentstep()==1)
@@ -57,36 +70,18 @@ public final class TextOutputWriter extends OutputWriterBase {
 			invsteps = 1f/((double)outsteps);
 			
 		try {
+			int dn,vt;
 			out_time.write(String.format("%f\n",time));
-			for(com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-				List<com.relteq.sirius.jaxb.Link> links = network.getLinkList().getLink();
-
-				int n = links.size();
-				Link link;
-				for(int i=0;i<n-1;i++){
-					link = (Link) links.get(i);
-					matrix = SiriusMath.times(link.getCumulative_density(0),invsteps);
-					out_density.write(SiriusFormatter.csv(matrix,":",",")+TextOutputWriter.delim);
+			for(dn=0;dn<scenario.numDenstinationNetworks;dn++){
+				for(vt=0;vt<scenario.numVehicleTypes;vt++){
+					out_density[dn][vt].write(SiriusFormatter.csv(scenario.getCumulativeDensity(0,dn,vt),TextOutputWriter.delim)+"\n");
 					if(exportflows){
-						matrix = SiriusMath.times(link.getCumulative_outflow(0),invsteps);
-						out_outflow.write(SiriusFormatter.csv(matrix,":",",")+TextOutputWriter.delim);
-						matrix = SiriusMath.times(link.getCumulative_inflow(0),invsteps);
-						out_inflow.write(SiriusFormatter.csv(matrix,":",",")+TextOutputWriter.delim);
+						out_outflow[dn][vt].write(SiriusFormatter.csv(scenario.getCumulativeOutflow(0,dn,vt),TextOutputWriter.delim)+"\n");
+						out_inflow[dn][vt].write(SiriusFormatter.csv(scenario.getCumulativeInflow(0,dn,vt),TextOutputWriter.delim)+"\n");
 					}
-					link.reset_cumulative();
 				}
-				
-				link = (Link) links.get(n-1);
-				matrix = SiriusMath.times(link.getCumulative_density(0),invsteps);
-				out_density.write(SiriusFormatter.csv(matrix,":",",")+"\n");
-				if(exportflows){
-					matrix = SiriusMath.times(link.getCumulative_outflow(0),invsteps);
-					out_outflow.write(SiriusFormatter.csv(matrix,":",",")+"\n");
-					matrix = SiriusMath.times(link.getCumulative_inflow(0),invsteps);
-					out_inflow.write(SiriusFormatter.csv(matrix,":",",")+"\n");
-				}
-				link.reset_cumulative();	
 			}
+			scenario.reset_cumulative();
 			
 		} catch (IOException e) {
 			throw new SiriusException(e);
@@ -95,14 +90,29 @@ public final class TextOutputWriter extends OutputWriterBase {
 
 	public void close(){
 		try {
+			int dn,vt;
+			
 			if(out_time!=null)
 				out_time.close();
+			
 			if(out_density!=null)
-				out_density.close();
+				for(dn=0;dn<scenario.numDenstinationNetworks;dn++)
+					for(vt=0;vt<scenario.numVehicleTypes;vt++)
+						if(out_density[dn][vt]!=null)
+							out_density[dn][vt].close();
+			
 			if(out_outflow!=null)
-				out_outflow.close();
+				for(dn=0;dn<scenario.numDenstinationNetworks;dn++)
+					for(vt=0;vt<scenario.numVehicleTypes;vt++)
+						if(out_outflow[dn][vt]!=null)
+							out_outflow[dn][vt].close();
+			
 			if(out_inflow!=null)
-				out_inflow.close();
+				for(dn=0;dn<scenario.numDenstinationNetworks;dn++)
+					for(vt=0;vt<scenario.numVehicleTypes;vt++)
+						if(out_inflow[dn][vt]!=null)
+							out_inflow[dn][vt].close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

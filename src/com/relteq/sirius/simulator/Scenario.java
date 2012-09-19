@@ -66,7 +66,8 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
 	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
-	/** @y.exclude */	protected int numEnsemble;
+	/** @y.exclude */	protected int numEnsemble;	
+	/** @y.exclude */	protected int numLinks;
 
 	// TEMPORARY!!
 	protected ArrayList<DestinationNetworkBLA> destination_networks;
@@ -101,6 +102,7 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 	protected void populate() throws SiriusException {
 		
 		// network list
+		numLinks = 0;
 		if(networkList!=null)
 			for( com.relteq.sirius.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).populate(this);
@@ -340,7 +342,62 @@ public final class Scenario extends com.relteq.sirius.jaxb.Scenario {
 		}
 		return null;
 	}
+	
+	protected void reset_cumulative(){
+		for(com.relteq.sirius.jaxb.Network jnetwork : this.getNetworkList().getNetwork()){
+			for(com.relteq.sirius.jaxb.Link jlink : jnetwork.getLinkList().getLink())
+				((Link)jlink).reset_cumulative();
+		}
+	}
+	
+	protected double [] getCumulativeDensity(int ensemble,int destination_network_index,int vehicle_type_index){
+		if(ensemble<0 || ensemble>=numEnsemble)
+			return null;
+		if(destination_network_index<0 || destination_network_index>=destination_networks.size())
+			return null;
+		if(vehicle_type_index<0 || vehicle_type_index>=numVehicleTypes)
+			return null;
+		double [] X = new double [numLinks];
+		int dn;
+		for(Link link : destination_networks.get(destination_network_index).links){
+			dn = link.myDNindex.indexOf(destination_network_index);
+			X[link.my_global_index] = link.cumulative_density[ensemble][dn][vehicle_type_index];
+		}
+		return X;
+	}
 
+	protected double [] getCumulativeInflow(int ensemble,int destination_network_index,int vehicle_type_index){
+		if(ensemble<0 || ensemble>=numEnsemble)
+			return null;
+		if(destination_network_index<0 || destination_network_index>=destination_networks.size())
+			return null;
+		if(vehicle_type_index<0 || vehicle_type_index>=numVehicleTypes)
+			return null;
+		double [] X = new double [numLinks];
+		int dn;
+		for(Link link : destination_networks.get(destination_network_index).links){
+			dn = link.myDNindex.indexOf(destination_network_index);
+			X[link.my_global_index] = link.cumulative_inflow[ensemble][dn][vehicle_type_index];
+		}
+		return X;
+	}
+
+	protected double [] getCumulativeOutflow(int ensemble,int destination_network_index,int vehicle_type_index){
+		if(ensemble<0 || ensemble>=numEnsemble)
+			return null;
+		if(destination_network_index<0 || destination_network_index>=destination_networks.size())
+			return null;
+		if(vehicle_type_index<0 || vehicle_type_index>=numVehicleTypes)
+			return null;
+		double [] X = new double [numLinks];
+		int dn;
+		for(Link link : destination_networks.get(destination_network_index).links){
+			dn = link.myDNindex.indexOf(destination_network_index);
+			X[link.my_global_index] = link.cumulative_outflow[ensemble][dn][vehicle_type_index];
+		}
+		return X;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// excluded from API
 	/////////////////////////////////////////////////////////////////////
