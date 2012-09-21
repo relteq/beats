@@ -1,4 +1,4 @@
-function data = readSiriusOutput(fnam)
+function data = readSiriusOutput_xml(fnam)
 data = struct;
 javapath = {fullfile('..', '..', 'sirius.jar')};
 javaaddpath(javapath{:});

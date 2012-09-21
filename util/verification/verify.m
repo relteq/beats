@@ -1,10 +1,13 @@
 aurora_fnam = 'I80_aurora.csv';
 sirius_fnam = 'output_0.xml';
 
+path = fullfile(fileparts(fileparts(mfilename('fullpath'))),'loadOutput');
+addpath(path);
 fprintf('Reading %s\n', aurora_fnam);
 aout = readAuroraOutput(aurora_fnam);
 fprintf('Reading %s\n', sirius_fnam);
 sout = readSiriusOutput(sirius_fnam);
+rmpath(path);
 
 linktype = 'freeway';
 

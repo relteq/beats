@@ -1,11 +1,10 @@
-function [X] = loadSiriusOutput_txt(configfile,outprefix)
+function [X] = readSiriusOutput_txt(configfile,outprefix)
 
 fprintf('Reading %s\n', configfile);
 scenario = xml_read(configfile);
 
 dt = round(2*scenario.NetworkList.network(1).ATTRIBUTE.dt)/2;
-outdt = dt/3600;
-clear dt
+dt = dt/3600;
 
 % destination network names
 for i=1:length(scenario.DestinationNetworks.destination_network)
@@ -19,10 +18,15 @@ for i=1:length(scenario.settings.VehicleTypes.vehicle_type)
 end
 numVT = length(vt_id);
 
-% number of links
+% number of links and link lengths in miles
 numLinks = 0;
+c=0;
 for i=1:length(scenario.NetworkList.network)
     numLinks = numLinks + length(scenario.NetworkList.network(i).LinkList.link);
+    for j=1:length(scenario.NetworkList.network(i).LinkList.link)
+        c=c+1;
+        llength(c) = scenario.NetworkList.network(i).LinkList.link(j).ATTRIBUTE.length;
+    end
 end
 
 % time
@@ -30,25 +34,19 @@ time = load([outprefix '_time_0.txt']);
 numTime = length(time);    
 
 X.density = zeros(numDN,numVT,numTime,numLinks);
-X.outflow = zeros(numDN,numVT,numTime-1,numLinks);
+X.flow = zeros(numDN,numVT,numTime-1,numLinks);
 
 for i=1:numDN
     for j=1:numVT
-        X.density(i,j,:,:) = load([outprefix '_density_' dn_id{i} '_' vt_id{j} '_0.txt']);
-        X.outflow(i,j,:,:) = load([outprefix '_outflow_' dn_id{i} '_' vt_id{j} '_0.txt']);
+        X.density(i,j,:,:) = bsxfun(@rdivide , load([outprefix '_density_' dn_id{i} '_' vt_id{j} '_0.txt']) , llength );
+        X.flow(i,j,:,:)    = load([outprefix '_outflow_' dn_id{i} '_' vt_id{j} '_0.txt'])/dt;
     end 
 end
 
-% % density in veh/mile
-% density = load([outprefix '_density_0.txt']);
-% for i=1:length(scenario.NetworkList.network(1).LinkList.link)
-%     lgth = scenario.NetworkList.network(1).LinkList.link(i).ATTRIBUTE.length;
-%     density(:,i) = density(:,i)/lgth;
-% end
-% 
-% % flow in veh/hr
-% flow = load([outprefix '_outflow_0.txt']);
-% flow = flow/outdt;
+X.time = load([outprefix '_time_0.txt']);
 
-% speed in mile/hr
-speed = outflow./density(1:(end - 1),:);
+
+X.numDN = numDN;
+X.numVT = numVT;
+X.numTime = numTime;
+X.numLinks = numLinks;
