@@ -168,7 +168,7 @@ public class ScenarioRestorer {
 	private com.relteq.sirius.jaxb.Node restoreNode(Nodes db_node) throws TorqueException {
 		com.relteq.sirius.jaxb.Node node = factory.createNode();
 		node.setId(id2str(db_node.getId()));
-		node.setInSynch(db_node.getInSynch());
+		node.setInSync(db_node.getInSynch());
 
 		NodeType db_nodetype = NodeTypePeer.retrieveByPK(db_node.getId(), db_node.getNetworkId());
 		node.setType(db_nodetype.getType());
@@ -282,7 +282,7 @@ public class ScenarioRestorer {
 		LinkTypeDet db_ltdet = LinkTypeDetPeer.retrieveByPK(db_link.getId(), db_link.getNetworkId());
 		link.setType(db_ltdet.getLinkTypes().getDescription());
 
-		link.setInSynch(db_link.getInSynch());
+		link.setInSync(db_link.getInSynch());
 		return link;
 	}
 

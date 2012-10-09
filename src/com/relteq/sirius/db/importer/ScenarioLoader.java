@@ -247,7 +247,7 @@ public class ScenarioLoader {
 		db_node.setNetworks(db_network);
 		db_node.setGeom(pos2str(node.getPosition()));
 		db_node.setGeom("");
-		db_node.setInSynch(node.isInSynch());
+		db_node.setInSynch(node.isInSync());
 
 		// node type
 		NodeType db_ntype = new NodeType();
@@ -336,7 +336,7 @@ public class ScenarioLoader {
 		db_link.setGeom(null == link.getShape() ? "" : link.getShape()); // TODO revise: shape -> geometry
 		db_link.setLength(link.getLength());
 		db_link.setDetailLevel(1);
-		db_link.setInSynch(link.isInSynch());
+		db_link.setInSynch(link.isInSync());
 
 		// link type
 		LinkTypeDet db_ltdet = new LinkTypeDet();
