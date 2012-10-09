@@ -1352,9 +1352,9 @@
 		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<column name="critical_speed" domain="DECIMAL" description="Critical speed in m/s."/>
 		<column name="congestion_wave_speed" domain="DECIMAL" description="Congestion wave speed in m/s."/>
-		<column name="capacity" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane (vphl)."/>
-		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
-		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
+		<column name="capacity" domain="DECIMAL" description="Maximum flow in vehicles per second."/>
+		<column name="jam_density" domain="DECIMAL" description="Maximum density in vehicles per meter. Optional - used for trapezoidal fundamental diagrams."/>
+		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vehicles per second. Optional."/>
 		<foreign-key foreignTable="links">
 			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>

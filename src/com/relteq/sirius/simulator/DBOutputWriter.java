@@ -192,12 +192,12 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldt.setCriticalSpeed(fd.getCriticalSpeed());
 			// congestion wave speed, m/s
 			db_ldt.setCongestionWaveSpeed(fd.getCongestionSpeed());
-			// maximum flow, vehicles per second per lane
-			db_ldt.setCapacity(fd.getCapacity());
-			// jam density, vehicles per meter per lane
-			db_ldt.setJamDensity(fd.getJamDensity());
-			// capacity drop, vehicle per second per lane
-			db_ldt.setCapacityDrop(fd.getCapacityDrop());
+			// maximum flow, vehicles per second
+			db_ldt.setCapacity(BigDecimal.valueOf(fd._getCapacityInVeh() / scenario.getSimDtInSeconds()));
+			// jam density, vehicles per meter
+			db_ldt.setJamDensity(BigDecimal.valueOf(fd._getDensityJamInVeh() / link._length));
+			// capacity drop, vehicle per second
+			db_ldt.setCapacityDrop(BigDecimal.valueOf(fd._getCapacityDropInVeh() / scenario.getSimDtInSeconds()));
 		}
 		db_ldt.save();
 		return db_ldt;
