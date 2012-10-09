@@ -35,14 +35,14 @@ public class DBOutputWriter extends OutputWriterBase {
 		if (null != db_scenario) {
 			logger.info("Loading vehicle types");
 			Criteria crit = new Criteria();
-			crit.addJoin(VehicleTypesPeer.VEHICLE_TYPE_ID, VehicleTypesInSetsPeer.VEHICLE_TYPE_ID);
-			crit.add(VehicleTypesInSetsPeer.VEHICLE_TYPE_SET_ID, db_scenario.getVehicleTypeSetId());
+			crit.addJoin(VehicleTypesPeer.ID, VehicleTypesInSetsPeer.VEH_TYPE_ID);
+			crit.add(VehicleTypesInSetsPeer.VEH_TYPE_SET_ID, db_scenario.getVehTypeSetId());
 			try {
 				@SuppressWarnings("unchecked")
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
 				for (VehicleTypes db_vt : db_vt_l)
 					for (int i = 0; i < scenario.getNumVehicleTypes(); ++i)
-						if (db_vt.getName().equals(scenario.getVehicleTypeNames()[i]))
+						if (db_vt.getDescription().equals(scenario.getVehicleTypeNames()[i]))
 							db_vehicle_type[i] = db_vt;
 			} catch (TorqueException exc) {
 				logger.error("Failed to load vehicle types for scenario " + db_scenario.getId(), exc);

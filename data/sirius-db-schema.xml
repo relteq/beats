@@ -21,7 +21,7 @@
 	<domain name="GEOMETRY" type="VARCHAR" size="2048"/>
 	<domain name="AGGREGATION" type="VARCHAR" size="8"/>
 	<domain name="EXE_STATUS" type="INTEGER"/>
-	<domain name="BOOL" type="BOOLEANCHAR"/>
+	<domain name="BOOL" type="BOOLEANINT"/>
 	<domain name="DECIMAL" type="DECIMAL" size="31" scale="16"/>
 
 
@@ -31,10 +31,10 @@
 
 	<!-- Projects -->
 
-	<table name="projects">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="name" required="true" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="projects" description="This is the head file for projects.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique identifier for this project."/>
+		<column name="name" required="true" domain="NAME_BUF" description="A short project name."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="A long description of the project."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -51,14 +51,14 @@
 	<!-- Scenario Configuration -->
 
 
-	<table name="networks" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
+	<table name="networks" idMethod="native" description="This table is the head entry for for every network ( master or derived ) on this system.">
+		<column name="id" primaryKey="true" domain="ID" description="The numeric identifier of this network."/>
 		<column name="is_master" domain="BOOL" description="This parameter is used only in the context of large system where maps are imported from Navteq or OSM."/>
-		<column name="name" domain="NAME_BUF"/>
+		<column name="name" domain="NAME_BUF" description="A short descriptive name for this network"/>
 		<column name="source" domain="ID" description="Network, from which current network was derived."/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-		<column name="in_use" domain="BOOL" description="If false, the network cannot be used - same as depricated."/>
-		<column name="locked" domain="BOOL" description="If true, the network is read-only."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="This is a larger description of this network."/>
+		<column name="in_use" domain="BOOL" default="1" description="If false, the network cannot be used - same as depricated."/>
+		<column name="locked" domain="BOOL" default="0" description="If true, the network is read-only."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -73,9 +73,9 @@
 		<column name="id" primaryKey="true" domain="ID"/>
 	</table>
 
-	<table name="nodes">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
+	<table name="nodes" description="There are nodes.  Nodes represent the beginning or ending of a link.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID of this node within a given network."/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The ID number of the network this node belongs in."/>
 		<column name="geom" required="true" domain="GEOMETRY" description="Geo location: SRID 4326"/>
 		<column name="in_synch" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
 		<column name="created" required="true" type="DATE"/>
@@ -91,17 +91,17 @@
 		</foreign-key>
 	</table>
 
-	<table name="node_name">
-		<column name="id" required="true" domain="ID"/>
-		<column name="network_id" required="true" domain="ID"/>
-		<column name="name" required="true" domain="NAME_BUF"/>
+	<table name="node_names" javaName="NodeName" description="A Name assigned to a given node.">
+		<column name="node_id" required="true" domain="ID" description="The node that this name is referning to."/>
+		<column name="network_id" required="true" domain="ID" description="The uique ID for the associated network."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name assigned to this node."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="nodes">
-			<reference local="id" foreign="id"/>
+			<reference local="node_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
@@ -182,54 +182,68 @@
 		</foreign-key>
 	</table>
 
-	<table name="link_name">
-		<column name="id" required="true" domain="ID"/>
-		<column name="network_id" required="true" domain="ID"/>
-		<column name="name" required="true" domain="NAME_BUF"/>
+	<table name="link_names" javaName="LinkName" description="A Name assigned to a given link.">
+		<column name="link_id" required="true" domain="ID" description="The link that this name is referning to."/>
+		<column name="network_id" required="true" domain="ID" description="The uique ID for the associated network."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name assigned to this link."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="links">
-			<reference local="id" foreign="id"/>
+			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
-	<table name="link_type">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+	<table name="link_types" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this link type"/>
+		<column name="description" domain="NAME_BUF" description="A description of the link type"/>
+		<column name="in_use" domain="BOOL" description="This indicates wether or not this link type should be shown when a user selects a link type.  This prevents a user from selecting it but allows historical reporting."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="link_type_det" description="The link type for a link in a network as defined by link types.">
+		<column name="link_id" primaryKey="true" domain="ID" description="The link id for this detail"/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this detail"/>
+		<column name="link_type_id" required="true" domain="ID" description="The links type derived from link_types"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="links">
-			<reference local="id" foreign="id"/>
+			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="link_types">
+			<reference local="link_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="link_lanes">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
-		<column name="lanes" required="true" domain="DECIMAL" description="Number of lanes."/>
+		<column name="link_id" primaryKey="true" domain="ID" description="The link id for this defintion"/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this lanes definition"/>
+		<column name="lanes" required="true" domain="DECIMAL" default="0" description="Number of lanes."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="links">
-			<reference local="id" foreign="id"/>
+			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
 	<table name="link_lane_offset">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
+		<column name="link_id" primaryKey="true" domain="ID" description="The link id for this defintion"/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this lanes offset definition"/>
 		<column name="display_lane_offset" domain="DECIMAL" description="This parameter indicates how link should be displayed at the map."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -237,7 +251,7 @@
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="links">
-			<reference local="id" foreign="id"/>
+			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
@@ -257,10 +271,10 @@
 		</foreign-key>
 	</table>
 
-	<table name="link_turn_restrictions">
-		<column name="from_network_id" primaryKey="true" domain="ID"/>
+	<table name="link_turn_rest" javaName="LinkTurnRestrictions" description="Turn Restrictions from unique to a network.">
+		<column name="from_net_id" javaName="fromNetworkId" primaryKey="true" domain="ID"/>
 		<column name="from_link_id" primaryKey="true" domain="ID"/>
-		<column name="to_network_id" primaryKey="true" domain="ID"/>
+		<column name="to_net_id" javaName="toNetworkId" primaryKey="true" domain="ID"/>
 		<column name="to_link_id" primaryKey="true" domain="ID"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -271,21 +285,21 @@
 			<reference local="from_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
-			<reference local="from_network_id" foreign="id"/>
+			<reference local="from_net_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="to_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
-			<reference local="to_network_id" foreign="id"/>
+			<reference local="to_net_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="network_connection_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="net_conn_sets" javaName="NetworkConnectionSets" idMethod="native" description="This is a set of network connections.  Each set is owned by a project.  Each set may be used by one or more scenarios.">
+		<column name="id" primaryKey="true" domain="ID" description="The uique ID for this connection set"/>
+		<column name="project_id" required="true" domain="ID" description="The project this set is owned by."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="This is the long description of this set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -296,40 +310,40 @@
 		</foreign-key>
 	</table>
 
-	<table name="network_connections">
-		<column name="network_connection_set_id" required="true" domain="ID"/>
-		<column name="from_network_id" required="true" domain="ID"/>
-		<column name="from_link_id" required="true" domain="ID"/>
-		<column name="to_network_id" required="true" domain="ID"/>
-		<column name="to_link_id" required="true" domain="ID"/>
+	<table name="net_conns" javaName="NetworkConnections" description="This record connects two networks and provides the orginating and destination link.">
+		<column name="set_id" required="true" domain="ID"/>
+		<column name="from_net_id" javaName="fromNetworkId" required="true" domain="ID" description="The origin network ID that this connector refres to."/>
+		<column name="from_link_id" required="true" domain="ID" description="The link within the originating network."/>
+		<column name="to_net_id" javaName="toNetworkId" required="true" domain="ID" description="The destination network that this connetor points to."/>
+		<column name="to_link_id" required="true" domain="ID" description="The link in the destination network."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="network_connection_sets">
-			<reference local="network_connection_set_id" foreign="id"/>
+		<foreign-key foreignTable="net_conn_sets">
+			<reference local="set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="from_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
-			<reference local="from_network_id" foreign="id"/>
+			<reference local="from_net_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="to_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
-			<reference local="to_network_id" foreign="id"/>
+			<reference local="to_net_id" foreign="id"/>
 		</foreign-key>
 		<unique name="network_connections_from">
-			<unique-column name="network_connection_set_id"/>
-			<unique-column name="from_network_id"/>
+			<unique-column name="set_id"/>
+			<unique-column name="from_net_id"/>
 			<unique-column name="from_link_id"/>
 		</unique>
 		<unique name="network_connections_to">
-			<unique-column name="network_connection_set_id"/>
-			<unique-column name="to_network_id"/>
+			<unique-column name="set_id"/>
+			<unique-column name="to_net_id"/>
 			<unique-column name="to_link_id"/>
 		</unique>
 	</table>
@@ -337,26 +351,26 @@
 
 	<!-- Destination Networks -->
 
-	<table name="destination_networks" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="destination_link_id" required="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
+	<table name="dest_networks" javaName="DestinationNetworks" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The uique ID for this destination network."/>
+		<column name="dest_link_id" javaName="destinationLinkId" required="true" domain="ID" description="The link to walk to on a foreign network"/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this destination."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="link_families">
-			<reference local="destination_link_id" foreign="id"/>
+			<reference local="dest_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="projects">
 			<reference local="project_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="destination_network_links">
-		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="destination_network_id" primaryKey="true" domain="ID"/>
+	<table name="dest_network_links" javaName="DestinationNetworkLinks" description="A destination link in a network to traverse into.">
+		<column name="link_id" primaryKey="true" domain="ID" description="The link to traverse to on the network id"/>
+		<column name="dest_network_id" primaryKey="true" domain="ID" description="the network ID that contains the link to land on."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -365,18 +379,18 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="destination_networks">
-			<reference local="destination_network_id" foreign="id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Routes -->
 
-	<table name="routes">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" required="true" domain="NAME_BUF"/>
+	<table name="routes" description="A route across one or more networks.">
+		<column name="id" primaryKey="true" domain="ID" description="The uique ID for this route."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this route."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this route."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -387,10 +401,10 @@
 		</foreign-key>
 	</table>
 
-	<table name="route_links">
-		<column name="route_id" primaryKey="true" domain="ID"/>
-		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="ordinal" primaryKey="true" type="INTEGER"/>
+	<table name="route_links" description="A set of links to traverse for a given route.">
+		<column name="route_id" primaryKey="true" domain="ID" description="The uique ID for this route."/>
+		<column name="link_id" primaryKey="true" domain="ID" description="A link on the route."/>
+		<column name="link_order" javaName="ordinal" primaryKey="true" type="INTEGER" description="The order in which the links in this route are to be traversed."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -407,9 +421,9 @@
 
 	<!-- Vehicle Types -->
 
-	<table name="vehicle_type_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
+	<table name="veh_type_sets" javaName="VehicleTypeSets" idMethod="native" description="A record of a set of vehicle types.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -420,46 +434,42 @@
 		</foreign-key>
 	</table>
 
-	<table name="vehicle_types" idMethod="native">
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
-		<column name="name" required="true" domain="NAME_BUF"/>
-		<column name="standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
+	<table name="veh_types" javaName="VehicleTypes" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this vehicle type"/>
+		<column name="size_factor" javaName="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
+		<column name="description" required="true" domain="NAME_BUF"/>
+		<column name="is_standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="projects">
-			<reference local="project_id" foreign="id"/>
-		</foreign-key>
 	</table>
 
-	<table name="vehicle_types_in_sets">
-		<column name="vehicle_type_set_id" primaryKey="true" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
+	<table name="veh_set_det" javaName="VehicleTypesInSets" description="This is a parent / child table to create sets of vihicles in vehicle sets associated with a project.">
+		<column name="veh_type_set_id" primaryKey="true" domain="ID" description="The ID vehicle_type_set."/>
+		<column name="veh_type_id" primaryKey="true" domain="ID" description="The vehicle type id from veh_types"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="vehicle_type_sets">
-			<reference local="vehicle_type_set_id" foreign="id"/>
+		<foreign-key foreignTable="veh_type_sets">
+			<reference local="veh_type_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	
 	<!-- Initial Conditions -->
 
-	<table name="initial_density_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="init_dens_sets" javaName="InitialDensitySets" idMethod="native" description="A set of Intial Densities for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this init dens set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this init dens set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this init dens set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -470,39 +480,39 @@
 		</foreign-key>
 	</table>
 
-	<table name="initial_densities">
-		<column name="initial_density_set_id" primaryKey="true" domain="ID"/>
-		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
-		<column name="destination_link_id" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
+	<table name="init_dens" javaName="InitialDensities" description="This table contains initial densities for a model.">
+		<column name="init_dens_set_id" primaryKey="true" domain="ID" description="The ID of the init_dens_set"/>
+		<column name="link_id" primaryKey="true" domain="ID" description="The initial link on which this density applies."/>
+		<column name="veh_type_id" javaName="vehicleTypeId" primaryKey="true" domain="ID" description="The vehicle type that this denisty represents from the table vehicle_types."/>
+		<column name="dest_link_id" javaName="destinationLinkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="initial_density_sets">
-			<reference local="initial_density_set_id" foreign="id"/>
+		<foreign-key foreignTable="init_dens_sets">
+			<reference local="init_dens_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
-			<reference local="destination_link_id" foreign="id"/>
+			<reference local="dest_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Weaving -->
 
-	<table name="weaving_factor_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="weave_sets" javaName="WeavingFactorSets" idMethod="native" description="A set of weaving factors for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this weave set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this weave set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this weave set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -513,19 +523,19 @@
 		</foreign-key>
 	</table>
 
-	<table name="weaving_factors">
-		<column name="weaving_factor_set_id" primaryKey="true" domain="ID"/>
-		<column name="in_link_id" primaryKey="true" domain="ID"/>
-		<column name="out_link_id" primaryKey="true" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
-		<column name="factor" domain="DECIMAL" description="Should be greater than 1 for downstream merge weaving, or less than -1 for upstream diverge weaving. 1 and -1 represent no weaving."/>
+	<table name="weaving_factors" description="This is the child table DS_BNDRY_CAP_SETS and defines an exit boundery flow limit for a given link">
+		<column name="weave_set_id" primaryKey="true" domain="ID" description="The parent of this weave_factor."/>
+		<column name="in_link_id" primaryKey="true" domain="ID" description="Inbound link."/>
+		<column name="out_link_id" primaryKey="true" domain="ID" description="Outbound link."/>
+		<column name="veh_type_id" primaryKey="true" domain="ID" description="vehicle type as defined in veh_types."/>
+		<column name="value" javaName="factor" domain="DECIMAL" description="Should be greater than 1 for downstream merge weaving, or less than -1 for upstream diverge weaving. 1 and -1 represent no weaving."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="weaving_factor_sets">
-			<reference local="weaving_factor_set_id" foreign="id"/>
+		<foreign-key foreignTable="weave_sets">
+			<reference local="weave_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="in_link_id" foreign="id"/>
@@ -533,19 +543,19 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Split Ratios -->
 
-	<table name="split_ratio_profile_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
+	<table name="split_ratio_sets" javaName="SplitRatioProfileSets" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
 		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+		<column name="name" domain="NAME_BUF" description="The short name for this split ratio set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this split ratio set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -553,46 +563,46 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
-	<table name="split_ratio_profiles" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="split_ratio_profile_set_id" required="true" domain="ID"/>
-		<column name="node_id" required="true" domain="ID"/>
-		<column name="network_id" required="true" domain="ID"/>
-		<column name="destination_link_id" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
-		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
-		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+	<table name="split_ratio_profs" javaName="SplitRatioProfiles" idMethod="native" description="A split ratio for a given node in a given network.">
+		<column name="id" primaryKey="true" domain="ID" description="The uique ID for this split ration profile."/>
+		<column name="split_ratio_set_id" required="true" domain="ID" description="The split ratio set this profile is a member of."/>
+		<column name="node_id" required="true" domain="ID" description="The node that this split ratio is calculated from."/>
+		<column name="network_id" required="true" domain="ID" description="The network the node is contained in."/>
+		<column name="dest_link_id" javaName="destinationLinkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
+		<column name="sample_rate" domain="DECIMAL" default="300.0" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
+		<column name="start_time" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="split_ratio_profile_sets">
-			<reference local="split_ratio_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="split_ratio_sets">
+			<reference local="split_ratio_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="nodes">
 			<reference local="node_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="links">
-			<reference local="destination_link_id" foreign="id"/>
+			<reference local="dest_link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
 	</table>
 
-	<table name="split_ratios">
-		<column name="split_ratio_profile_id" primaryKey="true" domain="ID"/>
-		<column name="in_link_id" primaryKey="true" domain="ID"/>
-		<column name="out_link_id" primaryKey="true" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
-		<column name="ordinal" primaryKey="true" type="INTEGER" description="Order of the split ratio"/>
-		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
+	<table name="split_ratios" description="A split ratio for a given node in a given network.">
+		<column name="split_ratio_prof_id" primaryKey="true" domain="ID" description="The split ratio profile set that this record is a member of."/>
+		<column name="in_link_id" primaryKey="true" domain="ID" description="The inbound link into the node the ratio is defined on."/>
+		<column name="out_link_id" primaryKey="true" domain="ID" description="The exit link that the ratio is built around."/>
+		<column name="veh_type_id" primaryKey="true" domain="ID" description="The vehicle type this ratio is based upon"/>
+		<column name="ratio_order" javaName="ordinal" primaryKey="true" type="INTEGER" description="Order of the split ratio"/>
+		<column name="ratio" javaName="splitRatio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="split_ratio_profiles">
-			<reference local="split_ratio_profile_id" foreign="id"/>
+		<foreign-key foreignTable="split_ratio_profs">
+			<reference local="split_ratio_prof_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="in_link_id" foreign="id"/>
@@ -600,19 +610,19 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Fundamental Diagrams -->
 
-	<table name="fundamental_diagram_profile_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="fund_diag_sets" javaName="FundamentalDiagramProfileSets" idMethod="native" description="A set of fundamental diagrams for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this FD set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this FD set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this FD set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -623,55 +633,55 @@
 		</foreign-key>
 	</table>
 
-	<table name="fundamental_diagram_profiles" idMethod="native">
+	<table name="fund_diag_profiles" javaName="FundamentalDiagramProfiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="fundamental_diagram_profile_set_id" required="true" domain="ID"/>
+		<column name="fund_diag_set_id" required="true" domain="ID"/>
 		<column name="link_id" required="true" domain="ID"/>
-		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
-		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="sample_rate" domain="DECIMAL" default="300.0" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
+		<column name="start_time" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="fundamental_diagram_profile_sets">
-			<reference local="fundamental_diagram_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="fund_diag_sets">
+			<reference local="fund_diag_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="fundamental_diagrams">
-		<column name="fundamental_diagram_profile_id" primaryKey="true" domain="ID"/>
-		<column name="number" primaryKey="true" type="INTEGER" description="Order of the fundamental diagram"/>
+	<table name="fund_diagrams" javaName="FundamentalDiagrams" description="A fundamental Diagram for a link in the network.">
+		<column name="fund_diag_prof_id" primaryKey="true" domain="ID" description="The FD Profile Set this profile is a member of."/>
+		<column name="diag_order" javaName="number" primaryKey="true" type="INTEGER" description="Order of the fundamental diagram"/>
 		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<column name="critical_speed" required="true" domain="DECIMAL" description="Critical speed in m/s."/>
-		<column name="congestion_wave_speed" required="true" domain="DECIMAL" description="Congestion wave speed in m/s."/>
+		<column name="cong_wave_speed" javaName="congestionWaveSpeed" required="true" domain="DECIMAL" description="Congestion wave speed in m/s."/>
 		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane (vphl)."/>
 		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
 		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
 		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vehicles per second per lane. Optional."/>
 		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in m/s. Optional."/>
-		<column name="congestion_wave_speed_std" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in m/s. Optional."/>
+		<column name="cong_wave_speed_std" javaName="congestionWaveSpeedStd" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in m/s. Optional."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="fundamental_diagram_profiles">
-			<reference local="fundamental_diagram_profile_id" foreign="id"/>
+		<foreign-key foreignTable="fund_diag_profiles">
+			<reference local="fund_diag_prof_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Demands -->
 
-	<table name="demand_profile_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="demand_prof_sets" javaName="DemandProfileSets" idMethod="native" description="This is a set of demands for the given project and scenario.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID of this SET."/>
+		<column name="project_id" required="true" domain="ID" description="The ID number of the project that owns this set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this set"/>
+		<column name="description" domain="DESCRIPTION_BUF" description="A long description of this set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -684,32 +694,32 @@
 
 	<table name="demand_profiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="demand_profile_set_id" required="true" domain="ID"/>
-		<column name="origin_link_id" required="true" domain="ID"/>
-		<column name="destination_link_id" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
-		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
-		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
-		<column name="knob" domain="DECIMAL" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
-		<column name="std_deviation_additive" domain="DECIMAL" description="Demand uncertainty in vph. Default value is 0."/>
-		<column name="std_deviation_multiplicative" domain="DECIMAL" description="Demand uncertainty. Default value is 1."/>
+		<column name="demand_prof_set_id" required="true" domain="ID"/>
+		<column name="orig_link_id" javaName="originLinkId" required="true" domain="ID"/>
+		<column name="dest_link_id" javaName="destinationLinkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
+		<column name="sample_rate" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
+		<column name="start_time" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
+		<column name="knob" domain="DECIMAL" default="1.0" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
+		<column name="std_dev_add" javaName="stdDeviationAdditive" domain="DECIMAL" default="0.0" description="Additive demand uncertainty in vph. Default value is 0."/>
+		<column name="std_dev_mult" javaName="stdDeviationMultiplicative" domain="DECIMAL" default="1.0" description="Multiplicative demand uncertainty. Default value is 1."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="demand_profile_sets">
-			<reference local="demand_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="demand_prof_sets">
+			<reference local="demand_prof_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
-			<reference local="origin_link_id" foreign="id"/>
+			<reference local="orig_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
-			<reference local="destination_link_id" foreign="id"/>
+			<reference local="dest_link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="demands">
-		<column name="demand_profile_id" primaryKey="true" domain="ID"/>
+		<column name="demand_prof_id" primaryKey="true" domain="ID"/>
 		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the demand"/>
 		<column name="demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
@@ -719,21 +729,21 @@
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="demand_profiles">
-			<reference local="demand_profile_id" foreign="id"/>
+			<reference local="demand_prof_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Downstream Boundary Capacities -->
 	
-	<table name="downstream_boundary_capacity_profile_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="ds_bndry_cap_sets" javaName="DownstreamBoundaryCapacityProfileSets" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this DSB_CAP set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this DSB_CAP set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this DSB_CAP set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -744,47 +754,47 @@
 		</foreign-key>
 	</table>
 
-	<table name="downstream_boundary_capacity_profiles" idMethod="native">
+	<table name="ds_bndry_cap_profiles" javaName="DownstreamBoundaryCapacityProfiles" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="downstream_boundary_capacity_profile_set_id" required="true" domain="ID"/>
+		<column name="ds_bndry_cap_set_id" required="true" domain="ID"/>
 		<column name="link_id" required="true" domain="ID"/>
-		<column name="dt" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
-		<column name="start_time" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="sample_rate" domain="DECIMAL" default="300.0" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
+		<column name="start_time" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="downstream_boundary_capacity_profile_sets">
-			<reference local="downstream_boundary_capacity_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="ds_bndry_cap_sets">
+			<reference local="ds_bndry_cap_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="downstream_boundary_capacities">
-		<column name="downstream_boundary_capacity_profile_id" primaryKey="true" domain="ID"/>
-		<column name="number" primaryKey="true" type="INTEGER" description="Order of the downstream boundary capacity"/>
-		<column name="downstream_boundary_capacity" required="true" domain="DECIMAL" description="Maximum flow that can exit this link in vph."/>
+	<table name="ds_bndry_caps" javaName="DownstreamBoundaryCapacities" description="An exit boundary flow limit for a given link">
+		<column name="ds_bndry_cap_prof_id" primaryKey="true" domain="ID"/>
+		<column name="ds_bndry_cap_order" javaName="number" primaryKey="true" type="INTEGER" description="Order of the downstream boundary capacity"/>
+		<column name="ds_bndry_cap" javaName="DownstreamBoundaryCapacity" required="true" domain="DECIMAL" description="Maximum flow that can exit this link in vph."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="downstream_boundary_capacity_profiles">
-			<reference local="downstream_boundary_capacity_profile_id" foreign="id"/>
+		<foreign-key foreignTable="ds_bndry_cap_profiles">
+			<reference local="ds_bndry_cap_prof_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Sensors -->
 
-	<table name="sensor_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="sensor_sets" idMethod="native" description="A set of sensors for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this sensor set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this sensor set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this sensor set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -796,15 +806,15 @@
 	</table>
 
 	<table name="sensors" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="type" required="true" domain="SENSOR_TYPE"/>
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this sensor."/>
 		<column name="sensor_set_id" required="true" domain="ID"/>
-		<column name="original_id" domain="NAME_BUF" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
+		<column name="type" required="true" domain="SENSOR_TYPE"/>
+		<column name="entity_id" javaName="originalId" domain="NAME_BUF" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
 		<column name="data_source_id" domain="ID" description="Which data feed does this sensor belong to."/>
 		<column name="display_geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="link_id" domain="ID" description="If link ID is not present, the sensor is not assigned."/>
-		<column name="link_position" domain="DECIMAL" description="Offset in meters from the begining of the link."/>
-		<column name="lane_number" type="INTEGER" description="Optional parameter indicating at which lane the sensor is located."/>
+		<column name="link_offset" javaName="linkPosition" domain="DECIMAL" description="Offset in meters from the begining of the link."/>
+		<column name="lane_num" javaName="laneNumber" type="INTEGER" description="Optional parameter indicating at which lane the sensor is located."/>
 		<column name="health_status" required="true" domain="DECIMAL" description="Value in the range of [0, 1], indicating how healthy the detector is: 0 = dead/ totally unreliable, 1 = 100% trustworthy."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -825,11 +835,11 @@
 
 	<!-- Signals -->
 
-	<table name="signal_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="signal_sets" idMethod="native" description="This is a set of signals used by a scenario.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this signal set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this signal set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description of this signal set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -840,10 +850,12 @@
 		</foreign-key>
 	</table>
 
-	<table name="signals" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="node_id" required="true" domain="ID"/>
-		<column name="signal_set_id" required="true" domain="ID"/>
+	<table name="signals" idMethod="native" description="This record represents a signal on a node.  This can be any type of signal, but this is primarily a representation of your typical three light signal.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this signal."/>
+		<column name="set_id" required="true" domain="ID" description="The signal set that owns this signal."/>
+		<column name="node_id" required="true" domain="ID" description="The node that this signal is associated with."/>
+		<column name="std_org" domain="NAME_BUF" default="NTCPIP" description="The Standards oraganization this sginal is based upon."/>
+		<column name="std_id" domain="NAME_BUF" description="The standard code of this signal in the context of the standard organization as defined in the column STD_ORG"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -853,17 +865,18 @@
 			<reference local="node_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="signal_sets">
-			<reference local="signal_set_id" foreign="id"/>
+			<reference local="set_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="phases">
-		<column name="signal_id" primaryKey="true" domain="ID"/>
+	<table name="signal_phases" javaName="Phases" description="These are signal phase minimums.  Processes within simlation can modify a signals properties but cannot modify outside the parameters that a phse record presents.">
+		<column name="signal_id" primaryKey="true" domain="ID" description="The signal this phase is associated with."/>
 		<column name="nema" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
-		<column name="protected" javaName="isProtected" required="true" domain="BOOL" description=""/>
-		<column name="permissive" required="true" domain="BOOL" description=""/>
-		<column name="lag" required="true" domain="BOOL" description=""/>
-		<column name="recall" required="true" domain="BOOL" description=""/>
+		<column name="is_protected" required="true" domain="BOOL" description="Is this a protected signal."/>
+		<column name="is_permissive" required="true" domain="BOOL" description="Is this a permisive signal."/>
+		<column name="is_lagged" required="true" domain="BOOL" description="Is the signal lagged."/>
+		<column name="recall_type" type="DECIMAL" size="3" scale="0" description="What recal type is associated with this signal."/>
+		<column name="do_recall" required="true" domain="BOOL" description="Perform a recall."/>
 		<column name="min_green_time" required="true" domain="DECIMAL" description="Minimum green time in seconds."/>
 		<column name="yellow_time" required="true" domain="DECIMAL" description="Yellow time in seconds."/>
 		<column name="red_clear_time" required="true" domain="DECIMAL" description="Time required to clear the intersection after the signal turned red, in seconds."/>
@@ -886,7 +899,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="phases">
+		<foreign-key foreignTable="signal_phases">
 			<reference local="signal_id" foreign="signal_id"/>
 			<reference local="nema" foreign="nema"/>
 		</foreign-key>
@@ -898,11 +911,11 @@
 
 	<!-- Controllers -->
 
-	<table name="controller_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="controller_sets" idMethod="native" description="A set of controllers for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this controller set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this controller set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this controller set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -963,11 +976,11 @@
 
 	<!-- Ensamble Kalman Filter -->
 
-	<table name="enkf_noise_parameter_sets">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="enkf_np_sets" javaName="EnKFNoiseParameterSets" description="A set of ENKF noise profiles for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this ENKF_NP set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this ENKF_NP set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this ENKF_NP set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -978,9 +991,9 @@
 		</foreign-key>
 	</table>
 
-	<table name="enkf_noise_parameters">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="enkf_noise_parameter_set_id" required="true" domain="ID"/>
+	<table name="enkf_np" javaName="EnKFNoiseParameters" description="This record represents and enkf noise paremeter that is based on the output of a sensor.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this enkf_noise"/>
+		<column name="enkf_np_set_id" required="true" domain="ID" description="The enkf_np_set record that owns this enkf_np record"/>
 		<column name="source" domain="NAME_BUF" description="Data source: model, PeMS, probes, etc."/>
 		<column name="mean" required="true" domain="DECIMAL" description="Noise mean in m/s."/>
 		<column name="stdev" required="true" domain="DECIMAL" description="Noise standard deviation in m/s."/>
@@ -989,19 +1002,19 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="enkf_noise_parameter_sets">
-			<reference local="enkf_noise_parameter_set_id" foreign="id"/>
+		<foreign-key foreignTable="enkf_np_sets">
+			<reference local="enkf_np_set_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Events -->
 
-	<table name="event_sets" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="event_sets" idMethod="native" description="A set of events for this project.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this event set."/>
+		<column name="name" domain="NAME_BUF" description="The short name for this event set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this event set."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1012,14 +1025,26 @@
 		</foreign-key>
 	</table>
 
+	<table name="event_types" idMethod="native" description="each event is of a particular type.  This table represents the allowable types.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this event type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this even type, eg: accident, rain etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this event type to be used."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
 	<table name="events" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="event_set_id" required="true" domain="ID"/>
-		<column name="tstamp" required="true" type="DECIMAL"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="id" primaryKey="true" domain="ID" description="The unique identifer for this event."/>
+		<column name="event_set_id" required="true" domain="ID" description="The event set that owns this event."/>
+		<column name="action_time" javaName="tstamp" required="true" type="DECIMAL" description="The time in seconds that this event will take its action in the simulation time stream."/>
+		<column name="event_type_id" required="true" domain="ID" description="The type of event.  Rain,  wreck, light change, pretty much anything."/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
-		<column name="display_geometry" domain="GEOMETRY" description="SRID 4326"/>
+		<column name="name" domain="NAME_BUF" description="The name of the event."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="Long comment for this event."/>
+		<column name="disp_geom" javaName="displayGeometry" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="enabled" required="true" domain="BOOL" description="If the event is not enabled, it does not fire."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1028,6 +1053,9 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="event_types">
+			<reference local="event_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -1051,8 +1079,8 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="out_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -1120,24 +1148,24 @@
 
 	<!-- Main Scenario Tables -->
 
-	<table name="scenarios" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="project_id" required="true" domain="ID"/>
-		<column name="network_connection_set_id" domain="ID"/>
-		<column name="vehicle_type_set_id" domain="ID"/>
-		<column name="signal_set_id" domain="ID"/>
-		<column name="sensor_set_id" domain="ID"/>
-		<column name="split_ratio_profile_set_id" domain="ID"/>
-		<column name="weaving_factor_set_id" domain="ID"/>
-		<column name="initial_density_set_id" domain="ID"/>
-		<column name="fundamental_diagram_profile_set_id" domain="ID"/>
-		<column name="demand_profile_set_id" domain="ID"/>
-		<column name="downstream_boundary_capacity_profile_set_id" domain="ID"/>
-		<column name="controller_set_id" domain="ID"/>
-		<column name="event_set_id" domain="ID"/>
-		<column name="enkf_noise_parameter_set_id" domain="ID"/>
-		<column name="name" domain="NAME_BUF"/>
-		<column name="description" domain="DESCRIPTION_BUF"/>
+	<table name="scenarios" idMethod="native" description="A scenario is a set of links to various tables that each hold data that identifies conditions that set a scenario''s initial conditions.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this scenario."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this scenario.  A scenario can only be owned by one project."/>
+		<column name="name" domain="NAME_BUF" description="The short name of this scenario."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="Long description of this scenario."/>
+		<column name="net_conn_set_id" domain="ID" description="The ID of the network connection set for this scenario."/>
+		<column name="veh_type_set_id" domain="ID" description="The vehicle set for this scenario."/>
+		<column name="signal_set_id" domain="ID" description="The signal set for this scenario."/>
+		<column name="sensor_set_id" domain="ID" description="The sensor set for this scenario."/>
+		<column name="split_ratio_set_id" domain="ID" description="The set of split ratios for this scenario."/>
+		<column name="weave_set_id" domain="ID" description="The set of weaving factors for this scenario."/>
+		<column name="init_dens_set_id" domain="ID" description="The initial Density Set for this scenario."/>
+		<column name="fund_diag_set_id" domain="ID" description="The fundemental diagram profile set for this scenario."/>
+		<column name="demand_prof_set_id" domain="ID" description="A set of demand Profiles."/>
+		<column name="ds_bndry_cap_set_id" domain="ID" description="This is the downstream boundary capacity profile set id for this scenario."/>
+		<column name="controller_set_id" domain="ID" description="This is the controller set for this scenario."/>
+		<column name="event_set_id" domain="ID" description="The event set for this scenario."/>
+		<column name="enkf_np_set_id" domain="ID" description="This is the set of ENKF noise parameters for this scenario."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1146,8 +1174,8 @@
 		<foreign-key foreignTable="projects">
 			<reference local="project_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="network_connection_sets">
-			<reference local="network_connection_set_id" foreign="id"/>
+		<foreign-key foreignTable="net_conn_sets">
+			<reference local="net_conn_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="signal_sets">
 			<reference local="signal_set_id" foreign="id"/>
@@ -1155,23 +1183,23 @@
 		<foreign-key foreignTable="sensor_sets">
 			<reference local="sensor_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="initial_density_sets">
-			<reference local="initial_density_set_id" foreign="id"/>
+		<foreign-key foreignTable="init_dens_sets">
+			<reference local="init_dens_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="fundamental_diagram_profile_sets">
-			<reference local="fundamental_diagram_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="fund_diag_sets">
+			<reference local="fund_diag_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="demand_profile_sets">
-			<reference local="demand_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="demand_prof_sets">
+			<reference local="demand_prof_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="downstream_boundary_capacity_profile_sets">
-			<reference local="downstream_boundary_capacity_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="ds_bndry_cap_sets">
+			<reference local="ds_bndry_cap_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="split_ratio_profile_sets">
-			<reference local="split_ratio_profile_set_id" foreign="id"/>
+		<foreign-key foreignTable="split_ratio_sets">
+			<reference local="split_ratio_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="weaving_factor_sets">
-			<reference local="weaving_factor_set_id" foreign="id"/>
+		<foreign-key foreignTable="weave_sets">
+			<reference local="weave_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="controller_sets">
 			<reference local="controller_set_id" foreign="id"/>
@@ -1179,11 +1207,11 @@
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="enkf_noise_parameter_sets">
-			<reference local="enkf_noise_parameter_set_id" foreign="id"/>
+		<foreign-key foreignTable="enkf_np_sets">
+			<reference local="enkf_np_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_type_sets">
-			<reference local="vehicle_type_set_id" foreign="id"/>
+		<foreign-key foreignTable="veh_type_sets">
+			<reference local="veh_type_set_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
@@ -1203,9 +1231,9 @@
 		</foreign-key>
 	</table>
 	
-	<table name="destination_network_sets">
+	<table name="dest_network_sets" javaName="DestinationNetworkSets" description="This is a set of network connections.  Each set is owned by a project.  Each set may be used by one or more scenarios.">
 		<column name="scenario_id" required="true" domain="ID"/>
-		<column name="destination_network_id" required="true" domain="ID"/>
+		<column name="dest_network_id" required="true" domain="ID" description="The uique ID for this destination network set"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1214,12 +1242,12 @@
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="destination_networks">
-			<reference local="destination_network_id" foreign="id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="route_sets">
+	<table name="route_sets" description="This is a set of network connections.  Each set is owned by a project.  Each set may be used by one or more scenarios.'">
 		<column name="scenario_id" required="true" domain="ID"/>
 		<column name="route_id" required="true" domain="ID"/>
 		<column name="created" required="true" type="DATE"/>
@@ -1282,12 +1310,12 @@
 		</unique>
 	</table>
 
-	<table name="default_simulation_settings">
+	<table name="def_sim_settings" description="These are the default settings for a given scenario">
 		<column name="scenario_id" primaryKey="true" domain="ID"/>
-		<column name="simulation_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
-		<column name="simulation_duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
-		<column name="simulation_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
-		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="sim_start_time" required="true" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
+		<column name="sim_duration" required="true" domain="DECIMAL" default="86400.0" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="sim_step_freq" domain="DECIMAL" required="true" default="1.0" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_write_freq" domain="DECIMAL" required="true" default="60.0" description="Frequency of writing the output in seconds. Default is 60."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1362,8 +1390,8 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="destination_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="vehicle_types">
-			<reference local="vehicle_type_id" foreign="vehicle_type_id"/>
+		<foreign-key foreignTable="veh_types">
+			<reference local="vehicle_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
