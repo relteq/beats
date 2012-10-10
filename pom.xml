@@ -2,18 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
     http://maven.apache.org/maven-v4_0_0.xsd">
-	
-	<parent>
-		<groupId>edu.berkeley.path</groupId>
-		<artifactId>CC</artifactId>
-		<version>0.1-SNAPSHOT</version>
-	</parent>
 
+	<groupId>edu.berkeley.path</groupId>
 	<artifactId>beats</artifactId>
-
+	<version>0.1-SNAPSHOT</version>
 	<modelVersion>4.0.0</modelVersion>
-	
-	<properties>		
+
+	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -22,7 +17,7 @@
 		<developerConnection>scm:git:git@github.com:calpath/sirius.git</developerConnection>
 		<url>git@github.com:calpath/sirius.git</url>
 	</scm>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -48,7 +43,7 @@
 					<execution>
 						<phase>generate-sources</phase>
 						<configuration>
-							<schemaDir>${basedir}\data</schemaDir>
+							<schemaDir>${basedir}/data</schemaDir>
 							<targetDatabase>derby</targetDatabase>
 							<targetPackage>edu.berkeley.path.beats.om</targetPackage>
 							<options>
@@ -64,7 +59,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
         <dependency>
 			<groupId>com.sun.xml.bind</groupId>
@@ -106,5 +101,11 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.12</version>
 		</dependency>
+    		<dependency>
+      				<groupId>junit</groupId>
+      				<artifactId>junit</artifactId>
+      				<version>3.8.1</version>
+      				<scope>test</scope>
+    		</dependency>
     </dependencies>
 </project>
