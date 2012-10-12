@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<scenario name="Multiple Types" schemaVersion="2.0.2">
+    <settings>
+        <VehicleTypes>
+            <vehicle_type name="car" weight="1.0"/>
+            <vehicle_type name="truck" weight="2.5"/>
+        </VehicleTypes>
+        <units>US</units>
+    </settings>
+    <NetworkList>
+        <network name="New Network" dt="5" id="-1">
+            <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
+            <position>
+                <point lat="37.857985471963" lng="-122.300827883184"/>
+            </position>
+            <NodeList>
+                <node type="terminal" id="-1">
+                    <outputs/>
+                    <inputs/>
+                    <position>
+                        <point lat="37.8399873791942" lng="-122.296725511551"/>
+                    </position>
+                </node>
+                <node type="simple" id="-2">
+                    <outputs>
+                        <output link_id="-2"/>
+                    </outputs>
+                    <inputs>
+                        <input link_id="-1"/>
+                    </inputs>
+                    <position>
+                        <point lat="37.8437831193107" lng="-122.297605276108"/>
+                    </position>
+                </node>
+                <node type="simple" id="-3">
+                    <outputs>
+                        <output link_id="-3"/>
+                    </outputs>
+                    <inputs>
+                        <input link_id="-2"/>
+                        <input link_id="-6"/>
+                    </inputs>
+                    <position>
+                        <point lat="37.8524075346173" lng="-122.299579381943"/>
+                    </position>
+                </node>
+                <node type="simple" id="-4">
+                    <outputs>
+                        <output link_id="-4"/>
+                        <output link_id="-7"/>
+                    </outputs>
+                    <inputs>
+                        <input link_id="-3"/>
+                    </inputs>
+                    <position>
+                        <point lat="37.8639002449351" lng="-122.302840411663"/>
+                    </position>
+                </node>
+                <node type="simple" id="-5">
+                    <outputs>
+                        <output link_id="-5"/>
+                    </outputs>
+                    <inputs>
+                        <input link_id="-4"/>
+                    </inputs>
+                    <position>
+                        <point lat="37.8713302695572" lng="-122.305008172989"/>
+                    </position>
+                </node>
+                <node type="terminal" id="-6">
+                    <outputs/>
+                    <inputs/>
+                    <position>
+                        <point lat="37.8764455192813" lng="-122.306660413742"/>
+                    </position>
+                </node>
+                <node type="terminal" id="-7">
+                    <outputs/>
+                    <inputs/>
+                    <position>
+                        <point lat="37.8490527738834" lng="-122.296017408371"/>
+                    </position>
+                </node>
+                <node type="terminal" id="-8">
+                    <outputs/>
+                    <inputs/>
+                    <position>
+                        <point lat="37.8669769349244" lng="-122.302186489105"/>
+                    </position>
+                </node>
+            </NodeList>
+            <LinkList>
+                <link lanes="1" length="429.282361519117083648" type="freeway" id="-1">
+                    <begin node_id="-1"/>
+                    <end node_id="-2"/>
+                    <roads>
+                        <road name="I-80 E"/>
+                    </roads>
+                    <dynamics type="CTM"/>
+                </link>
+                <link lanes="1" length="976.024459811775825792" type="freeway" id="-2">
+                    <begin node_id="-2"/>
+                    <end node_id="-3"/>
+                    <roads>
+                        <road name="I-80 E"/>
+                    </roads>
+                    <dynamics type="CTM"/>
+                </link>
+                <link lanes="1" length="1311.083050664645964288" type="freeway" id="-3">
+                    <begin node_id="-3"/>
+                    <end node_id="-4"/>
+                    <roads>
+                        <road name="I-80 E"/>
+                    </roads>
+                    <dynamics type="CTM"/>
+                </link>
+                <link lanes="1" length="848.919829890967148160" type="freeway" id="-4">
+                    <begin node_id="-4"/>
+                    <end node_id="-5"/>
+                    <roads>
+                        <road name="I-80 E"/>
+                    </roads>
+                    <dynamics type="CTM"/>
+                </link>
+                <link lanes="1" length="587.251471463024113152" type="freeway" id="-5">
+                    <begin node_id="-5"/>
+                    <end node_id="-6"/>
+                    <roads>
+                        <road name="I-80 E"/>
+                    </roads>
+                    <dynamics type="CTM"/>
+                </link>
+                <link lanes="1" length="598.818297926972572416" type="onramp" id="-6">
+                    <begin node_id="-7"/>
+                    <end node_id="-3"/>
+                    <dynamics type="CTM"/>
+                </link>
+                <link lanes="1" length="384.837405096538513152" type="offramp" id="-7">
+                    <begin node_id="-4"/>
+                    <end node_id="-8"/>
+                    <roads>
+                        <road name="University Ave"/>
+                    </roads>
+                    <dynamics type="CTM"/>
+                </link>
+            </LinkList>
+        </network>
+    </NetworkList>
+    <InitialDensitySet/>
+    <SplitRatioProfileSet>
+        <VehicleTypeOrder>
+            <vehicle_type name="car"/>
+            <vehicle_type name="truck"/>
+        </VehicleTypeOrder>
+        <splitratioProfile node_id="-2" dt="300">
+            <splitratio link_in="-1" link_out="-2">1:.1</splitratio>
+        </splitratioProfile>
+        <splitratioProfile node_id="-3" dt="300">
+            <splitratio link_in="-2" link_out="-3">1:.1</splitratio>
+            <splitratio link_in="-6" link_out="-3">1:.1</splitratio>
+        </splitratioProfile>
+        <splitratioProfile node_id="-4" dt="300">
+            <splitratio link_in="-3" link_out="-4">1:.1</splitratio>
+            <splitratio link_in="-3" link_out="-7">0:0</splitratio>
+        </splitratioProfile>
+        <splitratioProfile node_id="-5" dt="300">
+            <splitratio link_in="-4" link_out="-5">1:.1</splitratio>
+        </splitratioProfile>
+    </SplitRatioProfileSet>
+    <EventSet>
+        <event id="-1" tstamp="4" enabled="true" type="fundamental_diagram">
+            <targetElements>
+                <scenarioElement type="link" id="-2"/>
+            </targetElements>
+            <parameters>
+                <parameter name="capacity" value="0.25"/>
+                <parameter name="capacity_drop" value="0"/>
+                <parameter name="congestion_speed" value="6.7056"/>
+                <parameter name="jam_density" value="0.0466028"/>
+                <parameter name="free_flow_speed" value="26.8224"/>
+            </parameters>
+        </event>
+        <event id="-2" tstamp="20" enabled="true" type="fundamental_diagram">
+            <targetElements>
+                <scenarioElement type="link" id="-3"/>
+            </targetElements>
+        </event>
+    </EventSet>
+    <DemandProfileSet>
+        <VehicleTypeOrder>
+            <vehicle_type name="truck"/>
+            <vehicle_type name="car"/>
+        </VehicleTypeOrder>
+        <demandProfile knob="1" dt="300" link_id_origin="-6">0.111111:0.0555556</demandProfile>
+        <demandProfile knob="1" dt="300" link_id_origin="-1">0.0277778:0.0138889</demandProfile>
+    </DemandProfileSet>
+    <ControllerSet>
+        <controller type="IRM_alinea" id="-1" dt="5" enabled="true">
+            <targetElements>
+                <scenarioElement type="link" id="-6"/>
+            </targetElements>
+            <feedbackElements>
+                <scenarioElement type="link" id="-2" usage="mainlinelink"/>
+            </feedbackElements>
+            <parameters>
+                <parameter name="gain" value="22.352"/>
+            </parameters>
+        </controller>
+    </ControllerSet>
+    <FundamentalDiagramProfileSet>
+        <fundamentalDiagramProfile link_id="-1">
+            <fundamentalDiagram free_flow_speed="26.8224" critical_speed="26.8224" congestion_speed="6.7056" capacity="0.5" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+        <fundamentalDiagramProfile link_id="-2">
+            <fundamentalDiagram free_flow_speed="26.8224" critical_speed="26.8224" congestion_speed="6.7056" capacity="0.5" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+        <fundamentalDiagramProfile link_id="-3">
+            <fundamentalDiagram free_flow_speed="26.8224" critical_speed="26.8224" congestion_speed="6.7056" capacity="0.5" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+        <fundamentalDiagramProfile link_id="-4">
+            <fundamentalDiagram free_flow_speed="4.4704" critical_speed="26.8224" congestion_speed="1.1176" capacity="0.0833333" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+        <fundamentalDiagramProfile link_id="-5">
+            <fundamentalDiagram free_flow_speed="26.8224" critical_speed="26.8224" congestion_speed="6.7056" capacity="0.5" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+        <fundamentalDiagramProfile link_id="-6">
+            <fundamentalDiagram free_flow_speed="26.8224" critical_speed="26.8224" congestion_speed="6.7056" capacity="0.5" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+        <fundamentalDiagramProfile link_id="-7">
+            <fundamentalDiagram free_flow_speed="26.8224" critical_speed="26.8224" congestion_speed="6.7056" capacity="0.5" jam_density="0.0932057" capacity_drop="0"/>
+        </fundamentalDiagramProfile>
+    </FundamentalDiagramProfileSet>
+</scenario>
