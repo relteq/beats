@@ -193,18 +193,16 @@ public class ScenarioLoader {
 	 */
 	private VehicleTypes save(edu.berkeley.path.beats.jaxb.VehicleType vt, VehicleTypeSets db_vts) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(VehicleTypesPeer.PROJECT_ID, getProjectId());
-		crit.add(VehicleTypesPeer.NAME, vt.getName());
-		crit.add(VehicleTypesPeer.WEIGHT, vt.getWeight());
+		crit.add(VehicleTypesPeer.DESCRIPTION, vt.getName());
+		crit.add(VehicleTypesPeer.SIZE_FACTOR, vt.getWeight());
 		@SuppressWarnings("unchecked")
 		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);
 		VehicleTypes db_vtype = null;
 		if (db_vt_l.isEmpty()) {
 			db_vtype = new VehicleTypes();
-			db_vtype.setProjectId(getProjectId());
-			db_vtype.setName(vt.getName());
+			db_vtype.setDescription(vt.getName());
 			db_vtype.setWeight(vt.getWeight());
-			db_vtype.setStandard(Boolean.FALSE);
+			db_vtype.setIsStandard(Boolean.FALSE);
 			db_vtype.save(conn);
 		} else {
 			db_vtype = db_vt_l.get(0);
@@ -325,6 +323,24 @@ public class ScenarioLoader {
 			}
 	}
 
+	private LinkTypes getLinkTypes(String linktype) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(LinkTypesPeer.DESCRIPTION, linktype);
+		@SuppressWarnings("unchecked")
+		List<LinkTypes> db_lt_l = LinkTypesPeer.doSelect(crit, conn);
+		if (!db_lt_l.isEmpty()) {
+			if (1 < db_lt_l.size())
+				logger.warn("Found " + db_lt_l.size() + " link types '" + linktype + "'");
+			return db_lt_l.get(0);
+		} else {
+			LinkTypes db_lt = new LinkTypes();
+			db_lt.setDescription(linktype);
+			db_lt.setInUse(Boolean.TRUE);
+			db_lt.save(conn);
+			return db_lt;
+		}
+	}
+
 	/**
 	 * Imports a link
 	 * @param link
@@ -349,9 +365,9 @@ public class ScenarioLoader {
 		db_link.setInSynch(link.isInSync());
 
 		// link type
-		LinkType db_ltype = new LinkType();
-		db_ltype.setType(link.getType());
-		db_link.addLinkType(db_ltype, conn);
+		LinkTypeDet db_ltdet = new LinkTypeDet();
+		db_ltdet.setLinkTypes(getLinkTypes(link.getType()));
+		db_link.addLinkTypeDet(db_ltdet, conn);
 
 		// link lanes
 		LinkLanes db_llanes = new LinkLanes();
@@ -434,9 +450,9 @@ public class ScenarioLoader {
 		db_phase.setSignals(db_signal);
 		db_phase.setNema(phase.getNema().intValue());
 		db_phase.setIsProtected(phase.isProtected());
-		db_phase.setPermissive(phase.isPermissive());
-		db_phase.setLag(phase.isLag());
-		db_phase.setRecall(phase.isRecall());
+		db_phase.setIsPermissive(phase.isPermissive());
+		db_phase.setIsLagged(phase.isLag());
+		db_phase.setDoRecall(phase.isRecall());
 		db_phase.setMinGreenTime(phase.getMinGreenTime());
 		db_phase.setYellowTime(phase.getYellowTime());
 		db_phase.setRedClearTime(phase.getRedClearTime());
@@ -520,7 +536,7 @@ public class ScenarioLoader {
 		for (edu.berkeley.path.beats.jaxb.VehicleType vt : order.getVehicleType()) {
 			reordered_vt[i] = null;
 			for (VehicleTypes db_vt : vehicle_type)
-				if (vt.getName().equals(db_vt.getName())) {
+				if (vt.getName().equals(db_vt.getDescription())) {
 					reordered_vt[i] = db_vt;
 					break;
 				}
@@ -650,7 +666,7 @@ public class ScenarioLoader {
 		db_srp.setNetworkId(db_node.getNetworkId());
 		if (null != srp.getLinkIdDestination())
 			db_srp.setDestinationLinkId(getDBLinkId(srp.getLinkIdDestination()));
-		db_srp.setDt(srp.getDt());
+		db_srp.setSampleRate(srp.getDt());
 		db_srp.setStartTime(srp.getStartTime());
 		db_srp.save(conn);
 		for (edu.berkeley.path.beats.jaxb.Splitratio sr : srp.getSplitratio()) {
@@ -704,7 +720,7 @@ public class ScenarioLoader {
 		FundamentalDiagramProfiles db_fdprofile = new FundamentalDiagramProfiles();
 		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
 		db_fdprofile.setLinkId(getDBLinkId(fdprofile.getLinkId()));
-		db_fdprofile.setDt(fdprofile.getDt());
+		db_fdprofile.setSampleRate(fdprofile.getDt());
 		db_fdprofile.setStartTime(fdprofile.getStartTime());
 		db_fdprofile.save(conn);
 		int num = 0;
@@ -767,7 +783,7 @@ public class ScenarioLoader {
 		db_dp.setOriginLinkId(getDBLinkId(dp.getLinkIdOrigin()));
 		if (null != dp.getDestinationLinkId())
 			db_dp.setDestinationLinkId(getDBLinkId(dp.getDestinationLinkId()));
-		db_dp.setDt(dp.getDt());
+		db_dp.setSampleRate(dp.getDt());
 		db_dp.setStartTime(dp.getStartTime());
 		db_dp.setKnob(dp.getKnob());
 		db_dp.setStdDeviationAdditive(dp.getStdDevAdd());
@@ -853,7 +869,7 @@ public class ScenarioLoader {
 		DownstreamBoundaryCapacityProfiles db_dbcp = new DownstreamBoundaryCapacityProfiles();
 		db_dbcp.setDownstreamBoundaryCapacityProfileSets(db_dbcps);
 		db_dbcp.setLinkId(getDBLinkId(cp.getLinkId()));
-		db_dbcp.setDt(cp.getDt());
+		db_dbcp.setSampleRate(cp.getDt());
 		db_dbcp.setStartTime(cp.getStartTime());
 		db_dbcp.save(conn);
 		// TODO delimiter = ':' or ','?
@@ -966,6 +982,24 @@ public class ScenarioLoader {
 		return db_eset;
 	}
 
+	private EventTypes getEventType(String event_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(EventTypesPeer.DESCRIPTION, event_type);
+		@SuppressWarnings("unchecked")
+		List<EventTypes> db_event_type_l = EventTypesPeer.doSelect(crit, conn);
+		if (!db_event_type_l.isEmpty()) {
+			if (1 < db_event_type_l.size())
+				logger.warn("Found " + db_event_type_l.size() + " event types '" + event_type + "'");
+			return db_event_type_l.get(0);
+		} else {
+			EventTypes db_event_type = new EventTypes();
+			db_event_type.setDescription(event_type);
+			db_event_type.setInUse(Boolean.TRUE);
+			db_event_type.save(conn);
+			return db_event_type;
+		}
+	}
+
 	/**
 	 * Imports an event
 	 * @param event
@@ -976,7 +1010,7 @@ public class ScenarioLoader {
 	private Events save(edu.berkeley.path.beats.jaxb.Event event, EventSets db_eset) throws TorqueException {
 		Events db_event = new Events();
 		db_event.setEventSets(db_eset);
-		db_event.setType(event.getType());
+		db_event.setEventTypes(getEventType(event.getType()));
 		db_event.setTstamp(event.getTstamp());
 		db_event.setJavaClass(event.getJavaClass());
 		db_event.setDescription(event.getDescription());
