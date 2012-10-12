@@ -1,9 +1,6 @@
-/build/
-/bin/
-/doc/
 /lib/
+/src/main/generated-java/
 sirius.jar
-/src/com/relteq/sirius/jaxb/
 output_*
 *.asv
 *.class
@@ -11,8 +8,6 @@ output_*
 velocity.log
 /sirius/
 /derby.log
-/src/com/relteq/sirius/om/
-/src/org/apache/torque/linkage/
 *.pptx
 
 *~
