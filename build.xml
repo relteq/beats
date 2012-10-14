@@ -102,7 +102,7 @@
 
 	<target name="resources" depends="sql,version">
 		<copy file="${schema.file}" todir="${classes.dir}"/>
-		<copy file="log4j.properties" todir="${classes.dir}"/>
+		<copy file="src/main/resources/log4j.properties" todir="${classes.dir}"/>
 		<copy todir="${classes.dir}/sql">
 			<fileset dir="${torque.output.dir}/sql">
 				<include name="**/*.sql"/>
