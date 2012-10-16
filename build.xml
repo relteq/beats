@@ -4,7 +4,7 @@
 		xmlns:ivy="antlib:org.apache.ivy.ant" xmlns="antlib:org.apache.tools.ant">
 	<property name="gen.src.dir" value="${basedir}/target/generated-sources"/>
 	<property name="main.java.dir" value="${basedir}/src/main/java"/>
-	<property name="jaxb.java.dir" value="${gen.src.dir}/jaxb"/>
+	<property name="jaxb.java.dir" value="${gen.src.dir}/xjc"/>
 	<property name="test.java.dir" value="${basedir}/src/test/java"/>
 	<property name="util.java.dir" value="${basedir}/src/util/java"/>
 	<property name="classes.dir" value="${basedir}/target/classes"/>
@@ -100,14 +100,9 @@
 		</javac>
 	</target>
 
-	<target name="resources" depends="sql,version">
-		<copy file="${schema.file}" todir="${classes.dir}"/>
-		<copy file="src/main/resources/log4j.properties" todir="${classes.dir}"/>
-		<copy todir="${classes.dir}/sql">
-			<fileset dir="${torque.output.dir}/sql">
-				<include name="**/*.sql"/>
-			</fileset>
-		</copy>
+	<target name="resources">
+		<antcall target="sql"/>
+		<antcall target="version"/>
 	</target>
 
 	<target name="jar" depends="compile,resources,deps-runtime" description="build a jar">
@@ -119,6 +114,8 @@
 				<attribute name="Main-Class" value="${base.package}.Runner"/>
 				<attribute name="Class-Path" value="${jar.classpath}"/>
 			</manifest>
+			<zipfileset dir="${torque.sql.dir}" includes="**/*.sql" prefix="sql"/>
+			<fileset dir="${basedir}/src/main/resources"/>
 		</jar>
 	</target>
 
@@ -224,23 +221,23 @@
 
 	<uptodate property="sql.uptodate"
 			srcfile="${torque.schema.file}"
-			targetfile="${torque.output.dir}/sql/.done"/>
+			targetfile="${torque.sql.dir}/.done"/>
 
 	<target name="sql" depends="deps-generate" unless="sql.uptodate"
 			description="generate sql from xml db schema">
 		<ant antfile="${torque.buildfile}" target="sql-all">
 			<property name="torque.database" value="derby"/>
-			<property name="torque.sql.dir" value="${torque.output.dir}/sql/derby"/>
+			<property name="torque.sql.dir" value="${torque.sql.dir}/derby"/>
 		</ant>
 		<ant antfile="${torque.buildfile}" target="sql-all">
 			<property name="torque.database" value="postgresql"/>
-			<property name="torque.sql.dir" value="${torque.output.dir}/sql/postgresql"/>
+			<property name="torque.sql.dir" value="${torque.sql.dir}/postgresql"/>
 		</ant>
 		<ant antfile="${torque.buildfile}" target="sql-all">
 			<property name="torque.database" value="oracle"/>
-			<property name="torque.sql.dir" value="${torque.output.dir}/sql/oracle"/>
+			<property name="torque.sql.dir" value="${torque.sql.dir}/oracle"/>
 		</ant>
-		<touch file="${torque.output.dir}/sql/.done"/>
+		<touch file="${torque.sql.dir}/.done"/>
 	</target>
 
 	<target name="doc-db" depends="deps-generate"

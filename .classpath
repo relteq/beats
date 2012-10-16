@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="target/generated-sources/xjc"/>
 	<classpathentry kind="src" path="src/main/generated-java"/>
-	<classpathentry kind="src" path="target/generated-sources/jaxb"/>
 	<classpathentry kind="src" path="target/generated-sources/torque"/>
 	<classpathentry kind="src" output="target/util-classes" path="src/util/java"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
