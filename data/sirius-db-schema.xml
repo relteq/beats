@@ -11,12 +11,12 @@
 	<domain name="NAME_BUF" type="VARCHAR" size="64"/>
 	<domain name="STRING_VERSION" type="VARCHAR" size="64"/>
 	<domain name="VALUE_BUF" type="VARCHAR" size="256"/>
-	<domain name="VALUE_TYPE" type="VARCHAR" size="16"/>
+	<domain name="RUN_MODE" type="VARCHAR" size="16"/>
 	<domain name="JAVA_CLASS" type="VARCHAR" size="128"/>
 	<domain name="DESCRIPTION_BUF" type="VARCHAR" size="2048"/>
 	<domain name="ELEMENT_TYPE" type="VARCHAR" size="32"/>
+	<domain name="APPLICATION_TYPE" type="VARCHAR" size="32"/>
 	<domain name="MODEL_TYPE" type="VARCHAR" size="32"/>
-	<domain name="SENSOR_TYPE" type="VARCHAR" size="32"/>
 	<domain name="ENCODED_SHAPE" type="VARCHAR" size="2048"/>
 	<domain name="GEOMETRY" type="VARCHAR" size="2048"/>
 	<domain name="AGGREGATION" type="VARCHAR" size="8"/>
@@ -76,8 +76,8 @@
 	<table name="nodes" description="There are nodes.  Nodes represent the beginning or ending of a link.">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID of this node within a given network."/>
 		<column name="network_id" primaryKey="true" domain="ID" description="The ID number of the network this node belongs in."/>
-		<column name="geom" required="true" domain="GEOMETRY" description="Geo location: SRID 4326"/>
-		<column name="in_synch" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
+		<column name="geom" required="true" domain="GEOMETRY" description="Geo location: SRID 4326."/>
+		<column name="in_sync" domain="BOOL" description="This flag indicates whether the node type and position are in sync with the other nodes in the family."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -106,18 +106,32 @@
 		</foreign-key>
 	</table>
 
-	<table name="node_type">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+	<table name="node_types" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this node type."/>
+		<column name="description" domain="NAME_BUF" description="A description of the node type."/>
+		<column name="in_use" domain="BOOL" description="This indicates wether or not this node type should be shown when a user selects a node type. Setting this parameter to false prevents a user from selecting it but allows historical reporting."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="node_type_det" description="The node type for a node in a network as defined by link types.">
+		<column name="node_id" primaryKey="true" domain="ID" description="The node id for this detail."/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this detail."/>
+		<column name="node_type_id" required="true" domain="ID" description="The node's type is derived from node_types."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="nodes">
-			<reference local="id" foreign="id"/>
+			<reference local="node_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_types">
+			<reference local="node_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -162,7 +176,7 @@
 		<column name="geom" required="true" domain="GEOMETRY" description="Geometry: SRID 4326"/>
 		<column name="length" required="true" domain="DECIMAL" description="Length in meters."/>
 		<column name="detail_level" required="true" type="INTEGER" description="From 1 (important) to 5 (less so) used for subselection."/>
-		<column name="in_synch" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
+		<column name="in_sync" domain="BOOL" description="This flag indicates whether the link configuration is synchronized with the rest of the links in the family."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -198,9 +212,9 @@
 	</table>
 
 	<table name="link_types" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this link type"/>
-		<column name="description" domain="NAME_BUF" description="A description of the link type"/>
-		<column name="in_use" domain="BOOL" description="This indicates wether or not this link type should be shown when a user selects a link type.  This prevents a user from selecting it but allows historical reporting."/>
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this link type."/>
+		<column name="description" domain="NAME_BUF" description="A description of the link type."/>
+		<column name="in_use" domain="BOOL" description="This indicates wether or not this link type should be shown when a user selects a link type. Setting this parameter to false prevents a user from selecting it but allows historical reporting."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -209,9 +223,9 @@
 	</table>
 
 	<table name="link_type_det" description="The link type for a link in a network as defined by link types.">
-		<column name="link_id" primaryKey="true" domain="ID" description="The link id for this detail"/>
-		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this detail"/>
-		<column name="link_type_id" required="true" domain="ID" description="The links type derived from link_types"/>
+		<column name="link_id" primaryKey="true" domain="ID" description="The link id for this detail."/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this detail."/>
+		<column name="link_type_id" required="true" domain="ID" description="The links type derived from link_types."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -271,7 +285,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="link_turn_rest" javaName="LinkTurnRestrictions" description="Turn Restrictions from unique to a network.">
+	<table name="link_turn_rest" javaName="LinkTurnRestrictions" description="Turn restrictions from unique to a network.">
 		<column name="from_net_id" javaName="fromNetworkId" primaryKey="true" domain="ID"/>
 		<column name="from_link_id" primaryKey="true" domain="ID"/>
 		<column name="to_net_id" javaName="toNetworkId" primaryKey="true" domain="ID"/>
@@ -465,11 +479,12 @@
 	
 	<!-- Initial Conditions -->
 
-	<table name="init_dens_sets" javaName="InitialDensitySets" idMethod="native" description="A set of Intial Densities for this project.">
+	<table name="init_dens_sets" javaName="InitialDensitySets" idMethod="native" description="Sets of intial densities for this project.">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
-		<column name="project_id" required="true" domain="ID" description="The project that owns this init dens set."/>
+		<column name="project_id" required="true" domain="ID" description="The project that owns this initial density set."/>
 		<column name="name" domain="NAME_BUF" description="The short name for this init dens set."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this init dens set."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this initial density set."/>
+		<column name="action_time" required="true" type="DECIMAL" description="The time in seconds that this initial condition applies to."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -484,7 +499,7 @@
 		<column name="init_dens_set_id" primaryKey="true" domain="ID" description="The ID of the init_dens_set"/>
 		<column name="link_id" primaryKey="true" domain="ID" description="The initial link on which this density applies."/>
 		<column name="veh_type_id" javaName="vehicleTypeId" primaryKey="true" domain="ID" description="The vehicle type that this denisty represents from the table vehicle_types."/>
-		<column name="dest_link_id" javaName="destinationLinkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
+		<column name="dest_network_id" javaName="destinationNetworkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -497,8 +512,8 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="dest_link_id" foreign="id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="veh_types">
 			<reference local="veh_type_id" foreign="id"/>
@@ -567,8 +582,7 @@
 		<column name="id" primaryKey="true" domain="ID" description="The uique ID for this split ration profile."/>
 		<column name="split_ratio_set_id" required="true" domain="ID" description="The split ratio set this profile is a member of."/>
 		<column name="node_id" required="true" domain="ID" description="The node that this split ratio is calculated from."/>
-		<column name="network_id" required="true" domain="ID" description="The network the node is contained in."/>
-		<column name="dest_link_id" javaName="destinationLinkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
+		<column name="dest_network_id" javaName="destinationNetworkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="sample_rate" domain="DECIMAL" default="300.0" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
 		<column name="created" required="true" type="DATE"/>
@@ -579,17 +593,15 @@
 		<foreign-key foreignTable="split_ratio_sets">
 			<reference local="split_ratio_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="nodes">
+		<foreign-key foreignTable="node_families">
 			<reference local="node_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="links">
-			<reference local="dest_link_id" foreign="id"/>
-			<reference local="network_id" foreign="network_id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
-	<table name="split_ratios" description="A split ratio for a given node in a given network.">
+	<table name="split_ratios" description="A split ratio for a given link pair.">
 		<column name="split_ratio_prof_id" primaryKey="true" domain="ID" description="The split ratio profile set that this record is a member of."/>
 		<column name="in_link_id" primaryKey="true" domain="ID" description="The inbound link into the node the ratio is defined on."/>
 		<column name="out_link_id" primaryKey="true" domain="ID" description="The exit link that the ratio is built around."/>
@@ -618,9 +630,20 @@
 
 	<!-- Fundamental Diagrams -->
 
+	<table name="fund_diag_types" javaName="FundamentalDiagramTypes" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this vehicle type"/>
+		<column name="description" required="true" domain="NAME_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
 	<table name="fund_diag_sets" javaName="FundamentalDiagramProfileSets" idMethod="native" description="A set of fundamental diagrams for this project.">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
 		<column name="project_id" required="true" domain="ID" description="The project that owns this FD set."/>
+		<column name="fund_diag_type_id" required="true" domain="ID" description="The type of fundamental diagram."/>
 		<column name="name" domain="NAME_BUF" description="The short name for this FD set."/>
 		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this FD set."/>
 		<column name="created" required="true" type="DATE"/>
@@ -630,6 +653,9 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="projects">
 			<reference local="project_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="fund_diag_types">
+			<reference local="fund_diag_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -658,9 +684,9 @@
 		<column name="free_flow_speed" required="true" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<column name="critical_speed" required="true" domain="DECIMAL" description="Critical speed in m/s."/>
 		<column name="cong_wave_speed" javaName="congestionWaveSpeed" required="true" domain="DECIMAL" description="Congestion wave speed in m/s."/>
-		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane (vphl)."/>
-		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane (vphl). Optional - used for trapezoidal fundamental diagrams."/>
-		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vphl. Optional."/>
+		<column name="capacity" required="true" domain="DECIMAL" description="Maximum flow per lane in vehicles per second per lane."/>
+		<column name="jam_density" domain="DECIMAL" description="Maximum density per lane in vehicles per meter per lane. Optional - used for trapezoidal fundamental diagrams."/>
+		<column name="capacity_drop" domain="DECIMAL" description="Capacity drop in vehicles per second per lane. Optional."/>
 		<column name="capacity_std" domain="DECIMAL" description="Expression of uncertainty in capacity in vehicles per second per lane. Optional."/>
 		<column name="free_flow_speed_std" domain="DECIMAL" description="Expression of uncertainty in free flow speed in m/s. Optional."/>
 		<column name="cong_wave_speed_std" javaName="congestionWaveSpeedStd" domain="DECIMAL" description="Expression of uncertainty in congestion wave speed in m/s. Optional."/>
@@ -696,7 +722,7 @@
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="demand_prof_set_id" required="true" domain="ID"/>
 		<column name="orig_link_id" javaName="originLinkId" required="true" domain="ID"/>
-		<column name="dest_link_id" javaName="destinationLinkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
+		<column name="dest_network_id" javaName="destinationNetworkId" domain="ID" description="If the destination is not specified, the demand is added to the background flow."/>
 		<column name="sample_rate" domain="DECIMAL" description="Sampling rate in seconds. Default is 300 (5 minutes)."/>
 		<column name="start_time" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
 		<column name="knob" domain="DECIMAL" default="1.0" description="Coefficient by which the demand is multiplied before being fed to the simulation. Default value is 1."/>
@@ -713,14 +739,14 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="orig_link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="dest_link_id" foreign="id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="demands">
 		<column name="demand_prof_id" primaryKey="true" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
+		<column name="veh_type_id" primaryKey="true" domain="ID"/>
 		<column name="number" primaryKey="true" type="INTEGER" description="Order of the demand"/>
 		<column name="demand" required="true" domain="DECIMAL" description="Demand flow in vph."/>
 		<column name="created" required="true" type="DATE"/>
@@ -732,7 +758,7 @@
 			<reference local="demand_prof_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="veh_types">
-			<reference local="vehicle_type_id" foreign="id"/>
+			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -805,12 +831,24 @@
 		</foreign-key>
 	</table>
 
+	<table name="sensor_types" idMethod="native" description="Each sensor is of a particular type. This table represents the allowable types.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this sensor type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this sensor type, e.g.: loop, Sensys, TMC, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this sensor type to be used."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
 	<table name="sensors" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this sensor."/>
 		<column name="sensor_set_id" required="true" domain="ID"/>
-		<column name="type" required="true" domain="SENSOR_TYPE"/>
+		<column name="sensor_type_id" required="true" domain="ID"/>
+		<column name="java_class" domain="NAME_BUF" description="Column for user-defined sensors."/>
 		<column name="entity_id" javaName="originalId" domain="NAME_BUF" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
-		<column name="data_source_id" domain="ID" description="Which data feed does this sensor belong to."/>
+		<column name="measurement_source_id" domain="ID" description="Which data feed does this sensor belong to."/>
 		<column name="display_geometry" required="true" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="link_id" domain="ID" description="If link ID is not present, the sensor is not assigned."/>
 		<column name="link_offset" javaName="linkPosition" domain="DECIMAL" description="Offset in meters from the begining of the link."/>
@@ -827,8 +865,8 @@
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="sensor_types">
+			<reference local="sensor_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -871,7 +909,7 @@
 
 	<table name="signal_phases" javaName="Phases" description="These are signal phase minimums.  Processes within simlation can modify a signals properties but cannot modify outside the parameters that a phse record presents.">
 		<column name="signal_id" primaryKey="true" domain="ID" description="The signal this phase is associated with."/>
-		<column name="nema" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="phase_id" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="is_protected" required="true" domain="BOOL" description="Is this a protected signal."/>
 		<column name="is_permissive" required="true" domain="BOOL" description="Is this a permisive signal."/>
 		<column name="is_lagged" required="true" domain="BOOL" description="Is the signal lagged."/>
@@ -892,7 +930,7 @@
 
 	<table name="phase_links">
 		<column name="signal_id" primaryKey="true" domain="ID"/>
-		<column name="nema" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
+		<column name="phase_id" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -926,10 +964,10 @@
 		</foreign-key>
 	</table>
 
-	<table name="queue_controllers" idMethod="native">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
-		<column name="java_class" domain="NAME_BUF" description="Column for user-defined queue controllers."/>
+	<table name="controller_types" idMethod="native" description="Each controller is of a particular type. This table represents the allowable types.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this controller type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this controller type, e.g.: ALINEA, HERO, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this controller type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -940,11 +978,9 @@
 	<table name="controllers" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="controller_set_id" required="true" domain="ID"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+		<column name="controller_type_id" required="true" domain="ID"/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
-		<column name="name" domain="NAME_BUF"/>
 		<column name="dt" domain="DECIMAL" description="Invocation period in seconds. Default is 30."/>
-		<column name="queue_controller_id" domain="ID"/>
 		<column name="display_geometry" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -954,8 +990,8 @@
 		<foreign-key foreignTable="controller_sets">
 			<reference local="controller_set_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="queue_controllers">
-			<reference local="queue_controller_id" foreign="id"/>
+		<foreign-key foreignTable="controller_types">
+			<reference local="controller_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -973,39 +1009,35 @@
 		</foreign-key>
 	</table>
 
-
-	<!-- Ensamble Kalman Filter -->
-
-	<table name="enkf_np_sets" javaName="EnKFNoiseParameterSets" description="A set of ENKF noise profiles for this project.">
-		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this set."/>
-		<column name="project_id" required="true" domain="ID" description="The project that owns this ENKF_NP set."/>
-		<column name="name" domain="NAME_BUF" description="The short name for this ENKF_NP set."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The long description for this ENKF_NP set."/>
+	<table name="queue_controller_types" idMethod="native" description="Each queue controller is of a particular type. This table represents the allowable types.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this queue controller type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this queue controller type, e.g.: QueueOverride, PI, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this queue controller type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="projects">
-			<reference local="project_id" foreign="id"/>
-		</foreign-key>
 	</table>
 
-	<table name="enkf_np" javaName="EnKFNoiseParameters" description="This record represents and enkf noise paremeter that is based on the output of a sensor.">
-		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this enkf_noise"/>
-		<column name="enkf_np_set_id" required="true" domain="ID" description="The enkf_np_set record that owns this enkf_np record"/>
-		<column name="source" domain="NAME_BUF" description="Data source: model, PeMS, probes, etc."/>
-		<column name="mean" required="true" domain="DECIMAL" description="Noise mean in m/s."/>
-		<column name="stdev" required="true" domain="DECIMAL" description="Noise standard deviation in m/s."/>
+	<table name="queue_controllers" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID"/>
+		<column name="qcontroller_type_id" required="true" domain="ID"/>
+		<column name="controller_id" required="true" domain="ID"/>
+		<column name="java_class" domain="NAME_BUF" description="Column for user-defined queue controllers."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="enkf_np_sets">
-			<reference local="enkf_np_set_id" foreign="id"/>
+		<foreign-key foreignTable="controllers">
+			<reference local="controller_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="queue_controller_types">
+			<reference local="qcontroller_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
+
 
 
 	<!-- Events -->
@@ -1025,9 +1057,9 @@
 		</foreign-key>
 	</table>
 
-	<table name="event_types" idMethod="native" description="each event is of a particular type.  This table represents the allowable types.">
+	<table name="event_types" idMethod="native" description="Each event is of a particular type. This table represents the allowable types.">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this event type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this even type, eg: accident, rain etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this event type, e.g.: accident, rain, etc."/>
 		<column name="in_use" domain="BOOL" description="Allow this event type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1039,9 +1071,9 @@
 	<table name="events" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID" description="The unique identifer for this event."/>
 		<column name="event_set_id" required="true" domain="ID" description="The event set that owns this event."/>
-		<column name="action_time" javaName="tstamp" required="true" type="DECIMAL" description="The time in seconds that this event will take its action in the simulation time stream."/>
+		<column name="action_time" required="true" type="DECIMAL" description="The time in seconds that this event will take its action in the simulation."/>
 		<column name="event_type_id" required="true" domain="ID" description="The type of event.  Rain,  wreck, light change, pretty much anything."/>
-		<column name="java_class" domain="NAME_BUF" description="Column for user-defined controllers."/>
+		<column name="java_class" domain="NAME_BUF" description="Column for user-defined events."/>
 		<column name="name" domain="NAME_BUF" description="The name of the event."/>
 		<column name="description" domain="DESCRIPTION_BUF" description="Long comment for this event."/>
 		<column name="disp_geom" javaName="displayGeometry" domain="GEOMETRY" description="SRID 4326"/>
@@ -1063,7 +1095,7 @@
 		<column name="event_id" primaryKey="true" domain="ID"/>
 		<column name="in_link_id" primaryKey="true" domain="ID"/>
 		<column name="out_link_id" primaryKey="true" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
+		<column name="veh_type_id" primaryKey="true" domain="ID"/>
 		<column name="split_ratio" required="true" domain="DECIMAL" description="Value between 0 and 1."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1080,18 +1112,17 @@
 			<reference local="out_link_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="veh_types">
-			<reference local="vehicle_type_id" foreign="id"/>
+			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 
 	<!-- Shared Structures -->
 
-	<table name="parameters">
-		<column name="scenario_element_id" primaryKey="true" domain="ID" description="Reference to the scenario element with parameters."/>
-		<column name="scenario_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
-		<column name="name" primaryKey="true" domain="NAME_BUF"/>
-		<column name="value" required="true" domain="VALUE_BUF"/>
+	<table name="scenario_element_types" idMethod="native" description="Type of a scenario element: link|node|signal|sensor|controller|event.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this scenario element type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this event type, e.g.: link, controller, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this scenario element type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1099,11 +1130,30 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
+
+	<table name="parameters">
+		<column name="element_id" primaryKey="true" domain="ID" description="Reference to the scenario element with parameters."/>
+		<column name="element_type_id" primaryKey="true" domain="ID"/>
+		<column name="name" primaryKey="true" domain="NAME_BUF"/>
+		<column name="value" required="true" domain="VALUE_BUF"/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="scenario_element_types">
+			<reference local="element_type_id" foreign="id"/>
+		</foreign-key>
+	</table>
+
 	<table name="tables" idMethod="native">
 		<column name="id" domain="ID" primaryKey="true"/>
-		<column name="parent_element_id" required="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
-		<column name="parent_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
+		<column name="element_id" required="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
+		<column name="element_type_id" primaryKey="true" domain="ID"/>
 		<column name="name" required="true" domain="NAME_BUF" description="Table name"/>
+		<foreign-key foreignTable="scenario_element_types">
+			<reference local="element_type_id" foreign="id"/>
+		</foreign-key>
 	</table>
 
 	<table name="tabular_data">
@@ -1133,16 +1183,22 @@
 
 	<table name="referenced_scenario_elements">
 		<column name="parent_element_id" primaryKey="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
-		<column name="parent_element_type" primaryKey="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: controller|event."/>
+		<column name="parent_element_type_id" primaryKey="true" domain="ID" description="Determines where to look for the referenced scenario element: controller|event."/>
 		<column name="type" primaryKey="true" type="VARCHAR" size="8" description="feedback or target"/>
-		<column name="scenario_element_id" primaryKey="true" domain="ID" description="Reference to the scenario element."/>
-		<column name="scenario_element_type" required="true" domain="ELEMENT_TYPE" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
+		<column name="element_id" primaryKey="true" domain="ID" description="Reference to the scenario element."/>
+		<column name="element_type_id" required="true" domain="ID" description="Determines where to look for the referenced scenario element: link|node|signal|sensor|controller|queue controller|event."/>
 		<column name="usage" required="false" type="VARCHAR" size="128"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="scenario_element_types">
+			<reference local="parent_element_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="scenario_element_types">
+			<reference local="element_type_id" foreign="id"/>
+		</foreign-key>
 	</table>
 
 
@@ -1215,7 +1271,7 @@
 		</foreign-key>
 	</table>
 	
-	<table name="network_sets">
+	<table name="network_sets" description="This is a set of networks used by a scenario.">
 		<column name="scenario_id" required="true" domain="ID"/>
 		<column name="network_id" required="true" domain="ID"/>
 		<column name="created" required="true" type="DATE"/>
@@ -1231,7 +1287,7 @@
 		</foreign-key>
 	</table>
 	
-	<table name="dest_network_sets" javaName="DestinationNetworkSets" description="This is a set of network connections.  Each set is owned by a project.  Each set may be used by one or more scenarios.">
+	<table name="dest_network_sets" javaName="DestinationNetworkSets" description="This is a set of destination networks used by a scenario.">
 		<column name="scenario_id" required="true" domain="ID"/>
 		<column name="dest_network_id" required="true" domain="ID" description="The uique ID for this destination network set"/>
 		<column name="created" required="true" type="DATE"/>
@@ -1247,7 +1303,7 @@
 		</foreign-key>
 	</table>
 
-	<table name="route_sets" description="This is a set of network connections.  Each set is owned by a project.  Each set may be used by one or more scenarios.'">
+	<table name="route_sets" description="This is a set of routes used by a scenario.">
 		<column name="scenario_id" required="true" domain="ID"/>
 		<column name="route_id" required="true" domain="ID"/>
 		<column name="created" required="true" type="DATE"/>
@@ -1276,19 +1332,25 @@
 
 	<!-- Simulation Data -->
 
-	<table name="data_sources" idMethod="none">
-		<column name="id" primaryKey="true" domain="ID"/>
+	<table name="application_types" idMethod="native" description="Application type: BeATS simulator, freeway estimator.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this aggregation type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this aggregation levels, e.g.: 5-minute, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this event type to be used."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 	
 	<table name="simulation_runs">
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
+		<column name="id" primaryKey="true" domain="ID"/>
 		<column name="scenario_id" required="true" domain="ID"/>
 		<column name="run_number" required="true" type="BIGINT"/>
 		<column name="version" required="true" domain="STRING_VERSION"/>
-		<column name="build" required="true" domain="STRING_VERSION"/>
-		<column name="simulation_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
-		<column name="simulation_duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
-		<column name="simulation_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
+		<column name="sim_start_time" required="true" domain="DECIMAL" description="Start time in seconds. Default is 0."/>
+		<column name="sim_duration" required="true" domain="DECIMAL" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="sim_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
 		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
 		<column name="execution_start_time" required="true" type="TIMESTAMP"/>
 		<column name="execution_end_time" required="false" type="TIMESTAMP"/>
@@ -1298,24 +1360,74 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="scenarios">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
-		<unique name="scenario_run">
+		<unique name="simulation_run">
+			<unique-column name="scenario_id"/>
+			<unique-column name="run_number"/>
+		</unique>
+	</table>
+	
+	<table name="def_sim_settings" description="These are the default settings for a given scenario">
+		<column name="scenario_id" primaryKey="true" domain="ID"/>
+		<column name="sim_start_time" required="true" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
+		<column name="sim_duration" required="true" domain="DECIMAL" default="86400.0" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="sim_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="scenarios">
+			<reference local="scenario_id" foreign="id"/>
+		</foreign-key>
+	</table>
+	
+	<table name="estimation_runs">
+		<column name="id" primaryKey="true" domain="ID"/>
+		<column name="scenario_id" required="true" domain="ID"/>
+		<column name="run_number" required="true" type="BIGINT"/>
+		<column name="version" required="true" domain="STRING_VERSION"/>
+		<column name="estim_start_time" required="true" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
+		<column name="estim_duration" required="true" domain="DECIMAL" default="86400.0" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="estim_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="run_mode" domain="RUN_MODE" required="true" description="Online or offline."/>
+		<column name="model_type" domain="MODEL_TYPE" required="true" description="LNCTM, VCTM, or combined."/>
+		<column name="data_source" domain="NAME_BUF" description="Data source: model, PeMS, probes, etc."/>
+		<column name="enkf_mean" required="true" domain="DECIMAL" description="Noise mean in m/s."/>
+		<column name="enkf_stdev" required="true" domain="DECIMAL" description="Noise standard deviation in m/s."/>
+		<column name="execution_start_time" required="true" type="TIMESTAMP"/>
+		<column name="execution_end_time" required="false" type="TIMESTAMP"/>
+		<column name="status" required="true" domain="EXE_STATUS" description="Status of the run execution."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+		<foreign-key foreignTable="scenarios">
+			<reference local="scenario_id" foreign="id"/>
+		</foreign-key>
+		<unique name="estimation_run">
 			<unique-column name="scenario_id"/>
 			<unique-column name="run_number"/>
 		</unique>
 	</table>
 
-	<table name="def_sim_settings" description="These are the default settings for a given scenario">
+	
+	<table name="def_estim_settings" description="These are the default settings for a given scenario">
 		<column name="scenario_id" primaryKey="true" domain="ID"/>
-		<column name="sim_start_time" required="true" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
-		<column name="sim_duration" required="true" domain="DECIMAL" default="86400.0" description="Active time in seconds. Default is 86400 (24 hours)."/>
-		<column name="sim_step_freq" domain="DECIMAL" required="true" default="1.0" description="Simulation step in seconds. Default is 1."/>
-		<column name="output_write_freq" domain="DECIMAL" required="true" default="60.0" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="estim_start_time" required="true" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
+		<column name="estim_duration" required="true" domain="DECIMAL" default="86400.0" description="Active time in seconds. Default is 86400 (24 hours)."/>
+		<column name="estim_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="run_mode" domain="RUN_MODE" required="true" description="Online or offline."/>
+		<column name="model_type" domain="MODEL_TYPE" required="true" description="LNCTM, VCTM, or combined."/>
+		<column name="data_source" domain="NAME_BUF" description="Data source: model, PeMS, probes, etc."/>
+		<column name="enkf_mean" required="true" domain="DECIMAL" description="Noise mean in m/s."/>
+		<column name="enkf_stdev" required="true" domain="DECIMAL" description="Noise standard deviation in m/s."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -1333,6 +1445,29 @@
 
 	<!-- **************************************************************************** -->
 
+	<table name="quantity_types" idMethod="native" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this quantity type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this quantity type, e.g.: best case, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this quantity type to be used."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="aggregation_types" idMethod="native" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total.">
+		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this aggregation type."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this aggregation levels, e.g.: 5-minute, etc."/>
+		<column name="in_use" domain="BOOL" description="Allow this aggregation level type to be used."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+
 
 
 	<!-- Link Data -->
@@ -1340,11 +1475,11 @@
 	<table name="link_data_total">
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
-		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="in_flow" domain="DECIMAL"/>
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
@@ -1359,21 +1494,27 @@
 			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_types">
+			<reference local="app_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
 	<table name="link_data_detailed">
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
-		<column name="destination_link_id" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
+		<column name="dest_network_id" domain="ID"/>
+		<column name="veh_type_id" primaryKey="true" domain="ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
-		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="in_flow" domain="DECIMAL"/>
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
@@ -1384,14 +1525,20 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_types">
+			<reference local="app_type_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="destination_link_id" foreign="id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="veh_types">
-			<reference local="vehicle_type_id" foreign="id"/>
+			<reference local="veh_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -1409,11 +1556,11 @@
 	<table name="link_performance_total">
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
-		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="vmt" domain="DECIMAL"/>
 		<column name="vht" domain="DECIMAL"/>
 		<column name="delay" domain="DECIMAL"/>
@@ -1425,21 +1572,27 @@
 			<reference local="link_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_types">
+			<reference local="app_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
 	<table name="link_performance_detailed">
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="link_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
-		<column name="destination_link_id" domain="ID"/>
-		<column name="vehicle_type_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
+		<column name="dest_network_id" domain="ID"/>
+		<column name="veh_type_id" primaryKey="true" domain="ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
-		<column name="cell_number" primaryKey="true" type="INTEGER" description="Sometimes, a link can be divided into several cells. Usually, there is just a single cell."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="vmt" domain="DECIMAL"/>
 		<column name="vht" domain="DECIMAL"/>
 		<column name="delay" domain="DECIMAL"/>
@@ -1449,11 +1602,17 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_runs">
+			<reference local="app_run_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="link_families">
-			<reference local="destination_link_id" foreign="id"/>
+		<foreign-key foreignTable="dest_networks">
+			<reference local="dest_network_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -1468,16 +1627,23 @@
 	
 	<table name="route_performance_total">
 		<column name="route_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="travel_time" domain="DECIMAL"/>
 		<foreign-key foreignTable="routes">
 			<reference local="route_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_types">
+			<reference local="app_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -1494,11 +1660,12 @@
 	<table name="signal_data">
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="signal_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="begin_green" type="TIMESTAMP" description="Begin of the green period for the given phase. Optional - makes sense only for raw data." />
 		<column name="duration" required="true" domain="DECIMAL" description="Duration of green for this phase in seconds."/>
 		<foreign-key foreignTable="signals">
@@ -1507,8 +1674,14 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_types">
+			<reference local="app_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 	
@@ -1521,11 +1694,12 @@
 	<table name="signal_phase_performance">
 		<column name="network_id" primaryKey="true" domain="ID"/>
 		<column name="signal_id" primaryKey="true" domain="ID"/>
-		<column name="data_source_id" primaryKey="true" domain="ID"/>
+		<column name="app_run_id" primaryKey="true" domain="ID"/>
+		<column name="app_type_id" primaryKey="true" domain="ID"/>
 		<column name="phase" primaryKey="true" type="INTEGER" description="Phase number: 1-16. Currently used are 1-8."/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
-		<column name="aggregation" primaryKey="true" domain="AGGREGATION" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."/>
-		<column name="type" primaryKey="true" domain="VALUE_TYPE" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."/>
+		<column name="agg_type_id" primaryKey="true" domain="ID"/>
+		<column name="value_type_id" primaryKey="true" domain="ID"/>
 		<column name="phase_utilization" domain="DECIMAL" description="Percentage of green used."/>
 		<column name="progression_quality" domain="DECIMAL" description="Percentage of vehicles arriving during green phase."/>
 		<column name="delay_per_cycle" domain="DECIMAL" description="Delay per cycle for given phase."/>
@@ -1537,8 +1711,14 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="data_sources">
-			<reference local="data_source_id" foreign="id"/>
+		<foreign-key foreignTable="application_types">
+			<reference local="app_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="aggregation_types">
+			<reference local="agg_type_id" foreign="id"/>
+		</foreign-key>
+		<foreign-key foreignTable="quantity_types">
+			<reference local="value_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
