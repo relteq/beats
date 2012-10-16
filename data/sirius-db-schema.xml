@@ -939,7 +939,7 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="signal_phases">
 			<reference local="signal_id" foreign="signal_id"/>
-			<reference local="nema" foreign="nema"/>
+			<reference local="phase_id" foreign="phase_id"/>
 		</foreign-key>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
@@ -1262,9 +1262,6 @@
 		</foreign-key>
 		<foreign-key foreignTable="event_sets">
 			<reference local="event_set_id" foreign="id"/>
-		</foreign-key>
-		<foreign-key foreignTable="enkf_np_sets">
-			<reference local="enkf_np_set_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="veh_type_sets">
 			<reference local="veh_type_set_id" foreign="id"/>
