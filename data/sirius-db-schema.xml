@@ -853,7 +853,7 @@
 		<column name="link_id" domain="ID" description="If link ID is not present, the sensor is not assigned."/>
 		<column name="link_offset" javaName="linkPosition" domain="DECIMAL" description="Offset in meters from the begining of the link."/>
 		<column name="lane_num" javaName="laneNumber" type="INTEGER" description="Optional parameter indicating at which lane the sensor is located."/>
-		<column name="health_status" required="true" domain="DECIMAL" description="Value in the range of [0, 1], indicating how healthy the detector is: 0 = dead/ totally unreliable, 1 = 100% trustworthy."/>
+		<column name="health_status" required="false" default="1.0" domain="DECIMAL" description="Value in the range of [0, 1], indicating how healthy the detector is: 0 = dead/ totally unreliable, 1 = 100% trustworthy."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
