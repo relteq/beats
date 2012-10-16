@@ -76,9 +76,9 @@ public class XMLOutputWriterTest {
 	@BeforeClass
 	public static void loadSchemas() throws SAXException {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		String schemadir = "data" + File.separator + "schema";
-		ischema = factory.newSchema(new File(schemadir + File.separator + "sirius.xsd"));
-		oschema = factory.newSchema(new File(schemadir + File.separator + "sirius_output.xsd"));
+		ClassLoader classLoader = XMLOutputWriterTest.class.getClassLoader();
+		ischema = factory.newSchema(classLoader.getResource("sirius.xsd"));
+		oschema = factory.newSchema(new File("data" + File.separator + "schema" + File.separator + "sirius_output.xsd"));
 	}
 
 	/**
