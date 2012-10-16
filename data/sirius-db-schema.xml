@@ -106,18 +106,32 @@
 		</foreign-key>
 	</table>
 
-	<table name="node_type">
-		<column name="id" primaryKey="true" domain="ID"/>
-		<column name="network_id" primaryKey="true" domain="ID"/>
-		<column name="type" required="true" domain="ELEMENT_TYPE"/>
+	<table name="node_types" idMethod="native">
+		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this node type."/>
+		<column name="description" domain="NAME_BUF" description="A description of the node type."/>
+		<column name="in_use" domain="BOOL" description="This indicates wether or not this node type should be shown when a user selects a node type. Setting this parameter to false prevents a user from selecting it but allows historical reporting."/>
+		<column name="created" required="true" type="DATE"/>
+		<column name="modified" required="true" type="DATE"/>
+		<column name="created_by" required="true" domain="NAME_BUF"/>
+		<column name="modified_by" required="true" domain="NAME_BUF"/>
+		<column name="modstamp" required="true" type="TIMESTAMP"/>
+	</table>
+
+	<table name="node_type_det" description="The node type for a node in a network as defined by link types.">
+		<column name="node_id" primaryKey="true" domain="ID" description="The node id for this detail."/>
+		<column name="network_id" primaryKey="true" domain="ID" description="The network ID for this detail."/>
+		<column name="node_type_id" required="true" domain="ID" description="The node's type is derived from node_types."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 		<foreign-key foreignTable="nodes">
-			<reference local="id" foreign="id"/>
+			<reference local="node_id" foreign="id"/>
 			<reference local="network_id" foreign="network_id"/>
+		</foreign-key>
+		<foreign-key foreignTable="node_types">
+			<reference local="node_type_id" foreign="id"/>
 		</foreign-key>
 	</table>
 
@@ -200,7 +214,7 @@
 	<table name="link_types" idMethod="native">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this link type."/>
 		<column name="description" domain="NAME_BUF" description="A description of the link type."/>
-		<column name="in_use" domain="BOOL" description="This indicates wether or not this link type should be shown when a user selects a link type.  This prevents a user from selecting it but allows historical reporting."/>
+		<column name="in_use" domain="BOOL" description="This indicates wether or not this link type should be shown when a user selects a link type. Setting this parameter to false prevents a user from selecting it but allows historical reporting."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
