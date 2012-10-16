@@ -1599,9 +1599,6 @@
 		<foreign-key foreignTable="networks">
 			<reference local="network_id" foreign="id"/>
 		</foreign-key>
-		<foreign-key foreignTable="application_runs">
-			<reference local="app_run_id" foreign="id"/>
-		</foreign-key>
 		<foreign-key foreignTable="dest_networks">
 			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
