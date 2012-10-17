@@ -331,6 +331,7 @@ public class ScenarioRestorer {
 		idset.setId(id2str(db_idset.getId()));
 		idset.setName(db_idset.getName());
 		idset.setDescription(db_idset.getDescription());
+		idset.setTstamp(db_idset.getActionTime());
 
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(InitialDensitiesPeer.LINK_ID);

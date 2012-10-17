@@ -557,6 +557,7 @@ public class ScenarioLoader {
 		db_idsets.setProjectId(getProjectId());
 		db_idsets.setName(idset.getName());
 		db_idsets.setDescription(idset.getDescription());
+		db_idsets.setActionTime(idset.getTstamp());
 		db_idsets.save(conn);
 		VehicleTypes[] db_vt = reorderVehicleTypes(idset.getVehicleTypeOrder());
 		for (edu.berkeley.path.beats.jaxb.Density density : idset.getDensity())
