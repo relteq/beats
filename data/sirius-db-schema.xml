@@ -1221,7 +1221,6 @@
 		<column name="ds_bndry_cap_set_id" domain="ID" description="This is the downstream boundary capacity profile set id for this scenario."/>
 		<column name="controller_set_id" domain="ID" description="This is the controller set for this scenario."/>
 		<column name="event_set_id" domain="ID" description="The event set for this scenario."/>
-		<column name="enkf_np_set_id" domain="ID" description="This is the set of ENKF noise parameters for this scenario."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
