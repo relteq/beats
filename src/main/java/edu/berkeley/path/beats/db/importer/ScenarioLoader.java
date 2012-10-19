@@ -256,6 +256,24 @@ public class ScenarioLoader {
 		return db_network;
 	}
 
+	private NodeTypes getNodeTypes(String node_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(NodeTypesPeer.DESCRIPTION, node_type);
+		@SuppressWarnings("unchecked")
+		List<NodeTypes> db_nt_l = NodeTypesPeer.doSelect(crit, conn);
+		if (!db_nt_l.isEmpty()) {
+			if (1 < db_nt_l.size())
+				logger.warn("Found " + db_nt_l.size() + " node types '" + node_type + "'");
+			return db_nt_l.get(0);
+		} else {
+			NodeTypes db_nt = new NodeTypes();
+			db_nt.setDescription(node_type);
+			db_nt.setInUse(Boolean.TRUE);
+			db_nt.save(conn);
+			return db_nt;
+		}
+	}
+
 	/**
 	 * Imports a node
 	 * @param node
@@ -277,9 +295,9 @@ public class ScenarioLoader {
 		db_node.setInSynch(node.isInSync());
 
 		// node type
-		NodeType db_ntype = new NodeType();
-		db_ntype.setType(node.getType());
-		db_node.addNodeType(db_ntype, conn);
+		NodeTypeDet db_ntdet = new NodeTypeDet();
+		db_ntdet.setNodes(db_node);
+		db_ntdet.setNodeTypes(getNodeTypes(node.getType()));
 
 		db_node.save(conn);
 		nodes.put(node.getId(), db_node);
@@ -496,6 +514,23 @@ public class ScenarioLoader {
 		return db_ss;
 	}
 
+	private SensorTypes getSensorType(String sensor_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(SensorTypesPeer.DESCRIPTION, sensor_type);
+		@SuppressWarnings("unchecked")
+		List<SensorTypes> db_st_l = SensorTypesPeer.doSelect(crit, conn);
+		if (db_st_l.isEmpty()) {
+			SensorTypes db_st = new SensorTypes();
+			db_st.setDescription(sensor_type);
+			db_st.save(conn);
+			return db_st;
+		} else {
+			if (1 < db_st_l.size())
+				logger.warn("Found " + db_st_l.size() + " sensor types '" + sensor_type + "'");
+			return db_st_l.get(0);
+		}
+	}
+
 	/**
 	 * Imports a sensor
 	 * @param sensor
@@ -505,13 +540,9 @@ public class ScenarioLoader {
 	 */
 	private Sensors save(edu.berkeley.path.beats.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
 		Sensors db_sensor = new Sensors();
-		db_sensor.setType(sensor.getType());
 		db_sensor.setSensorSets(db_ss);
 		db_sensor.setOriginalId(sensor.getOriginalId());
-		DataSources db_ds = new DataSources();
-		db_ds.setId(DataSourcesPeer.nextId(DataSourcesPeer.ID, conn));
-		db_ds.save(conn);
-		db_sensor.setDataSources(db_ds);
+		db_sensor.setSensorTypes(getSensorType(sensor.getType()));
 		db_sensor.setDisplayGeometry(pos2str(sensor.getDisplayPosition()));
 		if (null != sensor.getLinkReference())
 			db_sensor.setLinkId(getDBLinkId(sensor.getLinkReference().getId()));
@@ -693,6 +724,23 @@ public class ScenarioLoader {
 		}
 	}
 
+	private FundamentalDiagramTypes getFundamentalDiagramTypes(String fd_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(FundamentalDiagramTypesPeer.DESCRIPTION, fd_type);
+		@SuppressWarnings("unchecked")
+		List<FundamentalDiagramTypes> db_fdt_l = FundamentalDiagramTypesPeer.doSelect(crit, conn);
+		if (db_fdt_l.isEmpty()) {
+			FundamentalDiagramTypes db_fdt = new FundamentalDiagramTypes();
+			db_fdt.setDescription(fd_type);
+			db_fdt.save(conn);
+			return db_fdt;
+		} else {
+			if (1 < db_fdt_l.size())
+				logger.warn("Found " + db_fdt_l.size() + " fundamental diagram types '" + fd_type + "'");
+			return db_fdt_l.get(0);
+		}
+	}
+
 	/**
 	 * Imports a fundamental diagram profile set
 	 * @param fdps
@@ -702,6 +750,7 @@ public class ScenarioLoader {
 	private FundamentalDiagramProfileSets save(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet fdps) throws TorqueException {
 		FundamentalDiagramProfileSets db_fdps = new FundamentalDiagramProfileSets();
 		db_fdps.setProjectId(getProjectId());
+		db_fdps.setFundamentalDiagramTypes(getFundamentalDiagramTypes("default"));
 		db_fdps.setName(fdps.getName());
 		db_fdps.setDescription(fdps.getDescription());
 		db_fdps.save(conn);
@@ -905,6 +954,24 @@ public class ScenarioLoader {
 		return db_cset;
 	}
 
+	private ControllerTypes getControllerType(String controller_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(ControllerTypesPeer.DESCRIPTION, controller_type);
+		@SuppressWarnings("unchecked")
+		List<ControllerTypes> db_ct_l = ControllerTypesPeer.doSelect(crit, conn);
+		if (db_ct_l.isEmpty()) {
+			ControllerTypes db_ct = new ControllerTypes();
+			db_ct.setDescription(controller_type);
+			db_ct.setInUse(true);
+			db_ct.save(conn);
+			return db_ct;
+		} else {
+			if (1 < db_ct_l.size())
+				logger.warn("Found " + db_ct_l.size() + " controller types '" + controller_type + "'");
+			return db_ct_l.get(0);
+		}
+	}
+
 	/**
 	 * Imports a controller
 	 * @param cntr a controller
@@ -915,7 +982,7 @@ public class ScenarioLoader {
 	private Controllers save(edu.berkeley.path.beats.jaxb.Controller cntr, ControllerSets db_cset) throws TorqueException {
 		Controllers db_cntr = new Controllers();
 		db_cntr.setControllerSets(db_cset);
-		db_cntr.setType(cntr.getType());
+		db_cntr.setControllerTypes(getControllerType(cntr.getType()));
 		db_cntr.setJavaClass(cntr.getJavaClass());
 		db_cntr.setName(cntr.getName());
 		db_cntr.setDt(cntr.getDt());
@@ -928,6 +995,24 @@ public class ScenarioLoader {
 		return db_cntr;
 	}
 
+	private QueueControllerTypes getQueueControllerType(String qc_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(QueueControllerTypesPeer.DESCRIPTION, qc_type);
+		@SuppressWarnings("unchecked")
+		List<QueueControllerTypes> db_qct_l = QueueControllerTypesPeer.doSelectVillageRecords(crit, conn);
+		if (db_qct_l.isEmpty()) {
+			QueueControllerTypes db_qct = new QueueControllerTypes();
+			db_qct.setDescription(qc_type);
+			db_qct.setInUse(Boolean.TRUE);
+			db_qct.save(conn);
+			return db_qct;
+		} else {
+			if (1 < db_qct_l.size())
+				logger.warn("Found " + db_qct_l.size() + " queue controller types '" + qc_type + "'");
+			return db_qct_l.get(0);
+		}
+	}
+
 	/**
 	 * Imports a queue controller
 	 * @param qc
@@ -937,7 +1022,7 @@ public class ScenarioLoader {
 	private QueueControllers save(edu.berkeley.path.beats.jaxb.QueueController qc) throws TorqueException {
 		if (null == qc) return null;
 		QueueControllers db_qc = new QueueControllers();
-		db_qc.setType(qc.getType());
+		db_qc.setQueueControllerTypes(getQueueControllerType(qc.getType()));
 		db_qc.setJavaClass(qc.getJavaClass());
 		db_qc.save(conn);
 		save(qc.getParameters(), db_qc);
@@ -1142,6 +1227,28 @@ public class ScenarioLoader {
 		return db_route;
 	}
 
+	private ScenarioElementTypes getScenarioElementTypes(String scenario_element_type) throws TorqueException {
+		Criteria crit = new Criteria();
+		crit.add(ScenarioElementTypesPeer.DESCRIPTION, scenario_element_type);
+		@SuppressWarnings("unchecked")
+		List<ScenarioElementTypes> db_scelt_l = ScenarioElementTypesPeer.doSelect(crit, conn);
+		if (db_scelt_l.isEmpty()) {
+			ScenarioElementTypes db_scelt = new ScenarioElementTypes();
+			db_scelt.setDescription(scenario_element_type);
+			db_scelt.setInUse(Boolean.TRUE);
+			db_scelt.save(conn);
+			return db_scelt;
+		} else {
+			if (1 < db_scelt_l.size())
+				logger.warn("Found " + db_scelt_l.size() + " scenario element types '" + scenario_element_type + "'");
+			return db_scelt_l.get(0);
+		}
+	}
+
+	private ScenarioElementTypes getScenarioElementTypes(edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
+		return getScenarioElementTypes(db_obj.getElementType());
+	}
+
 	/**
 	 * Imports parameters
 	 * @param params
@@ -1150,11 +1257,11 @@ public class ScenarioLoader {
 	 */
 	private void save(edu.berkeley.path.beats.jaxb.Parameters params, edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
 		if (null == params) return;
-		String element_type = db_obj.getElementType();
+		ScenarioElementTypes db_scelt = getScenarioElementTypes(db_obj);
 		for (edu.berkeley.path.beats.jaxb.Parameter param : params.getParameter()) {
 			Parameters db_param = new Parameters();
-			db_param.setScenarioElementId(db_obj.getId());
-			db_param.setScenarioElementType(element_type);
+			db_param.setElementId(db_obj.getId());
+			db_param.setScenarioElementTypes(db_scelt);
 			db_param.setName(param.getName());
 			db_param.setValue(param.getValue());
 			db_param.save(conn);
@@ -1171,8 +1278,8 @@ public class ScenarioLoader {
 		if (null == table) return;
 		Tables db_table = new Tables();
 		db_table.setName(table.getName());
-		db_table.setParentElementId(db_obj.getId());
-		db_table.setParentElementType(db_obj.getElementType());
+		db_table.setElementId(db_obj.getId());
+		db_table.setScenarioElementTypes(getScenarioElementTypes(db_obj));
 		db_table.save(conn);
 
 		int colnum = 0;
@@ -1233,7 +1340,7 @@ public class ScenarioLoader {
 	private void save(edu.berkeley.path.beats.jaxb.ScenarioElement elem, String type, edu.berkeley.path.beats.db.BaseObject db_parent) throws TorqueException {
 		ReferencedScenarioElements db_elems = new ReferencedScenarioElements();
 		db_elems.setParentElementId(db_parent.getId());
-		db_elems.setParentElementType(db_parent.getElementType());
+		db_elems.setScenarioElementTypesRelatedByParentElementTypeId(getScenarioElementTypes(db_parent));
 		db_elems.setType(type);
 		db_elems.setUsage(elem.getUsage());
 		edu.berkeley.path.beats.db.BaseObject db_ref = null;
@@ -1252,8 +1359,8 @@ public class ScenarioLoader {
 		} else
 			logger.error("Reference to a " + elem.getType() + " is not implemented");
 		if (null != db_ref) {
-			db_elems.setScenarioElementId(db_ref.getId());
-			db_elems.setScenarioElementType(db_ref.getElementType());
+			db_elems.setElementId(db_ref.getId());
+			db_elems.setScenarioElementTypesRelatedByElementTypeId(getScenarioElementTypes(db_ref));
 			db_elems.save(conn);
 		} else
 			logger.error("Object " + elem.getType() + " [id=" + elem.getId() + "] not found");

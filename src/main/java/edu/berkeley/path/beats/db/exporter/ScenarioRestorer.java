@@ -197,8 +197,14 @@ public class ScenarioRestorer {
 		node.setId(id2str(db_node.getId()));
 		node.setInSync(db_node.getInSynch());
 
-		NodeType db_nodetype = NodeTypePeer.retrieveByPK(db_node.getId(), db_node.getNetworkId());
-		node.setType(db_nodetype.getType());
+		@SuppressWarnings("unchecked")
+		List<NodeTypeDet> db_ntd_l = db_node.getNodeTypeDets();
+		if (!db_ntd_l.isEmpty()) {
+			if (1 < db_ntd_l.size())
+				logger.warn("Found " + db_ntd_l.size() + " node types for node " + db_node.getId());
+			node.setType(db_ntd_l.get(0).getNodeTypes().getDescription());
+		} else
+			logger.warn("No node types for node " + db_node.getId());
 
 		node.setRoadwayMarkers(restoreRoadwayMarkers(db_node));
 		node.setInputs(restoreInputs(db_node));
@@ -633,8 +639,8 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.Sensor sensor = factory.createSensor();
 		sensor.setId(id2str(db_sensor.getId()));
 		sensor.setLinkPosition(db_sensor.getLinkPosition());
-		sensor.setType(db_sensor.getType());
 		sensor.setOriginalId(db_sensor.getOriginalId());
+		sensor.setType(db_sensor.getSensorTypes().getDescription());
 		if (null != db_sensor.getLaneNumber())
 			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
 		sensor.setHealthStatus(db_sensor.getHealthStatus());
@@ -707,7 +713,7 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.Controller cntr = factory.createController();
 		cntr.setId(id2str(db_cntr.getId()));
 		cntr.setName(db_cntr.getName());
-		cntr.setType(db_cntr.getType());
+		cntr.setType(db_cntr.getControllerTypes().getDescription());
 		cntr.setDt(db_cntr.getDt());
 		cntr.setEnabled(Boolean.TRUE);
 		cntr.setJavaClass(db_cntr.getJavaClass());
@@ -732,7 +738,7 @@ public class ScenarioRestorer {
 	private edu.berkeley.path.beats.jaxb.QueueController restoreQueueController(QueueControllers db_qc) throws TorqueException {
 		if (null == db_qc) return null;
 		edu.berkeley.path.beats.jaxb.QueueController qc = factory.createQueueController();
-		qc.setType(db_qc.getType());
+		qc.setType(db_qc.getQueueControllerTypes().getDescription());
 		qc.setJavaClass(db_qc.getJavaClass());
 		qc.setParameters(restoreParameters(db_qc));
 		return qc;
@@ -879,8 +885,9 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.Parameters params = factory.createParameters();
 
 		Criteria crit = new Criteria();
-		crit.add(ParametersPeer.SCENARIO_ELEMENT_ID, db_obj.getId());
-		crit.add(ParametersPeer.SCENARIO_ELEMENT_TYPE, db_obj.getElementType());
+		crit.add(ParametersPeer.ELEMENT_ID, db_obj.getId());
+		crit.addJoin(ParametersPeer.ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
+		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_obj.getElementType());
 		@SuppressWarnings("unchecked")
 		List<Parameters> db_param_l = ParametersPeer.doSelect(crit);
 		for (Parameters db_param : db_param_l)
@@ -898,8 +905,9 @@ public class ScenarioRestorer {
 
 	private List<edu.berkeley.path.beats.jaxb.Table> restoreTables(edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(TablesPeer.PARENT_ELEMENT_ID, db_obj.getId());
-		crit.add(TablesPeer.PARENT_ELEMENT_TYPE, db_obj.getElementType());
+		crit.add(TablesPeer.ELEMENT_ID, db_obj.getId());
+		crit.addJoin(TablesPeer.ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
+		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_obj.getElementType());
 		@SuppressWarnings("unchecked")
 		List<Tables> db_table_l = TablesPeer.doSelect(crit);
 		List<edu.berkeley.path.beats.jaxb.Table> table_l = new java.util.ArrayList<edu.berkeley.path.beats.jaxb.Table>(db_table_l.size());
@@ -968,7 +976,8 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.TargetElements elems = factory.createTargetElements();
 		Criteria crit = new Criteria();
 		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_ID, db_parent.getId());
-		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE, db_parent.getElementType());
+		crit.addJoin(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
+		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_parent.getElementType());
 		crit.add(ReferencedScenarioElementsPeer.TYPE, "target");
 		@SuppressWarnings("unchecked")
 		List<ReferencedScenarioElements> db_elem_l = ReferencedScenarioElementsPeer.doSelect(crit);
@@ -981,7 +990,8 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.FeedbackElements elems = factory.createFeedbackElements();
 		Criteria crit = new Criteria();
 		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_ID, db_parent.getId());
-		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE, db_parent.getElementType());
+		crit.addJoin(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
+		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_parent.getElementType());
 		crit.add(ReferencedScenarioElementsPeer.TYPE, "feedback");
 		@SuppressWarnings("unchecked")
 		List<ReferencedScenarioElements> db_elem_l = ReferencedScenarioElementsPeer.doSelect(crit);
@@ -990,10 +1000,10 @@ public class ScenarioRestorer {
 		return elems;
 	}
 
-	private edu.berkeley.path.beats.jaxb.ScenarioElement restoreScenarioElement(ReferencedScenarioElements db_elem) {
+	private edu.berkeley.path.beats.jaxb.ScenarioElement restoreScenarioElement(ReferencedScenarioElements db_elem) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.ScenarioElement elem = factory.createScenarioElement();
-		elem.setId(id2str(db_elem.getScenarioElementId()));
-		elem.setType(db_elem.getScenarioElementType());
+		elem.setId(id2str(db_elem.getElementId()));
+		elem.setType(db_elem.getScenarioElementTypesRelatedByElementTypeId().getDescription());
 		elem.setUsage(db_elem.getUsage());
 		return elem;
 	}

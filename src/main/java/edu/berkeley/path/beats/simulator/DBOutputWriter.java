@@ -27,7 +27,6 @@
 package edu.berkeley.path.beats.simulator;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.util.Calendar;
 import java.util.List;
 
@@ -36,7 +35,6 @@ import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
-import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
 import com.workingdogs.village.DataSetException;
@@ -81,6 +79,9 @@ public class DBOutputWriter extends OutputWriterBase {
 	private Scenarios db_scenario = null;
 	VehicleTypes[] db_vehicle_type;
 	private SimulationRuns db_simulation_run = null;
+	private ApplicationTypes db_application_type = null;
+	private AggregationTypes db_aggregation_type_raw = null;
+	private QuantityTypes db_quantity_type_mean = null;
 
 	private Long str2id(String id) {
 		return Long.parseLong(id, 10);
@@ -89,6 +90,60 @@ public class DBOutputWriter extends OutputWriterBase {
 	boolean success = false;
 
 	private Calendar ts = null;
+
+	public static ApplicationTypes getApplicationTypes(String application_type) throws Exception {
+		Criteria crit = new Criteria();
+		crit.add(ApplicationTypesPeer.DESCRIPTION, application_type);
+		@SuppressWarnings("unchecked")
+		List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit);
+		if (db_at_l.isEmpty()) {
+			ApplicationTypes db_at = new ApplicationTypes();
+			db_at.setDescription(application_type);
+			db_at.setInUse(Boolean.TRUE);
+			db_at.save();
+			return db_at;
+		} else {
+			if (1 < db_at_l.size())
+				logger.warn("Found " + db_at_l.size() + " application types '" + application_type + "'");
+			return db_at_l.get(0);
+		}
+	}
+
+	public static AggregationTypes getAggregationTypes(String aggregation_type) throws Exception {
+		Criteria crit = new Criteria();
+		crit.add(AggregationTypesPeer.DESCRIPTION, aggregation_type);
+		@SuppressWarnings("unchecked")
+		List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit);
+		if (db_at_l.isEmpty()) {
+			AggregationTypes db_at = new AggregationTypes();
+			db_at.setDescription(aggregation_type);
+			db_at.setInUse(Boolean.TRUE);
+			db_at.save();
+			return db_at;
+		} else {
+			if (1 < db_at_l.size())
+				logger.warn("Found " + db_at_l.size() + " aggregation types '" + aggregation_type + "'");
+			return db_at_l.get(0);
+		}
+	}
+
+	public static QuantityTypes getQuantityTypes(String quantity_type) throws Exception {
+		Criteria crit = new Criteria();
+		crit.add(QuantityTypesPeer.DESCRIPTION, quantity_type);
+		@SuppressWarnings("unchecked")
+		List<QuantityTypes> db_qt_l = QuantityTypesPeer.doSelect(crit);
+		if (db_qt_l.isEmpty()) {
+			QuantityTypes db_qt = new QuantityTypes();
+			db_qt.setDescription(quantity_type);
+			db_qt.setInUse(Boolean.TRUE);
+			db_qt.save();
+			return db_qt;
+		} else {
+			if (1 < db_qt_l.size())
+				logger.warn("Found " + db_qt_l.size() + " quantity types '" + quantity_type + "'");
+			return db_qt_l.get(0);
+		}
+	}
 
 	@Override
 	public void open(int run_id) throws SiriusException {
@@ -99,46 +154,36 @@ public class DBOutputWriter extends OutputWriterBase {
 			throw new SiriusException("Scenario was not loaded from the database");
 
 		logger.info("Initializing simulation run");
-		Connection conn = null;
 		try {
-			conn = Transaction.begin();
-
-			DataSources db_ds = new DataSources();
-			db_ds.setId(DataSourcesPeer.nextId(DataSourcesPeer.ID, conn));
-			db_ds.save(conn);
-
 			Criteria crit = new Criteria();
 			crit.add(ScenariosPeer.ID, db_scenario.getId());
-			com.workingdogs.village.Value max_runnum = SimulationRunsPeer.maxColumnValue(SimulationRunsPeer.RUN_NUMBER, crit, conn);
+			com.workingdogs.village.Value max_runnum = SimulationRunsPeer.maxColumnValue(SimulationRunsPeer.RUN_NUMBER, crit, null);
 			final long run_number = null == max_runnum ? 1 : max_runnum.asLong() + 1;
 			logger.info("Run number: " + run_number);
 
 			db_simulation_run = new edu.berkeley.path.beats.om.SimulationRuns();
-			db_simulation_run.setDataSources(db_ds);
 			db_simulation_run.setScenarios(db_scenario);
 			db_simulation_run.setRunNumber(run_number);
 			db_simulation_run.setVersion(edu.berkeley.path.beats.Version.get().getEngineVersion());
-			db_simulation_run.setBuild("");
-			db_simulation_run.setSimulationStartTime(BigDecimal.valueOf(scenario.getTimeStart()));
-			db_simulation_run.setSimulationDuration(BigDecimal.valueOf(scenario.getTimeEnd() - scenario.getTimeStart()));
-			db_simulation_run.setSimulationDt(BigDecimal.valueOf(scenario.getSimDtInSeconds()));
+			db_simulation_run.setSimStartTime(BigDecimal.valueOf(scenario.getTimeStart()));
+			db_simulation_run.setSimDuration(BigDecimal.valueOf(scenario.getTimeEnd() - scenario.getTimeStart()));
+			db_simulation_run.setSimDt(BigDecimal.valueOf(scenario.getSimDtInSeconds()));
 			db_simulation_run.setOutputDt(BigDecimal.valueOf(scenario.getOutputDt()));
 			db_simulation_run.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(-1);
-			db_simulation_run.save(conn);
+			db_simulation_run.save();
 
-			Transaction.commit(conn);
-			conn = null;
+			db_application_type = getApplicationTypes("simulation");
+			db_aggregation_type_raw = getAggregationTypes("raw");
+			db_quantity_type_mean = getQuantityTypes("mean");
+
 			success = true;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		} catch (DataSetException exc) {
 			throw new SiriusException(exc);
-		} finally {
-			if (null != conn) {
-				Transaction.safeRollback(conn);
-				db_simulation_run = null;
-			}
+		} catch (Exception exc) {
+			throw new SiriusException(exc);
 		}
 		ts = Calendar.getInstance();
 		ts.set(Calendar.MILLISECOND, 0);
@@ -181,11 +226,11 @@ public class DBOutputWriter extends OutputWriterBase {
 		LinkDataTotal db_ldt = new LinkDataTotal();
 		db_ldt.setLinkId(str2id(link.getId()));
 		db_ldt.setNetworkId(str2id(link.myNetwork.getId()));
-		db_ldt.setDataSources(db_simulation_run.getDataSources());
+		db_ldt.setAppRunId(db_simulation_run.getId());
+		db_ldt.setApplicationTypes(db_application_type);
 		db_ldt.setTs(ts.getTime());
-		db_ldt.setAggregation("raw");
-		db_ldt.setType("mean");
-		db_ldt.setCellNumber(Integer.valueOf(0));
+		db_ldt.setAggregationTypes(db_aggregation_type_raw);
+		db_ldt.setQuantityTypes(db_quantity_type_mean);
 		// mean density, vehicles
 		double density = SiriusMath.sum(link.cumulative_density[0]) / params.getNsteps();
 		db_ldt.setDensity(BigDecimal.valueOf(density));
@@ -241,12 +286,13 @@ public class DBOutputWriter extends OutputWriterBase {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
 			db_ldd.setNetworkId(str2id(link.myNetwork.getId()));
-			db_ldd.setDataSources(db_simulation_run.getDataSources());
+			db_ldd.setAppRunId(db_simulation_run.getId());
+			db_ldd.setApplicationTypes(db_application_type);
+			// TODO db_ldd.setDestinationNetworks();
 			db_ldd.setVehicleTypes(db_vehicle_type[vt_ind]);
 			db_ldd.setTs(ts.getTime());
-			db_ldd.setAggregation("raw");
-			db_ldd.setType("mean");
-			db_ldd.setCellNumber(Integer.valueOf(0));
+			db_ldd.setAggregationTypes(db_aggregation_type_raw);
+			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
 			double density = link.cumulative_density[0][vt_ind] / params.getNsteps();
 			db_ldd.setDensity(new BigDecimal(density));
