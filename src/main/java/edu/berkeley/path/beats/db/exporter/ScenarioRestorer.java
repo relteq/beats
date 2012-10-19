@@ -712,7 +712,7 @@ public class ScenarioRestorer {
 	private edu.berkeley.path.beats.jaxb.Controller restoreController(Controllers db_cntr) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Controller cntr = factory.createController();
 		cntr.setId(id2str(db_cntr.getId()));
-		cntr.setName(db_cntr.getName());
+		// TODO cntr.setName();
 		cntr.setType(db_cntr.getControllerTypes().getDescription());
 		cntr.setDt(db_cntr.getDt());
 		cntr.setEnabled(Boolean.TRUE);
