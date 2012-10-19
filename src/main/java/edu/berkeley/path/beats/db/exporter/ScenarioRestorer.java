@@ -531,7 +531,7 @@ public class ScenarioRestorer {
 
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(DemandsPeer.NUMBER);
-		crit.addAscendingOrderByColumn(DemandsPeer.VEHICLE_TYPE_ID);
+		crit.addAscendingOrderByColumn(DemandsPeer.VEH_TYPE_ID);
 		@SuppressWarnings("unchecked")
 		List<Demands> db_demand_l = db_dp.getDemandss(crit);
 		StringBuilder sb = null;
@@ -796,7 +796,7 @@ public class ScenarioRestorer {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.IN_LINK_ID);
 		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.OUT_LINK_ID);
-		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.VEHICLE_TYPE_ID);
+		crit.addAscendingOrderByColumn(EventSplitRatiosPeer.VEH_TYPE_ID);
 		@SuppressWarnings("unchecked")
 		List<EventSplitRatios> db_esr_l = db_event.getEventSplitRatioss(crit);
 		if (!db_esr_l.isEmpty()) {
