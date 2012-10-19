@@ -144,7 +144,6 @@ public class ScenarioLoader {
 		db_scenario.setDownstreamBoundaryCapacityProfileSets(save(scenario.getDownstreamBoundaryCapacityProfileSet()));
 		db_scenario.setControllerSets(save(scenario.getControllerSet()));
 		db_scenario.setEventSets(save(scenario.getEventSet()));
-		// TODO db_scenario.setEnkfNoiseParameterSets();
 		save(scenario.getRoutes(), db_scenario);
 		db_scenario.save(conn);
 
