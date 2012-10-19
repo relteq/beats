@@ -663,9 +663,7 @@ public class ScenarioLoader {
 	private void save(edu.berkeley.path.beats.jaxb.SplitratioProfile srp, SplitRatioProfileSets db_srps, VehicleTypes[] db_vt) throws TorqueException {
 		SplitRatioProfiles db_srp = new SplitRatioProfiles();
 		db_srp.setSplitRatioProfileSets(db_srps);
-		Nodes db_node = nodes.get(srp.getNodeId());
-		db_srp.setNodeId(db_node.getId());
-		db_srp.setNetworkId(db_node.getNetworkId());
+		db_srp.setNodeId(getDBNodeId(srp.getNodeId()));
 		if (null != srp.getDestinationNetworkId())
 			db_srp.setDestinationNetworks(this.destnets.get(srp.getDestinationNetworkId()));
 		db_srp.setSampleRate(srp.getDt());
