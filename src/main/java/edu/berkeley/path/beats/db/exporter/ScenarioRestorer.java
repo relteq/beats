@@ -644,7 +644,7 @@ public class ScenarioRestorer {
 		if (null != db_sensor.getLaneNumber())
 			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
 		sensor.setHealthStatus(db_sensor.getHealthStatus());
-		sensor.setDisplayPosition(restorePosition(db_sensor.getDisplayGeometry()));
+		sensor.setDisplayPosition(restoreDisplayPosition(db_sensor.getDisplayGeometry()));
 		if (null != db_sensor.getLinkId()) {
 			edu.berkeley.path.beats.jaxb.LinkReference lr = factory.createLinkReference();
 			lr.setId(id2str(db_sensor.getLinkId()));
@@ -717,7 +717,7 @@ public class ScenarioRestorer {
 		cntr.setDt(db_cntr.getDt());
 		cntr.setEnabled(Boolean.TRUE);
 		cntr.setJavaClass(db_cntr.getJavaClass());
-		cntr.setDisplayPosition(restorePosition(db_cntr.getDisplayGeometry()));
+		cntr.setDisplayPosition(restoreDisplayPosition(db_cntr.getDisplayGeometry()));
 		cntr.setTargetElements(restoreTargetElements(db_cntr));
 		cntr.setFeedbackElements(restoreFeedbackElements(db_cntr));
 		@SuppressWarnings("unchecked")
@@ -789,7 +789,7 @@ public class ScenarioRestorer {
 		event.setType(db_event.getEventTypes().getDescription());
 		event.setJavaClass(db_event.getJavaClass());
 		event.setDescription(db_event.getDescription());
-		event.setDisplayPosition(restorePosition(db_event.getDisplayGeometry()));
+		event.setDisplayPosition(restoreDisplayPosition(db_event.getDisplayGeometry()));
 		event.setTargetElements(restoreTargetElements(db_event));
 		event.setParameters(restoreParameters(db_event));
 
@@ -1014,6 +1014,11 @@ public class ScenarioRestorer {
 	}
 
 	private edu.berkeley.path.beats.jaxb.Position restorePosition(String geometry) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private edu.berkeley.path.beats.jaxb.DisplayPosition restoreDisplayPosition(String geometry) {
 		// TODO Auto-generated method stub
 		return null;
 	}

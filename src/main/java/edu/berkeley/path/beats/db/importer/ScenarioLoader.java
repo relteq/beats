@@ -1374,4 +1374,8 @@ public class ScenarioLoader {
 		return "";
 	}
 
+	private String pos2str(edu.berkeley.path.beats.jaxb.DisplayPosition position) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
