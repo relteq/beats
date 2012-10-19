@@ -955,12 +955,12 @@ public class ScenarioRestorer {
 			}
 			while (citer.hasNext()) {
 				edu.berkeley.path.beats.jaxb.ColumnName colname = citer.next();
-				if (colname.getValue().equals(db_td.getColumnName())) {
+				if (colname.getName().equals(db_td.getColumnName())) {
 					row.getColumn().add(db_td.getValue());
 					break;
 				} else {
 					row.getColumn().add(null);
-					logger.warn("Column " + colname.getValue() + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
+					logger.warn("Column " + colname.getName() + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
 				}
 			}
 		}
@@ -972,7 +972,7 @@ public class ScenarioRestorer {
 
 	private edu.berkeley.path.beats.jaxb.ColumnName restoreColumnName(TabularDataKeys db_tdk) {
 		edu.berkeley.path.beats.jaxb.ColumnName colname = factory.createColumnName();
-		colname.setValue(db_tdk.getColumnName());
+		colname.setName(db_tdk.getColumnName());
 		colname.setKey(db_tdk.getIsKey());
 		return colname;
 	}

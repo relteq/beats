@@ -1288,7 +1288,7 @@ public class ScenarioLoader {
 		for (edu.berkeley.path.beats.jaxb.ColumnName colname : table.getColumnNames().getColumnName()) {
 			TabularDataKeys db_tdk = new TabularDataKeys();
 			db_tdk.setTables(db_table);
-			db_tdk.setColumnName(colname.getValue());
+			db_tdk.setColumnName(colname.getName());
 			db_tdk.setColumnNumber(Integer.valueOf(colnum++));
 			db_tdk.setIsKey(colname.isKey());
 			db_tdk.save(conn);
@@ -1299,7 +1299,7 @@ public class ScenarioLoader {
 			for (String elem : row.getColumn()) {
 				TabularData db_td = new TabularData();
 				db_td.setTables(db_table);
-				db_td.setColumnName(citer.next().getValue());
+				db_td.setColumnName(citer.next().getName());
 				db_td.setRowNumber(Integer.valueOf(rownum));
 				db_td.setValue(elem);
 				db_td.save(conn);

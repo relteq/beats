@@ -275,9 +275,9 @@ public class UnitConverter {
 		Converter conv[] = new Converter[table.getColumnNames().getColumnName().size()];
 		int colnum = 0;
 		for (ColumnName colname : table.getColumnNames().getColumnName()) {
-			if (colname.getValue().equals("MeteringRates") || colname.getValue().equals("FlowThresholds"))
+			if (colname.getName().equals("MeteringRates") || colname.getName().equals("FlowThresholds"))
 				conv[colnum] = fconv;
-			else if (colname.getValue().equals("SpeedThresholds"))
+			else if (colname.getName().equals("SpeedThresholds"))
 				conv[colnum] = sconv;
 			else
 				conv[colnum] = null;

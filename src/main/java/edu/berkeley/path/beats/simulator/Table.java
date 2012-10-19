@@ -79,7 +79,7 @@ public class Table {
 		for (edu.berkeley.path.beats.jaxb.Row row : T1.getRow())
 			Rows.add((ArrayList<String>) row.getColumn());
 		for (edu.berkeley.path.beats.jaxb.ColumnName colname : T1.getColumnNames().getColumnName())
-			ColumnNames.add(colname.getValue());
+			ColumnNames.add(colname.getName());
 	}
 
 	public Table(ArrayList<String> columnNames,	ArrayList<ArrayList<String>> rows) {
