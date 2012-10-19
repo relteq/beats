@@ -195,7 +195,7 @@ public class ScenarioRestorer {
 	private edu.berkeley.path.beats.jaxb.Node restoreNode(Nodes db_node) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Node node = factory.createNode();
 		node.setId(id2str(db_node.getId()));
-		node.setInSync(db_node.getInSynch());
+		node.setInSync(db_node.getInSync());
 
 		@SuppressWarnings("unchecked")
 		List<NodeTypeDet> db_ntd_l = db_node.getNodeTypeDets();
@@ -315,7 +315,7 @@ public class ScenarioRestorer {
 		LinkTypeDet db_ltdet = LinkTypeDetPeer.retrieveByPK(db_link.getId(), db_link.getNetworkId());
 		link.setType(db_ltdet.getLinkTypes().getDescription());
 
-		link.setInSync(db_link.getInSynch());
+		link.setInSync(db_link.getInSync());
 		return link;
 	}
 
