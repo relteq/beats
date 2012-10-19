@@ -466,7 +466,7 @@ public class ScenarioLoader {
 	private void save(edu.berkeley.path.beats.jaxb.Phase phase, Signals db_signal) throws TorqueException {
 		Phases db_phase = new Phases();
 		db_phase.setSignals(db_signal);
-		db_phase.setNema(phase.getNema().intValue());
+		db_phase.setPhaseId(phase.getNema().intValue());
 		db_phase.setIsProtected(phase.isProtected());
 		db_phase.setIsPermissive(phase.isPermissive());
 		db_phase.setIsLagged(phase.isLag());

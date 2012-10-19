@@ -602,7 +602,7 @@ public class ScenarioRestorer {
 
 	private edu.berkeley.path.beats.jaxb.Phase restorePhase(Phases db_ph) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Phase phase = factory.createPhase();
-		phase.setNema(BigInteger.valueOf(db_ph.getNema()));
+		phase.setNema(BigInteger.valueOf(db_ph.getPhaseId()));
 		phase.setProtected(db_ph.getIsProtected());
 		phase.setPermissive(db_ph.getIsPermissive());
 		phase.setLag(db_ph.getIsLagged());
