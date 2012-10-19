@@ -720,8 +720,13 @@ public class ScenarioRestorer {
 		cntr.setDisplayPosition(restorePosition(db_cntr.getDisplayGeometry()));
 		cntr.setTargetElements(restoreTargetElements(db_cntr));
 		cntr.setFeedbackElements(restoreFeedbackElements(db_cntr));
-		if (null != db_cntr.getQueueControllerId())
-			cntr.setQueueController(restoreQueueController(db_cntr.getQueueControllers()));
+		@SuppressWarnings("unchecked")
+		List<QueueControllers> db_qc_l = db_cntr.getQueueControllerss();
+		if (!db_qc_l.isEmpty()) {
+			if (1 < db_qc_l.size())
+				logger.warn("Found " + db_qc_l.size() + " queue controllers for controller " + db_cntr.getId());
+			cntr.setQueueController(restoreQueueController(db_qc_l.get(0)));
+		}
 		cntr.setParameters(restoreParameters(db_cntr));
 		List<edu.berkeley.path.beats.jaxb.Table> table_l = restoreTables(db_cntr);
 		if (null != table_l && !table_l.isEmpty()) {

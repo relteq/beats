@@ -985,9 +985,9 @@ public class ScenarioLoader {
 		db_cntr.setControllerTypes(getControllerType(cntr.getType()));
 		db_cntr.setJavaClass(cntr.getJavaClass());
 		db_cntr.setDt(cntr.getDt());
-		db_cntr.setQueueControllers(save(cntr.getQueueController()));
 		db_cntr.setDisplayGeometry(pos2str(cntr.getDisplayPosition()));
 		db_cntr.save(conn);
+		save(cntr.getQueueController(), db_cntr);
 		save(cntr.getParameters(), db_cntr);
 		save(cntr.getTable(), db_cntr);
 		save(cntr.getActivationIntervals(), db_cntr);
@@ -1014,14 +1014,16 @@ public class ScenarioLoader {
 
 	/**
 	 * Imports a queue controller
-	 * @param qc
+	 * @param qc the queue controller
+	 * @param db_cntr an imported controller
 	 * @return an imported queue controller
 	 * @throws TorqueException
 	 */
-	private QueueControllers save(edu.berkeley.path.beats.jaxb.QueueController qc) throws TorqueException {
+	private QueueControllers save(edu.berkeley.path.beats.jaxb.QueueController qc, Controllers db_cntr) throws TorqueException {
 		if (null == qc) return null;
 		QueueControllers db_qc = new QueueControllers();
 		db_qc.setQueueControllerTypes(getQueueControllerType(qc.getType()));
+		db_qc.setControllers(db_cntr);
 		db_qc.setJavaClass(qc.getJavaClass());
 		db_qc.save(conn);
 		save(qc.getParameters(), db_qc);
