@@ -639,8 +639,8 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.Sensor sensor = factory.createSensor();
 		sensor.setId(id2str(db_sensor.getId()));
 		sensor.setLinkPosition(db_sensor.getLinkPosition());
-		sensor.setOriginalId(db_sensor.getOriginalId());
 		sensor.setType(db_sensor.getSensorTypes().getDescription());
+		sensor.setSensorIdOriginal(db_sensor.getOriginalId());
 		if (null != db_sensor.getLaneNumber())
 			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
 		sensor.setHealthStatus(db_sensor.getHealthStatus());

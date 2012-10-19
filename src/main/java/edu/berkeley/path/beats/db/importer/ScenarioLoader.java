@@ -541,8 +541,10 @@ public class ScenarioLoader {
 	private Sensors save(edu.berkeley.path.beats.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
 		Sensors db_sensor = new Sensors();
 		db_sensor.setSensorSets(db_ss);
-		db_sensor.setOriginalId(sensor.getOriginalId());
 		db_sensor.setSensorTypes(getSensorType(sensor.getType()));
+		// TODO db_sensor.setJavaClass();
+		db_sensor.setOriginalId(sensor.getSensorIdOriginal());
+		// TODO db_sensor.setMeasurementSourceId();
 		db_sensor.setDisplayGeometry(pos2str(sensor.getDisplayPosition()));
 		if (null != sensor.getLinkReference())
 			db_sensor.setLinkId(getDBLinkId(sensor.getLinkReference().getId()));
