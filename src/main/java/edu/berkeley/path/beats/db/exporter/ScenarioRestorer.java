@@ -98,6 +98,7 @@ public class ScenarioRestorer {
 	 * @return String
 	 */
 	private static String id2str(Long id) {
+		if (null == id) return null;
 		return id.toString();
 	}
 
@@ -349,7 +350,7 @@ public class ScenarioRestorer {
 			if (null == density) { // new link
 				density = factory.createDensity();
 				density.setLinkId(id2str(db_id.getLinkId()));
-				density.setLinkIdDestination(id2str(db_id.getDestinationLinkId()));
+				density.setDestinationNetworkId(id2str(db_id.getDestinationNetworkId()));
 				sb.setLength(0);
 			} else { // same link, different vehicle type
 				sb.append(":");
@@ -421,8 +422,7 @@ public class ScenarioRestorer {
 		srp.setNodeId(id2str(db_srp.getNodeId()));
 		srp.setDt(db_srp.getSampleRate());
 		srp.setStartTime(db_srp.getStartTime());
-		if (null != db_srp.getDestinationLinkId())
-			srp.setLinkIdDestination(id2str(db_srp.getDestinationLinkId()));
+		srp.setDestinationNetworkId(id2str(db_srp.getDestinationNetworkId()));
 
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.IN_LINK_ID);
@@ -519,8 +519,7 @@ public class ScenarioRestorer {
 		dp.setStartTime(db_dp.getStartTime());
 		dp.setDt(db_dp.getSampleRate());
 		dp.setLinkIdOrigin(id2str(db_dp.getOriginLinkId()));
-		if (null != db_dp.getDestinationLinkId())
-			dp.setDestinationLinkId(id2str(db_dp.getDestinationLinkId()));
+		dp.setDestinationNetworkId(id2str(db_dp.getDestinationNetworkId()));
 		dp.setStdDevAdd(db_dp.getStdDeviationAdditive());
 		dp.setStdDevMult(db_dp.getStdDeviationMultiplicative());
 
@@ -832,7 +831,7 @@ public class ScenarioRestorer {
 	private edu.berkeley.path.beats.jaxb.DestinationNetwork restoreDestinationNetwork(DestinationNetworks db_destnet) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.DestinationNetwork destnet = factory.createDestinationNetwork();
 		destnet.setId(id2str(db_destnet.getId()));
-		destnet.setLinkIdDestination(id2str(db_destnet.getDestinationLinkId()));
+		destnet.setDestinationLinkId(id2str(db_destnet.getDestinationLinkId()));
 		edu.berkeley.path.beats.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
 		@SuppressWarnings("unchecked")
 		List<DestinationNetworkLinks> db_dnl_l = db_destnet.getDestinationNetworkLinkss();

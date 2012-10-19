@@ -64,6 +64,7 @@ public class ScenarioLoader {
 	private Map<String, Sensors> sensors = null;
 	private Map<String, Events> events = null;
 	private Map<String, Signals> signals = null;
+	private Map<String, DestinationNetworks> destnets = null;
 
 	private Long getDBNodeId(String id) {
 		return nodes.get(id).getId();
@@ -131,6 +132,7 @@ public class ScenarioLoader {
 		db_scenario.setVehicleTypeSets(save(vtypes));
 		db_scenario.save(conn);
 		save(scenario.getNetworkList(), db_scenario);
+		save(scenario.getDestinationNetworks(), db_scenario);
 		db_scenario.setNetworkConnectionSets(save(scenario.getNetworkConnections()));
 		db_scenario.setSignalSets(save(scenario.getSignalList()));
 		db_scenario.setSensorSets(save(scenario.getSensorList()));
@@ -143,7 +145,6 @@ public class ScenarioLoader {
 		db_scenario.setControllerSets(save(scenario.getControllerSet()));
 		db_scenario.setEventSets(save(scenario.getEventSet()));
 		// TODO db_scenario.setEnkfNoiseParameterSets();
-		save(scenario.getDestinationNetworks(), db_scenario);
 		save(scenario.getRoutes(), db_scenario);
 		db_scenario.save(conn);
 
@@ -583,8 +584,8 @@ public class ScenarioLoader {
 				db_id.setInitialDensitySets(db_idsets);
 				db_id.setLinkId(getDBLinkId(density.getLinkId()));
 				db_id.setVehicleTypes(db_vt[i]);
-				if (null != density.getLinkIdDestination())
-					db_id.setDestinationLinkId(getDBLinkId(density.getLinkIdDestination()));
+				if (null != density.getDestinationNetworkId())
+					db_id.setDestinationNetworks(this.destnets.get(density.getDestinationNetworkId()));
 				db_id.setDensity(data[i]);
 				db_id.save(conn);
 			}
@@ -665,8 +666,8 @@ public class ScenarioLoader {
 		Nodes db_node = nodes.get(srp.getNodeId());
 		db_srp.setNodeId(db_node.getId());
 		db_srp.setNetworkId(db_node.getNetworkId());
-		if (null != srp.getLinkIdDestination())
-			db_srp.setDestinationLinkId(getDBLinkId(srp.getLinkIdDestination()));
+		if (null != srp.getDestinationNetworkId())
+			db_srp.setDestinationNetworks(this.destnets.get(srp.getDestinationNetworkId()));
 		db_srp.setSampleRate(srp.getDt());
 		db_srp.setStartTime(srp.getStartTime());
 		db_srp.save(conn);
@@ -782,8 +783,8 @@ public class ScenarioLoader {
 		DemandProfiles db_dp = new DemandProfiles();
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setOriginLinkId(getDBLinkId(dp.getLinkIdOrigin()));
-		if (null != dp.getDestinationLinkId())
-			db_dp.setDestinationLinkId(getDBLinkId(dp.getDestinationLinkId()));
+		if (null != dp.getDestinationNetworkId())
+			db_dp.setDestinationNetworks(this.destnets.get(dp.getDestinationNetworkId()));
 		db_dp.setSampleRate(dp.getDt());
 		db_dp.setStartTime(dp.getStartTime());
 		db_dp.setKnob(dp.getKnob());
@@ -1067,6 +1068,7 @@ public class ScenarioLoader {
 	 */
 	private void save(edu.berkeley.path.beats.jaxb.DestinationNetworks destnets, Scenarios db_scenario) throws TorqueException {
 		if (null == destnets) return;
+		this.destnets = new HashMap<String, DestinationNetworks>(destnets.getDestinationNetwork().size());
 		for (edu.berkeley.path.beats.jaxb.DestinationNetwork destnet : destnets.getDestinationNetwork()) {
 			DestinationNetworkSets db_destnetset = new DestinationNetworkSets();
 			db_destnetset.setScenarios(db_scenario);
@@ -1083,11 +1085,12 @@ public class ScenarioLoader {
 	 */
 	private DestinationNetworks save(edu.berkeley.path.beats.jaxb.DestinationNetwork destnet) throws TorqueException {
 		DestinationNetworks db_destnet = new DestinationNetworks();
-		db_destnet.setDestinationLinkId(getDBLinkId(destnet.getLinkIdDestination()));
+		db_destnet.setDestinationLinkId(getDBLinkId(destnet.getDestinationLinkId()));
 		db_destnet.setProjectId(getProjectId());
 		db_destnet.save(conn);
 		for (edu.berkeley.path.beats.jaxb.LinkReference linkref : destnet.getLinkReferences().getLinkReference())
 			save(linkref, db_destnet);
+		this.destnets.put(destnet.getId(), db_destnet);
 		return db_destnet;
 	}
 
