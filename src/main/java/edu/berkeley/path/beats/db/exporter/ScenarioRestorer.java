@@ -784,7 +784,7 @@ public class ScenarioRestorer {
 	private edu.berkeley.path.beats.jaxb.Event restoreEvent(Events db_event) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Event event = factory.createEvent();
 		event.setId(id2str(db_event.getId()));
-		event.setTstamp(db_event.getTstamp());
+		event.setTstamp(db_event.getActionTime());
 		event.setEnabled(db_event.getEnabled());
 		event.setType(db_event.getEventTypes().getDescription());
 		event.setJavaClass(db_event.getJavaClass());

@@ -1097,8 +1097,8 @@ public class ScenarioLoader {
 	private Events save(edu.berkeley.path.beats.jaxb.Event event, EventSets db_eset) throws TorqueException {
 		Events db_event = new Events();
 		db_event.setEventSets(db_eset);
+		db_event.setActionTime(event.getTstamp());
 		db_event.setEventTypes(getEventType(event.getType()));
-		db_event.setTstamp(event.getTstamp());
 		db_event.setJavaClass(event.getJavaClass());
 		db_event.setDescription(event.getDescription());
 		db_event.setDisplayGeometry(pos2str(event.getDisplayPosition()));
