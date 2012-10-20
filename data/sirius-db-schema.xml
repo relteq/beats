@@ -1149,7 +1149,7 @@
 	<table name="tables" idMethod="native">
 		<column name="id" domain="ID" primaryKey="true"/>
 		<column name="element_id" required="true" domain="ID" description="ID of the controller or the event that works with referenced scenario elements."/>
-		<column name="element_type_id" primaryKey="true" domain="ID"/>
+		<column name="element_type_id" required="true" domain="ID"/>
 		<column name="name" required="true" domain="NAME_BUF" description="Table name"/>
 		<foreign-key foreignTable="scenario_element_types">
 			<reference local="element_type_id" foreign="id"/>
