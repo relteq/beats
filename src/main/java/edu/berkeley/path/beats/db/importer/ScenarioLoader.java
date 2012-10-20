@@ -521,6 +521,7 @@ public class ScenarioLoader {
 		if (db_st_l.isEmpty()) {
 			SensorTypes db_st = new SensorTypes();
 			db_st.setDescription(sensor_type);
+			db_st.setInUse(Boolean.TRUE);
 			db_st.save(conn);
 			return db_st;
 		} else {
