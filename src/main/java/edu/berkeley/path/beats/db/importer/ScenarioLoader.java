@@ -295,8 +295,8 @@ public class ScenarioLoader {
 
 		// node type
 		NodeTypeDet db_ntdet = new NodeTypeDet();
-		db_ntdet.setNodes(db_node);
 		db_ntdet.setNodeTypes(getNodeTypes(node.getType()));
+		db_node.addNodeTypeDet(db_ntdet, conn);
 
 		db_node.save(conn);
 		nodes.put(node.getId(), db_node);
