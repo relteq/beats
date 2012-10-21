@@ -69,11 +69,11 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	    int nummissing = 0;
 	    boolean missing_capacity, missing_vf, missing_w, missing_densityJam;
 	    double value;
-	    double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
+	    double simDtInSeconds = myLink.myNetwork.myScenario.getSimDtInSeconds();
 	    
 		if(jaxbfd.getCapacity()!=null){
-			value = jaxbfd.getCapacity().doubleValue();			// [veh/hr/lane]
-			_capacity = value * lanes*simDtInHours;
+			value = jaxbfd.getCapacity().doubleValue();			// [veh/second/lane]
+			_capacity = value * lanes * simDtInSeconds;
 			missing_capacity = false;
 		} 
 		else{
@@ -82,8 +82,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		}
 	    
 		if(jaxbfd.getFreeFlowSpeed()!=null){
-			value = jaxbfd.getFreeFlowSpeed().doubleValue();		// [mile/hr]
-			_vf = value * simDtInHours / myLink.getLengthInMiles();
+			value = jaxbfd.getFreeFlowSpeed().doubleValue();		// [meters/second]
+			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
 			missing_vf = false;
 		} 
 		else{
@@ -92,8 +92,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		}
 	
 		if(jaxbfd.getCongestionSpeed()!=null){
-			value = jaxbfd.getCongestionSpeed().doubleValue();		// [mile/hr]
-			_w = value * simDtInHours / myLink.getLengthInMiles();
+			value = jaxbfd.getCongestionSpeed().doubleValue();		// [meters/second]
+			_w = value * simDtInSeconds / myLink.getLengthInMeters();
 			missing_w = false;
 		} 
 		else{
@@ -102,8 +102,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		}
 	
 		if(jaxbfd.getJamDensity()!=null){
-			value = jaxbfd.getJamDensity().doubleValue();		// [veh/mile/lane]
-			_densityJam = value *lanes*myLink.getLengthInMiles();
+			value = jaxbfd.getJamDensity().doubleValue();		// [veh/meter/lane]
+			_densityJam = value * lanes * myLink.getLengthInMeters();
 			missing_densityJam = false;
 		} 
 		else{
@@ -113,22 +113,22 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 
 		// in order, check for missing values and fill in until we are able to make triangle
 		if(missing_capacity && nummissing>1){
-			_capacity = Defaults.capacity *lanes*simDtInHours;
+			_capacity = Defaults.capacity * lanes * simDtInSeconds;
 			nummissing--;
 		}
 
 		if(missing_vf && nummissing>1){
-			_vf = Defaults.vf * simDtInHours / myLink.getLengthInMiles();
+			_vf = Defaults.vf * simDtInSeconds / myLink.getLengthInMeters();
 			nummissing--;
 		}
 
 		if(missing_w && nummissing>1){
-			_w = Defaults.w * simDtInHours / myLink.getLengthInMiles();
+			_w = Defaults.w * simDtInSeconds / myLink.getLengthInMeters();
 			nummissing--;
 		}
 
 		if(missing_densityJam && nummissing>1){
-			_densityJam = Defaults.densityJam *lanes*myLink.getLengthInMiles();
+			_densityJam = Defaults.densityJam * lanes * myLink.getLengthInMeters();
 			nummissing--;
 		}
 	    
@@ -151,19 +151,19 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		
 		// set capacity drop and capacity uncertainty
 		if(jaxbfd.getStdDevCapacity()!=null){
-			value = jaxbfd.getStdDevCapacity().doubleValue();	// [veh/hr/lane]
-			std_dev_capacity = value * lanes*simDtInHours;
+			value = jaxbfd.getStdDevCapacity().doubleValue();	// [veh/second/lane]
+			std_dev_capacity = value * lanes * simDtInSeconds;
 		}
 		else{
 			std_dev_capacity = 0.0;
 		}
 		
 		if(jaxbfd.getCapacityDrop()!=null){
-			value = jaxbfd.getCapacityDrop().doubleValue();		// [veh/hr/lane]
-			_capacityDrop = value * lanes*simDtInHours;
+			value = jaxbfd.getCapacityDrop().doubleValue();		// [veh/second/lane]
+			_capacityDrop = value * lanes * simDtInSeconds;
 		} 
 		else{
-			_capacityDrop = Defaults.capacityDrop*lanes*simDtInHours;
+			_capacityDrop = Defaults.capacityDrop * lanes * simDtInSeconds;
 		}
         
 		// set critical density
@@ -241,14 +241,14 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
  	protected void settoDefault(){
 		if(myLink==null)
 			return;
-		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
-		double lengthInMiles = myLink.getLengthInMiles();
-		_densityJam 	  = Defaults.densityJam		*lanes*myLink.getLengthInMiles();
-		_capacity  		  = Defaults.capacity		*lanes*simDtInHours;
-		_capacityDrop 	  = Defaults.capacityDrop	*lanes*simDtInHours;
-		_vf = Defaults.vf * simDtInHours / lengthInMiles;
-        _w  = Defaults.w  * simDtInHours / lengthInMiles;
-        density_critical =  _capacity / _vf;
+		double simDtInSeconds = myLink.myNetwork.myScenario.getSimDtInSeconds();
+		double lengthInMeters = myLink.getLengthInMeters();
+		_densityJam 	  = Defaults.densityJam		* lanes * lengthInMeters;
+		_capacity  		  = Defaults.capacity		* lanes * simDtInSeconds;
+		_capacityDrop 	  = Defaults.capacityDrop	* lanes * simDtInSeconds;
+		_vf = Defaults.vf * simDtInSeconds / lengthInMeters;
+		_w  = Defaults.w  * simDtInSeconds / lengthInMeters;
+		density_critical = _capacity / _vf;
 	}
 
  	// copy per lane parameters from jaxb and normalize
@@ -260,36 +260,36 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			return;
 		
 		double value;
-		double simDtInHours = myLink.myNetwork.myScenario.getSimDtInHours();
+		double simDtInSeconds = myLink.myNetwork.myScenario.getSimDtInSeconds();
 
 		if(fd.getJamDensity()!=null){
-			value = fd.getJamDensity().doubleValue();		// [veh/mile/lane]
-			_densityJam = value *lanes*myLink.getLengthInMiles();
+			value = fd.getJamDensity().doubleValue();		// [veh/meter/lane]
+			_densityJam = value * lanes * myLink.getLengthInMeters();
 		} 
 
 		if(fd.getCapacity()!=null){
-			value = fd.getCapacity().doubleValue();			// [veh/hr/lane]
-			_capacity = value * lanes*simDtInHours;
+			value = fd.getCapacity().doubleValue();			// [veh/second/lane]
+			_capacity = value * lanes * simDtInSeconds;
 		} 
 		
 		if(fd.getStdDevCapacity()!=null){
-			value = fd.getStdDevCapacity().doubleValue();	// [veh/hr/lane]
-			std_dev_capacity = value * lanes*simDtInHours;
+			value = fd.getStdDevCapacity().doubleValue();	// [veh/second/lane]
+			std_dev_capacity = value * lanes * simDtInSeconds;
 		}
 		
 		if(fd.getCapacityDrop()!=null){
-			value = fd.getCapacityDrop().doubleValue();		// [veh/hr/lane]
-			_capacityDrop = value * lanes*simDtInHours;
+			value = fd.getCapacityDrop().doubleValue();		// [veh/second/lane]
+			_capacityDrop = value * lanes * simDtInSeconds;
 		} 
 		
 		if(fd.getFreeFlowSpeed()!=null){
-			value = fd.getFreeFlowSpeed().doubleValue();		// [mile/hr]
-			_vf = value * simDtInHours / myLink.getLengthInMiles();
+			value = fd.getFreeFlowSpeed().doubleValue();		// [meters/second]
+			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
 		}
 
 		if(fd.getCongestionSpeed()!=null){
-			value = fd.getCongestionSpeed().doubleValue();		// [mile/hr]
-			_w = value * simDtInHours / myLink.getLengthInMiles();
+			value = fd.getCongestionSpeed().doubleValue();		// [meters/second]
+			_w = value * simDtInSeconds / myLink.getLengthInMeters();
 		}
 
 		density_critical =  _capacity / _vf;

@@ -105,7 +105,7 @@ public class _test {
 			
 			// set demands to 10 vph
 			for(DemandProfile d : demands)
-				d.demand_nominal.set(0,0,10 * scenario.getSimDtInHours());
+				d.demand_nominal.set(0, 0, 10 * scenario.getSimDtInSeconds());
 			scenario.run(timestart,timeend,outdt,outputfileprefix);
 
 		} catch (SiriusException e) {

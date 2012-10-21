@@ -210,7 +210,7 @@ public class Controller_CRM_HERO extends Controller {
 		
 		// Read parameters
 				
-		double gain_in_mph = 50.0;
+		double gain_in_mps = 50.0 * 1609.344 / 3600.0; // [meters/second]
 		targetDensity_Given = false;
 		minFlow_Given=false;
 		maxFlow_Given=false;
@@ -222,7 +222,7 @@ public class Controller_CRM_HERO extends Controller {
 			for(edu.berkeley.path.beats.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 								
 				if(p.getName().equals("gainAlinea")){
-					gain_in_mph = Double.parseDouble(p.getValue());
+					gain_in_mps = Double.parseDouble(p.getValue());
 				}
 				
 				if(p.getName().equals("gainQueueController")){
@@ -236,7 +236,7 @@ public class Controller_CRM_HERO extends Controller {
 				if(p.getName().equals("targetDensity")){
 					if(mainlineLink!=null){
 						targetVehicles = Double.parseDouble(p.getValue());   // [in vpmpl]
-						targetVehicles *= mainlineLink.get_Lanes()*mainlineLink.getLengthInMiles(); // now in [veh]
+						targetVehicles *= mainlineLink.get_Lanes() * mainlineLink.getLengthInMeters(); // now in [veh]
 						targetDensity_Given = true;
 					}
 				}
@@ -267,19 +267,19 @@ public class Controller_CRM_HERO extends Controller {
 				}
 				
 				if(p.getName().equals("minFlow")){
-					minFlow = Double.parseDouble(p.getValue())*myScenario.getSimDtInHours()*this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					minFlow = Double.parseDouble(p.getValue()) * myScenario.getSimDtInSeconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
 				    minFlow_Given=true;
 				}
 				
 				if(p.getName().equals("maxFlow")){
-					maxFlow = Double.parseDouble(p.getValue())*myScenario.getSimDtInHours()*this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					maxFlow = Double.parseDouble(p.getValue()) * myScenario.getSimDtInSeconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
 					maxFlow_Given=true;
 				}
 			}	
 		
 		
 		// Normalize ALINEA Gain
-		alineaGainNormalized = gain_in_mph*myScenario.getSimDtInHours()/mainlineLink.getLengthInMiles();
+		alineaGainNormalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlineLink.getLengthInMeters();
 		
 		// Set minFlow equal to zero if not given
 		if(!minFlow_Given)
@@ -531,7 +531,7 @@ public class Controller_CRM_HERO extends Controller {
 			
 
 			if(!controllerList.get(i).maxFlow_Given)
-				controllerList.get(i).maxFlow=onrampLink.getCapacityInVPHPL(0)*myScenario.getSimDtInHours()*onrampLink.get_Lanes(); //[veh/sim_period/onramp];
+				controllerList.get(i).maxFlow = onrampLink.getCapacityInVPSPL(0) * myScenario.getSimDtInSeconds() * onrampLink.get_Lanes(); //[veh/sim_period/onramp];
 
 			if(!controllerList.get(i).queueMax_Given)
 				controllerList.get(i).queueMax = controllerList.get(i).onrampLink.getDensityJamInVeh(0); //[veh/onramp]

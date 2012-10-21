@@ -53,7 +53,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		String str = getContent();
 		if(!str.isEmpty()){
 			capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-			capacity.multiplyscalar(myScenario.getSimDtInHours()*myLink.get_Lanes());
+			capacity.multiplyscalar(myScenario.getSimDtInSeconds() * myLink.get_Lanes());
 		}
 			
 	}

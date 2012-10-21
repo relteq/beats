@@ -145,7 +145,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		for(int i=0;i<link.length;i++){
 			if(link[i].getId().equals(linkid) && link[i].myNetwork.getId().equals(network_id)){
 				for(int j=0;j<vehicletypeindex.length;j++)
-					d[vehicletypeindex[j]] = initial_density[i][j]*link[i].getLengthInMiles();
+					d[vehicletypeindex[j]] = initial_density[i][j] * link[i].getLengthInMeters();
 				return d;
 			}
 		}
@@ -221,7 +221,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 			for (int jjj = 0; jjj < vehicletypeindex.length; ++jjj)
 				data.add(new Tuple(link[iii].getId(), link[iii].myNetwork.getId(),
 						vehicletypeindex[jjj].intValue(),
-						initial_density[iii][jjj] * link[iii].getLengthInMiles()));
+						initial_density[iii][jjj] * link[iii].getLengthInMeters()));
 		return data;
 	}
 

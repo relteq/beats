@@ -83,7 +83,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected boolean global_control_on;	// global control switch
 	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
 	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
-	/** @y.exclude */	protected double simdtinhours;			// [hr]  simulation time step 	
 	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
 	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
@@ -569,13 +568,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public double getSimDtInSeconds() {
 		return simdtinseconds;
-	}
-
-	/** Size of the simulation time step in hours.
-	 * @return Simulation time step in hours. 
-	 */
-	public double getSimDtInHours() {
-		return simdtinhours;
 	}
 
 	/** Start time of the simulation.

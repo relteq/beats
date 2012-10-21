@@ -135,11 +135,11 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					// f = flow per dt, vehicles
 					if (exportflows) xmlsw.writeAttribute("f", format(_link.cumulative_outflow[0], ":"));
 					_link.reset_cumulative();
-					// mf = capacity, vehicles per hour
-					double mf = _link.getCapacityInVPH(0);
+					// mf = capacity, vehicles per second
+					double mf = _link.getCapacityInVPS(0);
 					if (!Double.isNaN(mf)) xmlsw.writeAttribute("mf", String.format(NUM_FORMAT, mf));
-					// fv = free flow speed, miles per hour
-					double fv = _link.getVfInMPH(0);
+					// fv = free flow speed, meters per second
+					double fv = _link.getVfInMPS(0);
 					if (!Double.isNaN(fv)) xmlsw.writeAttribute("fv", String.format(NUM_FORMAT, fv));
 					xmlsw.writeEndElement(); // l
 				}
