@@ -46,9 +46,9 @@ public class UnitConverter {
 	 * @throws SiriusException
 	 */
 	public static void convertUnits(String iconfig, String oconfig) throws SiriusException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.createAndLoadScenario(iconfig);
+		Scenario scenario = ScenarioUtil.load(iconfig);
 		process(scenario);
-		scenario.saveToXML(oconfig);
+		ScenarioUtil.save(scenario, oconfig);
 	}
 
 	/**

@@ -86,17 +86,15 @@ public class ScenarioLoader {
 	 * @throws SiriusException
 	 */
 	public static Scenarios load(String filename) throws SiriusException {
-		edu.berkeley.path.beats.simulator.Scenario scenario =
-				edu.berkeley.path.beats.simulator.ObjectFactory.createAndLoadScenario(filename);
-		if (null == scenario)
-			throw new SiriusException("Could not load a scenario from file " + filename);
+		edu.berkeley.path.beats.jaxb.Scenario scenario =
+				edu.berkeley.path.beats.util.ScenarioUtil.load(filename);
 		logger.info("Configuration file '" + filename + "' parsed");
 		Scenarios db_scenario = new ScenarioLoader().load(scenario);
 		logger.info("Scenario imported, ID=" + db_scenario.getId());
 		return db_scenario;
 	}
 
-	public Scenarios load(edu.berkeley.path.beats.simulator.Scenario scenario) throws SiriusException {
+	public Scenarios load(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		try {
 			conn = Transaction.begin();
@@ -120,7 +118,7 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 * @throws SiriusException
 	 */
-	private Scenarios save(edu.berkeley.path.beats.simulator.Scenario scenario) throws TorqueException, SiriusException {
+	private Scenarios save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws TorqueException, SiriusException {
 		if (null == scenario) return null;
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setProjectId(getProjectId());

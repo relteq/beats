@@ -25,21 +25,14 @@
  **/
 
 package edu.berkeley.path.beats.db.exporter;
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
-import org.xml.sax.SAXException;
 
 import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.SiriusException;
@@ -48,14 +41,8 @@ import edu.berkeley.path.beats.simulator.SiriusException;
  * Loads a scenario from the database
  */
 public class ScenarioRestorer {
-	public static void export(long id, String filename) throws SiriusException, JAXBException, SAXException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = ScenarioRestorer.getScenario(id);
-		scenario.setSchemaVersion(edu.berkeley.path.beats.Version.get().getSchemaVersion());
-		JAXBContext jaxbc = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-		Marshaller mrsh = jaxbc.createMarshaller();
-		SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		mrsh.setSchema(sf.newSchema(ScenarioRestorer.class.getClassLoader().getResource("sirius.xsd")));
-		mrsh.marshal(scenario, new File(filename));
+	public static void export(long id, String filename) throws SiriusException {
+		edu.berkeley.path.beats.util.ScenarioUtil.save(new ScenarioRestorer().restore(id), filename);
 	}
 
 	/**
@@ -65,7 +52,7 @@ public class ScenarioRestorer {
 	 * @throws SiriusException
 	 */
 	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process(new ScenarioRestorer().restore(id));
+		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) new ScenarioRestorer().restore(id));
 		if (null == scenario)
 			throw new SiriusException("Could not load scenario " + id + " from the database. See error log for details.");
 		return scenario;
@@ -79,7 +66,7 @@ public class ScenarioRestorer {
 
 	private static Logger logger = Logger.getLogger(ScenarioRestorer.class);
 
-	private edu.berkeley.path.beats.simulator.Scenario restore(long id) throws SiriusException {
+	private edu.berkeley.path.beats.jaxb.Scenario restore(long id) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		Scenarios db_scenario = null;
 		try {
@@ -89,7 +76,7 @@ public class ScenarioRestorer {
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}
-		return (edu.berkeley.path.beats.simulator.Scenario) restoreScenario(db_scenario);
+		return restoreScenario(db_scenario);
 	}
 
 	/**
