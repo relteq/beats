@@ -50,7 +50,7 @@ public class BasePeer extends org.apache.torque.util.BasePeer {
 		crit.addSelectColumn("COUNT(" + colname + ")");
 		crit.addSelectColumn("MAX(" + colname + ")");
 		@SuppressWarnings("unchecked")
-		List<com.workingdogs.village.Record> record_l = doSelect(crit, conn);
+		List<com.workingdogs.village.Record> record_l = null == conn ? doSelect(crit) : doSelect(crit, conn);
 		com.workingdogs.village.Record record = record_l.get(0);
 		int count = record.getValue(1).asInt();
 		return 0 == count ? null : record.getValue(2);
