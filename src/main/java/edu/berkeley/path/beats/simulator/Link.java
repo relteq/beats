@@ -720,6 +720,17 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
 	}
 
+	/** Critical speed in meters/second. */
+	public double getCriticalSpeedInMPS(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if (null == FD)
+			return Double.NaN;
+		else if (null != FD.getCriticalSpeed())
+			return FD.getCriticalSpeed().doubleValue();
+		else
+			return getVfInMPS(ensemble);
+	}
+
 	/** Congestion wave speed in normalized units (link/time step). */
 	public double getNormalizedW(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
@@ -757,6 +768,37 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return;
 		for(int i=0;i<x.length;i++)
 			density[ensemble][i] = x[i];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative densities for the given ensemble, for all vehicle types
+	 */
+	public Double[] getCumulativeDensity(int ensemble) {
+		return cumulative_density[ensemble];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative incoming flow for the given ensemble, for all vehicle types
+	 */
+	public Double[] getCumulativeInFlow(int ensemble) {
+		return cumulative_inflow[ensemble];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative outgoing flow for the given ensemble, for all vehicle types
+	 */
+	public Double[] getCumulativeOutFlow(int ensemble) {
+		return cumulative_outflow[ensemble];
+	}
+
+	/**
+	 * resets cumulative densities and flows
+	 */
+	public void resetCumulative() {
+		reset_cumulative();
 	}
 
 }
