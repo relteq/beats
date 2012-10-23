@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -37,6 +37,11 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
 import edu.berkeley.path.beats.om.*;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.SiriusMath;
+
 import com.workingdogs.village.DataSetException;
 
 /**
@@ -148,7 +153,7 @@ public class DBOutputWriter extends OutputWriterBase {
 	@Override
 	public void open(int run_id) throws SiriusException {
 		success = false;
-		if (1 != scenario.numEnsemble)
+		if (1 != scenario.getNumEnsemble())
 			logger.warn("scenario.numEnsembles != 1");
 		if (null == db_scenario)
 			throw new SiriusException("Scenario was not loaded from the database");
@@ -197,7 +202,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
 		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
 		ts.set(Calendar.SECOND, (int) (time - min * 60));
-		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.clock.getCurrentstep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
+		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.getCurrentTimeStep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
 
 		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
@@ -208,7 +213,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				} catch (Exception exc) {
 					throw new SiriusException(exc);
 				} finally {
-					_link.reset_cumulative();
+					_link.resetCumulative();
 				}
 			}
 		}
@@ -225,51 +230,51 @@ public class DBOutputWriter extends OutputWriterBase {
 	private LinkDataTotal fill_total(Link link, OutputParameters params) throws Exception {
 		LinkDataTotal db_ldt = new LinkDataTotal();
 		db_ldt.setLinkId(str2id(link.getId()));
-		db_ldt.setNetworkId(str2id(link.myNetwork.getId()));
+		db_ldt.setNetworkId(str2id(link.getMyNetwork().getId()));
 		db_ldt.setAppRunId(db_simulation_run.getId());
 		db_ldt.setApplicationTypes(db_application_type);
 		db_ldt.setTs(ts.getTime());
 		db_ldt.setAggregationTypes(db_aggregation_type_raw);
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
 		// mean density, vehicles
-		double density = SiriusMath.sum(link.cumulative_density[0]) / params.getNsteps();
+		double density = SiriusMath.sum(link.getCumulativeDensity(0)) / params.getNsteps();
 		db_ldt.setDensity(BigDecimal.valueOf(density));
 
-		FundamentalDiagram fd = link.currentFD(0);
-		if (null != fd) {
-			if (params.doExportFlows()) {
-				// input flow, vehicles
-				db_ldt.setInFlow(BigDecimal.valueOf(SiriusMath.sum(link.cumulative_inflow[0])));
-				// output flow, vehicles
-				double outflow = SiriusMath.sum(link.cumulative_outflow[0]);
-				db_ldt.setOutFlow(BigDecimal.valueOf(outflow));
+		if (params.doExportFlows()) {
+			// input flow, vehicles
+			db_ldt.setInFlow(BigDecimal.valueOf(SiriusMath.sum(link.getCumulativeInFlow(0))));
+			// output flow, vehicles
+			double outflow = SiriusMath.sum(link.getCumulativeOutFlow(0));
+			db_ldt.setOutFlow(BigDecimal.valueOf(outflow));
 
-				// free flow speed, m/s
-				BigDecimal ffspeed = fd.getFreeFlowSpeed();
-				// speed, m/s
-				if (density <= 0)
-					db_ldt.setSpeed(ffspeed);
-				else {
-					double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
-					if (null != ffspeed && speed > ffspeed.doubleValue())
-						db_ldt.setSpeed(ffspeed);
-					else if (!Double.isNaN(speed))
+			// free flow speed, m/s
+			double ffspeed = link.getVfInMPS(0);
+			// speed, m/s
+			if (density <= 0)
+				db_ldt.setSpeed(BigDecimal.valueOf(ffspeed));
+			else {
+				double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
+				if (!Double.isNaN(speed)) {
+					if (!Double.isNaN(ffspeed) && speed > ffspeed)
+						db_ldt.setSpeed(BigDecimal.valueOf(ffspeed));
+					else
 						db_ldt.setSpeed(BigDecimal.valueOf(speed));
 				}
 			}
-			// free flow speed, m/s
-			db_ldt.setFreeFlowSpeed(fd.getFreeFlowSpeed());
-			// critical speed, m/s
-			db_ldt.setCriticalSpeed(fd.getCriticalSpeed());
-			// congestion wave speed, m/s
-			db_ldt.setCongestionWaveSpeed(fd.getCongestionSpeed());
-			// maximum flow, vehicles per second
-			db_ldt.setCapacity(BigDecimal.valueOf(fd._getCapacityInVeh() / scenario.getSimDtInSeconds()));
-			// jam density, vehicles per meter
-			db_ldt.setJamDensity(BigDecimal.valueOf(fd._getDensityJamInVeh() / link._length));
-			// capacity drop, vehicle per second
-			db_ldt.setCapacityDrop(BigDecimal.valueOf(fd._getCapacityDropInVeh() / scenario.getSimDtInSeconds()));
 		}
+		// free flow speed, m/s
+		db_ldt.setFreeFlowSpeed(BigDecimal.valueOf(link.getVfInMPS(0)));
+		// critical speed, m/s
+		db_ldt.setCriticalSpeed(BigDecimal.valueOf(link.getCriticalSpeedInMPS(0)));
+		// congestion wave speed, m/s
+		db_ldt.setCongestionWaveSpeed(BigDecimal.valueOf(link.getWInMPS(0)));
+		// maximum flow, vehicles per second
+		db_ldt.setCapacity(BigDecimal.valueOf(link.getCapacityInVPS(0)));
+		// jam density, vehicles per meter
+		db_ldt.setJamDensity(BigDecimal.valueOf(link.getDensityJamInVeh(0) / link.getLengthInMeters()));
+		// capacity drop, vehicle per second
+		db_ldt.setCapacityDrop(BigDecimal.valueOf(link.getCapacityDropInVeh(0) / scenario.getSimDtInSeconds()));
+
 		db_ldt.save();
 		return db_ldt;
 	}
@@ -285,7 +290,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
-			db_ldd.setNetworkId(str2id(link.myNetwork.getId()));
+			db_ldd.setNetworkId(str2id(link.getMyNetwork().getId()));
 			db_ldd.setAppRunId(db_simulation_run.getId());
 			db_ldd.setApplicationTypes(db_application_type);
 			// TODO db_ldd.setDestinationNetworks();
@@ -294,26 +299,27 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = link.cumulative_density[0][vt_ind] / params.getNsteps();
+			double density = link.getCumulativeDensity(0)[vt_ind] / params.getNsteps();
 			db_ldd.setDensity(new BigDecimal(density));
 			if (params.doExportFlows()) {
 				// input flow, vehicles
-				db_ldd.setInFlow(new BigDecimal(link.cumulative_inflow[0][vt_ind]));
+				db_ldd.setInFlow(new BigDecimal(link.getCumulativeInFlow(0)[vt_ind]));
 				// output flow, vehicles
-				double outflow = link.cumulative_outflow[0][vt_ind];
+				double outflow = link.getCumulativeOutFlow(0)[vt_ind];
 				db_ldd.setOutFlow(new BigDecimal(outflow));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
-					FundamentalDiagram fd = link.currentFD(0);
-					// free flow speed, m/s
-					BigDecimal ffspeed = null == fd ? null : fd.getFreeFlowSpeed();
-					if (null != ffspeed && speed > ffspeed.doubleValue())
-						db_ldd.setSpeed(ffspeed);
-					else if (!Double.isNaN(speed))
-						db_ldd.setSpeed(new BigDecimal(speed));
+					double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+					if (!Double.isNaN(speed)) {
+						// free flow speed, m/s
+						double ffspeed = link.getVfInMPS(0);
+						if (!Double.isNaN(ffspeed) && speed > ffspeed)
+							db_ldd.setSpeed(BigDecimal.valueOf(ffspeed));
+						else
+							db_ldd.setSpeed(new BigDecimal(speed));
+					}
 				}
 			}
 			db_ldd.save();

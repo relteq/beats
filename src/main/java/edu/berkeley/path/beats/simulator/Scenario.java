@@ -45,6 +45,8 @@ import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
+import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
+import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
 
 /** Load, manipulate, and run scenarios. 
  * <p>

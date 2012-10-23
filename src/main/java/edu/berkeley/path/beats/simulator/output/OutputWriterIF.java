@@ -24,19 +24,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
-abstract class OutputWriterBase implements OutputWriterIF{
-	protected Scenario scenario;
+import edu.berkeley.path.beats.simulator.SiriusException;
 
-	OutputWriterBase(Scenario scenario) {
-		this.scenario = scenario;
-	}
+/**
+ * Output writer interface
+ */
+public interface OutputWriterIF {
 	/**
-	 * @return the scenario
+	 * Opens the output writer
+	 * @param run_id the run number
+	 * @throws SiriusException
 	 */
-	public Scenario getScenario() {
-		return scenario;
-	}
-
+	void open(int run_id) throws SiriusException;
+	/**
+	 * Records the simulator state
+	 * @param time
+	 * @param exportflows
+	 * @param outsteps
+	 * @throws SiriusException
+	 */
+	void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException;
+	/**
+	 * Closes the output writer
+	 */
+	void close();
 }

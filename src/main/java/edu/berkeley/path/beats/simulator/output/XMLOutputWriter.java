@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,6 +34,16 @@ import java.util.Properties;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
+
+import edu.berkeley.path.beats.simulator.Double3DMatrix;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Signal;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.SiriusMath;
 
 public final class XMLOutputWriter extends OutputWriterBase {
 	protected XMLStreamWriter xmlsw = null;
@@ -112,7 +122,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) {
-		boolean firststep = 0 == scenario.clock.getCurrentstep();
+		boolean firststep = 0 == scenario.getCurrentTimeStep();
 		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
 		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimDtInSeconds() * outsteps);
 		try {
@@ -131,10 +141,10 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.cumulative_density[0], invsteps), ":"));
+					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.getCumulativeDensity(0), invsteps), ":"));
 					// f = flow per dt, vehicles
-					if (exportflows) xmlsw.writeAttribute("f", format(_link.cumulative_outflow[0], ":"));
-					_link.reset_cumulative();
+					if (exportflows) xmlsw.writeAttribute("f", format(_link.getCumulativeOutFlow(0), ":"));
+					_link.resetCumulative();
 					// mf = capacity, vehicles per second
 					double mf = _link.getCapacityInVPS(0);
 					if (!Double.isNaN(mf)) xmlsw.writeAttribute("mf", String.format(NUM_FORMAT, mf));
@@ -150,7 +160,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeStartElement("n");
 					xmlsw.writeAttribute("id", node.getId());
 					Node _node = (Node) node;
-					Double3DMatrix srm = _node.splitratio;
+					Double3DMatrix srm = _node.getSplitratio();
 					for (int ili = 0; ili < _node.getnIn(); ++ili)
 						for (int oli = 0; oli < _node.getnOut(); ++oli) {
 							xmlsw.writeStartElement("io");
@@ -169,7 +179,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
-						List<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;
+						List<Signal.PhaseData> phdata = ((Signal) signal).getCompletedPhases();
 						for (Signal.PhaseData ph : phdata) {
 							xmlsw.writeStartElement("ph");
 							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));

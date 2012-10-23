@@ -24,26 +24,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
-import java.util.Properties;
+import edu.berkeley.path.beats.simulator.Scenario;
 
-/**
- *
- */
-public class OutputWriterFactory {
-	/**
-	 * Constructs an output writer of a given type
-	 * @param scenario
-	 * @param props output writer properties (type, prefix)
-	 * @return an output writer
-	 * @throws SiriusException
-	 */
-	public static OutputWriterIF getWriter(Scenario scenario, Properties props) throws SiriusException {
-		final String type = props.getProperty("type");
-		if (type.equals("xml")) return new XMLOutputWriter(scenario, props);
-		else if (type.equals("db")) return new DBOutputWriter(scenario);
-		else if (type.equals("text") || type.equals("plaintext")) return new TextOutputWriter(scenario, props);
-		else throw new SiriusException("Unknown output writer type '" + type + "'");
+abstract class OutputWriterBase implements OutputWriterIF{
+	protected Scenario scenario;
+
+	OutputWriterBase(Scenario scenario) {
+		this.scenario = scenario;
 	}
+	/**
+	 * @return the scenario
+	 */
+	public Scenario getScenario() {
+		return scenario;
+	}
+
 }
