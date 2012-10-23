@@ -1,5 +1,4 @@
 *.asv
-*.class
 /src/main/generated-java/
 velocity.log
 /derby.log
@@ -11,7 +10,6 @@ target
 .cache
 *.jar
 .project
-.classpath
 .settings
 .project
 bin/
