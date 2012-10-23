@@ -1369,8 +1369,8 @@
 		<column name="scenario_id" primaryKey="true" domain="ID"/>
 		<column name="sim_start_time" required="true" domain="DECIMAL" default="0.0" description="Start time in seconds. Default is 0."/>
 		<column name="sim_duration" required="true" domain="DECIMAL" default="86400.0" description="Active time in seconds. Default is 86400 (24 hours)."/>
-		<column name="sim_dt" domain="DECIMAL" required="true" description="Simulation step in seconds. Default is 1."/>
-		<column name="output_dt" domain="DECIMAL" required="true" description="Frequency of writing the output in seconds. Default is 60."/>
+		<column name="sim_dt" domain="DECIMAL" required="true" default="1.0" description="Simulation step in seconds. Default is 1."/>
+		<column name="output_dt" domain="DECIMAL" required="true" default="60.0" description="Frequency of writing the output in seconds. Default is 60."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
