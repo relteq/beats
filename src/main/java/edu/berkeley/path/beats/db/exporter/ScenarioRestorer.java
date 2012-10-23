@@ -111,6 +111,18 @@ public class ScenarioRestorer {
 			scenario.setNetworkConnections(restoreNetworkConnections(db_scenario.getNetworkConnectionSets()));
 			scenario.setDestinationNetworks(restoreDestinationNetworks(db_scenario));
 			scenario.setRoutes(restoreRoutes(db_scenario));
+
+			@SuppressWarnings("unchecked")
+			List<DefSimSettings> db_defss = db_scenario.getDefSimSettingss();
+			if (db_defss.isEmpty())
+				logger.warn("Found no default simulation settings for scenario " + db_scenario.getId());
+			else if (1 < db_defss.size())
+				logger.error("Found " + db_defss.size() + " default simulation settings for scenario " + db_scenario.getId());
+			else if (null != scenario.getNetworkList()) {
+				logger.info("Default sample rate: " + db_defss.get(0).getSimDt() + " sec");
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+					network.setDt(db_defss.get(0).getSimDt());
+			}
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}

@@ -145,6 +145,7 @@ public class ScenarioLoader {
 		save(scenario.getRoutes(), db_scenario);
 		db_scenario.save(conn);
 
+		// save referenced elements
 		if (null != scenario.getControllerSet())
 			for (edu.berkeley.path.beats.jaxb.Controller cntr : scenario.getControllerSet().getController()) {
 				save(cntr.getTargetElements(), controllers.get(cntr.getId()));
@@ -153,6 +154,25 @@ public class ScenarioLoader {
 		if (null != scenario.getEventSet())
 			for (edu.berkeley.path.beats.jaxb.Event event : scenario.getEventSet().getEvent())
 				save(event.getTargetElements(), events.get(event.getId()));
+
+		// create default simulation settings
+		DefSimSettings db_defss = new DefSimSettings();
+		db_defss.setScenarios(db_scenario);
+		db_defss.setSimStartTime(BigDecimal.valueOf(0));
+		db_defss.setSimDuration(BigDecimal.valueOf(60 * 60 * 24));
+		BigDecimal simdt = null;
+		if (null != scenario.getNetworkList())
+			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
+				if (null == simdt)
+					simdt = network.getDt();
+				else if (simdt.compareTo(network.getDt()) > 0)
+					simdt = network.getDt(); // TODO revise
+			}
+		if (null == simdt) simdt = BigDecimal.valueOf(1);
+		db_defss.setSimDt(simdt);
+		BigDecimal defaultOutputDt = BigDecimal.valueOf(60);
+		db_defss.setOutputDt(simdt.compareTo(defaultOutputDt) > 0 ? simdt : defaultOutputDt); // TODO revise
+		db_defss.save(conn);
 
 		return db_scenario;
 	}

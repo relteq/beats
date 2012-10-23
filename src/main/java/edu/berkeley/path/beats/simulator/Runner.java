@@ -26,9 +26,16 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.apache.torque.NoRowsException;
+import org.apache.torque.TooManyRowsException;
+import org.apache.torque.TorqueException;
+
+import edu.berkeley.path.beats.om.DefSimSettings;
+import edu.berkeley.path.beats.om.DefSimSettingsPeer;
 
 public final class Runner {
 	
@@ -155,7 +162,12 @@ public final class Runner {
 
 	public static void run_db(String [] args) throws SiriusException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 		logger.info("Parsing arguments");
-		if (0 == args.length) {
+		long scenario_id;
+		BigDecimal startTime = null;
+		BigDecimal duration = null;
+		BigDecimal outputDt = null;
+		Integer numSim = null;
+		if (0 == args.length || 5 < args.length) {
 			final String eol = System.getProperty("line.separator");
 			throw new edu.berkeley.path.beats.Runner.InvalidUsageException(
 					"Usage: simulate|s scenario_id [parameters]" + eol +
@@ -165,26 +177,47 @@ public final class Runner {
 					"\toutput sampling time, sec" + eol +
 					"\tnumber of simulations");
 		} else {
-			String [] auxargs = new String[args.length + 1];
-			auxargs[0] = auxargs[1] = null;
-			System.arraycopy(args, 1, auxargs, 2, args.length - 1);
-			parseInput(auxargs);
+			scenario_id = Long.parseLong(args[0]);
+			if (1 < args.length) startTime = new BigDecimal(args[1]);
+			if (2 < args.length) duration = new BigDecimal(args[2]);
+			if (3 < args.length) outputDt = new BigDecimal(args[3]);
+			if (4 < args.length) numSim = new Integer(args[4]);
 		}
 
 		edu.berkeley.path.beats.db.Service.init();
 
 		logger.info("Loading scenario");
-		scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(Integer.parseInt(args[0]));
-		
+		scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(scenario_id);
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();
 			return;
 		}
 
+		if (null == startTime || null == duration || null == outputDt) {
+			logger.info("Loading default simulation settings");
+			try {
+				DefSimSettings db_defss = DefSimSettingsPeer.retrieveByPK(Long.valueOf(scenario_id));
+				if (null == startTime) startTime = db_defss.getSimStartTime();
+				if (null == duration) duration = db_defss.getSimDuration();
+				if (null == outputDt) outputDt = db_defss.getOutputDt();
+			} catch (NoRowsException exc) {
+				logger.warn("Found no default simulation settings for scenario " + scenario_id, exc);
+			} catch (TooManyRowsException exc) {
+				logger.error("Too many default simulation settings for scenario " + scenario_id, exc);
+			} catch (TorqueException exc) {
+				throw new SiriusException(exc);
+			}
+		}
+
 		logger.info("Simulation");
 		Properties owr_props = new Properties();
 		owr_props.setProperty("type", "db");
-		scenario.run(timestart, timeend, outdt, numRepetitions, owr_props);
+		if (null == startTime) startTime = BigDecimal.valueOf(0);
+		if (null == duration) duration = BigDecimal.valueOf(60 * 60 * 24);
+		if (null == outputDt) outputDt = BigDecimal.valueOf(60);
+		if (null == numSim) numSim = Integer.valueOf(1);
+		logger.info("Simulation parameters: start time: " + startTime + " sec, duration: " + duration + " sec, output sampling time: " + outputDt + " sec");
+		scenario.run(startTime.doubleValue(), startTime.add(duration).doubleValue(), outputDt.doubleValue(), numSim.intValue(), owr_props);
 
 		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");
