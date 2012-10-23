@@ -382,7 +382,14 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * @return a list of completed phases
+	 */
+	public java.util.List<PhaseData> getCompletedPhases() {
+		return completedPhases;
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static class Command implements Comparable {
 		public Signal.CommandType type;
@@ -468,7 +475,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	// internal class
 	/////////////////////////////////////////////////////////////////////
 	
-	protected class PhaseData{
+	public class PhaseData{
 		public NEMA nema;
 		public double starttime;
 		public double greentime;
