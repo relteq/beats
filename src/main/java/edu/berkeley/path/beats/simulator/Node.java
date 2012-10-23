@@ -722,4 +722,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 			return splitratio.cloneData();
 		}
 	}
+
+	/**
+	 * @return the split ratio matrix
+	 */
+	public Double3DMatrix getSplitratio() {
+		return splitratio;
+	}
+
 }
