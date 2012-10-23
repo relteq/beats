@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Properties;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -75,6 +76,44 @@ public class ScenarioUtil {
 		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
 		}
+	}
+
+	/**
+	 * Restores a scenario from the database
+	 * @param id the scenario id
+	 * @return the restored scenario
+	 * @throws SiriusException
+	 */
+	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
+		return edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(id);
+	}
+
+	/**
+	 * runs a scenario simulation
+	 * @param scenario
+	 * @param startTime simulation start time, sec
+	 * @param endTime simulation end time, sec
+	 * @param outDt output frequency
+	 * @throws SiriusException
+	 */
+	public static void runScenario(edu.berkeley.path.beats.simulator.Scenario scenario, double startTime, double endTime, double outDt) throws SiriusException {
+		edu.berkeley.path.beats.db.Service.ensureInit();
+
+		Properties owr_props = new Properties();
+		owr_props.setProperty("type", "db");
+		scenario.run(startTime, endTime, outDt, 1, owr_props);
+	}
+
+	/**
+	 * runs a scenario simulation once
+	 * @param id the scenario id
+	 * @param startTime simulation start time, sec
+	 * @param endTime simulation end time, sec
+	 * @param outDt output frequency
+	 * @throws SiriusException
+	 */
+	public static void runScenario(long id, double startTime, double endTime, double outDt) throws SiriusException {
+		runScenario(getScenario(id), startTime, endTime, outDt);
 	}
 
 }
