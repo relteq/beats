@@ -105,12 +105,15 @@ public class Version {
 		}
 
 		// engine version
-		BufferedReader br = new BufferedReader(new InputStreamReader(Version.class.getClassLoader().getResourceAsStream("engine.version")));
-		try{
-			version.setEngineVersion(br.readLine());
-			br.close();
-		} catch (IOException exc) {
-			exc.printStackTrace();
+		java.io.InputStream istream = Version.class.getClassLoader().getResourceAsStream("engine.version");
+		if (null != istream) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(istream));
+			try{
+				version.setEngineVersion(br.readLine());
+				br.close();
+			} catch (IOException exc) {
+				exc.printStackTrace();
+			}
 		}
 
 		return version;
