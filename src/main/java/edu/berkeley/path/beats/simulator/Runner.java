@@ -62,7 +62,12 @@ public final class Runner {
 		}
 
 		// load configuration file ................................
-		scenario = ObjectFactory.createAndLoadScenario(configfilename);
+		try {
+			scenario = ObjectFactory.createAndLoadScenario(configfilename);
+		} catch (SiriusException exc) {
+			exc.printStackTrace();
+			return;
+		}
 
 		// check if it loaded
 		if(scenario==null)

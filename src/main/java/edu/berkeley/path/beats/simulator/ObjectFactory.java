@@ -248,8 +248,9 @@ public final class ObjectFactory {
 	 * 
 	 * @param configfilename		The name of the XML configuration file.
 	 * @return scenario				Scenario object.
+	 * @throws SiriusException
 	 */
-	public static Scenario createAndLoadScenario(String configfilename) {
+	public static Scenario createAndLoadScenario(String configfilename) throws SiriusException {
 
 		JAXBContext context;
 		Unmarshaller u;
@@ -259,9 +260,7 @@ public final class ObjectFactory {
         	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
             u = context.createUnmarshaller();
         } catch( JAXBException je ) {
-        	SiriusErrorLog.addError("Failed to create context for JAXB unmarshaller.");
-            SiriusErrorLog.print();
-            return null;
+        	throw new SiriusException("Failed to create context for JAXB unmarshaller", je);
         }
         
         // schema assignment ..........................................................
@@ -271,9 +270,7 @@ public final class ObjectFactory {
         	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
         	u.setSchema(schema);
         } catch(SAXException e){
-        	SiriusErrorLog.addError("Schema not found.");
-            SiriusErrorLog.print();
-        	return null;
+        	throw new SiriusException("Schema not found", e);
         }
         
         // process configuration file name ...........................................
@@ -286,21 +283,13 @@ public final class ObjectFactory {
         	setObjectFactory(u, new JaxbObjectFactory());
         	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
-        	SiriusErrorLog.addError("JAXB threw an exception when loading the configuration file.");
-        	if(je.getLinkedException()!=null)
-        		SiriusErrorLog.addError(je.getLinkedException().getMessage());
-            SiriusErrorLog.print();
-            return null;
+        	throw new SiriusException("JAXB threw an exception when loading the configuration file", je);
         } catch (FileNotFoundException e) {
-        	SiriusErrorLog.addError("Configuration file not found.");
-            SiriusErrorLog.print();
-        	return null;
+        	throw new SiriusException("Configuration file not found", e);
 		}
         
         if(S==null){
-        	SiriusErrorLog.addError("Unknown load error.");
-            SiriusErrorLog.print();
-        	return null;
+        	throw new SiriusException("Unknown load error");
 		}
 
         // copy in input parameters ..................................................
@@ -313,8 +302,9 @@ public final class ObjectFactory {
 	 * Updates a scenario loaded by JAXB
 	 * @param S a scenario
 	 * @return the updated scenario or null if an error occurred
+	 * @throws SiriusException
 	 */
-	public static Scenario process(Scenario S) {
+	public static Scenario process(Scenario S) throws SiriusException {
 		
 	    // copy data to static variables ..............................................
 	    S.global_control_on = true;
@@ -330,13 +320,8 @@ public final class ObjectFactory {
 	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
 
 	    // populate the scenario ....................................................
-	    try{
-	    	S.populate();
-	    } catch (SiriusException e){
-	    	SiriusErrorLog.addError(e.getMessage());
-	        SiriusErrorLog.print();
-	    	return null;
-	    }
+	    S.populate();
+
 	    
 	    // register signals with their targets ..................................
 	    boolean registersuccess = true;
@@ -344,16 +329,12 @@ public final class ObjectFactory {
 	    	for(edu.berkeley.path.beats.jaxb.Signal signal:S.getSignalList().getSignal())
 	    		registersuccess &= ((Signal)signal).register();
 	    if(!registersuccess){
-	    	SiriusErrorLog.addError("Signal registration failure.");
-	        SiriusErrorLog.print();
-	    	return null;
+	    	throw new SiriusException("Signal registration failure");
 	    }
 
 	    if(S.controllerset!=null)
 	    	if(!S.controllerset.register()){
-		    	SiriusErrorLog.addError("Controller registration failure.");
-		        SiriusErrorLog.print();
-		    	return null;
+	    		throw new SiriusException("Controller registration failure");
 		    }
 	    
 		// validate scenario ......................................
@@ -364,9 +345,9 @@ public final class ObjectFactory {
 	    SiriusErrorLog.print();
 	    
 	    if(SiriusErrorLog.haserror())
-	    	return null;
-	    else
-	    	return S;	
+	    	throw new SiriusException("Scenario validation failed");
+
+		return S;
 	}
 
 	public static void setObjectFactory(Unmarshaller unmrsh, Object factory) throws PropertyException {
