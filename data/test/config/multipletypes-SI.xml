@@ -5,7 +5,7 @@
             <vehicle_type name="car" weight="1.0"/>
             <vehicle_type name="truck" weight="2.5"/>
         </VehicleTypes>
-        <units>US</units>
+        <units>SI</units>
     </settings>
     <NetworkList>
         <network name="New Network" dt="5" id="-1">
