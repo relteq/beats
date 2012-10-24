@@ -205,7 +205,7 @@
 		  <xs:element name="units">
 			<xs:simpleType>
 			  <xs:restriction base="xs:string">
-				<xs:pattern value="US|Metric" />
+				<xs:pattern value="US|Metric|SI" />
 			  </xs:restriction>
 			</xs:simpleType>
 		  </xs:element>
