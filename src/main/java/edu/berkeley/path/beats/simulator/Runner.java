@@ -55,36 +55,26 @@ public final class Runner {
 
 		long time = System.currentTimeMillis();
 
-		// process input parameters
-		if(!parseInput(args)){
-			SiriusErrorLog.print();
-			return;
-		}
-
-		// load configuration file ................................
 		try {
+			// process input parameters
+			if (!parseInput(args)) return;
+
+			// load configuration file
 			scenario = ObjectFactory.createAndLoadScenario(configfilename);
-		} catch (SiriusException exc) {
-			exc.printStackTrace();
-			return;
-		}
+			if (null == scenario)
+				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
 
-		// check if it loaded
-		if(scenario==null)
-			return;
-
-		try {
 			Properties owr_props = new Properties();
 			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", outputtype);
 			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
 			System.out.println("done in " + (System.currentTimeMillis()-time));
-		} catch (SiriusException e) {
-			if(SiriusErrorLog.haserror())
+		} catch (SiriusException exc) {
+			exc.printStackTrace();
+		} finally {
+			if (SiriusErrorLog.hasmessage())
 				SiriusErrorLog.print();
-			else
-				e.printStackTrace();
-		}	
+		}
 		
 	}
 
