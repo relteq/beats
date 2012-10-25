@@ -200,6 +200,10 @@
 				</xs:complexType>
 			  </xs:element>
 		  
+		  <!-- [SI] ... 		length in meters, 	time in seconds
+			   US ... 		length in miles,	time in hours
+			   Metric ... 	length in km,		time in hours
+		  -->
 		  <xs:element name="units">
 			<xs:simpleType>
 			  <xs:restriction base="xs:string">
