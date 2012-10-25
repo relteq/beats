@@ -202,6 +202,10 @@
 				</xs:complexType>
 			  </xs:element>
 		  
+		  <!-- [SI] ... 		length in meters, 	time in seconds
+			   US ... 		length in miles,	time in hours
+			   Metric ... 	length in km,		time in hours
+		  -->
 		  <xs:element name="units">
 			<xs:simpleType>
 			  <xs:restriction base="xs:string">
@@ -474,7 +478,7 @@
 			  </xs:attribute>
 			  <xs:attribute name="sensor_id_original" type="xs:string" use="optional" />
 			  <xs:attribute name="lane_number" type="xs:integer" use="optional" />
-			 	<xs:attribute name="health_status" >
+			 	<xs:attribute name="health_status" use="optional">
 			    <xs:simpleType >
 		        <xs:restriction base="xs:decimal">
 			        <xs:minInclusive value="0"/>
@@ -875,7 +879,7 @@
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
 				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
-				  <xs:attribute name="critical_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
+				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
 				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
 				  <xs:attribute name="capacity" type="xs:decimal" use="required" />							<!-- [veh/s/lane]   -->
 				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/m/lane] -->
