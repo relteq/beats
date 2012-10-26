@@ -72,6 +72,7 @@ public class ScenarioUtil {
 			JAXBContext jaxbContext = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
 			marshaller.setSchema(getSchema());
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshaller.marshal(scenario, new File(filename));
 		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
