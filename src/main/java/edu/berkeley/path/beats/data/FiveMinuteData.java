@@ -84,7 +84,7 @@ public class FiveMinuteData {
 		return getAggFlwInVPSPL(i)*lanes;
 	}
 
-	/** get aggregate speed value in [mph]
+	/** get aggregate speed value in [m/s]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */

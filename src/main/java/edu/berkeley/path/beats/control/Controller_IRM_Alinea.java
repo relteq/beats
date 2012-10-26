@@ -44,7 +44,7 @@ public class Controller_IRM_Alinea extends Controller {
 											// In this case the this value is used and kept constant
 											// Otherwise it is assigned the critical density, which may change with fd profile.  
 	
-	private double targetvehicles;			// [veh/mile/lane]
+	private double targetvehicles;			// [veh/meter/lane]
 	private boolean usesensor;
 	
 	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink

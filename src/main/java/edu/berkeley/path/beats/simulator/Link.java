@@ -41,7 +41,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/** Type of link. */
 	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll};
 	
-	/** @y.exclude */ 	protected double _length;							// [miles]
+	/** @y.exclude */ 	protected double _length;							// [meters]
 	/** @y.exclude */ 	protected double _lanes;							// [-]
 	/** @y.exclude */ 	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
 	/** @y.exclude */ 	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
@@ -537,7 +537,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 	
-	/** Total of vehicles in (vehicles/mile). 
+	/** Total of vehicles in (vehicles/meter).
 	 * @return total density of vehicles in the link. 0 if something goes wrong.
 	 */
 	public double getTotalDensityInVPM(int ensemble) {

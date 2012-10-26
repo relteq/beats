@@ -383,7 +383,7 @@ public final class ObjectFactory {
 	 * <p> Generates a controller executing the Alinea algorithm. Feedback for the controller is taken
 	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
 	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
-	 * employed if the <code>queuesensor</code> is non-null. The gain, defined in mile/hr units, is
+	 * employed if the <code>queuesensor</code> is non-null. The gain, defined in meters/sec units, is
 	 * normalized within the algorithm by dividing by the length a the mainline link (or by the link where the 
 	 * sensor resides in the case of sensor feedback).
 	 * 
@@ -392,7 +392,7 @@ public final class ObjectFactory {
 	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
 	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
 	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
-	 * @param gain				The gain for the integral controller in mile/hr.
+	 * @param gain				The gain for the integral controller in meters/sec.
 	 * @return					Controller object
 	 */
 	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
@@ -492,12 +492,12 @@ public final class ObjectFactory {
 	 * 
 	 * @param myScenario		The scenario.
 	 * @param links				List of Link objects.
-	 * @param freeflowSpeed		Freeflow speed in [mile/hr]
-	 * @param congestionSpeed	Congestion wave speed in [mile/hr]
-	 * @param capacity			Capacity in [veh/hr/lane]
-	 * @param densityJam		Jam density in [veh/mile/lane]
-	 * @param capacityDrop		Capacity drop in [veh/hr/lane]
-	 * @param stdDevCapacity	Standard deviation for the capacity in [veh/hr/lane]
+	 * @param freeflowSpeed		Freeflow speed in [meters/sec]
+	 * @param congestionSpeed	Congestion wave speed in [meters/sec]
+	 * @param capacity			Capacity in [veh/sec/lane]
+	 * @param densityJam		Jam density in [veh/meter/lane]
+	 * @param capacityDrop		Capacity drop in [veh/sec/lane]
+	 * @param stdDevCapacity	Standard deviation for the capacity in [veh/sec/lane]
 	 * @return					Event object
 	 */
 	public static Event createEvent_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		

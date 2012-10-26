@@ -76,8 +76,8 @@ public class FDCalibrator {
 		int i;
 
 		// output:
-		float vf;			// [mph]
-		float w;			// [mph]
+		float vf;			// [m/s]
+		float w;			// [m/s]
 		float q_max;		// [veh/sec/lane]
 	    float rho_crit;		// [veh/meter/lane]
 	   
