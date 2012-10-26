@@ -131,7 +131,7 @@ public class ScenarioRestorer {
 
 	private edu.berkeley.path.beats.jaxb.Settings restoreSettings(Scenarios db_scenario) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Settings settings = factory.createSettings();
-		settings.setUnits("US");
+		settings.setUnits("SI");
 		settings.setVehicleTypes(restoreVehicleTypes(db_scenario.getVehicleTypeSets()));
 		return settings;
 	}
