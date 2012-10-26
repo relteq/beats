@@ -41,8 +41,8 @@ import edu.berkeley.path.beats.simulator.SiriusException;
 */
 public class DataFileReader {
 
-	private ColumnFormat PeMSDataClearingHouse = new ColumnFormat(",",5,8,9,10,8,false);
-	private ColumnFormat CaltransDbx 		   = new ColumnFormat("\t",6,20,22,23,8,true);
+	private ColumnFormat PeMSDataClearingHouse = new ColumnFormat(",",5,8,9,10,8,false,"US");
+	private ColumnFormat CaltransDbx 		   = new ColumnFormat("\t",6,20,22,23,8,true,"US");
 
 	/////////////////////////////////////////////////////////////////////
 	// public methods
@@ -93,6 +93,9 @@ public class DataFileReader {
     	int actuallanes;
     	boolean hasflw,hasspd;
 
+    	javax.measure.converter.UnitConverter flowConverter = edu.berkeley.path.beats.util.UnitConverter.getFlowConverter(format.units);
+    	javax.measure.converter.UnitConverter speedConverter = edu.berkeley.path.beats.util.UnitConverter.getSpeedConverter(format.units);
+
     	try{
 			URL url = new URL(datasource.getUrl());
 			URLConnection uc = url.openConnection();
@@ -125,7 +128,7 @@ public class DataFileReader {
 		            	str = f[index];
 		            	hasflw = !str.isEmpty();
 		            	if(hasflw){
-		            		val = Float.parseFloat(str)*12f;
+		            		val = (float) flowConverter.convert(Float.parseFloat(str)*12f);
 		            		laneflw.add(val);
 		            		totalflw += val;
 		            	}
@@ -136,7 +139,7 @@ public class DataFileReader {
 		            	str = f[index];
 		            	hasspd = !str.isEmpty();
 		            	if(hasspd){
-		            		val = Float.parseFloat(str);
+		            		val = (float) speedConverter.convert(Float.parseFloat(str));
 		            		lanespd.add(val);
 		            		totalspd += val;
 		            	}
@@ -152,7 +155,7 @@ public class DataFileReader {
 		            if(D.isaggregate && actuallanes>0){
 		                totalspd /= actuallanes;
 		                totalflw /= actuallanes;
-		                D.addAggFlwInVPHPL(totalflw);
+		                D.addAggFlwInVPSPL(totalflw);
 		                D.addAggSpd(totalspd);
 		                D.time.add(time);	
 		            }
@@ -181,8 +184,9 @@ public class DataFileReader {
     	public int maxlanes;
     	public boolean hasheader;
     	public String delimiter;
+    	public String units;
 
-    	public ColumnFormat(String delimiter,int laneblocksize, int flwoffset,int occoffset,int spdoffset, int maxlanes,boolean hasheader) {
+    	public ColumnFormat(String delimiter, int laneblocksize, int flwoffset, int occoffset, int spdoffset, int maxlanes, boolean hasheader, String units) {
     		super();
     		this.delimiter = delimiter;	
     		this.laneblocksize = laneblocksize;
@@ -191,6 +195,7 @@ public class DataFileReader {
     		this.spdoffset = spdoffset;
     		this.maxlanes = maxlanes;
     		this.hasheader = hasheader;
+    		this.units = units;
     	}
     }
 

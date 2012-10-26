@@ -205,32 +205,32 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		return data==null ? null : data.getTime();
 	}
 
-	/** get aggregate flow vlaue in [veh/hr]
+	/** get aggregate flow value in [veh/sec]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
-	public float getDataAggFlwInVPH(int i){
-		return data==null ? Float.NaN : data.getAggFlwInVPH(i);
+	public float getDataAggFlwInVPS(int i){
+		return data==null ? Float.NaN : data.getAggFlwInVPS(i);
 	}
 
-	/** get aggregate flow vlaue in [veh/hr/lane]
+	/** get aggregate flow vlaue in [veh/sec/lane]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
-	public float getDataAggFlwInVPHPL(int i){
-		return data==null ? Float.NaN : data.getAggFlwInVPHPL(i);
+	public float getDataAggFlwInVPSPL(int i){
+		return data==null ? Float.NaN : data.getAggFlwInVPSPL(i);
 	}
 	
-	/** get aggregate speed value in [mph]
+	/** get aggregate speed value in [meters/sec]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
-	public float getDataAggSpdInMPH(int i){
+	public float getDataAggSpdInMPS(int i){
 		return data==null ? Float.NaN : data.getAggSpd(i);
 
 	}	
 
-	/** get aggregate density value in [veh/mile]
+	/** get aggregate density value in [veh/meter]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
@@ -238,7 +238,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		return data==null ? Float.NaN : data.getAggDtyInVPM(i);
 	}
 
-	/** get aggregate density value in [veh/mile]
+	/** get aggregate density value in [veh/meter]
 	 * @param time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
