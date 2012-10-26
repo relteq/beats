@@ -107,6 +107,10 @@ public class UnitConverter {
 		return getDurationUnit(usystem).inverse();
 	}
 
+	private static Unit<? extends Quantity> getFlowUnit(String units) throws SiriusException {
+		return getFlowUnit(getUnitSystem(units));
+	}
+
 	private static Unit<Velocity> getSpeedUnit(UnitSystem usystem) {
 		switch (usystem) {
 		case SI:
@@ -118,6 +122,52 @@ public class UnitConverter {
 		default:
 			return null;
 		}
+	}
+
+	private static Unit<Velocity> getSpeedUnit(String units) throws SiriusException {
+		return getSpeedUnit(getUnitSystem(units));
+	}
+
+	/**
+	 * Creates a to-SI flow converter
+	 * @param iunits the units of the input data
+	 * @return a converter
+	 * @throws SiriusException
+	 */
+	public static javax.measure.converter.UnitConverter getFlowConverter(String iunits) throws SiriusException {
+		return getFlowConverter(iunits, "SI");
+	}
+
+	/**
+	 * Creates a flow converter
+	 * @param iunits the units of the input data
+	 * @param ounits the units of the output data
+	 * @return a converter
+	 * @throws SiriusException
+	 */
+	public static javax.measure.converter.UnitConverter getFlowConverter(String iunits, String ounits) throws SiriusException {
+		return getFlowUnit(iunits).getConverterTo(getFlowUnit(ounits));
+	}
+
+	/**
+	 * Creates a to-SI unit converter
+	 * @param iunits the units of the input data
+	 * @return a converter
+	 * @throws SiriusException
+	 */
+	public static javax.measure.converter.UnitConverter getSpeedConverter(String iunits) throws SiriusException {
+		return getSpeedConverter(iunits, "SI");
+	}
+
+	/**
+	 * Creates a speed converter
+	 * @param iunits the units of the input data
+	 * @param ounits the units of the output data
+	 * @return a converter
+	 * @throws SiriusException
+	 */
+	public static javax.measure.converter.UnitConverter getSpeedConverter(String iunits, String ounits) throws SiriusException {
+		return getSpeedUnit(iunits).getConverterTo(getSpeedUnit(ounits));
 	}
 
 	/**
