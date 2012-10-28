@@ -48,7 +48,7 @@
 		<ActivationIntervals>			
 			<interval start_time="10" end_time="120" />
 		</ActivationIntervals>		
-		<table>
+		<table name="schedule">
 			<column_names>
 				<column_name>StartTime</column_name>
 				<column_name>MeteringRates</column_name>
@@ -102,7 +102,7 @@
 		<ActivationIntervals>			
 			<interval start_time="410" end_time="3500" />
 		</ActivationIntervals>		
-		<table>
+		<table name="tod">
 			<column_names>
 				<column_name>MeteringRates</column_name>
 				<column_name>OccupancyThresholds</column_name>
