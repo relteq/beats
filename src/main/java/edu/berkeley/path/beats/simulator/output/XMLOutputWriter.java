@@ -35,7 +35,6 @@ import java.util.Properties;
 import javax.xml.namespace.QName;
 import javax.xml.stream.*;
 
-import edu.berkeley.path.beats.simulator.Double3DMatrix;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
@@ -51,10 +50,18 @@ public final class XMLOutputWriter extends OutputWriterBase {
 	protected static final String NUM_FORMAT = "%.4f";
 	private String prefix;
 
+	private Formatter dens_formatter; // density formatter
+	private Formatter flow_formatter; // flow formatter
+	private Formatter sr_formatter; // split ratio formatter
+
 	public XMLOutputWriter(Scenario scenario, Properties props){
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
+		final String delim = ":";
+		dens_formatter = new Formatter(delim, NUM_FORMAT);
+		flow_formatter = new Formatter(delim, NUM_FORMAT);
+		sr_formatter = new Formatter(delim, NUM_FORMAT);
 	}
 
 	@Override
@@ -141,9 +148,9 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", format(SiriusMath.times(_link.getCumulativeDensity(0), invsteps), ":"));
+					xmlsw.writeAttribute("d", dens_formatter.format(SiriusMath.times(_link.getCumulativeDensity(0), invsteps)));
 					// f = flow per dt, vehicles
-					if (exportflows) xmlsw.writeAttribute("f", format(_link.getCumulativeOutFlow(0), ":"));
+					if (exportflows) xmlsw.writeAttribute("f", flow_formatter.format(_link.getCumulativeOutFlow(0)));
 					_link.resetCumulative();
 					// mf = capacity, vehicles per second
 					double mf = _link.getCapacityInVPS(0);
@@ -160,13 +167,15 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeStartElement("n");
 					xmlsw.writeAttribute("id", node.getId());
 					Node _node = (Node) node;
-					Double3DMatrix srm = _node.getSplitratio();
 					for (int ili = 0; ili < _node.getnIn(); ++ili)
 						for (int oli = 0; oli < _node.getnOut(); ++oli) {
 							xmlsw.writeStartElement("io");
 							xmlsw.writeAttribute("il", _node.getInput_link()[ili].getId());
 							xmlsw.writeAttribute("ol", _node.getOutput_link()[oli].getId());
-							xmlsw.writeAttribute("r", format(srm.getData()[ili][oli], ":"));
+							sr_formatter.clear();
+							for (int vti = 0; vti < scenario.getNumVehicleTypes(); ++vti)
+								sr_formatter.add(_node.getSplitRatio(ili, oli, vti));
+							xmlsw.writeAttribute("r", sr_formatter.getResult());
 							xmlsw.writeEndElement(); // io
 						}
 					xmlsw.writeEndElement(); // n
@@ -213,21 +222,35 @@ public final class XMLOutputWriter extends OutputWriterBase {
 		}
 	}
 
-	/** Join the elements of an array into a string.
-	 * @param V      an array to be serialized
-	 * @param delim  the string used to separate the elements of the array
-	 * @return a string containing the array values
-	 */
-	protected static String format(Double [] V, String delim) {
-		if (0 == V.length) return "";
-		else if (1 == V.length) return String.format(NUM_FORMAT, V[0]);
-		else {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < V.length; ++i){
-				if (i > 0) sb.append(delim);
-				sb.append(String.format(NUM_FORMAT, V[i]));
-			}
+	protected static class Formatter {
+		private String delim;
+		private String format;
+		private StringBuilder sb;
+
+		public Formatter(String delim, String format) {
+			this.delim = delim;
+			this.format = format;
+			this.sb = new StringBuilder();
+		}
+
+		public void clear() {
+			sb.setLength(0);
+		}
+
+		public void add(Double val) {
+			if (0 < sb.length()) sb.append(delim);
+			sb.append(String.format(format, val));
+		}
+
+		public String getResult() {
 			return sb.toString();
+		}
+
+		public String format(Double[] vector) {
+			clear();
+			for (Double val : vector)
+				add(val);
+			return getResult();
 		}
 	}
 
