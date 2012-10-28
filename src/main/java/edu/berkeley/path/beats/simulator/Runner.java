@@ -74,6 +74,11 @@ public final class Runner {
 		
 	}
 
+	public static void simulate_output(String[] args) {
+		outputtype = "xml";
+		main(args);
+	}
+
 	public static void debug(String[] args) {
 		outputtype = "text";
 		main(args);

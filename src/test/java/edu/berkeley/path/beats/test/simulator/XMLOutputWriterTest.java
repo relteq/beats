@@ -157,7 +157,7 @@ public class XMLOutputWriterTest {
 		System.out.print("ARGS:");
 		for (int iii = 0; iii < args.length; ++ iii) System.out.print(" " + args[iii]);
 		System.out.println();
-		Runner.main(args);
+		Runner.simulate_output(args);
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();
