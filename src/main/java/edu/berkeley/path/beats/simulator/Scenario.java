@@ -392,18 +392,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
-	 * @param timestart
-	 * @param timeend
-	 * @param outdt
-	 * @param numRepetitions 	The integer number of simulations to run.
+	 * @param simsettings the simulation settings
 	 * @param owr_props the output writer properties
 	 * @throws SiriusException 
 	 */
-	public void run(Double timestart,Double timeend,double outdt,int numRepetitions,Properties owr_props) throws SiriusException{
-		this.outdt = outdt;
-		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+	public void run(SimulationSettings simsettings, Properties owr_props) throws SiriusException{
+		this.outdt = simsettings.getOutputDt();
+		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
 		numEnsemble = 1;
-		run_internal(param,numRepetitions,true,false,owr_props);
+		run_internal(param, simsettings.getNumRuns(), true, false, owr_props);
 	}
 	
 	/** Run the scenario once, save output to text files.
