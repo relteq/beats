@@ -45,6 +45,7 @@
       <targetElements>
         <scenarioElement id="-3" type="link"/>
       </targetElements>
+      <parameters/>
     </event>
   </EventSet>
   <DemandProfileSet>
