@@ -52,9 +52,21 @@ public class BlackBoxTest {
 									    "_outflow_0.txt" , 
 									    "_time_0.txt"};
 	
-	private String fixture_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\test\\fixture\\";
-	private String output_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\test\\output\\";
-	private String config_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\config\\";
+        /* This will not exist in everyone's computer, so I changed the locations below, it uses the
+         * relative location to the directory where the pom.xml is.
+         *
+        *private String fixture_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\test\\fixture\\";
+        *private String output_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\test\\output\\";
+        *private String config_folder = "C:\\Users\\gomes\\workspace\\sirius\\data\\config\\";
+        */
+
+        /* Since mvn needs to run at the location where the pom.xml resides, the mvn test goal will find
+         * the relative location of the data directories.
+         */
+        private String fixture_folder = "data/test/fixture/";
+        private String output_folder = "data/test/output/";
+        private String config_folder = "data/test/config/";
+
 	
 	@Test
 	public void testSimulator() {
