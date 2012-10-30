@@ -17,9 +17,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:git@github.com:calpath/sirius.git</connection>
-    <developerConnection>scm:git:git@github.com:calpath/sirius.git</developerConnection>
-    <url>git@github.com:calpath/sirius.git</url>
+    <connection>scm:git:git@github.com:calpath/beats.git</connection>
+    <developerConnection>scm:git:git@github.com:calpath/beats.git</developerConnection>
+    <url>git@github.com:calpath/beats.git</url>
   </scm>
 
   <build>
