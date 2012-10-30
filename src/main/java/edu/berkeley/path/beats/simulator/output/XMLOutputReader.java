@@ -39,24 +39,6 @@ import edu.berkeley.path.beats.simulator.JaxbObjectFactory;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-class Output {
-	public Scenario scenario;
-	public Vector<Double> t; // time
-	public Vector<Double> d; // density
-	public Vector<Double> f; // flow
-	public Vector<Double> mf; // capacity
-	public Vector<Double> fv; // free flow speed
-	public Vector<edu.berkeley.path.beats.jaxb.Link> getLinks() {
-		Vector<edu.berkeley.path.beats.jaxb.Link> res = new Vector<edu.berkeley.path.beats.jaxb.Link>();
-		if (null != scenario){
-			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
-				for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
-					res.add(link);
-		}
-		return res;
-	}
-}
-
 class XMLOutputReader {
 	public static void main(String[] args) {
 		if (args.length < 1) {
@@ -72,12 +54,12 @@ class XMLOutputReader {
 		}
 	}
 	
-	public static Output Read(String filename) throws FileNotFoundException {
+	public static Data Read(String filename) throws FileNotFoundException {
 		return Read(new FileInputStream(filename));
 	}
 	
-	public static Output Read(InputStream is) {
-		Output res = new Output();
+	public static Data Read(InputStream is) {
+		Data res = new Data();
 		try {
 			XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(is);
 			while (xmlsr.hasNext()) {
@@ -160,6 +142,24 @@ class XMLOutputReader {
 			String [] parts = str.split(delim);
 			Vector<Double> res = new Vector<Double>(parts.length);
 			for (int iii = 0; iii < parts.length; ++iii) res.add(Double.valueOf(parts[iii]));
+			return res;
+		}
+	}
+
+	public static class Data {
+		public Scenario scenario;
+		public Vector<Double> t; // time
+		public Vector<Double> d; // density
+		public Vector<Double> f; // flow
+		public Vector<Double> mf; // capacity
+		public Vector<Double> fv; // free flow speed
+		public Vector<edu.berkeley.path.beats.jaxb.Link> getLinks() {
+			Vector<edu.berkeley.path.beats.jaxb.Link> res = new Vector<edu.berkeley.path.beats.jaxb.Link>();
+			if (null != scenario){
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
+						res.add(link);
+			}
 			return res;
 		}
 	}
