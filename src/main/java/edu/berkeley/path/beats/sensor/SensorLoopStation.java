@@ -78,7 +78,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 			}
 		
 		if (null != jaxbs.getTable()) {
-			if ("data_sources" == jaxbs.getTable().getName()) {
+			if ("data_sources".equals(jaxbs.getTable().getName())) {
 				edu.berkeley.path.beats.simulator.Table table = new edu.berkeley.path.beats.simulator.Table(jaxbs.getTable());
 				final String[] colname = {"url", "format"};
 				int[] colnum = new int[2];

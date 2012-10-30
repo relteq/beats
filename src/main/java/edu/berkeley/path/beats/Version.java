@@ -90,7 +90,7 @@ public class Version {
 			while (xmlsr.hasNext()) {
 				if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
 					javax.xml.namespace.QName qname = xmlsr.getName();
-					if ("schema" == qname.getLocalPart() && XMLConstants.W3C_XML_SCHEMA_NS_URI == qname.getNamespaceURI()) {
+					if ("schema".equals(qname.getLocalPart()) && XMLConstants.W3C_XML_SCHEMA_NS_URI == qname.getNamespaceURI()) {
 						version.setSchemaVersion(xmlsr.getAttributeValue(null, "version"));
 						break;
 					}
