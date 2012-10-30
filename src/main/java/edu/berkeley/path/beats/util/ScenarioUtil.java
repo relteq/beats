@@ -87,7 +87,7 @@ public class ScenarioUtil {
 	 * @throws SiriusException
 	 */
 	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
-		return edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(id);
+		return edu.berkeley.path.beats.db.ScenarioExporter.getScenario(id);
 	}
 
 	/**

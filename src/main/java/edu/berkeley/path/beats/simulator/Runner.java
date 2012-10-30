@@ -150,7 +150,7 @@ public final class Runner {
 		edu.berkeley.path.beats.db.Service.init();
 
 		logger.info("Loading scenario");
-		Scenario scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(scenario_id);
+		Scenario scenario = edu.berkeley.path.beats.db.ScenarioExporter.getScenario(scenario_id);
 
 		if (args.length < 4) {
 			logger.info("Loading default simulation settings");

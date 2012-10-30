@@ -48,7 +48,7 @@ public class Runner {
 			System.arraycopy(args, 1, arguments, 0, args.length - 1);
 			if (cmd.equals("import") || cmd.equals("i")) {
 				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
-				edu.berkeley.path.beats.db.importer.ScenarioLoader.load(arguments[0]);
+				edu.berkeley.path.beats.db.ScenarioImporter.load(arguments[0]);
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
@@ -56,7 +56,7 @@ public class Runner {
 					throw new InvalidUsageException("Usage: export|e scenario_id [output_file_name]");
 				else {
 					String filename = 1 == arguments.length ? arguments[0] + ".xml" : arguments[1];
-					edu.berkeley.path.beats.db.exporter.ScenarioRestorer.export(Integer.parseInt(arguments[0]), filename);
+					edu.berkeley.path.beats.db.ScenarioExporter.export(Integer.parseInt(arguments[0]), filename);
 				}
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);

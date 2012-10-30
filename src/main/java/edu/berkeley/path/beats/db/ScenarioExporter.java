@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.db.exporter;
+package edu.berkeley.path.beats.db;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -40,9 +40,9 @@ import edu.berkeley.path.beats.simulator.SiriusException;
 /**
  * Loads a scenario from the database
  */
-public class ScenarioRestorer {
+public class ScenarioExporter {
 	public static void export(long id, String filename) throws SiriusException {
-		edu.berkeley.path.beats.util.ScenarioUtil.save(new ScenarioRestorer().restore(id), filename);
+		edu.berkeley.path.beats.util.ScenarioUtil.save(new ScenarioExporter().restore(id), filename);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class ScenarioRestorer {
 	 * @throws SiriusException
 	 */
 	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) new ScenarioRestorer().restore(id));
+		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) new ScenarioExporter().restore(id));
 		if (null == scenario)
 			throw new SiriusException("Could not load scenario " + id + " from the database. See error log for details.");
 		return scenario;
@@ -60,11 +60,11 @@ public class ScenarioRestorer {
 
 	edu.berkeley.path.beats.simulator.JaxbObjectFactory factory = null;
 
-	private ScenarioRestorer() {
+	private ScenarioExporter() {
 		factory = new edu.berkeley.path.beats.simulator.JaxbObjectFactory();
 	}
 
-	private static Logger logger = Logger.getLogger(ScenarioRestorer.class);
+	private static Logger logger = Logger.getLogger(ScenarioExporter.class);
 
 	private edu.berkeley.path.beats.jaxb.Scenario restore(long id) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
@@ -893,14 +893,14 @@ public class ScenarioRestorer {
 		crit.addJoin(ParametersPeer.ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
 		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_obj.getElementType());
 		@SuppressWarnings("unchecked")
-		List<Parameters> db_param_l = ParametersPeer.doSelect(crit);
-		for (Parameters db_param : db_param_l)
+		List<edu.berkeley.path.beats.om.Parameters> db_param_l = ParametersPeer.doSelect(crit);
+		for (edu.berkeley.path.beats.om.Parameters db_param : db_param_l)
 			params.getParameter().add(restoreParameter(db_param));
 
 		return params;
 	}
 
-	private edu.berkeley.path.beats.jaxb.Parameter restoreParameter(Parameters db_param) {
+	private edu.berkeley.path.beats.jaxb.Parameter restoreParameter(edu.berkeley.path.beats.om.Parameters db_param) {
 		edu.berkeley.path.beats.jaxb.Parameter param = factory.createParameter();
 		param.setName(db_param.getName());
 		param.setValue(db_param.getValue());
