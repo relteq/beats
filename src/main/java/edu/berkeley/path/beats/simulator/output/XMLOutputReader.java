@@ -57,7 +57,7 @@ class Output {
 	}
 }
 
-class OutputReader {
+class XMLOutputReader {
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.err.print("Please specify an output file name\n");
