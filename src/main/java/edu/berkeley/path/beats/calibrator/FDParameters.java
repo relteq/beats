@@ -29,9 +29,9 @@ package edu.berkeley.path.beats.calibrator;
 public class FDParameters {
 
 	// nominal values
-	private static float nom_vf = 65;				// [mph]
-	private static float nom_w = 15;				// [mph]
-	private static float nom_q_max = 2000;			// [veh/hr/lane]
+	private static float nom_vf = 65 * 0.44704f;			// [m/s]
+	private static float nom_w = 15 * 0.44704f; 			// [m/s]
+	private static float nom_q_max = 2000 / 3600.0f;		// [veh/sec/lane]
 
 	private float vf;
 	private float w;

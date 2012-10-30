@@ -724,10 +724,14 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
 
 	/**
-	 * @return the split ratio matrix
+	 * Retrieves a split ratio for the given input/output link pair and vehicle type
+	 * @param inLinkInd input link index
+	 * @param outLinkInd output link index
+	 * @param vehTypeInd vehicle type index
+	 * @return the split ratio
 	 */
-	public Double3DMatrix getSplitratio() {
-		return splitratio;
+	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
+		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
 
 }

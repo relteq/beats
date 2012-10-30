@@ -35,6 +35,7 @@ import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
+import edu.berkeley.path.beats.util.Data1D;
 
 public class Event_Node_Split_Ratio extends Event {
 
@@ -121,12 +122,13 @@ public class Event_Node_Split_Ratio extends Event {
 			}
 			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());
 			for (edu.berkeley.path.beats.jaxb.Splitratio sr : srevent.getSplitratio()) {
-				edu.berkeley.path.beats.simulator.Double1DVector vector = new edu.berkeley.path.beats.simulator.Double1DVector(sr.getContent(), ":");
-				if (!vector.isEmpty()) {
+				Data1D data1d = new Data1D(sr.getContent(), ":");
+				if (!data1d.isEmpty()) {
+					java.math.BigDecimal[] data = data1d.getData();
 					int input_index = myNode.getInputLinkIndex(sr.getLinkIn());
 					int output_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-					for (int i = 0; i < vector.getLength().intValue(); ++i)
-						splitratios.add(new SplitRatio(input_index, output_index, vt_index[i], vector.get(i)));
+					for (int i = 0; i < data.length; ++i)
+						splitratios.add(new SplitRatio(input_index, output_index, vt_index[i], data[i].doubleValue()));
 				}
 			}
 		}

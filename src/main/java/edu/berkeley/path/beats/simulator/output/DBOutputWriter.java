@@ -174,6 +174,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_simulation_run.setScenarios(db_scenario);
 			db_simulation_run.setRunNumber(run_number);
 			db_simulation_run.setVersion(edu.berkeley.path.beats.Version.get().getEngineVersion());
+			if (null == db_simulation_run.getVersion()) db_simulation_run.setVersion("");
 			db_simulation_run.setSimStartTime(double2decimal(scenario.getTimeStart()));
 			db_simulation_run.setSimDuration(double2decimal(scenario.getTimeEnd() - scenario.getTimeStart()));
 			db_simulation_run.setSimDt(double2decimal(scenario.getSimDtInSeconds()));

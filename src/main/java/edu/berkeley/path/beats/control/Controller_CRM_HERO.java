@@ -64,7 +64,7 @@ public class Controller_CRM_HERO extends Controller {
 	private static ArrayList<Controller_CRM_HERO> controllerList = new ArrayList<Controller_CRM_HERO>();    // Hero Controller List Arranged from Downstream to Upstream
 	
 	private double mainlineVehiclesCurrent;	
-	private double targetVehicles;			// [veh/mile/lane]
+	private double targetVehicles;			// [veh/meter/lane]
 	private boolean targetDensity_Given;
 	
 
@@ -123,7 +123,7 @@ public class Controller_CRM_HERO extends Controller {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
+	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
 		// TODO Auto-generated constructor stub		
 	}
 

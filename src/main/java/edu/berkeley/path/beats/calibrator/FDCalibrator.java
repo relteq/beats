@@ -76,13 +76,13 @@ public class FDCalibrator {
 		int i;
 
 		// output:
-		float vf;			// [mph]
-		float w;			// [mph]
-		float q_max;		// [veh/hr/lane]
-	    float rho_crit;		// [veh/mile/lane]
+		float vf;			// [m/s]
+		float w;			// [m/s]
+		float q_max;		// [veh/sec/lane]
+	    float rho_crit;		// [veh/meter/lane]
 	   
-		float w_min = 10;	// [mph]
-		float w_max = 19;	// [mph]
+		float w_min = 10 * 0.44704f;	// [m/s]
+		float w_max = 19 * 0.44704f;	// [m/s]
 
 		// ignore non-freeway links
 		if(!Link.isFreewayType(S.getMyLink()))
@@ -98,7 +98,7 @@ public class FDCalibrator {
 		// organize into an array of DataPoint
 		ArrayList<DataPoint> datavec = new ArrayList<DataPoint>();
 		for(i=0;i<numdatapoints;i++)
-			datavec.add(new DataPoint(S.getDataAggDtyInVPMPL(i),S.getDataAggFlwInVPHPL(i),S.getDataAggSpdInMPH(i)));
+			datavec.add(new DataPoint(S.getDataAggDtyInVPMPL(i), S.getDataAggFlwInVPSPL(i), S.getDataAggSpdInMPS(i)));
 		
 		// Find free-flow velocity ...............................
 

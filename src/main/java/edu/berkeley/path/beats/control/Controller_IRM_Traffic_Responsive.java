@@ -209,13 +209,13 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		for (int i=0;i<table.getNoRows();i++){
 			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * myScenario.getSimDtInSeconds(); // in veh per sim step
 			if (hasflowthres){
-				trFlowThresh[i]=Double.parseDouble(table.getTableElement(i,flwIndx));			// flow in veh/hr	
+				trFlowThresh[i]=Double.parseDouble(table.getTableElement(i,flwIndx));			// flow in veh/sec
 			}
 			if (hasoccthres){
 				trOccThresh[i]=Double.parseDouble(table.getTableElement(i,occIndx));  			// occupancy in %
 			}
 			if (hasspeedthres){
-				trSpeedThresh[i]=Double.parseDouble(table.getTableElement(i,spdIndx)); 			// speed in mph
+				trSpeedThresh[i]=Double.parseDouble(table.getTableElement(i,spdIndx)); 			// speed in m/s
 			}
 
 			if (i==0 && ((hasflowthres && trFlowThresh[i]<0) || (hasoccthres && trOccThresh[i]<0) ||

@@ -120,6 +120,12 @@ public class ScenarioLoader {
 	 */
 	private Scenarios save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws TorqueException, SiriusException {
 		if (null == scenario) return null;
+		if (null == scenario.getSettings() || null == scenario.getSettings().getUnits())
+			logger.warn("Scenario units not specified. Assuming SI");
+		else {
+			logger.info("Converting scenario units from " + scenario.getSettings().getUnits() + " to SI");
+			edu.berkeley.path.beats.util.UnitConverter.process(scenario);
+		}
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());

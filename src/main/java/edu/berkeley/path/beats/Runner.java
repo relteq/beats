@@ -59,7 +59,7 @@ public class Runner {
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
 				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
-				edu.berkeley.path.beats.simulator.Runner.main(arguments);
+				edu.berkeley.path.beats.simulator.Runner.simulate_output(arguments);
 			} else if (cmd.equals("debug")) {
 				edu.berkeley.path.beats.simulator.Runner.debug(arguments);
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {

@@ -28,7 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.StringTokenizer;
 
-public final class Double1DVector {
+final class Double1DVector {
 	
 	private Double [] data;
     
