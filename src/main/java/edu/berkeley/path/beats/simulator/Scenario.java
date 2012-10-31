@@ -88,6 +88,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
 	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
+	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
 	double outdt;
 
@@ -121,16 +122,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(networkList!=null)
 			for( edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).populate(this);
+
+		// sensors
+		sensorlist.populate(this);
 		
-		// replace jaxb.Sensor with simulator.Sensor
-		if(sensorList!=null){
-			for(int i=0;i<sensorList.getSensor().size();i++){
-				edu.berkeley.path.beats.jaxb.Sensor sensor = sensorList.getSensor().get(i);
-				Sensor.Type myType = Sensor.Type.valueOf(sensor.getType());
-				sensorList.getSensor().set(i,ObjectFactory.createSensorFromJaxb(this,sensor,myType));
-			}
-		}
-		
+		// signals
 		if(signalList!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
 				((Signal) signal).populate(this);
@@ -173,9 +169,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network)network).validate();
 
 		// sensor list
-		if(sensorList!=null)
-			for (edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor())
-				((Sensor) sensor).validate();
+		sensorlist.validate();
 		
 		// signal list
 		if(signalList!=null)
@@ -228,9 +222,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			((Network)network).reset(simulationMode);
 		
 		// sensor list
-		if(sensorList!=null)
-			for (edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor())
-				((Sensor) sensor).reset();
+		sensorlist.reset();
 		
 		// signal list
 		if(signalList!=null)
@@ -279,11 +271,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         		((FundamentalDiagramProfile) fdProfile).update();
     	
         // update sensor readings .......................
-        // NOTE: ensembles have not been implemented for sensors. They do not apply
-        // to the loop sensor, but would make a difference for floating sensors.
-		if(sensorList!=null)
-			for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor())
-				((Sensor)sensor).update();
+    	sensorlist.update();
 		
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
@@ -906,7 +894,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void loadSensorData() throws SiriusException {
 
-		if(sensorList==null)
+		if(sensorlist.sensors.isEmpty())
 			return;
 		
 		if(sensor_data_loaded)
@@ -917,8 +905,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
-			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+		for(Sensor sensor : sensorlist.sensors){
+			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -943,9 +931,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		P.Read5minData(data,datasources);
 		
 		// distribute data to sensors
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
+		for(Sensor sensor : sensorlist.sensors){
 			
-			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;
