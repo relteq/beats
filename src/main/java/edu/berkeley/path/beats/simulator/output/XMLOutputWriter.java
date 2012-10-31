@@ -28,11 +28,12 @@ package edu.berkeley.path.beats.simulator.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.stream.*;
 
 import edu.berkeley.path.beats.simulator.Link;
@@ -54,7 +55,9 @@ public final class XMLOutputWriter extends OutputWriterBase {
 	private Formatter flow_formatter; // flow formatter
 	private Formatter sr_formatter; // split ratio formatter
 
-	public XMLOutputWriter(Scenario scenario, Properties props){
+	private Marshaller marshaller;
+
+	public XMLOutputWriter(Scenario scenario, Properties props) throws SiriusException {
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
@@ -62,6 +65,14 @@ public final class XMLOutputWriter extends OutputWriterBase {
 		dens_formatter = new Formatter(delim, NUM_FORMAT);
 		flow_formatter = new Formatter(delim, NUM_FORMAT);
 		sr_formatter = new Formatter(delim, NUM_FORMAT);
+
+		try {
+			marshaller = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class).createMarshaller();
+			marshaller.setSchema(edu.berkeley.path.beats.util.ScenarioUtil.getOutputSchema());
+			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+		} catch (JAXBException exc) {
+			throw new SiriusException(exc);
+		}
 	}
 
 	@Override
@@ -73,40 +84,10 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			xmlsw.writeStartElement("scenario_output");
 			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
-			if (null != scenario) {
-				String conffnam = scenario.getConfigFilename();
-				XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(conffnam));
-				while (xmlsr.hasNext()) {
-					switch (xmlsr.getEventType()) {
-					case XMLStreamConstants.START_ELEMENT:
-						QName ename = xmlsr.getName();
-						xmlsw.writeStartElement(ename.getPrefix(), ename.getLocalPart(), ename.getNamespaceURI());
-						for (int iii = 0; iii < xmlsr.getAttributeCount(); ++iii) {
-							QName aname = xmlsr.getAttributeName(iii);
-							xmlsw.writeAttribute(aname.getPrefix(), aname.getNamespaceURI(), aname.getLocalPart(), xmlsr.getAttributeValue(iii));
-						}
-						break;
-					case XMLStreamConstants.END_ELEMENT:
-						xmlsw.writeEndElement();
-						break;
-					case XMLStreamConstants.CHARACTERS:
-						if (!xmlsr.isWhiteSpace()) xmlsw.writeCharacters(xmlsr.getText());
-						break;
-					case XMLStreamConstants.CDATA:
-						if (!xmlsr.isWhiteSpace()) xmlsw.writeCData(xmlsr.getText());
-						break;
-					}
-					xmlsr.next();
-				}
-				xmlsr.close();
-			}
+			marshaller.marshal(scenario, xmlsw);
 			// report
 			xmlsw.writeStartElement("report");
-			xmlsw.writeStartElement("settings");
-			xmlsw.writeStartElement("units");
-			xmlsw.writeCharacters("US");
-			xmlsw.writeEndElement(); // units
-			xmlsw.writeEndElement(); // settings
+			marshaller.marshal(scenario.getSettings(), xmlsw);
 			xmlsw.writeStartElement("link_report");
 			xmlsw.writeAttribute("density_report", "true");
 			xmlsw.writeAttribute("flow_report", "true");
@@ -123,6 +104,8 @@ public final class XMLOutputWriter extends OutputWriterBase {
 		} catch (XMLStreamException exc) {
 			SiriusErrorLog.addError(exc.toString());
 		} catch (FileNotFoundException exc) {
+			throw new SiriusException(exc);
+		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
 		}
 	}
