@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
  
-package edu.berkeley.path.beats.test.simulator;
+package edu.berkeley.path.beats.test.simulator.output;
 
 import static org.junit.Assert.*;
 
