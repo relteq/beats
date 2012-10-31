@@ -40,6 +40,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import edu.berkeley.path.beats.control.*;
@@ -298,14 +299,25 @@ public final class ObjectFactory {
 		return process(S);
 	}
 
+	private static Logger logger = Logger.getLogger(ObjectFactory.class);
+
 	/**
-	 * Updates a scenario loaded by JAXB
+	 * Updates a scenario loaded by JAXB.
+	 * Converts units to SI, populates the scenario,
+	 * registers signals and controllers,
+	 * and validates the scenario.
 	 * @param S a scenario
 	 * @return the updated scenario or null if an error occurred
 	 * @throws SiriusException
 	 */
 	public static Scenario process(Scenario S) throws SiriusException {
-		
+		if (null == S.getSettings() || null == S.getSettings().getUnits())
+			logger.warn("Scenario units not specified. Assuming SI");
+		else if (!"SI".equalsIgnoreCase(S.getSettings().getUnits())) {
+			logger.info("Converting scenario units from " + S.getSettings().getUnits() + " to SI");
+			edu.berkeley.path.beats.util.UnitConverter.process(S);
+		}
+
 	    // copy data to static variables ..............................................
 	    S.global_control_on = true;
 	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
