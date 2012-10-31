@@ -23,17 +23,36 @@ public class ScenarioUtil {
 	private static Logger logger = Logger.getLogger(ScenarioUtil.class);
 
 	/**
-	 * Loads the XML schema as a resource
+	 * Loads an XML schema as a resource
+	 * @param resourceName the resource path
+	 * @return the schema
+	 * @throws SiriusException
+	 */
+	private static javax.xml.validation.Schema getSchema(String resourceName) throws SiriusException {
+		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+		try {
+			return factory.newSchema(ScenarioUtil.class.getClassLoader().getResource(resourceName));
+		} catch (org.xml.sax.SAXException exc) {
+			throw new SiriusException(exc);
+		}
+	}
+
+	/**
+	 * Loads the scenario XML schema
 	 * @return the schema
 	 * @throws SiriusException
 	 */
 	public static javax.xml.validation.Schema getSchema() throws SiriusException {
-		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		try {
-			return factory.newSchema(ScenarioUtil.class.getClassLoader().getResource("sirius.xsd"));
-		} catch (org.xml.sax.SAXException exc) {
-			throw new SiriusException(exc);
-		}
+		return getSchema("sirius.xsd");
+	}
+
+	/**
+	 * Loads the XML output schema
+	 * @return the output schema
+	 * @throws SiriusException
+	 */
+	public static javax.xml.validation.Schema getOutputSchema() throws SiriusException {
+		return getSchema("sirius_output.xsd");
 	}
 
 	/**
