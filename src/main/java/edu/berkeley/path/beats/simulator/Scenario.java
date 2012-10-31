@@ -37,8 +37,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.log4j.Logger;
-
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
@@ -642,7 +640,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if(link!=null)
 				return link;
 		}
-		Logger.getLogger(Scenario.class).error("Link " + id + " not found");
 		return null;
 	}
 
