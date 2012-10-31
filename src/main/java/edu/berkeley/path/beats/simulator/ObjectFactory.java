@@ -336,16 +336,20 @@ public final class ObjectFactory {
 	    	if(!S.controllerset.register()){
 	    		throw new SiriusException("Controller registration failure");
 		    }
-	    
+
+		if (SiriusErrorLog.hasmessage()) {
+			SiriusErrorLog.print();
+			SiriusErrorLog.clearErrorMessage();
+		}
+
 		// validate scenario ......................................
-	    SiriusErrorLog.clearErrorMessage();
 	    S.validate();
-	    
-	    // print errors and warnings
-	    SiriusErrorLog.print();
-	    
-	    if(SiriusErrorLog.haserror())
-	    	throw new SiriusException("Scenario validation failed");
+
+		if(SiriusErrorLog.hasmessage()) {
+			SiriusErrorLog.print();
+			SiriusErrorLog.clearErrorMessage();
+			throw new SiriusException("Scenario validation failed");
+		}
 
 		return S;
 	}
