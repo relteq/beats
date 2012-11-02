@@ -203,5 +203,10 @@
       <version>4.3.1</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.torque</groupId>
+      <artifactId>village</artifactId>
+      <version>3.3.1</version>
+    </dependency>
   </dependencies>
 </project>
