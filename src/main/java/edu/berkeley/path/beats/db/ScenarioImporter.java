@@ -672,7 +672,6 @@ public class ScenarioImporter {
 	 * @throws TorqueException
 	 */
 	private void save(edu.berkeley.path.beats.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset, VehicleTypes[] db_vt) throws TorqueException {
-		// TODO delimiter = ':' or ','?
 		Data1D data1d = new Data1D(wf.getContent(), ":");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
@@ -943,7 +942,6 @@ public class ScenarioImporter {
 		db_dbcp.setSampleRate(cp.getDt());
 		db_dbcp.setStartTime(cp.getStartTime());
 		db_dbcp.save(conn);
-		// TODO delimiter = ':' or ','?
 		Data1D data1d = new Data1D(cp.getContent(), ",");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();

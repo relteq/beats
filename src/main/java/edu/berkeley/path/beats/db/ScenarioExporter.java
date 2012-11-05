@@ -397,7 +397,6 @@ public class ScenarioExporter {
 				wf.setLinkOut(id2str(db_wf.getOutLinkId()));
 				sb.setLength(0);
 			} else { // same weaving factor, different vehicle type
-				// TODO delimiter = ':' or ','?
 				sb.append(':');
 			}
 			sb.append(db_wf.getFactor().toPlainString());
@@ -684,7 +683,6 @@ public class ScenarioExporter {
 		List<DownstreamBoundaryCapacities> db_dbc_l = db_dbcp.getDownstreamBoundaryCapacitiess(crit);
 		StringBuilder sb = null;
 		for (DownstreamBoundaryCapacities db_dbc : db_dbc_l) {
-			// TODO delimiter = ',' or ':'?
 			if (null == sb) sb = new StringBuilder();
 			else sb.append(',');
 			sb.append(db_dbc.getDownstreamBoundaryCapacity().toPlainString());
