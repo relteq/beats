@@ -13,6 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <torque.sql.dir>${project.build.directory}/generated-sql</torque.sql.dir>
+    <torque.override.dir>${basedir}/torque-override</torque.override.dir>
+    <torque.enableJava5Features>false</torque.enableJava5Features>
   </properties>
 
   <scm>
@@ -20,7 +22,7 @@
     <developerConnection>scm:git:git@github.com:calpath/beats.git</developerConnection>
     <url>git@github.com:calpath/beats.git</url>
   </scm>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -141,53 +143,53 @@
       </resource>
     </resources>
     <pluginManagement>
-    	<plugins>
+      <plugins>
     		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    		<plugin>
-    			<groupId>org.eclipse.m2e</groupId>
-    			<artifactId>lifecycle-mapping</artifactId>
-    			<version>1.0.0</version>
-    			<configuration>
-    				<lifecycleMappingMetadata>
-    					<pluginExecutions>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>
-    									org.apache.maven.plugins
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.apache.maven.plugins
     								</groupId>
-    								<artifactId>
-    									maven-dependency-plugin
+                    <artifactId>
+                      maven-dependency-plugin
     								</artifactId>
-    								<versionRange>[2.1,)</versionRange>
-    								<goals>
-    									<goal>copy-dependencies</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.apache.torque</groupId>
-    								<artifactId>
-    									torque-maven-plugin
+                    <versionRange>[2.1,)</versionRange>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.torque</groupId>
+                    <artifactId>
+                      torque-maven-plugin
     								</artifactId>
-    								<versionRange>[3.3,)</versionRange>
-    								<goals>
-    									<goal>om</goal>
-    									<goal>sql</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    					</pluginExecutions>
-    				</lifecycleMappingMetadata>
-    			</configuration>
-    		</plugin>
-    	</plugins>
+                    <versionRange>[3.3,)</versionRange>
+                    <goals>
+                      <goal>om</goal>
+                      <goal>sql</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
     </pluginManagement>
   </build>
 
@@ -201,19 +203,16 @@
       <groupId>org.apache.torque</groupId>
       <artifactId>torque-runtime</artifactId>
       <version>3.3</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.8.2.2</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>9.1-901.jdbc4</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jgit</groupId>
@@ -224,25 +223,21 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>2.3</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.12</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.4</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jscience</groupId>
       <artifactId>jscience</artifactId>
       <version>4.3.1</version>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
