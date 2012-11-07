@@ -26,12 +26,16 @@
 
 package edu.berkeley.path.beats;
 
+import org.apache.log4j.Logger;
+
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 
 /**
  * Implements "Sirius: Concept of Operations"
  */
 public class Runner {
+
+	private static Logger logger = Logger.getLogger(Runner.class);
 
 	/**
 	 * @param args command-line arguments
@@ -116,24 +120,25 @@ public class Runner {
 				else
 					throw new InvalidUsageException("Usage: convert_units|cu input_file output_file");
 			} else throw new InvalidCommandException(cmd);
-			if (SiriusErrorLog.haserror()) SiriusErrorLog.print();
 		} catch (InvalidUsageException exc) {
 			String msg = exc.getMessage();
 			if (null == msg) msg = "Usage: command [parameters]";
 			System.err.println(msg);
-			System.exit(1);
 		} catch (NotImplementedException exc) {
 			System.err.println(exc.getMessage());
-			System.exit(1);
 		} catch (InvalidCommandException exc) {
 			System.err.println(exc.getMessage());
-			System.exit(1);
 		} catch (Exception exc) {
 			exc.printStackTrace();
-			System.exit(2);
 		} finally {
-			if (edu.berkeley.path.beats.db.Service.isInit())
+			if (SiriusErrorLog.hasmessage()) {
+				SiriusErrorLog.print();
+				SiriusErrorLog.clearErrorMessage();
+			}
+			if (edu.berkeley.path.beats.db.Service.isInit()) {
+				logger.info("Shutting down the DB service");
 				edu.berkeley.path.beats.db.Service.shutdown();
+			}
 		}
 	}
 

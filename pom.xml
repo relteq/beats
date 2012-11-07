@@ -126,7 +126,15 @@
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
     </plugins>
     <resources>
       <resource>
@@ -243,6 +251,11 @@
       <artifactId>jscience</artifactId>
       <version>4.3.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.torque</groupId>
+      <artifactId>village</artifactId>
+      <version>3.3.1</version>
     </dependency>
   </dependencies>
 </project>
