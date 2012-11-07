@@ -87,8 +87,8 @@ public class ScenarioLoader {
 	 */
 	public static Scenarios load(String filename) throws SiriusException {
 		edu.berkeley.path.beats.jaxb.Scenario scenario =
-				edu.berkeley.path.beats.util.ScenarioUtil.load(filename);
-		logger.info("Configuration file '" + filename + "' parsed");
+				edu.berkeley.path.beats.simulator.ObjectFactory.createAndLoadScenario(filename);
+		logger.info("Loaded configuration file '" + filename + "'");
 		Scenarios db_scenario = new ScenarioLoader().load(scenario);
 		logger.info("Scenario imported, ID=" + db_scenario.getId());
 		return db_scenario;
@@ -120,12 +120,8 @@ public class ScenarioLoader {
 	 */
 	private Scenarios save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws TorqueException, SiriusException {
 		if (null == scenario) return null;
-		if (null == scenario.getSettings() || null == scenario.getSettings().getUnits())
-			logger.warn("Scenario units not specified. Assuming SI");
-		else {
-			logger.info("Converting scenario units from " + scenario.getSettings().getUnits() + " to SI");
-			edu.berkeley.path.beats.util.UnitConverter.process(scenario);
-		}
+		if (null != scenario.getSettings() && !"SI".equalsIgnoreCase(scenario.getSettings().getUnits()))
+			throw new SiriusException("Scenario's system of units is not SI");
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
