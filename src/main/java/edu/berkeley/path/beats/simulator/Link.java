@@ -67,9 +67,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/** @y.exclude */ 	protected Double []spaceSupply;        		// [veh]	numEnsemble
 	/** @y.exclude */ 	protected boolean issource; 				// [boolean]
 	/** @y.exclude */ 	protected boolean issink;     				// [boolean]
-	/** @y.exclude */ 	protected Double [][] cumulative_density;	// [veh] 	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double [][] cumulative_inflow;	// [veh] 	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double [][] cumulative_outflow;	// [veh] 	numEnsemble x numVehTypes
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -81,15 +78,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
-
-	/** @y.exclude */
-	protected void reset_cumulative(){
-		int n1 = myNetwork.myScenario.numEnsemble;
-		int n2 = myNetwork.myScenario.getNumVehicleTypes();
-    	cumulative_density = SiriusMath.zeros(n1,n2);
-    	cumulative_inflow  = SiriusMath.zeros(n1,n2);
-    	cumulative_outflow = SiriusMath.zeros(n1,n2);
-	}
 
 	/** @y.exclude */
 	protected boolean registerFlowController(Controller c,int index){
@@ -402,11 +390,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         sourcedemand 		= SiriusMath.zeros(n2);
         outflowDemand 		= SiriusMath.zeros(n1,n2);
         spaceSupply 		= SiriusMath.zeros(n1);
-        
-        // for correct export of initial condition
-        cumulative_density 	= SiriusMath.makecopy(density);
-        cumulative_inflow 	= SiriusMath.zeros(n1,n2);
-        cumulative_outflow 	= SiriusMath.zeros(n1,n2);
 
 		return;
 	}
@@ -438,9 +421,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
         	  for(int j=0;j<myNetwork.myScenario.getNumVehicleTypes();j++){
               	density[e][j] += inflow[e][j] - outflow[e][j];
-              	cumulative_density[e][j] += density[e][j];
-              	cumulative_inflow[e][j] += inflow[e][j];
-              	cumulative_outflow[e][j] += outflow[e][j];
               }
         }
 	}
@@ -771,34 +751,30 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	/**
-	 * @param ensemble
-	 * @return the cumulative densities for the given ensemble, for all vehicle types
+	 * @param ensemble number of ensemble
+	 * @param vt_ind vehicle type index
+	 * @return density for the given ensemble and vehicle type [vehicles]
 	 */
-	public Double[] getCumulativeDensity(int ensemble) {
-		return cumulative_density[ensemble];
+	public Double getDensity(int ensemble, int vt_ind) {
+		return density[ensemble][vt_ind];
 	}
 
 	/**
-	 * @param ensemble
-	 * @return the cumulative incoming flow for the given ensemble, for all vehicle types
+	 * @param ensemble number of ensemble
+	 * @param vt_ind vehicle type index
+	 * @return input flow for the given ensemble and vehicle type [vehicles]
 	 */
-	public Double[] getCumulativeInFlow(int ensemble) {
-		return cumulative_inflow[ensemble];
+	public Double getInputFlow(int ensemble, int vt_ind) {
+		return inflow[ensemble][vt_ind];
 	}
 
 	/**
-	 * @param ensemble
-	 * @return the cumulative outgoing flow for the given ensemble, for all vehicle types
+	 * @param ensemble number of ensemble
+	 * @param vt_ind vehicle type index
+	 * @return output flow for the given ensemble and vehicle type [vehicles]
 	 */
-	public Double[] getCumulativeOutFlow(int ensemble) {
-		return cumulative_outflow[ensemble];
-	}
-
-	/**
-	 * resets cumulative densities and flows
-	 */
-	public void resetCumulative() {
-		reset_cumulative();
+	public Double getOutputFlow(int ensemble, int vt_ind) {
+		return outflow[ensemble][vt_ind];
 	}
 
 }

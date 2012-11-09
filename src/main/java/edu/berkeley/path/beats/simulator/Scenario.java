@@ -37,6 +37,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.log4j.Logger;
+
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
@@ -96,6 +98,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// data
 	private boolean sensor_data_loaded = false;
+
+	private Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -155,7 +159,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// populate events 
 		eventset.populate(this);
-		
+
+		cumulatives = new Cumulatives(this);
 	}
 
 	/** @y.exclude */
@@ -242,7 +247,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// reset events
 		eventset.reset();
-		
+
+		cumulatives.reset();
+
 		return true;
 		
 	}	
@@ -288,7 +295,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update the network state......................
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
 			((Network) network).update();
-        
+
+		cumulatives.update();
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -1037,8 +1045,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
+		cumulatives.reset();
 	}
-	
+
+	public void requestLinkCumulatives() {
+		cumulatives.storeLinks();
+	}
+
+	public LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+		return cumulatives.get(link);
+	}
+
+
 	private class RunParameters{
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
@@ -1098,6 +1116,48 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Get configuration file name */
 	public String getConfigFilename() {
 		return configfilename;
+	}
+
+	private static class Cumulatives {
+		private Scenario scenario;
+		java.util.Map<String, LinkCumulativeData> links = null;
+
+		private static Logger logger = Logger.getLogger(Cumulatives.class);
+
+		public Cumulatives(Scenario scenario) {
+			this.scenario = scenario;
+		}
+
+		public void storeLinks() {
+			if (null == links) {
+				links = new java.util.HashMap<String, LinkCumulativeData>();
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
+						if (links.containsKey(link.getId()))
+							logger.warn("Duplicate link: id=" + link.getId());
+						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
+					}
+			}
+		}
+
+		public void reset() {
+			if (null != links) {
+				java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
+				while (iter.hasNext()) iter.next().reset();
+			}
+		}
+
+		public void update() throws SiriusException {
+			if (null != links) {
+				java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
+				while (iter.hasNext()) iter.next().update();
+			}
+		}
+
+		public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+			if (null == links) throw new SiriusException("Link cumulative data were not requested");
+			return links.get(link.getId());
+		}
 	}
 
 }
