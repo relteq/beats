@@ -139,6 +139,29 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					if (exportflows) {
 						// f = flow per dt, vehicles
 						xmlsw.writeAttribute("f", flow_formatter.format(link_cum_data.getCumulativeOutputFlow(0)));
+						// computing speed
+						speed_formatter.clear();
+						double ffspeed = _link.getVfInMPS(0);
+						double mean_total_density = link_cum_data.getMeanTotalDensity(0);
+						if (0 >= mean_total_density) {
+							if (!Double.isNaN(ffspeed))
+								for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind)
+									speed_formatter.add(ffspeed);
+						} else {
+							double mean_speed = link_cum_data.getMeanTotalOutputFlow(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimDtInSeconds());
+							if (!Double.isNaN(ffspeed) && ffspeed < mean_speed) mean_speed = ffspeed;
+							for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
+								double density = link_cum_data.getMeanDensity(0, vt_ind);
+								double speed = mean_speed;
+								if (0 < density) {
+									speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimDtInSeconds());
+									if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
+								}
+								speed_formatter.add(speed);
+							}
+						}
+						// v = speed, m/s
+						if (!speed_formatter.isEmpty()) xmlsw.writeAttribute("v", speed_formatter.getResult());
 					}
 					// mf = capacity, vehicles per second
 					double mf = _link.getCapacityInVPS(0);
