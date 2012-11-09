@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import com.relteq.sirius.jaxb.DestinationNetwork;
 
+import com.relteq.sirius.calibrator.FDParameters;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -20,6 +22,11 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 	/** @y.exclude */ 	protected Node begin_node;
 	/** @y.exclude */ 	protected Node end_node;
 
+	// link type
+	protected Link.Type myType;
+	/** Type of link. */
+	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll};
+	
 	/** @y.exclude */ 	protected double _length;							// [miles]
 	/** @y.exclude */ 	protected double _lanes;							// [-]
 	/** @y.exclude */ 	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
@@ -359,6 +366,10 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
         myNetwork.myScenario.numLinks++;
         this.link_used = false;
 
+        
+        // link type
+        this.myType = Link.Type.valueOf(getType());
+        
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
 		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
@@ -491,6 +502,26 @@ public final class Link extends com.relteq.sirius.jaxb.Link {
 		return this.getId();
 	}	
 
+	// Link type ........................
+	
+	public Link.Type getMyType() {
+		return myType;
+	}
+	
+	public static boolean isFreewayType(Link link){
+		
+		if(link==null)
+			return false;
+		
+		Link.Type linktype = link.getMyType();
+		
+		return  linktype.compareTo(Link.Type.intersection_approach)!=0 &&
+				linktype.compareTo(Link.Type.offramp)!=0 &&
+				linktype.compareTo(Link.Type.onramp)!=0 &&
+				linktype.compareTo(Link.Type.street)!=0;		
+	}
+	
+	
 	// Link geometry ....................
 	
 	/** network that contains this link */
