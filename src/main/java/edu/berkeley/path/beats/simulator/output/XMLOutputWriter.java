@@ -77,6 +77,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 		}
 
 		scenario.requestLinkCumulatives();
+		scenario.requestSignalPhases();
 	}
 
 	@Override
@@ -199,7 +200,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
-						List<Signal.PhaseData> phdata = ((Signal) signal).getCompletedPhases();
+						List<Signal.PhaseData> phdata = scenario.getCompletedPhases(signal).getPhaseList();
 						for (Signal.PhaseData ph : phdata) {
 							xmlsw.writeStartElement("ph");
 							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
@@ -207,7 +208,6 @@ public final class XMLOutputWriter extends OutputWriterBase {
 							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
 							xmlsw.writeEndElement(); // ph
 						}
-						phdata.clear();
 						xmlsw.writeEndElement(); // sig
 					}
 					xmlsw.writeEndElement(); // sigl
