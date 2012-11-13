@@ -124,8 +124,72 @@
 		<xsl:if test="not(@enabled)">
 			<xsl:attribute name="enabled">true</xsl:attribute>
 		</xsl:if>
-		<xsl:apply-templates/>
+		<xsl:choose>
+			<xsl:when test="parameters">
+				<xsl:apply-templates select="parameters"/>
+			</xsl:when>
+			<xsl:when test="PlanSequence">
+				<parameters>
+					<xsl:apply-templates select="." mode="params"/>
+				</parameters>
+			</xsl:when>
+		</xsl:choose>
+		<xsl:apply-templates select="display_position"/>
+		<xsl:apply-templates select="targetElements"/>
+		<xsl:apply-templates select="feedbackElements"/>
+		<xsl:apply-templates select="queue_controller"/>
+		<xsl:apply-templates select="ActivationIntervals"/>
+		<xsl:apply-templates select="table"/>
+		<xsl:apply-templates select="PlanSequence|PlanList" mode="table"/>
 	</xsl:copy>
+</xsl:template>
+
+<xsl:template match="PlanSequence" mode="table">
+	<table name="Plan Sequence">
+		<column_names>
+			<column_name name="Plan ID" key="true"/>
+			<column_name name="Start Time" key="false"/>
+			<column_name name="Cycle Length" key="false"/>
+		</column_names>
+		<xsl:apply-templates select="plan_reference" mode="table"/>
+	</table>
+</xsl:template>
+
+<xsl:template match="plan_reference" mode="table">
+	<row>
+		<column><xsl:value-of select="@plan_id"/></column>
+		<column><xsl:value-of select="@start_time"/></column>
+		<column><xsl:value-of select="../../PlanList/plan[@id=current()/@plan_id]/@cyclelength"/></column>
+	</row>
+</xsl:template>
+
+<xsl:template match="PlanList" mode="table">
+	<table name="Plan List">
+		<column_names>
+			<column_name name="Plan ID" key="true"/>
+			<column_name name="Intersection" key="true"/>
+			<column_name name="Offset" key="false"/>
+			<column_name name="Movement A" key="true"/>
+			<column_name name="Movement B" key="true"/>
+			<column_name name="Green Time" key="false"/>
+		</column_names>
+		<xsl:apply-templates select="plan/intersection/stage" mode="table"/>
+	</table>
+</xsl:template>
+
+<xsl:template match="plan/intersection/stage" mode="table">
+	<row>
+		<column><xsl:value-of select="../../@id"/></column>
+		<column><xsl:value-of select="../@node_id"/></column>
+		<column><xsl:value-of select="../@offset"/></column>
+		<column><xsl:value-of select="@movA"/></column>
+		<column><xsl:value-of select="@movB"/></column>
+		<column><xsl:value-of select="@greentime"/></column>
+	</row>
+</xsl:template>
+
+<xsl:template match="PlanSequence" mode="params">
+	<parameter name="Transition Delay" value="{@transition_delay}"/>
 </xsl:template>
 
 <xsl:template match="phase/links">
