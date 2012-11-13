@@ -12,7 +12,7 @@ public class LinkCumulativeData {
 	private Double[][] oflow;
 	private int nsteps;
 
-	public LinkCumulativeData(edu.berkeley.path.beats.simulator.Link link) {
+	LinkCumulativeData(edu.berkeley.path.beats.simulator.Link link) {
 		this.link = link;
 		Scenario scenario = link.myNetwork.myScenario;
 		nensemble = scenario.getNumEnsemble();
@@ -23,7 +23,7 @@ public class LinkCumulativeData {
 		reset();
 	}
 
-	public void update() throws SiriusException {
+	void update() throws SiriusException {
 		for (int i = 0; i < nensemble; ++i)
 			for (int j = 0; j < nvehtype; ++j) {
 				density[i][j] += link.getDensity(i, j);
@@ -94,7 +94,7 @@ public class LinkCumulativeData {
 			return SiriusMath.times(oflow[ensemble], 1.0d / nsteps);
 	}
 
-	public void reset() {
+	void reset() {
 		reset(density);
 		reset(iflow);
 		reset(oflow);

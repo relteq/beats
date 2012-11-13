@@ -1229,7 +1229,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		private edu.berkeley.path.beats.jaxb.Signal signal;
 		private List<Signal.PhaseData> phases;
 
-		public SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
+		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
 			this.signal = signal;
 			phases = new java.util.ArrayList<Signal.PhaseData>();
 		}
@@ -1238,11 +1238,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return phases;
 		}
 
-		public void update() {
+		void update() {
 			phases.addAll(((Signal) signal).getCompletedPhases());
 		}
 
-		public void reset() {
+		void reset() {
 			phases.clear();
 		}
 	}
