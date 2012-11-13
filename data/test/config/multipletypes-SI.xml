@@ -197,15 +197,15 @@
     </DemandProfileSet>
     <ControllerSet>
         <controller type="IRM_alinea" id="-1" dt="5" enabled="true">
+            <parameters>
+                <parameter name="gain" value="22.352"/>
+            </parameters>
             <targetElements>
                 <scenarioElement type="link" id="-6"/>
             </targetElements>
             <feedbackElements>
                 <scenarioElement type="link" id="-2" usage="mainlinelink"/>
             </feedbackElements>
-            <parameters>
-                <parameter name="gain" value="22.352"/>
-            </parameters>
         </controller>
     </ControllerSet>
     <FundamentalDiagramProfileSet>
