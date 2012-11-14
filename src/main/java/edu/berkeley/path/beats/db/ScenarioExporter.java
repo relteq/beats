@@ -84,7 +84,7 @@ public class ScenarioExporter {
 	 * @param id
 	 * @return String
 	 */
-	private static String id2str(Long id) {
+	static String id2str(Long id) {
 		if (null == id) return null;
 		return id.toString();
 	}

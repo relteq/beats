@@ -1317,9 +1317,12 @@ public class ScenarioImporter {
 		for (edu.berkeley.path.beats.jaxb.Row row : table.getRow()) {
 			java.util.Iterator<edu.berkeley.path.beats.jaxb.ColumnName> citer = table.getColumnNames().getColumnName().iterator();
 			for (String elem : row.getColumn()) {
+				String column_name = citer.next().getName();
+				if ("Plan List".equals(table.getName()) && "Intersection".equals(column_name))
+					elem = ScenarioExporter.id2str(getDBNodeId(elem));
 				TabularData db_td = new TabularData();
 				db_td.setTables(db_table);
-				db_td.setColumnName(citer.next().getName());
+				db_td.setColumnName(column_name);
 				db_td.setRowNumber(Integer.valueOf(rownum));
 				db_td.setValue(elem);
 				db_td.save(conn);
