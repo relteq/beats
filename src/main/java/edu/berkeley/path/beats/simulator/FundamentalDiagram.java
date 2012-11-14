@@ -1,11 +1,32 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-package com.relteq.sirius.simulator;
+package edu.berkeley.path.beats.simulator;
 
-final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram{
+final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
 	protected Link myLink;
 	protected double lanes;
@@ -29,7 +50,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	}
 	
 	// fundamental diagram created from jaxb objects must have all values filled in. 
-	public FundamentalDiagram(Link myLink,com.relteq.sirius.jaxb.FundamentalDiagram jaxbfd){
+	public FundamentalDiagram(Link myLink,edu.berkeley.path.beats.jaxb.FundamentalDiagram jaxbfd){
 		this.myLink       = myLink;
 		this.lanes 		  = myLink==null ? Double.NaN : myLink._lanes;
 		_densityJam 	  = Double.NaN;  
@@ -155,7 +176,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	}
 	
 	// fundamental diagrams created from other fundamental diagrams copy all values. 
-	public FundamentalDiagram(Link myLink,com.relteq.sirius.simulator.FundamentalDiagram fd){
+	public FundamentalDiagram(Link myLink,edu.berkeley.path.beats.simulator.FundamentalDiagram fd){
 		if(myLink==null)
 			return;
 		this.myLink = myLink;
@@ -236,7 +257,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	}
 
  	// copy per lane parameters from jaxb and normalize
-	protected void copyfrom(com.relteq.sirius.jaxb.FundamentalDiagram fd){
+	protected void copyfrom(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd){
 
 		if(fd==null)
 			return;
@@ -281,7 +302,7 @@ final class FundamentalDiagram extends com.relteq.sirius.jaxb.FundamentalDiagram
 	}
 
  	// clone a fd
-	protected void copyfrom(com.relteq.sirius.simulator.FundamentalDiagram that){
+	protected void copyfrom(edu.berkeley.path.beats.simulator.FundamentalDiagram that){
 		if(that==null)
 			return;
 		this.myLink = that.myLink;

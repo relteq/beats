@@ -1,14 +1,40 @@
-package com.relteq.sirius.event;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.event;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.simulator.ObjectFactory;
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator.Event;
-import com.relteq.sirius.simulator.Node;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.Event;
+import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 
 public class Event_Node_Split_Ratio extends Event {
 
@@ -56,8 +82,8 @@ public class Event_Node_Split_Ratio extends Event {
 	@Override
 	public void populate(Object jaxbobject) {
 
-		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
+		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
 
 		// reset_to_nominal
 		boolean reset_to_nominal = false;
@@ -80,7 +106,7 @@ public class Event_Node_Split_Ratio extends Event {
 		if(resetToNominal)		// nothing else to populate in this case
 			return;
 		
-		com.relteq.sirius.jaxb.SplitratioEvent srevent = jaxbe.getSplitratioEvent();
+		edu.berkeley.path.beats.jaxb.SplitratioEvent srevent = jaxbe.getSplitratioEvent();
 		if (srevent != null) {
 			int[] vt_index = null;
 			if (null == srevent.getVehicleTypeOrder()) {
@@ -90,12 +116,12 @@ public class Event_Node_Split_Ratio extends Event {
 			} else {
 				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleType().size()];
 				int i = 0;
-				for (com.relteq.sirius.jaxb.VehicleType vt : srevent.getVehicleTypeOrder().getVehicleType())
+				for (edu.berkeley.path.beats.jaxb.VehicleType vt : srevent.getVehicleTypeOrder().getVehicleType())
 					vt_index[i++] = myScenario.getVehicleTypeIndex(vt.getName());
 			}
 			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());
-			for (com.relteq.sirius.jaxb.Splitratio sr : srevent.getSplitratio()) {
-				com.relteq.sirius.simulator.Double1DVector vector = new com.relteq.sirius.simulator.Double1DVector(sr.getContent(), ":");
+			for (edu.berkeley.path.beats.jaxb.Splitratio sr : srevent.getSplitratio()) {
+				edu.berkeley.path.beats.simulator.Double1DVector vector = new edu.berkeley.path.beats.simulator.Double1DVector(sr.getContent(), ":");
 				if (!vector.isEmpty()) {
 					int input_index = myNode.getInputLinkIndex(sr.getLinkIn());
 					int output_index = myNode.getOutputLinkIndex(sr.getLinkOut());

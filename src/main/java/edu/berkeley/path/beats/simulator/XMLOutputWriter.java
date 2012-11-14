@@ -1,9 +1,30 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-package com.relteq.sirius.simulator;
+package edu.berkeley.path.beats.simulator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -98,14 +119,14 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
 			xmlsw.writeStartElement("netl");
-			for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
+			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", network.getId());
 				// dt = time interval of reporting, sec
 				xmlsw.writeAttribute("dt", dt);
 				// link list
 				xmlsw.writeStartElement("ll");
-				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink()) {
+				for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 					xmlsw.writeStartElement("l");
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
@@ -125,7 +146,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 				xmlsw.writeEndElement(); // ll
 				// node list
 				xmlsw.writeStartElement("nl");
-				for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode()) {
+				for (edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode()) {
 					xmlsw.writeStartElement("n");
 					xmlsw.writeAttribute("id", node.getId());
 					Node _node = (Node) node;
@@ -142,10 +163,10 @@ public final class XMLOutputWriter extends OutputWriterBase {
 				}
 				xmlsw.writeEndElement(); // nl
 				// signal list
-				List<com.relteq.sirius.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+				List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
 				if (null != sigl && 0 < sigl.size()) {
 					xmlsw.writeStartElement("sigl");
-					for (com.relteq.sirius.jaxb.Signal signal : sigl) {
+					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
 						List<Signal.PhaseData> phdata = ((Signal) signal).completedPhases;

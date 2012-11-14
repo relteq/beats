@@ -1,9 +1,30 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-package com.relteq.sirius.simulator;
+package edu.berkeley.path.beats.simulator;
 
 import java.util.Arrays;
 import java.util.Properties;
@@ -179,11 +200,11 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 		return true;
 	}
 
-	public static void run_db(String [] args) throws SiriusException, com.relteq.sirius.Runner.InvalidUsageException {
+	public static void run_db(String [] args) throws SiriusException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 		logger.info("Parsing arguments");
 		if (0 == args.length) {
 			final String eol = System.getProperty("line.separator");
-			throw new com.relteq.sirius.Runner.InvalidUsageException(
+			throw new edu.berkeley.path.beats.Runner.InvalidUsageException(
 					"Usage: simulate|s scenario_id [parameters]" + eol +
 					"Parameters:" + eol +
 					"\tstart time, sec" + eol +
@@ -197,10 +218,10 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 			parseInput(auxargs);
 		}
 
-		com.relteq.sirius.db.Service.init();
+		edu.berkeley.path.beats.db.Service.init();
 
 		logger.info("Loading scenario");
-		scenario = com.relteq.sirius.db.exporter.ScenarioRestorer.getScenario(Integer.parseInt(args[0]));
+		scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(Integer.parseInt(args[0]));
 		
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();
@@ -212,7 +233,7 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 		owr_props.setProperty("type", "db");
 		scenario.run(timestart, timeend, outdt, numRepetitions, owr_props);
 
-		com.relteq.sirius.db.Service.shutdown();
+		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");
 	}
 

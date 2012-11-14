@@ -1,4 +1,30 @@
-package com.relteq.sirius.db.importer;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.db.importer;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -11,10 +37,10 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
-import com.relteq.sirius.om.*;
-import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.util.Data1D;
-import com.relteq.sirius.util.Data2D;
+import edu.berkeley.path.beats.om.*;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.util.Data1D;
+import edu.berkeley.path.beats.util.Data2D;
 
 /**
  * Imports a scenario
@@ -59,8 +85,8 @@ public class ScenarioLoader {
 	 * @throws SiriusException
 	 */
 	public static Scenarios load(String filename) throws SiriusException {
-		com.relteq.sirius.simulator.Scenario scenario =
-				com.relteq.sirius.simulator.ObjectFactory.createAndLoadScenario(filename);
+		edu.berkeley.path.beats.simulator.Scenario scenario =
+				edu.berkeley.path.beats.simulator.ObjectFactory.createAndLoadScenario(filename);
 		if (null == scenario)
 			throw new SiriusException("Could not load a scenario from file " + filename);
 		logger.info("Configuration file '" + filename + "' parsed");
@@ -69,8 +95,8 @@ public class ScenarioLoader {
 		return db_scenario;
 	}
 
-	public Scenarios load(com.relteq.sirius.simulator.Scenario scenario) throws SiriusException {
-		com.relteq.sirius.db.Service.ensureInit();
+	public Scenarios load(edu.berkeley.path.beats.simulator.Scenario scenario) throws SiriusException {
+		edu.berkeley.path.beats.db.Service.ensureInit();
 		try {
 			conn = Transaction.begin();
 			Scenarios db_scenario = save(scenario);
@@ -93,13 +119,13 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 * @throws SiriusException
 	 */
-	private Scenarios save(com.relteq.sirius.simulator.Scenario scenario) throws TorqueException, SiriusException {
+	private Scenarios save(edu.berkeley.path.beats.simulator.Scenario scenario) throws TorqueException, SiriusException {
 		if (null == scenario) return null;
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
 		db_scenario.setDescription(scenario.getDescription());
-		com.relteq.sirius.jaxb.VehicleTypes vtypes = null;
+		edu.berkeley.path.beats.jaxb.VehicleTypes vtypes = null;
 		if (null != scenario.getSettings())
 			vtypes = scenario.getSettings().getVehicleTypes();
 		db_scenario.setVehicleTypeSets(save(vtypes));
@@ -122,12 +148,12 @@ public class ScenarioLoader {
 		db_scenario.save(conn);
 
 		if (null != scenario.getControllerSet())
-			for (com.relteq.sirius.jaxb.Controller cntr : scenario.getControllerSet().getController()) {
+			for (edu.berkeley.path.beats.jaxb.Controller cntr : scenario.getControllerSet().getController()) {
 				save(cntr.getTargetElements(), controllers.get(cntr.getId()));
 				save(cntr.getFeedbackElements(), controllers.get(cntr.getId()));
 			}
 		if (null != scenario.getEventSet())
-			for (com.relteq.sirius.jaxb.Event event : scenario.getEventSet().getEvent())
+			for (edu.berkeley.path.beats.jaxb.Event event : scenario.getEventSet().getEvent())
 				save(event.getTargetElements(), events.get(event.getId()));
 
 		return db_scenario;
@@ -139,21 +165,21 @@ public class ScenarioLoader {
 	 * @return the imported vehicle type set
 	 * @throws TorqueException
 	 */
-	private VehicleTypeSets save(com.relteq.sirius.jaxb.VehicleTypes vtypes) throws TorqueException {
+	private VehicleTypeSets save(edu.berkeley.path.beats.jaxb.VehicleTypes vtypes) throws TorqueException {
 		VehicleTypeSets db_vts = new VehicleTypeSets();
 		db_vts.setProjectId(getProjectId());
 		db_vts.save(conn);
 		if (null == vtypes) {
-			vtypes = new com.relteq.sirius.jaxb.VehicleTypes();
-			com.relteq.sirius.jaxb.VehicleType vt = new com.relteq.sirius.jaxb.VehicleType();
+			vtypes = new edu.berkeley.path.beats.jaxb.VehicleTypes();
+			edu.berkeley.path.beats.jaxb.VehicleType vt = new edu.berkeley.path.beats.jaxb.VehicleType();
 			vt.setName("SOV");
 			vt.setWeight(new BigDecimal(1));
 			vtypes.getVehicleType().add(vt);
 		}
-		List<com.relteq.sirius.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
+		List<edu.berkeley.path.beats.jaxb.VehicleType> vtlist = vtypes.getVehicleType();
 		vehicle_type = new VehicleTypes[vtlist.size()];
 		int ind = 0;
-		for (com.relteq.sirius.jaxb.VehicleType vt : vtlist)
+		for (edu.berkeley.path.beats.jaxb.VehicleType vt : vtlist)
 			vehicle_type[ind++] = save(vt, db_vts);
 		return db_vts;
 	}
@@ -165,7 +191,7 @@ public class ScenarioLoader {
 	 * @return the imported (or already existing) vehicle type
 	 * @throws TorqueException
 	 */
-	private VehicleTypes save(com.relteq.sirius.jaxb.VehicleType vt, VehicleTypeSets db_vts) throws TorqueException {
+	private VehicleTypes save(edu.berkeley.path.beats.jaxb.VehicleType vt, VehicleTypeSets db_vts) throws TorqueException {
 		Criteria crit = new Criteria();
 		crit.add(VehicleTypesPeer.PROJECT_ID, getProjectId());
 		crit.add(VehicleTypesPeer.NAME, vt.getName());
@@ -198,11 +224,11 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 * @throws SiriusException
 	 */
-	private void save(com.relteq.sirius.jaxb.NetworkList nl, Scenarios db_scenario) throws TorqueException, SiriusException {
+	private void save(edu.berkeley.path.beats.jaxb.NetworkList nl, Scenarios db_scenario) throws TorqueException, SiriusException {
 		network_id = new HashMap<String, Long>(nl.getNetwork().size());
 		nodes = new HashMap<String, Nodes>();
 		links = new HashMap<String, Links>();
-		for (com.relteq.sirius.jaxb.Network network : nl.getNetwork()) {
+		for (edu.berkeley.path.beats.jaxb.Network network : nl.getNetwork()) {
 			NetworkSets db_ns = new NetworkSets();
 			db_ns.setScenarios(db_scenario);
 			db_ns.setNetworks(save(network));
@@ -217,16 +243,16 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 * @throws SiriusException
 	 */
-	private Networks save(com.relteq.sirius.jaxb.Network network) throws TorqueException, SiriusException {
+	private Networks save(edu.berkeley.path.beats.jaxb.Network network) throws TorqueException, SiriusException {
 		Networks db_network = new Networks();
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
 		db_network.setLocked(network.isLocked());
 		db_network.save(conn);
 		network_id.put(network.getId(), Long.valueOf(db_network.getId()));
-		for (com.relteq.sirius.jaxb.Node node : network.getNodeList().getNode())
+		for (edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())
 			save(node, db_network);
-		for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink())
+		for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
 			save(link, db_network);
 		return db_network;
 	}
@@ -238,7 +264,7 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 * @throws SiriusException
 	 */
-	private void save(com.relteq.sirius.jaxb.Node node, Networks db_network) throws TorqueException, SiriusException {
+	private void save(edu.berkeley.path.beats.jaxb.Node node, Networks db_network) throws TorqueException, SiriusException {
 		if (nodes.containsKey(node.getId())) throw new SiriusException("Node " + node.getId() + " already exists");
 		NodeFamilies db_nf = new NodeFamilies();
 		db_nf.setId(NodeFamiliesPeer.nextId(NodeFamiliesPeer.ID, conn));
@@ -249,7 +275,7 @@ public class ScenarioLoader {
 		db_node.setNetworks(db_network);
 		db_node.setGeom(pos2str(node.getPosition()));
 		db_node.setGeom("");
-		db_node.setInSynch(node.isInSynch());
+		db_node.setInSynch(node.isInSync());
 
 		// node type
 		NodeType db_ntype = new NodeType();
@@ -268,9 +294,9 @@ public class ScenarioLoader {
 	 * @param db_node an imported node
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.RoadwayMarkers markers, Nodes db_node) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.RoadwayMarkers markers, Nodes db_node) throws TorqueException {
 		if (null == markers) return;
-		for (com.relteq.sirius.jaxb.Marker marker : markers.getMarker())
+		for (edu.berkeley.path.beats.jaxb.Marker marker : markers.getMarker())
 			if (null == marker.getPostmile()) { // importing node name
 				NodeName db_nname = new NodeName();
 				db_nname.setNodes(db_node);
@@ -306,7 +332,7 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 * @throws SiriusException
 	 */
-	private void save(com.relteq.sirius.jaxb.Link link, Networks db_network) throws TorqueException, SiriusException {
+	private void save(edu.berkeley.path.beats.jaxb.Link link, Networks db_network) throws TorqueException, SiriusException {
 		if (links.containsKey(link.getId())) throw new SiriusException("Link " + link.getId() + " already exists");
 		LinkFamilies db_lf = new LinkFamilies();
 		db_lf.setId(LinkFamiliesPeer.nextId(LinkFamiliesPeer.ID, conn));
@@ -320,7 +346,7 @@ public class ScenarioLoader {
 		db_link.setGeom(null == link.getShape() ? "" : link.getShape()); // TODO revise: shape -> geometry
 		db_link.setLength(link.getLength());
 		db_link.setDetailLevel(1);
-		db_link.setInSynch(link.isInSynch());
+		db_link.setInSynch(link.isInSync());
 
 		// link type
 		LinkType db_ltype = new LinkType();
@@ -351,9 +377,9 @@ public class ScenarioLoader {
 	 * @param db_link an imported link
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Roads roads, Links db_link) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Roads roads, Links db_link) throws TorqueException {
 		if (null == roads) return;
-		for (com.relteq.sirius.jaxb.Road road : roads.getRoad()) {
+		for (edu.berkeley.path.beats.jaxb.Road road : roads.getRoad()) {
 			LinkName db_lname = new LinkName();
 			db_lname.setLinks(db_link);
 			db_lname.setName(road.getName());
@@ -367,7 +393,7 @@ public class ScenarioLoader {
 	 * @return the imported signal set
 	 * @throws TorqueException
 	 */
-	private SignalSets save(com.relteq.sirius.jaxb.SignalList sl) throws TorqueException {
+	private SignalSets save(edu.berkeley.path.beats.jaxb.SignalList sl) throws TorqueException {
 		if (null == sl) return null;
 		SignalSets db_ss = new SignalSets();
 		db_ss.setProjectId(getProjectId());
@@ -375,7 +401,7 @@ public class ScenarioLoader {
 		db_ss.setDescription(sl.getDescription());
 		db_ss.save(conn);
 		signals = new HashMap<String, Signals>(sl.getSignal().size());
-		for (com.relteq.sirius.jaxb.Signal signal : sl.getSignal())
+		for (edu.berkeley.path.beats.jaxb.Signal signal : sl.getSignal())
 			signals.put(signal.getId(), save(signal, db_ss));
 		return db_ss;
 	}
@@ -387,12 +413,12 @@ public class ScenarioLoader {
 	 * @return an imported signal
 	 * @throws TorqueException
 	 */
-	private Signals save(com.relteq.sirius.jaxb.Signal signal, SignalSets db_ss) throws TorqueException {
+	private Signals save(edu.berkeley.path.beats.jaxb.Signal signal, SignalSets db_ss) throws TorqueException {
 		Signals db_signal = new Signals();
 		db_signal.setNodeId(getDBNodeId(signal.getNodeId()));
 		db_signal.setSignalSets(db_ss);
 		db_signal.save(conn);
-		for (com.relteq.sirius.jaxb.Phase phase : signal.getPhase())
+		for (edu.berkeley.path.beats.jaxb.Phase phase : signal.getPhase())
 			save(phase, db_signal);
 		return db_signal;
 	}
@@ -403,7 +429,7 @@ public class ScenarioLoader {
 	 * @param db_signal
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Phase phase, Signals db_signal) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Phase phase, Signals db_signal) throws TorqueException {
 		Phases db_phase = new Phases();
 		db_phase.setSignals(db_signal);
 		db_phase.setNema(phase.getNema().intValue());
@@ -416,7 +442,7 @@ public class ScenarioLoader {
 		db_phase.setRedClearTime(phase.getRedClearTime());
 		db_phase.save(conn);
 		if (null != phase.getLinkReferences())
-			for (com.relteq.sirius.jaxb.LinkReference lr : phase.getLinkReferences().getLinkReference())
+			for (edu.berkeley.path.beats.jaxb.LinkReference lr : phase.getLinkReferences().getLinkReference())
 				save(lr, db_phase);
 	}
 
@@ -426,7 +452,7 @@ public class ScenarioLoader {
 	 * @param db_phase the imported phase
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.LinkReference lr, Phases db_phase) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.LinkReference lr, Phases db_phase) throws TorqueException {
 		PhaseLinks db_lr = new PhaseLinks();
 		db_lr.setPhases(db_phase);
 		db_lr.setLinkId(getDBLinkId(lr.getId()));
@@ -440,7 +466,7 @@ public class ScenarioLoader {
 	 * @return the imported sensor set
 	 * @throws TorqueException
 	 */
-	private SensorSets save(com.relteq.sirius.jaxb.SensorList sl) throws TorqueException {
+	private SensorSets save(edu.berkeley.path.beats.jaxb.SensorList sl) throws TorqueException {
 		if (null == sl) return null;
 		SensorSets db_ss = new SensorSets();
 		db_ss.setProjectId(getProjectId());
@@ -448,7 +474,7 @@ public class ScenarioLoader {
 		// TODO db_ss.setDescription();
 		db_ss.save(conn);
 		sensors = new HashMap<String, Sensors>(sl.getSensor().size());
-		for (com.relteq.sirius.jaxb.Sensor sensor : sl.getSensor())
+		for (edu.berkeley.path.beats.jaxb.Sensor sensor : sl.getSensor())
 			sensors.put(sensor.getId(), save(sensor, db_ss));
 		return db_ss;
 	}
@@ -460,7 +486,7 @@ public class ScenarioLoader {
 	 * @return an imported sensor
 	 * @throws TorqueException
 	 */
-	private Sensors save(com.relteq.sirius.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
+	private Sensors save(edu.berkeley.path.beats.jaxb.Sensor sensor, SensorSets db_ss) throws TorqueException {
 		Sensors db_sensor = new Sensors();
 		db_sensor.setType(sensor.getType());
 		db_sensor.setSensorSets(db_ss);
@@ -487,11 +513,11 @@ public class ScenarioLoader {
 	 * @param order vehicle type order
 	 * @return default vehicle type array if order is NULL
 	 */
-	private VehicleTypes[] reorderVehicleTypes(com.relteq.sirius.jaxb.VehicleTypeOrder order) {
+	private VehicleTypes[] reorderVehicleTypes(edu.berkeley.path.beats.jaxb.VehicleTypeOrder order) {
 		if (null == order) return vehicle_type;
 		VehicleTypes[] reordered_vt = new VehicleTypes[order.getVehicleType().size()];
 		int i = 0;
-		for (com.relteq.sirius.jaxb.VehicleType vt : order.getVehicleType()) {
+		for (edu.berkeley.path.beats.jaxb.VehicleType vt : order.getVehicleType()) {
 			reordered_vt[i] = null;
 			for (VehicleTypes db_vt : vehicle_type)
 				if (vt.getName().equals(db_vt.getName())) {
@@ -509,7 +535,7 @@ public class ScenarioLoader {
 	 * @return the imported initial density set
 	 * @throws TorqueException
 	 */
-	private InitialDensitySets save(com.relteq.sirius.jaxb.InitialDensitySet idset) throws TorqueException {
+	private InitialDensitySets save(edu.berkeley.path.beats.jaxb.InitialDensitySet idset) throws TorqueException {
 		if (null == idset) return null;
 		InitialDensitySets db_idsets = new InitialDensitySets();
 		db_idsets.setProjectId(getProjectId());
@@ -517,7 +543,7 @@ public class ScenarioLoader {
 		db_idsets.setDescription(idset.getDescription());
 		db_idsets.save(conn);
 		VehicleTypes[] db_vt = reorderVehicleTypes(idset.getVehicleTypeOrder());
-		for (com.relteq.sirius.jaxb.Density density : idset.getDensity())
+		for (edu.berkeley.path.beats.jaxb.Density density : idset.getDensity())
 			save(density, db_idsets, db_vt);
 		return db_idsets;
 	}
@@ -529,7 +555,7 @@ public class ScenarioLoader {
 	 * @param db_vt [possibly reordered] vehicle types
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Density density, InitialDensitySets db_idsets, VehicleTypes[] db_vt) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Density density, InitialDensitySets db_idsets, VehicleTypes[] db_vt) throws TorqueException {
 		Data1D data1d = new Data1D(density.getContent(), ":");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
@@ -554,7 +580,7 @@ public class ScenarioLoader {
 	 * @return the imported weaving factor set
 	 * @throws TorqueException
 	 */
-	private WeavingFactorSets save(com.relteq.sirius.jaxb.WeavingFactorSet wfset) throws TorqueException {
+	private WeavingFactorSets save(edu.berkeley.path.beats.jaxb.WeavingFactorSet wfset) throws TorqueException {
 		if (null == wfset) return null;
 		WeavingFactorSets db_wfset = new WeavingFactorSets();
 		db_wfset.setProjectId(getProjectId());
@@ -562,7 +588,7 @@ public class ScenarioLoader {
 		db_wfset.setDescription(wfset.getDescription());
 		db_wfset.save(conn);
 		VehicleTypes[] db_vt = reorderVehicleTypes(wfset.getVehicleTypeOrder());
-		for (com.relteq.sirius.jaxb.Weavingfactors wf : wfset.getWeavingfactors())
+		for (edu.berkeley.path.beats.jaxb.Weavingfactors wf : wfset.getWeavingfactors())
 			save(wf, db_wfset, db_vt);
 		return db_wfset;
 	}
@@ -574,7 +600,7 @@ public class ScenarioLoader {
 	 * @param db_vt [imported] vehicle type list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset, VehicleTypes[] db_vt) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset, VehicleTypes[] db_vt) throws TorqueException {
 		// TODO delimiter = ':' or ','?
 		Data1D data1d = new Data1D(wf.getContent(), ":");
 		if (!data1d.isEmpty()) {
@@ -597,14 +623,14 @@ public class ScenarioLoader {
 	 * @return the imported split ratio profile set
 	 * @throws TorqueException
 	 */
-	private SplitRatioProfileSets save(com.relteq.sirius.jaxb.SplitRatioProfileSet srps) throws TorqueException {
+	private SplitRatioProfileSets save(edu.berkeley.path.beats.jaxb.SplitRatioProfileSet srps) throws TorqueException {
 		if (null == srps) return null;
 		SplitRatioProfileSets db_srps = new SplitRatioProfileSets();
 		db_srps.setProjectId(getProjectId());
 		db_srps.setName(srps.getName());
 		db_srps.setDescription(srps.getDescription());
 		db_srps.save(conn);
-		for (com.relteq.sirius.jaxb.SplitratioProfile srp : srps.getSplitratioProfile())
+		for (edu.berkeley.path.beats.jaxb.SplitratioProfile srp : srps.getSplitratioProfile())
 			save(srp, db_srps, reorderVehicleTypes(srps.getVehicleTypeOrder()));
 		return db_srps;
 	}
@@ -616,7 +642,7 @@ public class ScenarioLoader {
 	 * @param db_vt [imported] vehicle type list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.SplitratioProfile srp, SplitRatioProfileSets db_srps, VehicleTypes[] db_vt) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.SplitratioProfile srp, SplitRatioProfileSets db_srps, VehicleTypes[] db_vt) throws TorqueException {
 		SplitRatioProfiles db_srp = new SplitRatioProfiles();
 		db_srp.setSplitRatioProfileSets(db_srps);
 		Nodes db_node = nodes.get(srp.getNodeId());
@@ -627,7 +653,7 @@ public class ScenarioLoader {
 		db_srp.setDt(srp.getDt());
 		db_srp.setStartTime(srp.getStartTime());
 		db_srp.save(conn);
-		for (com.relteq.sirius.jaxb.Splitratio sr : srp.getSplitratio()) {
+		for (edu.berkeley.path.beats.jaxb.Splitratio sr : srp.getSplitratio()) {
 			BigDecimal[][] data = new Data2D(sr.getContent(), new String[] {",", ":"}).getData();
 			if (null != data) {
 				for (int t = 0; t < data.length; ++t) {
@@ -657,13 +683,13 @@ public class ScenarioLoader {
 	 * @return the imported FD profile set
 	 * @throws TorqueException
 	 */
-	private FundamentalDiagramProfileSets save(com.relteq.sirius.jaxb.FundamentalDiagramProfileSet fdps) throws TorqueException {
+	private FundamentalDiagramProfileSets save(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet fdps) throws TorqueException {
 		FundamentalDiagramProfileSets db_fdps = new FundamentalDiagramProfileSets();
 		db_fdps.setProjectId(getProjectId());
 		db_fdps.setName(fdps.getName());
 		db_fdps.setDescription(fdps.getDescription());
 		db_fdps.save(conn);
-		for (com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile : fdps.getFundamentalDiagramProfile())
+		for (edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdprofile : fdps.getFundamentalDiagramProfile())
 			save(fdprofile, db_fdps);
 		return db_fdps;
 	}
@@ -674,7 +700,7 @@ public class ScenarioLoader {
 	 * @param db_fdps an already imported FD profile set
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.FundamentalDiagramProfile fdprofile, FundamentalDiagramProfileSets db_fdps) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdprofile, FundamentalDiagramProfileSets db_fdps) throws TorqueException {
 		FundamentalDiagramProfiles db_fdprofile = new FundamentalDiagramProfiles();
 		db_fdprofile.setFundamentalDiagramProfileSets(db_fdps);
 		db_fdprofile.setLinkId(getDBLinkId(fdprofile.getLinkId()));
@@ -682,7 +708,7 @@ public class ScenarioLoader {
 		db_fdprofile.setStartTime(fdprofile.getStartTime());
 		db_fdprofile.save(conn);
 		int num = 0;
-		for (com.relteq.sirius.jaxb.FundamentalDiagram fd : fdprofile.getFundamentalDiagram())
+		for (edu.berkeley.path.beats.jaxb.FundamentalDiagram fd : fdprofile.getFundamentalDiagram())
 			save(fd, db_fdprofile, num++);
 	}
 
@@ -693,7 +719,7 @@ public class ScenarioLoader {
 	 * @param number order of the FD
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.FundamentalDiagram fd, FundamentalDiagramProfiles db_fdprofile, int number) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd, FundamentalDiagramProfiles db_fdprofile, int number) throws TorqueException {
 		FundamentalDiagrams db_fd = new FundamentalDiagrams();
 		db_fd.setFundamentalDiagramProfiles(db_fdprofile);
 		db_fd.setNumber(number);
@@ -715,7 +741,7 @@ public class ScenarioLoader {
 	 * @return the imported demand profile set
 	 * @throws TorqueException
 	 */
-	private DemandProfileSets save(com.relteq.sirius.jaxb.DemandProfileSet dpset) throws TorqueException {
+	private DemandProfileSets save(edu.berkeley.path.beats.jaxb.DemandProfileSet dpset) throws TorqueException {
 		if (null == dpset) return null;
 		DemandProfileSets db_dpset = new DemandProfileSets();
 		db_dpset.setProjectId(getProjectId());
@@ -723,7 +749,7 @@ public class ScenarioLoader {
 		db_dpset.setDescription(dpset.getDescription());
 		db_dpset.save(conn);
 		VehicleTypes[] db_vt = reorderVehicleTypes(dpset.getVehicleTypeOrder());
-		for (com.relteq.sirius.jaxb.DemandProfile dp : dpset.getDemandProfile())
+		for (edu.berkeley.path.beats.jaxb.DemandProfile dp : dpset.getDemandProfile())
 			save(dp, db_dpset, db_vt);
 		return db_dpset;
 	}
@@ -735,7 +761,7 @@ public class ScenarioLoader {
 	 * @param db_vt [imported] vehicle type list
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.DemandProfile dp, DemandProfileSets db_dpset, VehicleTypes[] db_vt) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.DemandProfile dp, DemandProfileSets db_dpset, VehicleTypes[] db_vt) throws TorqueException {
 		DemandProfiles db_dp = new DemandProfiles();
 		db_dp.setDemandProfileSets(db_dpset);
 		db_dp.setOriginLinkId(getDBLinkId(dp.getLinkIdOrigin()));
@@ -769,14 +795,14 @@ public class ScenarioLoader {
 	 * @return the imported network connection set
 	 * @throws TorqueException
 	 */
-	private NetworkConnectionSets save(com.relteq.sirius.jaxb.NetworkConnections nconns) throws TorqueException {
+	private NetworkConnectionSets save(edu.berkeley.path.beats.jaxb.NetworkConnections nconns) throws TorqueException {
 		if (null == nconns) return null;
 		NetworkConnectionSets db_ncs = new NetworkConnectionSets();
 		db_ncs.setProjectId(getProjectId());
 		db_ncs.setName(nconns.getName());
 		db_ncs.setDescription(nconns.getDescription());
 		db_ncs.save(conn);
-		for (com.relteq.sirius.jaxb.Networkpair np : nconns.getNetworkpair())
+		for (edu.berkeley.path.beats.jaxb.Networkpair np : nconns.getNetworkpair())
 			save(np, db_ncs);
 		return db_ncs;
 	}
@@ -787,8 +813,8 @@ public class ScenarioLoader {
 	 * @param db_ncs an already imported network connection set
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Networkpair np, NetworkConnectionSets db_ncs) throws TorqueException {
-		for (com.relteq.sirius.jaxb.Linkpair lp : np.getLinkpair()) {
+	private void save(edu.berkeley.path.beats.jaxb.Networkpair np, NetworkConnectionSets db_ncs) throws TorqueException {
+		for (edu.berkeley.path.beats.jaxb.Linkpair lp : np.getLinkpair()) {
 			NetworkConnections db_nc = new NetworkConnections();
 			db_nc.setNetworkConnectionSets(db_ncs);
 			db_nc.setFromNetworkId(network_id.get(np.getNetworkA()));
@@ -805,14 +831,14 @@ public class ScenarioLoader {
 	 * @return the imported downstream boundary capacity profile set
 	 * @throws TorqueException
 	 */
-	private DownstreamBoundaryCapacityProfileSets save(com.relteq.sirius.jaxb.DownstreamBoundaryCapacityProfileSet dbcps) throws TorqueException {
+	private DownstreamBoundaryCapacityProfileSets save(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfileSet dbcps) throws TorqueException {
 		if (null == dbcps) return null;
 		DownstreamBoundaryCapacityProfileSets db_dbcps = new DownstreamBoundaryCapacityProfileSets();
 		db_dbcps.setProjectId(getProjectId());
 		db_dbcps.setName(dbcps.getName());
 		db_dbcps.setDescription(dbcps.getDescription());
 		db_dbcps.save(conn);
-		for (com.relteq.sirius.jaxb.CapacityProfile cp : dbcps.getCapacityProfile())
+		for (edu.berkeley.path.beats.jaxb.CapacityProfile cp : dbcps.getCapacityProfile())
 			save(cp, db_dbcps);
 		return db_dbcps;
 	}
@@ -823,7 +849,7 @@ public class ScenarioLoader {
 	 * @param db_dbcps an already imported capacity profile set
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.CapacityProfile cp, DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.CapacityProfile cp, DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
 		DownstreamBoundaryCapacityProfiles db_dbcp = new DownstreamBoundaryCapacityProfiles();
 		db_dbcp.setDownstreamBoundaryCapacityProfileSets(db_dbcps);
 		db_dbcp.setLinkId(getDBLinkId(cp.getLinkId()));
@@ -850,7 +876,7 @@ public class ScenarioLoader {
 	 * @return an imported controller set
 	 * @throws TorqueException
 	 */
-	private ControllerSets save(com.relteq.sirius.jaxb.ControllerSet cset) throws TorqueException {
+	private ControllerSets save(edu.berkeley.path.beats.jaxb.ControllerSet cset) throws TorqueException {
 		if (null == cset) return null;
 		ControllerSets db_cset = new ControllerSets();
 		db_cset.setProjectId(getProjectId());
@@ -858,7 +884,7 @@ public class ScenarioLoader {
 		db_cset.setDescription(cset.getDescription());
 		db_cset.save(conn);
 		controllers = new HashMap<String, Controllers>(cset.getController().size());
-		for (com.relteq.sirius.jaxb.Controller controller : cset.getController())
+		for (edu.berkeley.path.beats.jaxb.Controller controller : cset.getController())
 			controllers.put(controller.getId(), save(controller, db_cset));
 		return db_cset;
 	}
@@ -870,7 +896,7 @@ public class ScenarioLoader {
 	 * @return an imported controller
 	 * @throws TorqueException
 	 */
-	private Controllers save(com.relteq.sirius.jaxb.Controller cntr, ControllerSets db_cset) throws TorqueException {
+	private Controllers save(edu.berkeley.path.beats.jaxb.Controller cntr, ControllerSets db_cset) throws TorqueException {
 		Controllers db_cntr = new Controllers();
 		db_cntr.setControllerSets(db_cset);
 		db_cntr.setType(cntr.getType());
@@ -892,7 +918,7 @@ public class ScenarioLoader {
 	 * @return an imported queue controller
 	 * @throws TorqueException
 	 */
-	private QueueControllers save(com.relteq.sirius.jaxb.QueueController qc) throws TorqueException {
+	private QueueControllers save(edu.berkeley.path.beats.jaxb.QueueController qc) throws TorqueException {
 		if (null == qc) return null;
 		QueueControllers db_qc = new QueueControllers();
 		db_qc.setType(qc.getType());
@@ -908,9 +934,9 @@ public class ScenarioLoader {
 	 * @param db_cntr an imported controller
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.ActivationIntervals ais, Controllers db_cntr) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.ActivationIntervals ais, Controllers db_cntr) throws TorqueException {
 		if (null == ais) return;
-		for (com.relteq.sirius.jaxb.Interval interval : ais.getInterval()) {
+		for (edu.berkeley.path.beats.jaxb.Interval interval : ais.getInterval()) {
 			ControllerActivationIntervals db_cai = new ControllerActivationIntervals();
 			db_cai.setControllers(db_cntr);
 			db_cai.setStartTime(interval.getStartTime());
@@ -925,7 +951,7 @@ public class ScenarioLoader {
 	 * @return an imported event set
 	 * @throws TorqueException
 	 */
-	private EventSets save(com.relteq.sirius.jaxb.EventSet eset) throws TorqueException {
+	private EventSets save(edu.berkeley.path.beats.jaxb.EventSet eset) throws TorqueException {
 		if (null == eset) return null;
 		EventSets db_eset = new EventSets();
 		db_eset.setProjectId(getProjectId());
@@ -934,7 +960,7 @@ public class ScenarioLoader {
 		db_eset.save(conn);
 
 		events = new HashMap<String, Events>(eset.getEvent().size());
-		for (com.relteq.sirius.jaxb.Event event : eset.getEvent())
+		for (edu.berkeley.path.beats.jaxb.Event event : eset.getEvent())
 			events.put(event.getId(), save(event, db_eset));
 
 		return db_eset;
@@ -947,7 +973,7 @@ public class ScenarioLoader {
 	 * @return an imported event
 	 * @throws TorqueException
 	 */
-	private Events save(com.relteq.sirius.jaxb.Event event, EventSets db_eset) throws TorqueException {
+	private Events save(edu.berkeley.path.beats.jaxb.Event event, EventSets db_eset) throws TorqueException {
 		Events db_event = new Events();
 		db_event.setEventSets(db_eset);
 		db_event.setType(event.getType());
@@ -968,10 +994,10 @@ public class ScenarioLoader {
 	 * @param db_event an imported event
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.SplitratioEvent srevent, Events db_event) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.SplitratioEvent srevent, Events db_event) throws TorqueException {
 		if (null == srevent) return;
 		VehicleTypes[] db_vt = reorderVehicleTypes(srevent.getVehicleTypeOrder());
-		for (com.relteq.sirius.jaxb.Splitratio sr : srevent.getSplitratio())
+		for (edu.berkeley.path.beats.jaxb.Splitratio sr : srevent.getSplitratio())
 			save(sr, db_event, db_vt);
 	}
 
@@ -982,7 +1008,7 @@ public class ScenarioLoader {
 	 * @param db_vt vehicle type order
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Splitratio sr, Events db_event, VehicleTypes[] db_vt) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Splitratio sr, Events db_event, VehicleTypes[] db_vt) throws TorqueException {
 		Data1D data1d = new Data1D(sr.getContent(), ":");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
@@ -1004,9 +1030,9 @@ public class ScenarioLoader {
 	 * @param db_scenario an imported scenario
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.DestinationNetworks destnets, Scenarios db_scenario) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.DestinationNetworks destnets, Scenarios db_scenario) throws TorqueException {
 		if (null == destnets) return;
-		for (com.relteq.sirius.jaxb.DestinationNetwork destnet : destnets.getDestinationNetwork()) {
+		for (edu.berkeley.path.beats.jaxb.DestinationNetwork destnet : destnets.getDestinationNetwork()) {
 			DestinationNetworkSets db_destnetset = new DestinationNetworkSets();
 			db_destnetset.setScenarios(db_scenario);
 			db_destnetset.setDestinationNetworks(save(destnet));
@@ -1020,12 +1046,12 @@ public class ScenarioLoader {
 	 * @return an imported destination network
 	 * @throws TorqueException
 	 */
-	private DestinationNetworks save(com.relteq.sirius.jaxb.DestinationNetwork destnet) throws TorqueException {
+	private DestinationNetworks save(edu.berkeley.path.beats.jaxb.DestinationNetwork destnet) throws TorqueException {
 		DestinationNetworks db_destnet = new DestinationNetworks();
 		db_destnet.setDestinationLinkId(getDBLinkId(destnet.getLinkIdDestination()));
 		db_destnet.setProjectId(getProjectId());
 		db_destnet.save(conn);
-		for (com.relteq.sirius.jaxb.LinkReference linkref : destnet.getLinkReferences().getLinkReference())
+		for (edu.berkeley.path.beats.jaxb.LinkReference linkref : destnet.getLinkReferences().getLinkReference())
 			save(linkref, db_destnet);
 		return db_destnet;
 	}
@@ -1036,7 +1062,7 @@ public class ScenarioLoader {
 	 * @param db_destnet an imported destination network
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.LinkReference linkref, DestinationNetworks db_destnet) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.LinkReference linkref, DestinationNetworks db_destnet) throws TorqueException {
 		DestinationNetworkLinks db_dnl = new DestinationNetworkLinks();
 		db_dnl.setLinkId(getDBLinkId(linkref.getId()));
 		db_dnl.setDestinationNetworks(db_destnet);
@@ -1049,9 +1075,9 @@ public class ScenarioLoader {
 	 * @param db_scenario an imported scenario
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Routes routes, Scenarios db_scenario) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Routes routes, Scenarios db_scenario) throws TorqueException {
 		if (null == routes) return;
-		for (com.relteq.sirius.jaxb.Route route : routes.getRoute()) {
+		for (edu.berkeley.path.beats.jaxb.Route route : routes.getRoute()) {
 			RouteSets db_rs = new RouteSets();
 			db_rs.setScenarios(db_scenario);
 			db_rs.setRoutes(save(route));
@@ -1065,12 +1091,12 @@ public class ScenarioLoader {
 	 * @return an imported route
 	 * @throws TorqueException
 	 */
-	private Routes save(com.relteq.sirius.jaxb.Route route) throws TorqueException {
+	private Routes save(edu.berkeley.path.beats.jaxb.Route route) throws TorqueException {
 		Routes db_route = new Routes();
 		db_route.setProjectId(getProjectId());
 		db_route.setName(route.getName());
 		int ordinal = 0;
-		for (com.relteq.sirius.jaxb.LinkReference lr : route.getLinkReferences().getLinkReference()) {
+		for (edu.berkeley.path.beats.jaxb.LinkReference lr : route.getLinkReferences().getLinkReference()) {
 			RouteLinks db_rl = new RouteLinks();
 			db_rl.setLinkId(getDBLinkId(lr.getId()));
 			db_rl.setOrdinal(Integer.valueOf(ordinal++));
@@ -1086,10 +1112,10 @@ public class ScenarioLoader {
 	 * @param db_obj an imported parent element
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Parameters params, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Parameters params, edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
 		if (null == params) return;
 		String element_type = db_obj.getElementType();
-		for (com.relteq.sirius.jaxb.Parameter param : params.getParameter()) {
+		for (edu.berkeley.path.beats.jaxb.Parameter param : params.getParameter()) {
 			Parameters db_param = new Parameters();
 			db_param.setScenarioElementId(db_obj.getId());
 			db_param.setScenarioElementType(element_type);
@@ -1105,7 +1131,7 @@ public class ScenarioLoader {
 	 * @param db_obj an imported parent element
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.Table table, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.Table table, edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
 		if (null == table) return;
 		Tables db_table = new Tables();
 		db_table.setName(table.getName());
@@ -1114,7 +1140,7 @@ public class ScenarioLoader {
 		db_table.save(conn);
 
 		int colnum = 0;
-		for (com.relteq.sirius.jaxb.ColumnName colname : table.getColumnNames().getColumnName()) {
+		for (edu.berkeley.path.beats.jaxb.ColumnName colname : table.getColumnNames().getColumnName()) {
 			TabularDataKeys db_tdk = new TabularDataKeys();
 			db_tdk.setTables(db_table);
 			db_tdk.setColumnName(colname.getValue());
@@ -1123,8 +1149,8 @@ public class ScenarioLoader {
 			db_tdk.save(conn);
 		}
 		int rownum = 0;
-		for (com.relteq.sirius.jaxb.Row row : table.getRow()) {
-			java.util.Iterator<com.relteq.sirius.jaxb.ColumnName> citer = table.getColumnNames().getColumnName().iterator();
+		for (edu.berkeley.path.beats.jaxb.Row row : table.getRow()) {
+			java.util.Iterator<edu.berkeley.path.beats.jaxb.ColumnName> citer = table.getColumnNames().getColumnName().iterator();
 			for (String elem : row.getColumn()) {
 				TabularData db_td = new TabularData();
 				db_td.setTables(db_table);
@@ -1143,9 +1169,9 @@ public class ScenarioLoader {
 	 * @param db_obj an imported parent element
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.TargetElements elems, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.TargetElements elems, edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
 		if (null == elems) return;
-		for (com.relteq.sirius.jaxb.ScenarioElement elem : elems.getScenarioElement())
+		for (edu.berkeley.path.beats.jaxb.ScenarioElement elem : elems.getScenarioElement())
 			save(elem, "target", db_obj);
 	}
 
@@ -1155,9 +1181,9 @@ public class ScenarioLoader {
 	 * @param db_obj an imported parent element
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.FeedbackElements elems, com.relteq.sirius.db.BaseObject db_obj) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.FeedbackElements elems, edu.berkeley.path.beats.db.BaseObject db_obj) throws TorqueException {
 		if (null == elems) return;
-		for (com.relteq.sirius.jaxb.ScenarioElement elem : elems.getScenarioElement())
+		for (edu.berkeley.path.beats.jaxb.ScenarioElement elem : elems.getScenarioElement())
 			save(elem, "feedback", db_obj);
 	}
 
@@ -1168,13 +1194,13 @@ public class ScenarioLoader {
 	 * @param db_parent an imported parent element
 	 * @throws TorqueException
 	 */
-	private void save(com.relteq.sirius.jaxb.ScenarioElement elem, String type, com.relteq.sirius.db.BaseObject db_parent) throws TorqueException {
+	private void save(edu.berkeley.path.beats.jaxb.ScenarioElement elem, String type, edu.berkeley.path.beats.db.BaseObject db_parent) throws TorqueException {
 		ReferencedScenarioElements db_elems = new ReferencedScenarioElements();
 		db_elems.setParentElementId(db_parent.getId());
 		db_elems.setParentElementType(db_parent.getElementType());
 		db_elems.setType(type);
 		db_elems.setUsage(elem.getUsage());
-		com.relteq.sirius.db.BaseObject db_ref = null;
+		edu.berkeley.path.beats.db.BaseObject db_ref = null;
 		if (elem.getType().equals("link")) {
 			if (null != links) db_ref = links.get(elem.getId());
 		} else if (elem.getType().equals("node")) {
@@ -1197,7 +1223,7 @@ public class ScenarioLoader {
 			logger.error("Object " + elem.getType() + " [id=" + elem.getId() + "] not found");
 	}
 
-	private static String pos2str(com.relteq.sirius.jaxb.Position position) {
+	private static String pos2str(edu.berkeley.path.beats.jaxb.Position position) {
 		if (null == position) return null;
 		// TODO method stub
 		return "";

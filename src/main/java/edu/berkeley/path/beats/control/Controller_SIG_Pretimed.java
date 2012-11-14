@@ -1,12 +1,38 @@
-package com.relteq.sirius.control;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.control;
 
 import java.util.Vector;
 
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator.Controller;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 
 public class Controller_SIG_Pretimed extends Controller {
 
@@ -45,7 +71,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	@Override
 	public void populate(Object jaxbobject) {
 
-		com.relteq.sirius.jaxb.Controller jaxbc = (com.relteq.sirius.jaxb.Controller) jaxbobject;
+		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 
 		// must have these
 		if(jaxbc.getTargetElements()==null)
@@ -91,7 +117,7 @@ public class Controller_SIG_Pretimed extends Controller {
 				planstarttime = new float[numPlanReference];
 				
 				for(int i=0;i<numPlanReference;i++){
-					com.relteq.sirius.jaxb.PlanReference ref = jaxbc.getPlanSequence().getPlanReference().get(i);
+					edu.berkeley.path.beats.jaxb.PlanReference ref = jaxbc.getPlanSequence().getPlanReference().get(i);
 					plansequence[i] = planId2Index.indexOf(ref.getPlanId());
 					planstarttime[i] = ref.getStartTime().floatValue();
 				}

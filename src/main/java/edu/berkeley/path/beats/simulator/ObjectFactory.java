@@ -1,4 +1,30 @@
-package com.relteq.sirius.simulator;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.simulator;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,12 +42,12 @@ import javax.xml.validation.SchemaFactory;
 
 import org.xml.sax.SAXException;
 
-import com.relteq.sirius.control.*;
-import com.relteq.sirius.event.*;
-import com.relteq.sirius.jaxb.Density;
-import com.relteq.sirius.jaxb.VehicleType;
-import com.relteq.sirius.jaxb.VehicleTypeOrder;
-import com.relteq.sirius.sensor.*;
+import edu.berkeley.path.beats.control.*;
+import edu.berkeley.path.beats.event.*;
+import edu.berkeley.path.beats.jaxb.Density;
+import edu.berkeley.path.beats.jaxb.VehicleType;
+import edu.berkeley.path.beats.jaxb.VehicleTypeOrder;
+import edu.berkeley.path.beats.sensor.*;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
  * <p>
@@ -42,7 +68,7 @@ public final class ObjectFactory {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
-	protected static Controller createControllerFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Controller jaxbC,Controller.Type myType) {		
+	protected static Controller createControllerFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType) {		
 		if(myScenario==null)
 			return null;
 		Controller C;
@@ -90,7 +116,7 @@ public final class ObjectFactory {
 	}
 
 	/** @y.exclude */
-	protected static Event createEventFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Event jaxbE,Event.Type myType) {	
+	protected static Event createEventFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType) {	
 		if(myScenario==null)
 			return null;
 		Event E;
@@ -133,7 +159,7 @@ public final class ObjectFactory {
 	}
 
 	/** @y.exclude */
-	protected static Sensor createSensorFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.Sensor jaxbS,Sensor.Type myType) {	
+	protected static Sensor createSensorFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor jaxbS,Sensor.Type myType) {	
 		if(myScenario==null)
 			return null;
 		Sensor S;
@@ -160,7 +186,7 @@ public final class ObjectFactory {
 	}
 	
 	/** @y.exclude */
-	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,com.relteq.sirius.jaxb.ScenarioElement jaxbS){
+	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;
 		ScenarioElement S = new ScenarioElement();
@@ -230,7 +256,7 @@ public final class ObjectFactory {
     	
     	// create unmarshaller .......................................................
         try {
-        	context = JAXBContext.newInstance("com.relteq.sirius.jaxb");
+        	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
             u = context.createUnmarshaller();
         } catch( JAXBException je ) {
         	SiriusErrorLog.addError("Failed to create context for JAXB unmarshaller.");
@@ -331,7 +357,7 @@ public final class ObjectFactory {
 	    // register signals with their targets ..................................
 	    boolean registersuccess = true;
 		if(S.getSignalList()!=null)
-	    	for(com.relteq.sirius.jaxb.Signal signal:S.getSignalList().getSignal())
+	    	for(edu.berkeley.path.beats.jaxb.Signal signal:S.getSignalList().getSignal())
 	    		registersuccess &= ((Signal)signal).register();
 	    if(!registersuccess){
 	    	SiriusErrorLog.addError("Signal registration failure.");
@@ -376,7 +402,7 @@ public final class ObjectFactory {
 	 * @return			_Controller object
 	 */
 	public static Controller createController_CRM_HERO(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_CRM_HERO(myScenario);
+		return  new edu.berkeley.path.beats.control.Controller_CRM_HERO(myScenario);
 	}
 
 	/** [NOT IMPLEMENTED] SWARM coordinated ramp metering.
@@ -384,7 +410,7 @@ public final class ObjectFactory {
 	 * @return			_Controller object
 	 */
 	public static Controller createController_CRM_SWARM(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_CRM_SWARM(myScenario);
+		return  new edu.berkeley.path.beats.control.Controller_CRM_SWARM(myScenario);
 	}
 
 	/** Alinea isolated ramp metering.
@@ -405,7 +431,7 @@ public final class ObjectFactory {
 	 * @return					Controller object
 	 */
 	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
-		return  new com.relteq.sirius.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
+		return  new edu.berkeley.path.beats.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
 	}
 	
 	/** TOD isolated ramp metering.
@@ -422,7 +448,7 @@ public final class ObjectFactory {
 	 * @return					_Controller object
 	 */
 	public static Controller createController_IRM_Time_of_Day(Scenario myScenario,Link onramplink,Sensor queuesensor,Table todtable){
-		return  new com.relteq.sirius.control.Controller_IRM_Time_of_Day(myScenario,onramplink,queuesensor,todtable);
+		return  new edu.berkeley.path.beats.control.Controller_IRM_Time_of_Day(myScenario,onramplink,queuesensor,todtable);
 	}
 	
 	/** Traffic responsive isolated ramp metering.
@@ -443,7 +469,7 @@ public final class ObjectFactory {
 	 * @return					_Controller object
 	 */
 	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
-		return  new com.relteq.sirius.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
+		return  new edu.berkeley.path.beats.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
 	}
 	
 	
@@ -453,7 +479,7 @@ public final class ObjectFactory {
 	 * @return			_Controller object
 	 */
 	public static Controller createController_SIG_Actuated(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_SIG_Actuated(myScenario);
+		return  new edu.berkeley.path.beats.control.Controller_SIG_Actuated(myScenario);
 	}
 
 	/** [NOT IMPLEMENTED] Pretimed signal control.
@@ -461,7 +487,7 @@ public final class ObjectFactory {
 	 * @return			_Controller object
 	 */
 	public static Controller createController_SIG_Pretimed(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_SIG_Pretimed(myScenario);
+		return  new edu.berkeley.path.beats.control.Controller_SIG_Pretimed(myScenario);
 	}
 
 	/** [NOT IMPLEMENTED] Time of day variable speed limits.
@@ -469,7 +495,7 @@ public final class ObjectFactory {
 	 * @return			_Controller object
 	 */
 	public static Controller createController_VSL_Time_of_Day(Scenario myScenario){
-		return  new com.relteq.sirius.control.Controller_VSL_Time_of_Day(myScenario);
+		return  new edu.berkeley.path.beats.control.Controller_VSL_Time_of_Day(myScenario);
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -490,7 +516,7 @@ public final class ObjectFactory {
 	 * @return						Event object
 	 */
 	public static Event createEvent_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
-		return  new com.relteq.sirius.event.Event_Control_Toggle(myScenario,timestampinseconds,controllers,ison);
+		return  new edu.berkeley.path.beats.event.Event_Control_Toggle(myScenario,timestampinseconds,controllers,ison);
 	}	
 
 	/** Change the model parameters of a list of links.
@@ -510,7 +536,7 @@ public final class ObjectFactory {
 	 * @return					Event object
 	 */
 	public static Event createEvent_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
-		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,links,freeflowSpeed,congestionSpeed,capacity,densityJam,capacityDrop,stdDevCapacity);
+		return  new edu.berkeley.path.beats.event.Event_Fundamental_Diagram(myScenario,links,freeflowSpeed,congestionSpeed,capacity,densityJam,capacityDrop,stdDevCapacity);
 	}
 	
 	/** Revert to original parameters for a list of links.
@@ -520,7 +546,7 @@ public final class ObjectFactory {
 	 * @return					Event object
 	 */
 	public static Event createEvent_Fundamental_Diagram_Revert(Scenario myScenario,List <Link> links) {		
-		return  new com.relteq.sirius.event.Event_Fundamental_Diagram(myScenario,links);
+		return  new edu.berkeley.path.beats.event.Event_Fundamental_Diagram(myScenario,links);
 	}
 	
 	/** On/Off switch for <i>all</i> controllers. 
@@ -530,7 +556,7 @@ public final class ObjectFactory {
 	 * @return					Event object
 	 */
 	public static Event createEvent_Global_Control_Toggle(Scenario myScenario,boolean ison){
-		return  new com.relteq.sirius.event.Event_Global_Control_Toggle(myScenario,ison);
+		return  new edu.berkeley.path.beats.event.Event_Global_Control_Toggle(myScenario,ison);
 	}	
 	
 	/** Adjust the global demand knob.
@@ -544,7 +570,7 @@ public final class ObjectFactory {
 	 * @return			Event object
 	 */
 	public static Event createEvent_Global_Demand_Knob(Scenario myScenario,double newknob){
-		return  new com.relteq.sirius.event.Event_Global_Demand_Knob(myScenario,newknob);
+		return  new edu.berkeley.path.beats.event.Event_Global_Demand_Knob(myScenario,newknob);
 	}	
 	
 	/** Adjust the knob for the demand profile applied to a particular link.
@@ -556,7 +582,7 @@ public final class ObjectFactory {
 	 * @return					Event object
 	 */
 	public static Event createEvent_Link_Demand_Knob(Scenario myScenario,double newknob){
-		return  new com.relteq.sirius.event.Event_Link_Demand_Knob(myScenario,newknob);
+		return  new edu.berkeley.path.beats.event.Event_Link_Demand_Knob(myScenario,newknob);
 	}	
 	
 	/** Change the number of lanes on a particular link.
@@ -567,7 +593,7 @@ public final class ObjectFactory {
 	 * @return					Event object
 	 */
 	public static Event createEvent_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes){
-		return  new com.relteq.sirius.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
+		return  new edu.berkeley.path.beats.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
 	}	
 	
 	/** Change the split ratio matrix on a node.
@@ -580,7 +606,7 @@ public final class ObjectFactory {
 	 * @return					Event object
 	 */		
 	public static Event createEvent_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicleType,ArrayList<Double>splits){
-		return  new com.relteq.sirius.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
+		return  new edu.berkeley.path.beats.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
 	}	
 	
 	/////////////////////////////////////////////////////////////////////
@@ -597,7 +623,7 @@ public final class ObjectFactory {
 	 * @return					Sensor object
 	 */
 	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
-		return new com.relteq.sirius.sensor.SensorLoopStation(myScenario,linkId);
+		return new edu.berkeley.path.beats.sensor.SensorLoopStation(myScenario,linkId);
 	}
 
 	/** Create a floating detector.
@@ -611,7 +637,7 @@ public final class ObjectFactory {
 	 * @return			Sensor The sensor object
 	 */
 	public static Sensor createSensor_Floating(Scenario myScenario,String linkId){
-		Sensor S = new com.relteq.sirius.sensor.SensorFloating(myScenario,linkId);
+		Sensor S = new edu.berkeley.path.beats.sensor.SensorFloating(myScenario,linkId);
 		return S;
 	}
 
@@ -801,7 +827,7 @@ public final class ObjectFactory {
 			
 		// loop through networks calling gcd
 		double dt;
-		List<com.relteq.sirius.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
+		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
 		int tengcd = 0;		// in deciseconds
 		for(int i=0;i<networkList.size();i++){
 			dt = networkList.get(i).getDt().doubleValue();	// in seconds

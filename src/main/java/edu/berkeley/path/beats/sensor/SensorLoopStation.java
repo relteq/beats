@@ -1,20 +1,45 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-package com.relteq.sirius.sensor;
+package edu.berkeley.path.beats.sensor;
 
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.relteq.sirius.data.FiveMinuteData;
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.Sensor;
+import edu.berkeley.path.beats.data.FiveMinuteData;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Sensor;
 
-public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
+public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor {
 	
 	private int VDS;								// PeMS vehicle detector station number
-	private ArrayList<com.relteq.sirius.sensor.DataSource> _datasources = new ArrayList<com.relteq.sirius.sensor.DataSource>();
+	private ArrayList<edu.berkeley.path.beats.sensor.DataSource> _datasources = new ArrayList<edu.berkeley.path.beats.sensor.DataSource>();
 	private FiveMinuteData data;
 	
 	private Double [] cumulative_inflow;	// [veh] 	numEnsemble
@@ -44,17 +69,17 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 	@Override
 	public void populate(Object jaxbobject) {
 		
-		com.relteq.sirius.jaxb.Sensor jaxbs = (com.relteq.sirius.jaxb.Sensor) jaxbobject;
+		edu.berkeley.path.beats.jaxb.Sensor jaxbs = (edu.berkeley.path.beats.jaxb.Sensor) jaxbobject;
 
 		if(jaxbs.getParameters()!=null)
-			for(com.relteq.sirius.jaxb.Parameter param : jaxbs.getParameters().getParameter()){
+			for(edu.berkeley.path.beats.jaxb.Parameter param : jaxbs.getParameters().getParameter()){
 				if(param.getName().compareToIgnoreCase("vds")==0)
 					this.VDS = Integer.parseInt(param.getValue());
 			}
 		
 		if (null != jaxbs.getTable()) {
 			if ("data_sources" == jaxbs.getTable().getName()) {
-				com.relteq.sirius.simulator.Table table = new com.relteq.sirius.simulator.Table(jaxbs.getTable());
+				edu.berkeley.path.beats.simulator.Table table = new edu.berkeley.path.beats.simulator.Table(jaxbs.getTable());
 				final String[] colname = {"url", "format"};
 				int[] colnum = new int[2];
 				boolean colnotfound = false;
@@ -160,7 +185,7 @@ public class SensorLoopStation extends com.relteq.sirius.simulator.Sensor {
 		return VDS;
 	}
 
-	public ArrayList<com.relteq.sirius.sensor.DataSource> get_datasources() {
+	public ArrayList<edu.berkeley.path.beats.sensor.DataSource> get_datasources() {
 		return _datasources;
 	}
 	

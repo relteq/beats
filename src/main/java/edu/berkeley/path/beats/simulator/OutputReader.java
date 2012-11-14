@@ -1,4 +1,30 @@
-package com.relteq.sirius.simulator;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.simulator;
 
 import java.io.*;
 import java.util.Vector;
@@ -16,11 +42,11 @@ class Output {
 	public Vector<Double> f; // flow
 	public Vector<Double> mf; // capacity
 	public Vector<Double> fv; // free flow speed
-	public Vector<com.relteq.sirius.jaxb.Link> getLinks() {
-		Vector<com.relteq.sirius.jaxb.Link> res = new Vector<com.relteq.sirius.jaxb.Link>();
+	public Vector<edu.berkeley.path.beats.jaxb.Link> getLinks() {
+		Vector<edu.berkeley.path.beats.jaxb.Link> res = new Vector<edu.berkeley.path.beats.jaxb.Link>();
 		if (null != scenario){
-			for (com.relteq.sirius.jaxb.Network network : scenario.getNetworkList().getNetwork())
-				for (com.relteq.sirius.jaxb.Link link : network.getLinkList().getLink())
+			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+				for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
 					res.add(link);
 		}
 		return res;
@@ -56,7 +82,7 @@ class OutputReader {
 					if ("scenario" == localname) {
 						JAXBContext jaxbc;
 						try {
-							jaxbc = JAXBContext.newInstance(com.relteq.sirius.jaxb.ObjectFactory.class);
+							jaxbc = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
 							Unmarshaller unmrsh = jaxbc.createUnmarshaller();
 							ObjectFactory.setObjectFactory(unmrsh, new JaxbObjectFactory());
 							res.scenario = (Scenario) unmrsh.unmarshal(xmlsr);
@@ -68,7 +94,7 @@ class OutputReader {
 							int nvehtypes = res.scenario.getNumVehicleTypes();
 							if (nvehtypes <= 0) nvehtypes = 1;
 							int nlinks = 0;
-							for (com.relteq.sirius.jaxb.Network network : res.scenario.getNetworkList().getNetwork())
+							for (edu.berkeley.path.beats.jaxb.Network network : res.scenario.getNetworkList().getNetwork())
 								nlinks += network.getLinkList().getLink().size();
 							int t_incr = 30;
 							int d_incr = t_incr * nvehtypes * nlinks;

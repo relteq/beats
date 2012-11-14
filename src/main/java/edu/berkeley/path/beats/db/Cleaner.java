@@ -1,4 +1,30 @@
-package com.relteq.sirius.db;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.db;
 
 import java.sql.Connection;
 import java.util.List;
@@ -10,14 +36,14 @@ import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
-import com.relteq.sirius.om.LinkDataDetailedPeer;
-import com.relteq.sirius.om.LinkDataTotalPeer;
-import com.relteq.sirius.om.LinkPerformanceDetailedPeer;
-import com.relteq.sirius.om.LinkPerformanceTotalPeer;
-import com.relteq.sirius.om.ScenariosPeer;
-import com.relteq.sirius.om.SimulationRuns;
-import com.relteq.sirius.om.SimulationRunsPeer;
-import com.relteq.sirius.simulator.SiriusException;
+import edu.berkeley.path.beats.om.LinkDataDetailedPeer;
+import edu.berkeley.path.beats.om.LinkDataTotalPeer;
+import edu.berkeley.path.beats.om.LinkPerformanceDetailedPeer;
+import edu.berkeley.path.beats.om.LinkPerformanceTotalPeer;
+import edu.berkeley.path.beats.om.ScenariosPeer;
+import edu.berkeley.path.beats.om.SimulationRuns;
+import edu.berkeley.path.beats.om.SimulationRunsPeer;
+import edu.berkeley.path.beats.simulator.SiriusException;
 
 public class Cleaner {
 
@@ -26,7 +52,7 @@ public class Cleaner {
 	 * @throws SiriusException
 	 */
 	private static void initDB() throws SiriusException {
-		if (!com.relteq.sirius.db.Service.isInit()) com.relteq.sirius.db.Service.init();
+		if (!edu.berkeley.path.beats.db.Service.isInit()) edu.berkeley.path.beats.db.Service.init();
 	}
 
 	private static Logger logger = Logger.getLogger(Cleaner.class);

@@ -1,6 +1,32 @@
-package com.relteq.sirius;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-import com.relteq.sirius.simulator.SiriusErrorLog;
+package edu.berkeley.path.beats;
+
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 
 /**
  * Implements "Sirius: Concept of Operations"
@@ -18,7 +44,7 @@ public class Runner {
 			System.arraycopy(args, 1, arguments, 0, args.length - 1);
 			if (cmd.equals("import") || cmd.equals("i")) {
 				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
-				com.relteq.sirius.db.importer.ScenarioLoader.load(arguments[0]);
+				edu.berkeley.path.beats.db.importer.ScenarioLoader.load(arguments[0]);
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
@@ -26,23 +52,23 @@ public class Runner {
 					throw new InvalidUsageException("Usage: export|e scenario_id [output_file_name]");
 				else {
 					String filename = 1 == arguments.length ? arguments[0] + ".xml" : arguments[1];
-					com.relteq.sirius.db.exporter.ScenarioRestorer.export(Integer.parseInt(arguments[0]), filename);
+					edu.berkeley.path.beats.db.exporter.ScenarioRestorer.export(Integer.parseInt(arguments[0]), filename);
 				}
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
-				com.relteq.sirius.calibrator.FDCalibrator.main(arguments);
+				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
-				com.relteq.sirius.simulator.Runner.run_db(arguments);
+				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
-				com.relteq.sirius.simulator.Runner.main(arguments);
+				edu.berkeley.path.beats.simulator.Runner.main(arguments);
 			} else if (cmd.equals("debug")) {
-				com.relteq.sirius.simulator.Runner.debug(arguments);
+				edu.berkeley.path.beats.simulator.Runner.debug(arguments);
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {
-				com.relteq.sirius.db.Lister.listScenarios();
+				edu.berkeley.path.beats.db.Lister.listScenarios();
 			} else if (cmd.equals("list_runs") || cmd.equals("lr")) {
 				if (1 == arguments.length)
-					com.relteq.sirius.db.Lister.listRuns(Long.parseLong(arguments[0], 10));
+					edu.berkeley.path.beats.db.Lister.listRuns(Long.parseLong(arguments[0], 10));
 				else
 					throw new InvalidUsageException("Usage: list_runs|lr scenario_id");
 			} else if (cmd.equals("load") || cmd.equals("l")) {
@@ -70,12 +96,12 @@ public class Runner {
 			} else if (cmd.equals("report") || cmd.equals("r")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("init")) {
-				com.relteq.sirius.db.Admin.init();
+				edu.berkeley.path.beats.db.Admin.init();
 			} else if (cmd.equals("clear_data") || cmd.equals("cld")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
 				if (1 == arguments.length)
-					com.relteq.sirius.db.Cleaner.clearProcessed(Long.parseLong(arguments[0], 10));
+					edu.berkeley.path.beats.db.Cleaner.clearProcessed(Long.parseLong(arguments[0], 10));
 				else
 					throw new InvalidUsageException("Usage: clear_processed|clp scenario_id");
 			} else if (cmd.equals("clear_scenario") || cmd.equals("cls")) {
@@ -86,7 +112,7 @@ public class Runner {
 				printVersion();
 			} else if (cmd.equals("convert_units") || cmd.equals("cu")) {
 				if (2 == arguments.length)
-					com.relteq.sirius.util.UnitConverter.convertUnits(arguments[0], arguments[1]);
+					edu.berkeley.path.beats.util.UnitConverter.convertUnits(arguments[0], arguments[1]);
 				else
 					throw new InvalidUsageException("Usage: convert_units|cu input_file output_file");
 			} else throw new InvalidCommandException(cmd);
@@ -106,8 +132,8 @@ public class Runner {
 			exc.printStackTrace();
 			System.exit(2);
 		} finally {
-			if (com.relteq.sirius.db.Service.isInit())
-				com.relteq.sirius.db.Service.shutdown();
+			if (edu.berkeley.path.beats.db.Service.isInit())
+				edu.berkeley.path.beats.db.Service.shutdown();
 		}
 	}
 

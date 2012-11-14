@@ -1,14 +1,40 @@
-package com.relteq.sirius.control;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.control;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.ScenarioElement;
-import com.relteq.sirius.simulator.Signal;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.Signal;
 
-public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
+public class Controller_SIG_Pretimed_Plan extends edu.berkeley.path.beats.jaxb.Plan {
 	
 	protected Controller_SIG_Pretimed myController;
 	
@@ -19,7 +45,7 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 
 	ArrayList<Signal.Command> commandlist = new ArrayList<Signal.Command>();
 
-	public void populate(Controller_SIG_Pretimed myController,Scenario myScenario,com.relteq.sirius.jaxb.Plan jaxbplan) {
+	public void populate(Controller_SIG_Pretimed myController,Scenario myScenario,edu.berkeley.path.beats.jaxb.Plan jaxbplan) {
 		
 		this.myController = myController;
 		
@@ -35,8 +61,13 @@ public class Controller_SIG_Pretimed_Plan extends com.relteq.sirius.jaxb.Plan {
 			for(int i=0;i<intersplan.length;i++){
 
 				// check whether the signal is in the target list
+<<<<<<< HEAD
 				com.relteq.sirius.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
 				Signal mySignal = myScenario.getSignalWithNodeId(jaxbi.getNodeId());
+=======
+				edu.berkeley.path.beats.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
+				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
+>>>>>>> d424666dd48bf9c3f658eacb842a541aadfe662b
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;

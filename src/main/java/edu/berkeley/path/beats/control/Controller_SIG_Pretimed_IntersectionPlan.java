@@ -1,15 +1,41 @@
-package com.relteq.sirius.control;
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+package edu.berkeley.path.beats.control;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.relteq.sirius.simulator.SignalPhase;
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusMath;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.Signal;
-import com.relteq.sirius.simulator.Signal.Command;
-import com.relteq.sirius.simulator.Signal.NEMA;
+import edu.berkeley.path.beats.simulator.SignalPhase;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Signal;
+import edu.berkeley.path.beats.simulator.Signal.Command;
+import edu.berkeley.path.beats.simulator.Signal.NEMA;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
@@ -44,7 +70,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void populate(Scenario myScenario,com.relteq.sirius.jaxb.Intersection jaxbi) {
+	public void populate(Scenario myScenario,edu.berkeley.path.beats.jaxb.Intersection jaxbi) {
 								
 		if(jaxbi.getOffset()!=null)
 			this.offset = jaxbi.getOffset().floatValue();
@@ -61,7 +87,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		movB = new Signal.NEMA[numstages];
 	
 		for(int i=0;i<numstages;i++){
-			com.relteq.sirius.jaxb.Stage stage = jaxbi.getStage().get(i);
+			edu.berkeley.path.beats.jaxb.Stage stage = jaxbi.getStage().get(i);
 			if(stage.getGreentime()!=null)
 				greentime[i] = stage.getGreentime().floatValue();
 			else

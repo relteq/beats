@@ -1,11 +1,36 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-package com.relteq.sirius.control;
+package edu.berkeley.path.beats.control;
 
-import com.relteq.sirius.simulator.Controller;
-import com.relteq.sirius.simulator.Link;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.Sensor;
-import com.relteq.sirius.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Sensor;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 
 public class Controller_IRM_Alinea extends Controller {
 
@@ -68,7 +93,7 @@ public class Controller_IRM_Alinea extends Controller {
 	@Override
 	public void populate(Object jaxbobject) {
 
-		com.relteq.sirius.jaxb.Controller jaxbc = (com.relteq.sirius.jaxb.Controller) jaxbobject;
+		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
 		if(jaxbc.getTargetElements()==null)
 			return;
@@ -85,14 +110,14 @@ public class Controller_IRM_Alinea extends Controller {
 		
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			com.relteq.sirius.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onramplink = myScenario.getLinkWithId(s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
 		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
 			
-			for(com.relteq.sirius.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
+			for(edu.berkeley.path.beats.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
 				
 				if(s.getUsage()==null)
 					return;
@@ -136,7 +161,7 @@ public class Controller_IRM_Alinea extends Controller {
 		double gain_in_mph = 50.0;
 		targetdensity_given = false;
 		if(jaxbc.getParameters()!=null)
-			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
+			for(edu.berkeley.path.beats.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 				if(p.getName().equals("gain")){
 					try {
 						gain_in_mph = Double.parseDouble(p.getValue());
