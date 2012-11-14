@@ -35,11 +35,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		for(i=0;i<numDensity;i++)
 			data.add(new LinkDestinationIC(getDensity().get(i),myScenario));
 		
-		// round to the nearest decisecond
-		if(getTstamp()!=null)
-			timestamp = SiriusMath.round(getTstamp().doubleValue()*10.0)/10.0;
-		else
-			timestamp = 0.0;
+		timestamp = 0.0;
 		
 	}
 

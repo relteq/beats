@@ -190,7 +190,7 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
     	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void setNodeEventSplitRatio(Node node,int inputindex,int vehicletypeindex,ArrayList<Double> splitrow) {
+	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
 		if(node==null)
 			return;
 		Double4DMatrix X = new Double4DMatrix(node,Double.NaN);
@@ -202,6 +202,33 @@ public abstract class Event extends com.relteq.sirius.jaxb.Event implements Comp
 			return;
 		node.setSplitratio(X);
 		node.hasactivesplitevent = true;
+	}
+
+	protected static class SplitRatio {
+		private int input_index;
+		private int output_index;
+		private int vehicle_type_index;
+		private Double value;
+
+		public SplitRatio(int input_index, int output_index, int vehicle_type_index, Double value) {
+			this.input_index = input_index;
+			this.output_index = output_index;
+			this.vehicle_type_index = vehicle_type_index;
+			this.value = value;
+		}
+
+		public int getInputIndex() {
+			return input_index;
+		}
+		public int getOutputIndex() {
+			return output_index;
+		}
+		public int getVehicleTypeIndex() {
+			return vehicle_type_index;
+		}
+		public Double getValue() {
+			return value;
+		}
 	}
 
 	protected void revertNodeEventSplitRatio(Node node) {
