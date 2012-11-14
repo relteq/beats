@@ -72,8 +72,8 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/** Activation times for this controller */
 	protected ArrayList<ActivationTimes> activationTimes;
 	
-	/** Table of parameters. */
-	protected Table table;
+	/** Tables of parameters. */
+	protected java.util.Map<String, Table> tables;
 	
 	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
@@ -219,9 +219,13 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
 		
-		// Copy table
-		if (c.getTable()!=null)
-			this.table = new Table(c.getTable());
+		// Copy tables
+		tables = new java.util.HashMap<String, Table>();
+		for (edu.berkeley.path.beats.jaxb.Table table : c.getTable()) {
+			if (tables.containsKey(table.getName()))
+				SiriusErrorLog.addError("Table '" + table.getName() + "' already exists");
+			tables.put(table.getName(), new Table(table));
+		}
 		
 		// Get activation times and sort	
 		if (c.getActivationIntervals()!=null)

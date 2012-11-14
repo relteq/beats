@@ -725,12 +725,7 @@ public class ScenarioExporter {
 			cntr.setQueueController(restoreQueueController(db_qc_l.get(0)));
 		}
 		cntr.setParameters(restoreParameters(db_cntr));
-		List<edu.berkeley.path.beats.jaxb.Table> table_l = restoreTables(db_cntr);
-		if (null != table_l && !table_l.isEmpty()) {
-			cntr.setTable(table_l.get(0));
-			if (1 < table_l.size())
-				logger.warn("Controller " + db_cntr.getId() + " has " + table_l.size() + " tables");
-		}
+		cntr.getTable().addAll(restoreTables(db_cntr));
 		cntr.setActivationIntervals(restoreActivationIntervals(db_cntr));
 		// TODO cntr.setPlanSequence();
 		// TODO cntr.setPlanList();

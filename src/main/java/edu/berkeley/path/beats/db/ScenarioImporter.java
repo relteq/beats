@@ -1009,7 +1009,8 @@ public class ScenarioImporter {
 		db_cntr.save(conn);
 		save(cntr.getQueueController(), db_cntr);
 		save(cntr.getParameters(), db_cntr);
-		save(cntr.getTable(), db_cntr);
+		for (edu.berkeley.path.beats.jaxb.Table table : cntr.getTable())
+			save(table, db_cntr);
 		save(cntr.getActivationIntervals(), db_cntr);
 		return db_cntr;
 	}

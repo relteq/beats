@@ -728,18 +728,18 @@
 	  </xs:element>
 	  
 		  <xs:element name="controller">
-			<xs:complexType>
-			  <xs:all>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="parameters" minOccurs="0" />
 				<xs:element ref="display_position" minOccurs="0" />
 				<xs:element ref="targetElements" minOccurs="1" />
 				<xs:element ref="feedbackElements" minOccurs="0" />
 				<xs:element ref="queue_controller" minOccurs="0" />
-				<xs:element ref="parameters" minOccurs="0" />
-				<xs:element ref="table" minOccurs="0" />
 				<xs:element ref="ActivationIntervals" minOccurs="0" />
 				<xs:element ref="PlanSequence" minOccurs="0" />
 				<xs:element ref="PlanList" minOccurs="0" />
-			  </xs:all>
+				<xs:element ref="table" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
 			  <xs:attribute name="name" type="xs:string" use="optional" />
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>

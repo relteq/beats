@@ -57,6 +57,8 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	private double[] trMeteringRates_normalized; // normalized metering rates corresponding to the different levels of the traffic responsive controller.
 	
 	private int trlevelindex; // denotes the current level that is requested by the traffic responsive logic.
+
+	private Table table;
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
