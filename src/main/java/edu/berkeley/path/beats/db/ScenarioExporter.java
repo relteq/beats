@@ -921,7 +921,38 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.Table restoreTable(Tables db_table) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Table table = factory.createTable();
 		table.setName(db_table.getName());
+		table.setColumnNames(restoreColumnNames(db_table));
 
+		java.util.Map<String, Integer> colname2index = new java.util.HashMap<String, Integer>();
+		int index = 0;
+		for (edu.berkeley.path.beats.jaxb.ColumnName colname : table.getColumnNames().getColumnName())
+			colname2index.put(colname.getName(), Integer.valueOf(index++));
+
+		Criteria crit = new Criteria();
+		crit.addJoin(TabularDataPeer.TABLE_ID, TabularDataKeysPeer.TABLE_ID);
+		crit.addJoin(TabularDataPeer.COLUMN_NAME, TabularDataKeysPeer.COLUMN_NAME);
+		crit.addAscendingOrderByColumn(TabularDataPeer.ROW_NUMBER);
+		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
+		@SuppressWarnings("unchecked")
+		List<TabularData> db_td_l = db_table.getTabularDatas(crit);
+		for (TabularData db_td : db_td_l) {
+			while (table.getRow().size() <= db_td.getRowNumber()) {
+				edu.berkeley.path.beats.jaxb.Row row = factory.createRow();
+				for (int i = 0; i < table.getColumnNames().getColumnName().size(); ++i)
+					row.getColumn().add(null);
+				table.getRow().add(row);
+			}
+			edu.berkeley.path.beats.jaxb.Row row = table.getRow().get(db_td.getRowNumber());
+			int colnum = colname2index.get(db_td.getColumnName()).intValue();
+			if (null != row.getColumn().get(colnum))
+				logger.warn("Table " + table.getName() + ", row " + db_td.getRowNumber() + ": duplicate column '" + db_td.getColumnName() + "'");
+			row.getColumn().set(colnum, db_td.getValue());
+		}
+
+		return table;
+	}
+
+	private edu.berkeley.path.beats.jaxb.ColumnNames restoreColumnNames(Tables db_table) throws TorqueException {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
 		@SuppressWarnings("unchecked")
@@ -929,42 +960,7 @@ public class ScenarioExporter {
 		edu.berkeley.path.beats.jaxb.ColumnNames colnames = factory.createColumnNames();
 		for (TabularDataKeys db_tdk : db_tdk_l)
 			colnames.getColumnName().add(restoreColumnName(db_tdk));
-		table.setColumnNames(colnames);
-
-		crit.clear();
-		crit.addJoin(TabularDataPeer.TABLE_ID, TabularDataKeysPeer.TABLE_ID);
-		crit.addJoin(TabularDataPeer.COLUMN_NAME, TabularDataKeysPeer.COLUMN_NAME);
-		crit.addAscendingOrderByColumn(TabularDataPeer.ROW_NUMBER);
-		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
-		@SuppressWarnings("unchecked")
-		List<TabularData> db_td_l = db_table.getTabularDatas(crit);
-		edu.berkeley.path.beats.jaxb.Row row = null;
-		Integer rownum = null;
-		java.util.Iterator<edu.berkeley.path.beats.jaxb.ColumnName> citer = null;
-		for (TabularData db_td : db_td_l) {
-			if (null != rownum && !rownum.equals(db_td.getRowNumber())) {
-				table.getRow().add(row);
-				row = null;
-			}
-			if (null == row) {
-				row = factory.createRow();
-				citer = colnames.getColumnName().iterator();
-			}
-			while (citer.hasNext()) {
-				edu.berkeley.path.beats.jaxb.ColumnName colname = citer.next();
-				if (colname.getName().equals(db_td.getColumnName())) {
-					row.getColumn().add(db_td.getValue());
-					break;
-				} else {
-					row.getColumn().add(null);
-					logger.warn("Column " + colname.getName() + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
-				}
-			}
-		}
-		if (null != row)
-			table.getRow().add(row);
-
-		return table;
+		return colnames;
 	}
 
 	private edu.berkeley.path.beats.jaxb.ColumnName restoreColumnName(TabularDataKeys db_tdk) {
