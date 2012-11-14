@@ -34,7 +34,7 @@ import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.Signal;
 
-public class Controller_SIG_Pretimed_Plan extends edu.berkeley.path.beats.jaxb.Plan {
+public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	
 	protected Controller_SIG_Pretimed myController;
 	
@@ -45,24 +45,24 @@ public class Controller_SIG_Pretimed_Plan extends edu.berkeley.path.beats.jaxb.P
 
 	ArrayList<Signal.Command> commandlist = new ArrayList<Signal.Command>();
 
-	public void populate(Controller_SIG_Pretimed myController,Scenario myScenario,edu.berkeley.path.beats.jaxb.Plan jaxbplan) {
+	public void populate(Controller_SIG_Pretimed myController, Scenario myScenario, Controller_SIG_Pretimed.Plan plan) {
 		
 		this.myController = myController;
 		
-		this.setId(jaxbplan.getId());
+		this.setId(plan.getId());
 		
-		if(jaxbplan.getCyclelength()!=null)
-			_cyclelength = jaxbplan.getCyclelength().doubleValue();
+		if (null != plan.getCycleLength())
+			_cyclelength = plan.getCycleLength().doubleValue();
 					
-		if(jaxbplan.getIntersection()!=null){
-			int numintersection = jaxbplan.getIntersection().size();
+		if (null != plan.getIntersection()) {
+			int numintersection = plan.getIntersection().size();
 			havesignaltarget = new boolean[numintersection];
 			intersplan = new Controller_SIG_Pretimed_IntersectionPlan[numintersection];
 			for(int i=0;i<intersplan.length;i++){
 
 				// check whether the signal is in the target list
-				edu.berkeley.path.beats.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
-				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
+				Controller_SIG_Pretimed.Intersection intersection = plan.getIntersection().get(i);
+				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null, intersection.getNodeId());
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;
@@ -76,7 +76,7 @@ public class Controller_SIG_Pretimed_Plan extends edu.berkeley.path.beats.jaxb.P
 				if(!haveit)
 					continue;				
 				intersplan[i] = new Controller_SIG_Pretimed_IntersectionPlan(this);
-				intersplan[i].populate(myScenario,jaxbi);
+				intersplan[i].populate(myScenario, intersection);
 			}
 		}
 		

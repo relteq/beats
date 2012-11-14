@@ -736,8 +736,6 @@
 				<xs:element ref="feedbackElements" minOccurs="0" />
 				<xs:element ref="queue_controller" minOccurs="0" />
 				<xs:element ref="ActivationIntervals" minOccurs="0" />
-				<xs:element ref="PlanSequence" minOccurs="0" />
-				<xs:element ref="PlanList" minOccurs="0" />
 				<xs:element ref="table" minOccurs="0" maxOccurs="unbounded" />
 			</xs:sequence>
 			  <xs:attribute name="name" type="xs:string" use="optional" />
@@ -786,72 +784,6 @@
 					</xs:complexType>
 				</xs:element>
 			  
-  <!-- Pretimed signal ........................................................... -->
-			  
-			  <xs:element name="PlanSequence">
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="plan_reference" minOccurs="0" maxOccurs="unbounded" />
-				  </xs:sequence>
-				  <xs:attribute name="transition_delay" type="xs:decimal" use="required" />		<!-- in seconds -->
-				</xs:complexType>
-			  </xs:element>
-
-				  <xs:element name="plan_reference">
-					<xs:complexType>
-					  <xs:attribute name="plan_id" type="xs:string" use="required" />
-					  <xs:attribute name="start_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-					</xs:complexType>
-				  </xs:element>
-
-			  <xs:element name="PlanList">
-				<xs:complexType>
-				  <xs:sequence>
-					<xs:element ref="plan" minOccurs="0" maxOccurs="unbounded" />
-				  </xs:sequence>
-				</xs:complexType>
-			  </xs:element>
-
-				  <xs:element name="plan">
-					<xs:complexType>
-					  <xs:sequence>
-						<xs:element ref="intersection" minOccurs="0" maxOccurs="unbounded" />
-					  </xs:sequence>
-					  <xs:attribute name="id" type="xs:string" use="required" />
-					  <xs:attribute name="cyclelength" type="xs:decimal" use="required" />		<!-- in seconds -->
-					</xs:complexType>
-				  </xs:element>
-					  
-					  <xs:element name="intersection">
-						<xs:complexType>
-						  <xs:sequence>
-							<xs:element ref="stage" minOccurs="0" maxOccurs="unbounded" />
-						  </xs:sequence>
-						  <xs:attribute name="node_id" type="xs:string" use="required" />
-						  <xs:attribute name="offset" type="xs:decimal" use="required" />		<!-- in seconds -->
-						</xs:complexType>
-					  </xs:element>
-
-						  <xs:element name="stage">
-							<xs:complexType>
-							  <xs:attribute name="greentime" type="xs:decimal" use="required" />		<!-- in seconds -->
-							  <xs:attribute name="movA" use="required">
-								<xs:simpleType>
-								  <xs:restriction base="xs:string">
-									<xs:pattern value="|1|2|3|4|5|6|7|8"/>
-								  </xs:restriction>
-								</xs:simpleType>
-							  </xs:attribute>
-							  <xs:attribute name="movB" use="required">
-								<xs:simpleType>
-								  <xs:restriction base="xs:string">
-									<xs:pattern value="|1|2|3|4|5|6|7|8"/>
-								  </xs:restriction>
-								</xs:simpleType>
-							  </xs:attribute>
-							</xs:complexType>
-						  </xs:element>
-						  
   <!-- FundamentalDiagramProfileSet .............................................. -->
 
 	  <xs:element name="FundamentalDiagramProfileSet">
