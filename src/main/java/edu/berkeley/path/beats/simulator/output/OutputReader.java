@@ -83,7 +83,7 @@ class OutputReader {
 			while (xmlsr.hasNext()) {
 				if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
 					String localname = xmlsr.getName().getLocalPart();
-					if ("scenario" == localname) {
+					if ("scenario".equals(localname)) {
 						JAXBContext jaxbc;
 						try {
 							jaxbc = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
@@ -93,7 +93,7 @@ class OutputReader {
 						} catch (JAXBException exc) {
 							exc.printStackTrace();
 						}
-					}else if ("data" == localname) {
+					}else if ("data".equals(localname)) {
 						if (null != res.scenario) {
 							int nvehtypes = res.scenario.getNumVehicleTypes();
 							if (nvehtypes <= 0) nvehtypes = 1;
@@ -116,17 +116,17 @@ class OutputReader {
 						}
 						xmlsr.next();
 						while (xmlsr.hasNext()) {
-							if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "data" == xmlsr.getName().getLocalPart()) break;
+							if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "data".equals(xmlsr.getName().getLocalPart())) break;
 							else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
-								if ("ts" == xmlsr.getName().getLocalPart()) {
+								if ("ts".equals(xmlsr.getName().getLocalPart())) {
 									res.t.add(Double.valueOf(xmlsr.getAttributeValue(null, "sec")));
-								}else if ("net" == xmlsr.getName().getLocalPart()) {
+								}else if ("net".equals(xmlsr.getName().getLocalPart())) {
 									String dt_attr = xmlsr.getAttributeValue(null, "dt");
 									double dt = null == dt_attr ? 1.0f : Double.valueOf(dt_attr);
 									xmlsr.next();
 									while (xmlsr.hasNext()) {
-										if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "net" == xmlsr.getName().getLocalPart()) break;
-										else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType() && "l" == xmlsr.getName().getLocalPart()) {
+										if (XMLStreamConstants.END_ELEMENT == xmlsr.getEventType() && "net".equals(xmlsr.getName().getLocalPart())) break;
+										else if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType() && "l".equals(xmlsr.getName().getLocalPart())) {
 											res.d.addAll(unformat(xmlsr.getAttributeValue(null, "d"), ":"));
 
 											Vector<Double> vect_f = unformat(xmlsr.getAttributeValue(null, "f"), ":");

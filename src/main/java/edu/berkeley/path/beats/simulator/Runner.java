@@ -39,16 +39,10 @@ import edu.berkeley.path.beats.om.DefSimSettings;
 import edu.berkeley.path.beats.om.DefSimSettingsPeer;
 
 public final class Runner {
-	
-	private static Scenario scenario;
 
 	private static String outputtype = "text";
 	private static String configfilename;
 	private static String outputfileprefix;
-	private static double timestart;
-	private static double timeend;
-	private static double outdt;
-	private static int numRepetitions;
 
 	private static Logger logger = Logger.getLogger(Runner.class);
 
@@ -56,23 +50,15 @@ public final class Runner {
 
 		long time = System.currentTimeMillis();
 
-		// process input parameters
-		if(!parseInput(args)){
-			SiriusErrorLog.print();
-			return;
-		}
-
-		// load configuration file ................................
 		try {
-			scenario = ObjectFactory.createAndLoadScenario(configfilename);
-		} catch (SiriusException exc) {
-			exc.printStackTrace();
-			return;
-		}
+			// process input parameters
+			SimulationSettings simsettings = parseInput(args);
+			if (null == simsettings) return;
 		
-		// check if it loaded
-		if(scenario==null)
-			return;
+			// load configuration file
+			Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
+			if (null == scenario)
+				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
 
 
 		
@@ -124,23 +110,30 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 			Properties owr_props = new Properties();
 			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", outputtype);
-			scenario.run(timestart,timeend,outdt,numRepetitions,owr_props);
+			scenario.run(simsettings, owr_props);
 			System.out.println("done in " + (System.currentTimeMillis()-time));
-		} catch (SiriusException e) {
-			if(SiriusErrorLog.haserror())
+		} catch (SiriusException exc) {
+			exc.printStackTrace();
+		} finally {
+			if (SiriusErrorLog.hasmessage()) {
 				SiriusErrorLog.print();
-			else
-				e.printStackTrace();
-		}	
+				SiriusErrorLog.clearErrorMessage();
+			}
+		}
 		
 	}
 
-	public static void debug(String [] args) {
+	public static void simulate_output(String[] args) {
+		outputtype = "xml";
+		main(args);
+	}
+
+	public static void debug(String[] args) {
 		outputtype = "text";
 		main(args);
 	}
 
-	private static boolean parseInput(String[] args){
+	private static SimulationSettings parseInput(String[] args){
 
 		if(args.length<1){
 			String str;
@@ -168,7 +161,7 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
 			SiriusErrorLog.addError(str);
-			return false;
+			return null;
 		}
 		
 		// Configuration file name	
@@ -179,46 +172,16 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 			outputfileprefix = args[1];	
 		else
 			outputfileprefix = "output";
-			
-		// Start time [seconds after midnight]
-		if(args.length>2){
-			timestart = Double.parseDouble(args[2]);
-			timestart = SiriusMath.round(timestart*10.0)/10.0;	// round to the nearest decisecond
-		}
-		else
-			timestart = Defaults.TIME_INIT;
 
-		// Duration [seconds]	
-		if(args.length>3)
-			timeend = timestart + Double.parseDouble(args[3]);
-		else
-			timeend = timestart + Defaults.DURATION;
-		
-		// Output sampling time [seconds]
-		if(args.length>4){
-			outdt = Double.parseDouble(args[4]);
-			outdt = SiriusMath.round(outdt*10.0)/10.0;		// round to the nearest decisecond	
-		}
-		else
-			outdt = Defaults.OUT_DT;
-
-		// Number of simulations
-		if(args.length>5){
-			numRepetitions = Integer.parseInt(args[5]);
-		}
-		else
-			numRepetitions = 1;
-
-		return true;
+		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
+		simsettings.parseArgs(args, 2);
+		return simsettings;
 	}
 
 	public static void run_db(String [] args) throws SiriusException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 		logger.info("Parsing arguments");
 		long scenario_id;
-		BigDecimal startTime = null;
-		BigDecimal duration = null;
-		BigDecimal outputDt = null;
-		Integer numSim = null;
+		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
 		if (0 == args.length || 5 < args.length) {
 			final String eol = System.getProperty("line.separator");
 			throw new edu.berkeley.path.beats.Runner.InvalidUsageException(
@@ -230,28 +193,23 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 					"\tnumber of simulations");
 		} else {
 			scenario_id = Long.parseLong(args[0]);
-			if (1 < args.length) startTime = new BigDecimal(args[1]);
-			if (2 < args.length) duration = new BigDecimal(args[2]);
-			if (3 < args.length) outputDt = new BigDecimal(args[3]);
-			if (4 < args.length) numSim = new Integer(args[4]);
+			simsettings.parseArgs(args, 1);
 		}
 
 		edu.berkeley.path.beats.db.Service.init();
 
 		logger.info("Loading scenario");
-		scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(scenario_id);
-		if (SiriusErrorLog.haserror()) {
-			SiriusErrorLog.print();
-			return;
-		}
+		Scenario scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(scenario_id);
 
-		if (null == startTime || null == duration || null == outputDt) {
+		if (args.length < 4) {
 			logger.info("Loading default simulation settings");
 			try {
 				DefSimSettings db_defss = DefSimSettingsPeer.retrieveByPK(Long.valueOf(scenario_id));
-				if (null == startTime) startTime = db_defss.getSimStartTime();
-				if (null == duration) duration = db_defss.getSimDuration();
-				if (null == outputDt) outputDt = db_defss.getOutputDt();
+				SimulationSettings defss = new SimulationSettings(simsettings.getParent());
+				defss.setStartTime(db_defss.getSimStartTime());
+				defss.setDuration(db_defss.getSimDuration());
+				defss.setOutputDt(db_defss.getOutputDt());
+				simsettings.setParent(defss);
 			} catch (NoRowsException exc) {
 				logger.warn("Found no default simulation settings for scenario " + scenario_id, exc);
 			} catch (TooManyRowsException exc) {
@@ -261,15 +219,12 @@ System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
 			}
 		}
 
+		logger.info("Simulation parameters: " + simsettings);
+
 		logger.info("Simulation");
 		Properties owr_props = new Properties();
 		owr_props.setProperty("type", "db");
-		if (null == startTime) startTime = BigDecimal.valueOf(0);
-		if (null == duration) duration = BigDecimal.valueOf(60 * 60 * 24);
-		if (null == outputDt) outputDt = BigDecimal.valueOf(60);
-		if (null == numSim) numSim = Integer.valueOf(1);
-		logger.info("Simulation parameters: start time: " + startTime + " sec, duration: " + duration + " sec, output sampling time: " + outputDt + " sec");
-		scenario.run(startTime.doubleValue(), startTime.add(duration).doubleValue(), outputDt.doubleValue(), numSim.intValue(), owr_props);
+		scenario.run(simsettings, owr_props);
 
 		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");

@@ -37,8 +37,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.log4j.Logger;
-
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
@@ -129,6 +127,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(networkList!=null)
 			for( edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).populate(this);
+
+		// sensors
+		sensorlist.populate(this);
 		
 		// background and destination networks
 		// NOTE: PUT THIS INTO AN EXTENSION CLASS
@@ -151,15 +152,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(networkList!=null)
 			for( com.relteq.sirius.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).constructLinkNodeMaps();
-		
-		// replace jaxb.Sensor with simulator.Sensor
-		if(sensorList!=null){
-			for(int i=0;i<sensorList.getSensor().size();i++){
-				edu.berkeley.path.beats.jaxb.Sensor sensor = sensorList.getSensor().get(i);
-				Sensor.Type myType = Sensor.Type.valueOf(sensor.getType());
-				sensorList.getSensor().set(i,ObjectFactory.createSensorFromJaxb(this,sensor,myType));
-			}
-		}
 		
 		if(signalList!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
@@ -208,9 +200,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				destnet.validate();
 		
 		// sensor list
-		if(sensorList!=null)
-			for (edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor())
-				((Sensor) sensor).validate();
+		sensorlist.validate();
 		
 		// signal list
 		if(signalList!=null)
@@ -263,9 +253,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			((Network)network).reset(simulationMode);
 		
 		// sensor list
-		if(sensorList!=null)
-			for (edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor())
-				((Sensor) sensor).reset();
+		sensorlist.reset();
 		
 		// signal list
 		if(signalList!=null)
@@ -314,11 +302,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         		((FundamentalDiagramProfile) fdProfile).update();
     	
         // update sensor readings .......................
-        // NOTE: ensembles have not been implemented for sensors. They do not apply
-        // to the loop sensor, but would make a difference for floating sensors.
-		if(sensorList!=null)
-			for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor())
-				((Sensor)sensor).update();
+    	sensorlist.update();
 		
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
@@ -482,18 +466,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
-	 * @param timestart
-	 * @param timeend
-	 * @param outdt
-	 * @param numRepetitions 	The integer number of simulations to run.
+	 * @param simsettings the simulation settings
 	 * @param owr_props the output writer properties
 	 * @throws SiriusException 
 	 */
-	public void run(Double timestart,Double timeend,double outdt,int numRepetitions,Properties owr_props) throws SiriusException{
-		this.outdt = outdt;
-		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+	public void run(SimulationSettings simsettings, Properties owr_props) throws SiriusException{
+		this.outdt = simsettings.getOutputDt();
+		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
 		numEnsemble = 1;
-		run_internal(param,numRepetitions,true,false,owr_props);
+		run_internal(param, simsettings.getNumRuns(), true, false, owr_props);
 	}
 	
 	/** Run the scenario once, save output to text files.
@@ -777,7 +758,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if(link!=null)
 				return link;
 		}
-		Logger.getLogger(Scenario.class).error("Link " + id + " not found");
 		return null;
 	}
 
@@ -1111,7 +1091,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void loadSensorData() throws SiriusException {
 
-		if(sensorList==null)
+		if(sensorlist.sensors.isEmpty())
 			return;
 		
 		if(sensor_data_loaded)
@@ -1122,8 +1102,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
-			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+		for(Sensor sensor : sensorlist.sensors){
+			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -1148,9 +1128,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		P.Read5minData(data,datasources);
 		
 		// distribute data to sensors
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
+		for(Sensor sensor : sensorlist.sensors){
 			
-			if(((Sensor) sensor).getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;
