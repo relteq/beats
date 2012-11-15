@@ -124,10 +124,10 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		return;
 	}
 
-//	@Override
-//	public double[] getDensityInVPM(int ensemble) {
-//		return SiriusMath.times(myLink.getDensityInVeh(ensemble),1/myLink.getLengthInMiles());
-//	}
+	@Override
+	public Double[] getDensityInVPM(int ensemble) {
+		return SiriusMath.times(myLink.getDensityInVeh(ensemble), 1 / myLink.getLengthInMeters());
+	}
 
 	@Override
 	public double getTotalDensityInVeh(int ensemble) {
@@ -136,7 +136,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public double getTotalDensityInVPM(int ensemble) {
-		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles();
+		return myLink.getTotalDensityInVeh(ensemble) / myLink.getLengthInMeters();
 	}
 
 //	@Override
@@ -145,18 +145,18 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 //	}
 	
 	@Override
-	public Double[] getFlowInVPH(int ensemble) {
-		return SiriusMath.times(myLink.getOutflowInVeh(ensemble),1/myScenario.getSimDtInHours());
+	public Double[] getFlowInVPS(int ensemble) {
+		return SiriusMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
 	}
 
 	@Override
-	public double getTotalFlowInVPH(int ensemble) {
-		return myLink.getTotalOutflowInVeh(ensemble)/myScenario.getSimDtInHours();
+	public double getTotalFlowInVPS(int ensemble) {
+		return myLink.getTotalOutflowInVeh(ensemble) / myScenario.getSimDtInSeconds();
 	}
 
 	@Override
-	public double getSpeedInMPH(int ensemble) {
-		return myLink.computeSpeedInMPH(ensemble);
+	public double getSpeedInMPS(int ensemble) {
+		return myLink.computeSpeedInMPS(ensemble);
 	}
 
 	/////////////////////////////////////////////////////////////////////

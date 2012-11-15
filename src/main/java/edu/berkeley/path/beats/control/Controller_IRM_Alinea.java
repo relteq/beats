@@ -58,7 +58,7 @@ public class Controller_IRM_Alinea extends Controller {
 	public Controller_IRM_Alinea() {
 	}
 
-	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mph){
+	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
 
 		this.myScenario = myScenario;
 		this.onramplink 	= onramplink;
@@ -82,7 +82,7 @@ public class Controller_IRM_Alinea extends Controller {
 		if(usesensor)
 			mainlinelink = mainlinesensor.getMyLink();
 		
-		gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
+		gain_normalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlinelink.getLengthInMeters();
 		
 	}
 
@@ -158,21 +158,21 @@ public class Controller_IRM_Alinea extends Controller {
 //			return;
 		
 		// read parameters
-		double gain_in_mph = 50.0;
+		double gain_in_mps = 50.0 * 1609.344 / 3600.0; // [meters/second]
 		targetdensity_given = false;
 		if(jaxbc.getParameters()!=null)
 			for(edu.berkeley.path.beats.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 				if(p.getName().equals("gain")){
 					try {
-						gain_in_mph = Double.parseDouble(p.getValue());
+						gain_in_mps = Double.parseDouble(p.getValue());
 					} catch (NumberFormatException e) {
-						gain_in_mph = 0d;
+						gain_in_mps = 0d;
 					}
 				}
 				if(p.getName().equals("targetdensity")){
 					if(mainlinelink!=null){
-						targetvehicles = Double.parseDouble(p.getValue());   // [in vpmpl]
-						targetvehicles *= mainlinelink.get_Lanes()*mainlinelink.getLengthInMiles();		// now in [veh]
+						targetvehicles = Double.parseDouble(p.getValue());   // [in veh/meter/lane]
+						targetvehicles *= mainlinelink.get_Lanes() * mainlinelink.getLengthInMeters();		// now in [veh]
 						targetdensity_given = true;
 					}
 				}
@@ -180,7 +180,7 @@ public class Controller_IRM_Alinea extends Controller {
 		
 		// normalize the gain
 		if(mainlinelink!=null)
-			gain_normalized = gain_in_mph*myScenario.getSimDtInHours()/mainlinelink.getLengthInMiles();
+			gain_normalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlinelink.getLengthInMeters();
 	}
 	
 	@Override

@@ -87,27 +87,27 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 		return Double.NaN;
 	}
 
-//	/** Default implementation of {@link InterfaceSensor#getFlowInVPH()} 
-//	 * @return <code>null</code>
-//	 * */
-//	@Override
-//	public double[] getFlowInVPH(int ensemble) {
-//		return null;
-//	}
+	/** Default implementation of {@link InterfaceSensor#getFlowInVPS()}
+	 * @return <code>null</code>
+	 * */
+	@Override
+	public Double[] getFlowInVPS(int ensemble) {
+		return null;
+	}
 
-	/** Default implementation of {@link InterfaceSensor#getTotalFlowInVPH()} 
+	/** Default implementation of {@link InterfaceSensor#getTotalFlowInVPS()}
 	 * @return <code>Double.NaN</code>
 	 * */
 	@Override
-	public double getTotalFlowInVPH(int ensemble) {
+	public double getTotalFlowInVPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getSpeedInMPH()} 
+	/** Default implementation of {@link InterfaceSensor#getSpeedInMPS()}
 	 * @return <code>Double.NaN</code>
 	 * */
 	@Override
-	public double getSpeedInMPH(int ensemble) {
+	public double getSpeedInMPS(int ensemble) {
 		return Double.NaN;
 	}
 	

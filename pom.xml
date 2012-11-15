@@ -10,6 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<torque.sql.dir>${project.build.directory}/generated-sql</torque.sql.dir>
 	</properties>
 
 	<scm>
@@ -39,33 +40,92 @@
 				<groupId>org.apache.torque</groupId>
 				<artifactId>torque-maven-plugin</artifactId>
 				<version>3.3</version>
+				<configuration>
+					<schemaDir>${basedir}/data</schemaDir>
+					<targetDatabase>derby</targetDatabase>
+				</configuration>
 				<executions>
 					<execution>
+						<id>om</id>
 						<phase>generate-sources</phase>
 						<configuration>
-							<schemaDir>${basedir}/data</schemaDir>
-							<targetDatabase>derby</targetDatabase>
 							<targetPackage>edu.berkeley.path.beats.om</targetPackage>
-							<options>
-								<targetPackage>edu.berkeley.path.beats.om</targetPackage>
-							</options>
 						</configuration>
 						<goals>
 							<goal>om</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>sql-derby</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<targetDatabase>derby</targetDatabase>
+							<outputDir>${torque.sql.dir}/derby</outputDir>
+						</configuration>
+						<goals>
+							<goal>sql</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>sql-postgres</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<targetDatabase>postgresql</targetDatabase>
+							<outputDir>${torque.sql.dir}/postgres</outputDir>
+						</configuration>
+						<goals>
+							<goal>sql</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>sql-oracle</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<targetDatabase>oracle</targetDatabase>
+							<outputDir>${torque.sql.dir}/oracle</outputDir>
+						</configuration>
+						<goals>
+							<goal>sql</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>doc</id>
+						<phase>site</phase>
+						<goals>
 							<goal>documentation</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>edu.berkeley.path.beats.Runner</mainClass>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<targetPath>sql</targetPath>
+				<directory>${torque.sql.dir}</directory>
+				<includes>
+					<include>**/*.sql</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 
 	<dependencies>
-        <dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-xjc</artifactId>
-			<version>2.2</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.torque</groupId>
 			<artifactId>torque-generator</artifactId>
@@ -75,16 +135,19 @@
 			<groupId>org.apache.torque</groupId>
 			<artifactId>torque-runtime</artifactId>
 			<version>3.3</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.8.2.2</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901.jdbc4</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
@@ -95,17 +158,19 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.3</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.12</version>
+			<scope>compile</scope>
 		</dependency>
-    		<dependency>
-      				<groupId>junit</groupId>
-      				<artifactId>junit</artifactId>
-      				<version>3.8.1</version>
-      				<scope>test</scope>
-    		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

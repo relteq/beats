@@ -72,7 +72,7 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
 			demand_nominal = new Double2DMatrix(getContent());
-			demand_nominal.multiplyscalar(myScenario.getSimDtInHours());
+			demand_nominal.multiplyscalar(myScenario.getSimDtInSeconds());
 		}
 		
 		// optional dt
@@ -94,12 +94,12 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 		
 		// optional uncertainty model
 		if(getStdDevAdd()!=null)
-			std_dev_add = getStdDevAdd().doubleValue()*myScenario.getSimDtInHours();
+			std_dev_add = getStdDevAdd().doubleValue() * myScenario.getSimDtInSeconds();
 		else
 			std_dev_add = Double.POSITIVE_INFINITY;		// so that the other will always win the min
 		
 		if(getStdDevMult()!=null)
-			std_dev_mult = getStdDevMult().doubleValue()*myScenario.getSimDtInHours();
+			std_dev_mult = getStdDevMult().doubleValue() * myScenario.getSimDtInSeconds();
 		else
 			std_dev_mult = Double.POSITIVE_INFINITY;	// so that the other will always win the min
 		

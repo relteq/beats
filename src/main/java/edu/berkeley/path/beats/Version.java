@@ -48,6 +48,13 @@ public class Version {
 		this.engineVersion = engineVersion;
 	}
 
+	/**
+	 * @return java version
+	 */
+	public String getJavaVersion() {
+		return System.getProperty("java.version");
+	}
+
 	public static Version get() {
 		Version version = new Version();
 		ClassLoader classLoader = Version.class.getClassLoader();
@@ -72,12 +79,15 @@ public class Version {
 		}
 
 		// engine version
-		BufferedReader br = new BufferedReader(new InputStreamReader(Version.class.getClassLoader().getResourceAsStream("engine.version")));
-		try{
-			version.setEngineVersion(br.readLine());
-			br.close();
-		} catch (IOException exc) {
-			exc.printStackTrace();
+		java.io.InputStream istream = Version.class.getClassLoader().getResourceAsStream("engine.version");
+		if (null != istream) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(istream));
+			try{
+				version.setEngineVersion(br.readLine());
+				br.close();
+			} catch (IOException exc) {
+				exc.printStackTrace();
+			}
 		}
 
 		return version;
@@ -85,10 +95,13 @@ public class Version {
 
 	@Override
 	public String toString() {
+		final String linesep = System.getProperty("line.separator");
 		StringBuilder sb = new StringBuilder();
 		sb.append("schema: ").append(getSchemaVersion());
-		sb.append("    ");
+		sb.append(linesep);
 		sb.append("engine: ").append(getEngineVersion());
+		sb.append(linesep);
+		sb.append("java:   ").append(getJavaVersion());
 		return sb.toString();
 	}
 }

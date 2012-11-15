@@ -32,22 +32,22 @@ package edu.berkeley.path.beats.simulator;
 */
 public interface InterfaceSensor {
 
-//	/** Measured density per vehicle type in veh/mile. 
-//	 * 
-//	 * <p> The output array contains measured densities.
-//	 * The array is organized by vehicle type in the order in which they appear in the 
-//	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
-//	 * 
-//	 * @return Array of densities.
-//	 */
-//	public double[] getDensityInVPM(int ensemble);
+	/** Measured density per vehicle type in veh/meter.
+	 * 
+	 * <p> The output array contains measured densities.
+	 * The array is organized by vehicle type in the order in which they appear in the 
+	 * <code>settings</code> block of the configuration file (see {@link Scenario#getVehicleTypeNames}).
+	 * 
+	 * @return Array of densities.
+	 */
+	public Double[] getDensityInVPM(int ensemble);
 	
-	/** Measured total density in veh/mile. 
+	/** Measured total density in veh/meter.
 	 * 
 	 * <p> Returns the total density measured by the sensor.
 	 * Must equal the sum of values in {@link InterfaceSensor#getDensityInVPM}.
 	 * 
-	 * @return A double with the total measured density in veh/mile.	 
+	 * @return A double with the total measured density in veh/meter.
 	 */
 	public double getTotalDensityInVPM(int ensemble);
 
@@ -68,7 +68,7 @@ public interface InterfaceSensor {
 	public double getOccupancy(int ensemble);
 	
 	
-	/** Measured flow per vehicle type in veh/hr. 
+	/** Measured flow per vehicle type in veh/sec.
 	 * 
 	 * <p> The output array contains measured flows.
 	 * The array is organized by vehicle type in the order in which they appear in the 
@@ -77,23 +77,23 @@ public interface InterfaceSensor {
 	 * @return Array of flows.
 	 */	
 	
-	public Double[] getFlowInVPH(int ensemble);
+	public Double[] getFlowInVPS(int ensemble);
 	
-	/** Measured total flow in veh/hr. 
+	/** Measured total flow in veh/sec.
 	 * 
 	 * <p> Returns the total flow measured by the sensor.
-	 * Must equal the sum of values in {@link InterfaceSensor#getFlowInVPH}.
+	 * Must equal the sum of values in {@link InterfaceSensor#getFlowInVPS}.
 	 * 
-	 * @return A double with the total measured flow in veh/hr.	 
+	 * @return A double with the total measured flow in veh/sec.
 	 */
-	public double getTotalFlowInVPH(int ensemble);
+	public double getTotalFlowInVPS(int ensemble);
 	
-	/** Measured speed in mile/hr. 
+	/** Measured speed in meters/sec.
 	 * 
 	 * <p> Returns the speed measured by the sensor.
 	 * 
-	 * @return A double with the measured speed in mile/hr.	 
+	 * @return A double with the measured speed in meters/sec.
 	 */
-	public double getSpeedInMPH(int ensemble);
+	public double getSpeedInMPS(int ensemble);
 	
 }

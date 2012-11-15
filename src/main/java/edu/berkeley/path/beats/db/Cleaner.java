@@ -36,13 +36,7 @@ import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
-import edu.berkeley.path.beats.om.LinkDataDetailedPeer;
-import edu.berkeley.path.beats.om.LinkDataTotalPeer;
-import edu.berkeley.path.beats.om.LinkPerformanceDetailedPeer;
-import edu.berkeley.path.beats.om.LinkPerformanceTotalPeer;
-import edu.berkeley.path.beats.om.ScenariosPeer;
-import edu.berkeley.path.beats.om.SimulationRuns;
-import edu.berkeley.path.beats.om.SimulationRunsPeer;
+import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.SiriusException;
 
 public class Cleaner {
@@ -87,25 +81,55 @@ public class Cleaner {
 			@SuppressWarnings("unchecked")
 			List<SimulationRuns> db_sr_l = SimulationRunsPeer.doSelect(crit, conn);
 
+			crit.clear();
+			crit.add(ApplicationTypesPeer.DESCRIPTION, "simulation");
+			@SuppressWarnings("unchecked")
+			List<ApplicationTypes> db_appt_l = ApplicationTypesPeer.doSelect(crit, conn);
+			if (db_appt_l.isEmpty()) {
+				logger.warn("Application type 'simulation' does not exist");
+				return;
+			} else if (1 < db_appt_l.size()) {
+				logger.error("Application type 'simulation' is not unique");
+				return;
+			}
+			final Long app_type_id = db_appt_l.get(0).getId();
+
+			crit.clear();
+			crit.add(AggregationTypesPeer.DESCRIPTION, "raw");
+			@SuppressWarnings("unchecked")
+			List<AggregationTypes> db_aggt_l = AggregationTypesPeer.doSelect(crit, conn);
+			if (db_aggt_l.isEmpty()) {
+				logger.warn("Aggregation type 'raw' does not exist");
+				return;
+			} else if (1 < db_aggt_l.size()) {
+				logger.error("Aggregation type 'raw' is not unique");
+				return;
+			}
+			final Long agg_type_id = db_aggt_l.get(0).getId();
+
 			for (SimulationRuns db_sr : db_sr_l) {
 				logger.info("Run number: " + db_sr.getRunNumber());
 
 				crit.clear();
-				crit.add(LinkDataTotalPeer.DATA_SOURCE_ID, db_sr.getDataSourceId());
-				crit.add(LinkDataTotalPeer.AGGREGATION, (Object) "raw", Criteria.NOT_EQUAL);
+				crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkDataTotalPeer.APP_RUN_ID, db_sr.getId());
+				crit.add(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
 				executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)), conn);
 
 				crit.clear();
-				crit.add(LinkDataDetailedPeer.DATA_SOURCE_ID, db_sr.getDataSourceId());
-				crit.add(LinkDataDetailedPeer.AGGREGATION, (Object) "raw", Criteria.NOT_EQUAL);
+				crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkDataDetailedPeer.APP_RUN_ID, db_sr.getId());
+				crit.add(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
 				executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)), conn);
 
 				crit.clear();
-				crit.add(LinkPerformanceTotalPeer.DATA_SOURCE_ID, db_sr.getDataSourceId());
+				crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkPerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
 				executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)), conn);
 
 				crit.clear();
-				crit.add(LinkPerformanceDetailedPeer.DATA_SOURCE_ID, db_sr.getDataSourceId());
+				crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkPerformanceDetailedPeer.APP_RUN_ID, db_sr.getId());
 				executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)), conn);
 			}
 

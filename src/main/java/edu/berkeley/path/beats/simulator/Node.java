@@ -1035,6 +1035,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
 
+<<<<<<< HEAD
 //	public Double [][][] getSplitRatio(){
 //		if(splitratio==null)
 //			return null;
@@ -1042,4 +1043,21 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 //			return splitratio.cloneData();
 //		}
 //	}
+=======
+	public Double [][][] getSplitRatio(){
+		if(splitratio==null)
+			return null;
+		else{
+			return splitratio.cloneData();
+		}
+	}
+
+	/**
+	 * @return the split ratio matrix
+	 */
+	public Double3DMatrix getSplitratio() {
+		return splitratio;
+	}
+
+>>>>>>> fe5713b2d6aeff86c23560d82dbfa05e81949c59
 }

@@ -28,11 +28,17 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.StringTokenizer;
 
+<<<<<<< HEAD
 /** 3D matrix class used for representing time-invariant split ratio matrices.
  * 
 * @author Gabriel Gomes
 */
 final class Double3DMatrix {
+=======
+// 3D matrix class used for representing time-invariant split ratio matrices.
+
+public final class Double3DMatrix {
+>>>>>>> fe5713b2d6aeff86c23560d82dbfa05e81949c59
 	
 	private int nIn;			// [1st dimension] number of input links
 	private int nOut;			// [2nd dimension] number of columns

@@ -24,10 +24,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.util.Calendar;
 import java.util.List;
 
@@ -36,9 +35,13 @@ import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
-import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.SiriusMath;
+
 import com.workingdogs.village.DataSetException;
 
 /**
@@ -61,14 +64,14 @@ public class DBOutputWriter extends OutputWriterBase {
 		if (null != db_scenario) {
 			logger.info("Loading vehicle types");
 			Criteria crit = new Criteria();
-			crit.addJoin(VehicleTypesPeer.VEHICLE_TYPE_ID, VehicleTypesInSetsPeer.VEHICLE_TYPE_ID);
-			crit.add(VehicleTypesInSetsPeer.VEHICLE_TYPE_SET_ID, db_scenario.getVehicleTypeSetId());
+			crit.addJoin(VehicleTypesPeer.ID, VehicleTypesInSetsPeer.VEH_TYPE_ID);
+			crit.add(VehicleTypesInSetsPeer.VEH_TYPE_SET_ID, db_scenario.getVehTypeSetId());
 			try {
 				@SuppressWarnings("unchecked")
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
 				for (VehicleTypes db_vt : db_vt_l)
 					for (int i = 0; i < scenario.getNumVehicleTypes(); ++i)
-						if (db_vt.getName().equals(scenario.getVehicleTypeNames()[i]))
+						if (db_vt.getDescription().equals(scenario.getVehicleTypeNames()[i]))
 							db_vehicle_type[i] = db_vt;
 			} catch (TorqueException exc) {
 				logger.error("Failed to load vehicle types for scenario " + db_scenario.getId(), exc);
@@ -81,6 +84,9 @@ public class DBOutputWriter extends OutputWriterBase {
 	private Scenarios db_scenario = null;
 	VehicleTypes[] db_vehicle_type;
 	private SimulationRuns db_simulation_run = null;
+	private ApplicationTypes db_application_type = null;
+	private AggregationTypes db_aggregation_type_raw = null;
+	private QuantityTypes db_quantity_type_mean = null;
 
 	private Long str2id(String id) {
 		return Long.parseLong(id, 10);
@@ -90,55 +96,103 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	private Calendar ts = null;
 
+	public static ApplicationTypes getApplicationTypes(String application_type) throws Exception {
+		Criteria crit = new Criteria();
+		crit.add(ApplicationTypesPeer.DESCRIPTION, application_type);
+		@SuppressWarnings("unchecked")
+		List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit);
+		if (db_at_l.isEmpty()) {
+			ApplicationTypes db_at = new ApplicationTypes();
+			db_at.setDescription(application_type);
+			db_at.setInUse(Boolean.TRUE);
+			db_at.save();
+			return db_at;
+		} else {
+			if (1 < db_at_l.size())
+				logger.warn("Found " + db_at_l.size() + " application types '" + application_type + "'");
+			return db_at_l.get(0);
+		}
+	}
+
+	public static AggregationTypes getAggregationTypes(String aggregation_type) throws Exception {
+		Criteria crit = new Criteria();
+		crit.add(AggregationTypesPeer.DESCRIPTION, aggregation_type);
+		@SuppressWarnings("unchecked")
+		List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit);
+		if (db_at_l.isEmpty()) {
+			AggregationTypes db_at = new AggregationTypes();
+			db_at.setDescription(aggregation_type);
+			db_at.setInUse(Boolean.TRUE);
+			db_at.save();
+			return db_at;
+		} else {
+			if (1 < db_at_l.size())
+				logger.warn("Found " + db_at_l.size() + " aggregation types '" + aggregation_type + "'");
+			return db_at_l.get(0);
+		}
+	}
+
+	public static QuantityTypes getQuantityTypes(String quantity_type) throws Exception {
+		Criteria crit = new Criteria();
+		crit.add(QuantityTypesPeer.DESCRIPTION, quantity_type);
+		@SuppressWarnings("unchecked")
+		List<QuantityTypes> db_qt_l = QuantityTypesPeer.doSelect(crit);
+		if (db_qt_l.isEmpty()) {
+			QuantityTypes db_qt = new QuantityTypes();
+			db_qt.setDescription(quantity_type);
+			db_qt.setInUse(Boolean.TRUE);
+			db_qt.save();
+			return db_qt;
+		} else {
+			if (1 < db_qt_l.size())
+				logger.warn("Found " + db_qt_l.size() + " quantity types '" + quantity_type + "'");
+			return db_qt_l.get(0);
+		}
+	}
+
+	private static BigDecimal double2decimal(double arg) {
+		return Double.isNaN(arg) ? null : BigDecimal.valueOf(arg);
+	}
+
 	@Override
 	public void open(int run_id) throws SiriusException {
 		success = false;
-		if (1 != scenario.numEnsemble)
+		if (1 != scenario.getNumEnsemble())
 			logger.warn("scenario.numEnsembles != 1");
 		if (null == db_scenario)
 			throw new SiriusException("Scenario was not loaded from the database");
 
 		logger.info("Initializing simulation run");
-		Connection conn = null;
 		try {
-			conn = Transaction.begin();
-
-			DataSources db_ds = new DataSources();
-			db_ds.setId(DataSourcesPeer.nextId(DataSourcesPeer.ID, conn));
-			db_ds.save(conn);
-
 			Criteria crit = new Criteria();
 			crit.add(ScenariosPeer.ID, db_scenario.getId());
-			com.workingdogs.village.Value max_runnum = SimulationRunsPeer.maxColumnValue(SimulationRunsPeer.RUN_NUMBER, crit, conn);
+			com.workingdogs.village.Value max_runnum = SimulationRunsPeer.maxColumnValue(SimulationRunsPeer.RUN_NUMBER, crit, null);
 			final long run_number = null == max_runnum ? 1 : max_runnum.asLong() + 1;
 			logger.info("Run number: " + run_number);
 
 			db_simulation_run = new edu.berkeley.path.beats.om.SimulationRuns();
-			db_simulation_run.setDataSources(db_ds);
 			db_simulation_run.setScenarios(db_scenario);
 			db_simulation_run.setRunNumber(run_number);
 			db_simulation_run.setVersion(edu.berkeley.path.beats.Version.get().getEngineVersion());
-			db_simulation_run.setBuild("");
-			db_simulation_run.setSimulationStartTime(BigDecimal.valueOf(scenario.getTimeStart()));
-			db_simulation_run.setSimulationDuration(BigDecimal.valueOf(scenario.getTimeEnd() - scenario.getTimeStart()));
-			db_simulation_run.setSimulationDt(BigDecimal.valueOf(scenario.getSimDtInSeconds()));
-			db_simulation_run.setOutputDt(BigDecimal.valueOf(scenario.getOutputDt()));
+			db_simulation_run.setSimStartTime(double2decimal(scenario.getTimeStart()));
+			db_simulation_run.setSimDuration(double2decimal(scenario.getTimeEnd() - scenario.getTimeStart()));
+			db_simulation_run.setSimDt(double2decimal(scenario.getSimDtInSeconds()));
+			db_simulation_run.setOutputDt(double2decimal(scenario.getOutputDt()));
 			db_simulation_run.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(-1);
-			db_simulation_run.save(conn);
+			db_simulation_run.save();
 
-			Transaction.commit(conn);
-			conn = null;
+			db_application_type = getApplicationTypes("simulation");
+			db_aggregation_type_raw = getAggregationTypes("raw");
+			db_quantity_type_mean = getQuantityTypes("mean");
+
 			success = true;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		} catch (DataSetException exc) {
 			throw new SiriusException(exc);
-		} finally {
-			if (null != conn) {
-				Transaction.safeRollback(conn);
-				db_simulation_run = null;
-			}
+		} catch (Exception exc) {
+			throw new SiriusException(exc);
 		}
 		ts = Calendar.getInstance();
 		ts.set(Calendar.MILLISECOND, 0);
@@ -152,7 +206,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
 		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
 		ts.set(Calendar.SECOND, (int) (time - min * 60));
-		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.clock.getCurrentstep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
+		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.getCurrentTimeStep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
 
 		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
@@ -163,7 +217,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				} catch (Exception exc) {
 					throw new SiriusException(exc);
 				} finally {
-					_link.reset_cumulative();
+					_link.resetCumulative();
 				}
 			}
 		}
@@ -180,51 +234,51 @@ public class DBOutputWriter extends OutputWriterBase {
 	private LinkDataTotal fill_total(Link link, OutputParameters params) throws Exception {
 		LinkDataTotal db_ldt = new LinkDataTotal();
 		db_ldt.setLinkId(str2id(link.getId()));
-		db_ldt.setNetworkId(str2id(link.myNetwork.getId()));
-		db_ldt.setDataSources(db_simulation_run.getDataSources());
+		db_ldt.setNetworkId(str2id(link.getMyNetwork().getId()));
+		db_ldt.setAppRunId(db_simulation_run.getId());
+		db_ldt.setApplicationTypes(db_application_type);
 		db_ldt.setTs(ts.getTime());
-		db_ldt.setAggregation("raw");
-		db_ldt.setType("mean");
-		db_ldt.setCellNumber(Integer.valueOf(0));
+		db_ldt.setAggregationTypes(db_aggregation_type_raw);
+		db_ldt.setQuantityTypes(db_quantity_type_mean);
 		// mean density, vehicles
-		double density = SiriusMath.sum(link.cumulative_density[0]) / params.getNsteps();
-		db_ldt.setDensity(BigDecimal.valueOf(density));
+		double density = SiriusMath.sum(link.getCumulativeDensity(0)) / params.getNsteps();
+		db_ldt.setDensity(double2decimal(density));
 
-		FundamentalDiagram fd = link.currentFD(0);
-		if (null != fd) {
-			if (params.doExportFlows()) {
-				// input flow, vehicles
-				db_ldt.setInFlow(BigDecimal.valueOf(SiriusMath.sum(link.cumulative_inflow[0])));
-				// output flow, vehicles
-				double outflow = SiriusMath.sum(link.cumulative_outflow[0]);
-				db_ldt.setOutFlow(BigDecimal.valueOf(outflow));
+		if (params.doExportFlows()) {
+			// input flow, vehicles
+			db_ldt.setInFlow(double2decimal(SiriusMath.sum(link.getCumulativeInFlow(0))));
+			// output flow, vehicles
+			double outflow = SiriusMath.sum(link.getCumulativeOutFlow(0));
+			db_ldt.setOutFlow(double2decimal(outflow));
 
-				// free flow speed, m/s
-				BigDecimal ffspeed = fd.getFreeFlowSpeed();
-				// speed, m/s
-				if (density <= 0)
-					db_ldt.setSpeed(ffspeed);
-				else {
-					double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
-					if (null != ffspeed && speed > ffspeed.doubleValue())
-						db_ldt.setSpeed(ffspeed);
-					else if (!Double.isNaN(speed))
-						db_ldt.setSpeed(BigDecimal.valueOf(speed));
+			// free flow speed, m/s
+			double ffspeed = link.getVfInMPS(0);
+			// speed, m/s
+			if (density <= 0)
+				db_ldt.setSpeed(double2decimal(ffspeed));
+			else {
+				double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+				if (!Double.isNaN(speed)) {
+					if (!Double.isNaN(ffspeed) && speed > ffspeed)
+						db_ldt.setSpeed(double2decimal(ffspeed));
+					else
+						db_ldt.setSpeed(double2decimal(speed));
 				}
 			}
-			// free flow speed, m/s
-			db_ldt.setFreeFlowSpeed(fd.getFreeFlowSpeed());
-			// critical speed, m/s
-			db_ldt.setCriticalSpeed(fd.getCriticalSpeed());
-			// congestion wave speed, m/s
-			db_ldt.setCongestionWaveSpeed(fd.getCongestionSpeed());
-			// maximum flow, vehicles per second per lane
-			db_ldt.setCapacity(fd.getCapacity());
-			// jam density, vehicles per meter per lane
-			db_ldt.setJamDensity(fd.getJamDensity());
-			// capacity drop, vehicle per second per lane
-			db_ldt.setCapacityDrop(fd.getCapacityDrop());
 		}
+		// free flow speed, m/s
+		db_ldt.setFreeFlowSpeed(double2decimal(link.getVfInMPS(0)));
+		// critical speed, m/s
+		db_ldt.setCriticalSpeed(double2decimal(link.getCriticalSpeedInMPS(0)));
+		// congestion wave speed, m/s
+		db_ldt.setCongestionWaveSpeed(double2decimal(link.getWInMPS(0)));
+		// maximum flow, vehicles per second
+		db_ldt.setCapacity(double2decimal(link.getCapacityInVPS(0)));
+		// jam density, vehicles per meter
+		db_ldt.setJamDensity(double2decimal(link.getDensityJamInVeh(0) / link.getLengthInMeters()));
+		// capacity drop, vehicle per second
+		db_ldt.setCapacityDrop(double2decimal(link.getCapacityDropInVeh(0) / scenario.getSimDtInSeconds()));
+
 		db_ldt.save();
 		return db_ldt;
 	}
@@ -240,34 +294,36 @@ public class DBOutputWriter extends OutputWriterBase {
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
-			db_ldd.setNetworkId(str2id(link.myNetwork.getId()));
-			db_ldd.setDataSources(db_simulation_run.getDataSources());
+			db_ldd.setNetworkId(str2id(link.getMyNetwork().getId()));
+			db_ldd.setAppRunId(db_simulation_run.getId());
+			db_ldd.setApplicationTypes(db_application_type);
+			// TODO db_ldd.setDestinationNetworks();
 			db_ldd.setVehicleTypes(db_vehicle_type[vt_ind]);
 			db_ldd.setTs(ts.getTime());
-			db_ldd.setAggregation("raw");
-			db_ldd.setType("mean");
-			db_ldd.setCellNumber(Integer.valueOf(0));
+			db_ldd.setAggregationTypes(db_aggregation_type_raw);
+			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = link.cumulative_density[0][vt_ind] / params.getNsteps();
-			db_ldd.setDensity(new BigDecimal(density));
+			double density = link.getCumulativeDensity(0)[vt_ind] / params.getNsteps();
+			db_ldd.setDensity(double2decimal(density));
 			if (params.doExportFlows()) {
 				// input flow, vehicles
-				db_ldd.setInFlow(new BigDecimal(link.cumulative_inflow[0][vt_ind]));
+				db_ldd.setInFlow(double2decimal(link.getCumulativeInFlow(0)[vt_ind]));
 				// output flow, vehicles
-				double outflow = link.cumulative_outflow[0][vt_ind];
-				db_ldd.setOutFlow(new BigDecimal(outflow));
+				double outflow = link.getCumulativeOutFlow(0)[vt_ind];
+				db_ldd.setOutFlow(double2decimal(outflow));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = outflow * link.getLength().doubleValue() / (params.getOutputPeriod() * density);
-					FundamentalDiagram fd = link.currentFD(0);
-					// free flow speed, m/s
-					BigDecimal ffspeed = null == fd ? null : fd.getFreeFlowSpeed();
-					if (null != ffspeed && speed > ffspeed.doubleValue())
-						db_ldd.setSpeed(ffspeed);
-					else if (!Double.isNaN(speed))
-						db_ldd.setSpeed(new BigDecimal(speed));
+					double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+					if (!Double.isNaN(speed)) {
+						// free flow speed, m/s
+						double ffspeed = link.getVfInMPS(0);
+						if (!Double.isNaN(ffspeed) && speed > ffspeed)
+							db_ldd.setSpeed(double2decimal(ffspeed));
+						else
+							db_ldd.setSpeed(double2decimal(speed));
+					}
 				}
 			}
 			db_ldd.save();

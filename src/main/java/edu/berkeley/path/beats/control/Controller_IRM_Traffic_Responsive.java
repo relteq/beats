@@ -207,7 +207,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		trlevelindex = 0;
 		// extract data from the table and populate
 		for (int i=0;i<table.getNoRows();i++){
-			trMeteringRates_normalized[i]=Double.parseDouble(table.getTableElement(i,rateIndx))* myScenario.getSimDtInHours(); // in veh per sim step
+			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * myScenario.getSimDtInSeconds(); // in veh per sim step
 			if (hasflowthres){
 				trFlowThresh[i]=Double.parseDouble(table.getTableElement(i,flwIndx));			// flow in veh/hr	
 			}
@@ -298,18 +298,18 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 		if (hasspeedthres)
 			if(usesensor){
-				mainlinespeed = mainlinesensor.getSpeedInMPH(0);			
+				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
 			}
 			else {
-				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0)/mainlinelink.getTotalDensityInVPM(0)/myScenario.getSimDtInHours();
+				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPM(0) / myScenario.getSimDtInSeconds();
 			}
 		
 		if (hasflowthres)
 			if(usesensor){
-				mainlineflow = mainlinesensor.getTotalFlowInVPH(0);			
+				mainlineflow = mainlinesensor.getTotalFlowInVPS(0);
 			}
 			else {
-				mainlineflow = mainlinelink.getTotalOutflowInVeh(0)/myScenario.getSimDtInHours();
+				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / myScenario.getSimDtInSeconds();
 			}		
 		
 		// metering rate adjustments

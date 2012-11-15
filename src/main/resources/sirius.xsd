@@ -554,13 +554,12 @@
 			  <xs:attribute name="node_id" type="xs:string" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
-			  <xs:attribute name="link_id_destination" type="xs:string" use="optional" />
+			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
 			</xs:complexType>
 		  </xs:element>		  
 
 			  <xs:element name="splitratio">
 				<xs:complexType mixed="true">
-				  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
 				  <xs:attribute name="link_in" type="xs:string" use="required" />
 				  <xs:attribute name="link_out" type="xs:string" use="required" />
 				</xs:complexType>
@@ -937,7 +936,7 @@
 				<xs:element ref="link_references" minOccurs="1" maxOccurs="1" />
 			  </xs:all>
 			  <xs:attribute name="id" type="xs:string" use="required" />
-			  <xs:attribute name="link_id_destination" type="xs:string" use="required" />
+			  <xs:attribute name="destination_link_id" type="xs:string" use="required" />
 			</xs:complexType>
 		  </xs:element>
   

@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
 import java.io.*;
 import java.util.Vector;
@@ -34,6 +34,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import javax.xml.stream.*;
+
+import edu.berkeley.path.beats.simulator.JaxbObjectFactory;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
 
 class Output {
 	public Scenario scenario;

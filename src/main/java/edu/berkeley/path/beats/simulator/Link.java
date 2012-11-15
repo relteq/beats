@@ -580,8 +580,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return end_node;
 	}
 
-	/** Length of this link in miles */
-	public double getLengthInMiles() {
+	/** Length of this link in meters */
+	public double getLengthInMeters() {
 		return _length;
 	}
 
@@ -716,19 +716,19 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Average speed of traffic in the link in mile/hour. 
+	/** Average speed of traffic in the link in meters/second.
 	 * The return value is computed by dividing the total outgoing 
 	 * link flow by the total link density. 
 	 * @return average link speed. 0  if something goes wrong.
 	 */
-	public double computeSpeedInMPH(int ensemble){
+	public double computeSpeedInMPS(int ensemble){
 		try{
 			double speed;
 			if( SiriusMath.greaterthan(totaldensity[ensemble],0d) )
 				speed = SiriusMath.sumsum(outflow[ensemble])/totaldensity[ensemble];
 			else
 				speed = currentFD(ensemble).getVfNormalized();
-			return speed*_length/myNetwork.myScenario.getSimDtInHours();
+			return speed * _length / myNetwork.myScenario.getSimDtInSeconds();
 		} catch(Exception e){
 			return 0d;
 		}
@@ -772,49 +772,49 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return FD._getCapacityInVeh();
 	}
 
-	/** Jam density in vehicle/mile/lane. */
+	/** Jam density in vehicle/meter/lane. */
 	public double getDensityJamInVPMPL(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getDensityJamInVeh()/getLengthInMiles()/_lanes;
+			return FD._getDensityJamInVeh() / getLengthInMeters() / _lanes;
 	}
 
-	/** Critical density in vehicle/mile/lane. */
+	/** Critical density in vehicle/meter/lane. */
 	public double getDensityCriticalInVPMPL(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD.getDensityCriticalInVeh()/getLengthInMiles()/_lanes;
+			return FD.getDensityCriticalInVeh() / getLengthInMeters() / _lanes;
 	}
 
-	/** Capacity drop in vehicle/hr/lane. */
-	public double getCapacityDropInVPHPL(int ensemble) {
+	/** Capacity drop in vehicle/second/lane. */
+	public double getCapacityDropInVPSPL(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getCapacityDropInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
+			return FD._getCapacityDropInVeh() / myNetwork.myScenario.getSimDtInSeconds() / _lanes;
 	}
 
-	/** Capacity in vehicles per hour. */
-	public double getCapacityInVPH(int ensemble) {
+	/** Capacity in vehicles per second. */
+	public double getCapacityInVPS(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInHours();
+			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInSeconds();
 	}
 
-	/** Capacity in vehicle/hr/lane. */
-	public double getCapacityInVPHPL(int ensemble) {
+	/** Capacity in vehicle/second/lane. */
+	public double getCapacityInVPSPL(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getCapacityInVeh()/myNetwork.myScenario.getSimDtInHours()/_lanes;
+			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInSeconds() / _lanes;
 	}
 
 	/** Freeflow speed in normalized units (link/time step). */
@@ -826,13 +826,24 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return FD.getVfNormalized();
 	}
 
-	/** Freeflow speed in mile/hr. */
-	public double getVfInMPH(int ensemble) {
+	/** Freeflow speed in meters/second. */
+	public double getVfInMPS(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD.getVfNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
+			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
+	}
+
+	/** Critical speed in meters/second. */
+	public double getCriticalSpeedInMPS(int ensemble) {
+		FundamentalDiagram FD = currentFD(ensemble);
+		if (null == FD)
+			return Double.NaN;
+		else if (null != FD.getCriticalSpeed())
+			return FD.getCriticalSpeed().doubleValue();
+		else
+			return getVfInMPS(ensemble);
 	}
 
 	/** Congestion wave speed in normalized units (link/time step). */
@@ -844,13 +855,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return FD.getWNormalized();
 	}
 
-	/** Congestion wave speed in mile/hr. */
-	public double getWInMPH(int ensemble) {
+	/** Congestion wave speed in meters/second. */
+	public double getWInMPS(int ensemble) {
 		FundamentalDiagram FD = currentFD(ensemble);
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD.getWNormalized()*getLengthInMiles()/myNetwork.myScenario.getSimDtInHours();
+			return FD.getWNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
 	}
 		
 	/** Replace link density with given values.
@@ -868,6 +879,37 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		for(i=0;i<x.length;i++)
 			for(j=0;j<x[i].length;j++)
 				density[ensemble][i][j] = x[i][j];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative densities for the given ensemble, for all vehicle types
+	 */
+	public Double[] getCumulativeDensity(int ensemble) {
+		return cumulative_density[ensemble];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative incoming flow for the given ensemble, for all vehicle types
+	 */
+	public Double[] getCumulativeInFlow(int ensemble) {
+		return cumulative_inflow[ensemble];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative outgoing flow for the given ensemble, for all vehicle types
+	 */
+	public Double[] getCumulativeOutFlow(int ensemble) {
+		return cumulative_outflow[ensemble];
+	}
+
+	/**
+	 * resets cumulative densities and flows
+	 */
+	public void resetCumulative() {
+		reset_cumulative();
 	}
 
 }
