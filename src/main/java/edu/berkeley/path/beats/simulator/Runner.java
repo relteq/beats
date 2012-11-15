@@ -105,8 +105,6 @@ public final class Runner {
 
 ////////////////////////////////////
 
-
-		try {
 			Properties owr_props = new Properties();
 			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", outputtype);

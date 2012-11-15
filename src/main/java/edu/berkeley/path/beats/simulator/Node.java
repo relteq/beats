@@ -1,14 +1,35 @@
-/*  Copyright (c) 2012, Relteq Systems, Inc. All rights reserved.
-	This source is subject to the following copyright notice:
-	http://relteq.com/COPYRIGHT_RelteqSystemsInc.txt
-*/
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
 
-package com.relteq.sirius.simulator;
+package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.relteq.sirius.jaxb.DestinationNetwork;
+import edu.berkeley.path.beats.simulator.DestinationNetworkBLA;
 
 // NOTE
 // SEE IF THE ENSEMBLE DIMENSION CAN BE ELIMINATED FOR OUTDEMANDKNOWN AND DSRATIO
@@ -17,7 +38,7 @@ import com.relteq.sirius.jaxb.DestinationNetwork;
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class Node extends com.relteq.sirius.jaxb.Node {
+public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		   
 	/** @y.exclude */ 	protected Network myNetwork;
 
@@ -274,7 +295,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 			nOut = getOutputs().getOutput().size();
 			output_link = new Link[nOut];
 			for(int i=0;i<nOut;i++){
-				com.relteq.sirius.jaxb.Output output = getOutputs().getOutput().get(i);
+				edu.berkeley.path.beats.jaxb.Output output = getOutputs().getOutput().get(i);
 				output_link[i] = myNetwork.getLinkWithId(output.getLinkId());				
 			}
 		}
@@ -284,7 +305,7 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 			nIn = getInputs().getInput().size();
 			input_link = new Link[nIn];
 			for(int i=0;i<nIn;i++){
-				com.relteq.sirius.jaxb.Input input = getInputs().getInput().get(i);
+				edu.berkeley.path.beats.jaxb.Input input = getInputs().getInput().get(i);
 				input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
 			}
 		}
@@ -1035,15 +1056,6 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
 
-<<<<<<< HEAD
-//	public Double [][][] getSplitRatio(){
-//		if(splitratio==null)
-//			return null;
-//		else{
-//			return splitratio.cloneData();
-//		}
-//	}
-=======
 	public Double [][][] getSplitRatio(){
 		if(splitratio==null)
 			return null;
@@ -1063,5 +1075,4 @@ public final class Node extends com.relteq.sirius.jaxb.Node {
 		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
 
->>>>>>> fe5713b2d6aeff86c23560d82dbfa05e81949c59
 }
