@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensitySet {
+public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
 	private Double [][] initial_density; 	// [veh/meter] indexed by link and type
@@ -145,7 +145,7 @@ public final class InitialDensitySet extends com.relteq.sirius.jaxb.InitialDensi
 		private int dn_global_index;
 		private boolean hasvalidrefs;
 
-		public LinkDestinationIC(com.relteq.sirius.jaxb.Density jaxbD,Scenario myScenario){
+		public LinkDestinationIC(edu.berkeley.path.beats.jaxb.Density jaxbD,Scenario myScenario){
 			// read destination link.
 			// if not specified, this density applies to background flow.
 			

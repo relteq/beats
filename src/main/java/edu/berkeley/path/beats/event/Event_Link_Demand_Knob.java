@@ -26,12 +26,12 @@
 
 package edu.berkeley.path.beats.event;
 
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator.Event;
-import com.relteq.sirius.simulator.Link;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.Event;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 
 public class Event_Link_Demand_Knob extends Event {
 
@@ -56,8 +56,8 @@ public class Event_Link_Demand_Knob extends Event {
 
 	@Override
 	public void populate(Object jaxbobject) {
-		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
+		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
 		// reset_to_nominal
 		if (null != params && params.has("reset_to_nominal"))
 			this.resetToNominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
@@ -89,7 +89,7 @@ public class Event_Link_Demand_Knob extends Event {
 	public void activate() throws SiriusException {
 		for(ScenarioElement s : targets){
 	    	if(myScenario.getDemandProfileSet()!=null){
-	        	for(com.relteq.sirius.jaxb.DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){
+	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){
 	        		if(profile.getLinkIdOrigin().equals(s.getId())){
 	        			if(resetToNominal)
 	        				setDemandProfileEventKnob(profile,profile.getKnob().doubleValue());

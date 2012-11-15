@@ -26,9 +26,8 @@
 
 package edu.berkeley.path.beats.control;
 
-
-import com.relteq.sirius.simulator.Controller;
-import com.relteq.sirius.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Scenario;
 
 public class Controller_CRM_SWARM extends Controller {
 

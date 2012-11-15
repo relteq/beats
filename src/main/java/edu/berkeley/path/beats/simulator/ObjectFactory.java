@@ -334,7 +334,7 @@ public final class ObjectFactory {
 	    // set has_background_flow     	
 		S.has_background_flow = false;
 		if(S.getDemandProfileSet()!=null)
-			for(com.relteq.sirius.jaxb.DemandProfile demprofile : S.getDemandProfileSet().getDemandProfile() ){
+			for(edu.berkeley.path.beats.jaxb.DemandProfile demprofile : S.getDemandProfileSet().getDemandProfile() ){
 				S.has_background_flow |= demprofile.getDestinationNetworkId()==null;
 			}
 		

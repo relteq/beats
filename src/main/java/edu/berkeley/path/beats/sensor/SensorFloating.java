@@ -26,8 +26,8 @@
 
 package edu.berkeley.path.beats.sensor;
 
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.Sensor;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Sensor;
 
 public class SensorFloating extends Sensor {
 

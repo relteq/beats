@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class DemandProfileSet extends com.relteq.sirius.jaxb.DemandProfileSet {
+final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileSet {
 
 	protected Scenario myScenario;
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
@@ -44,12 +44,12 @@ final class DemandProfileSet extends com.relteq.sirius.jaxb.DemandProfileSet {
 
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
-		for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile) dp).populate(myScenario);
 	}
 
 	protected void reset() {
-		for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile) dp).reset();
 	}
 	
@@ -62,12 +62,12 @@ final class DemandProfileSet extends com.relteq.sirius.jaxb.DemandProfileSet {
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");
 		
-		for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile)dp).validate();		
 	}
 
 	protected void update() {
-    	for(com.relteq.sirius.jaxb.DemandProfile dp : getDemandProfile())
+    	for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
     		((DemandProfile) dp).update(false);	
 	}
 	

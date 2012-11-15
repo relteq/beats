@@ -26,90 +26,90 @@
 
 package edu.berkeley.path.beats.simulator;
 
-public final class JaxbObjectFactory extends com.relteq.sirius.jaxb.ObjectFactory {
+public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 	
 	@Override
-	public com.relteq.sirius.jaxb.CapacityProfile createCapacityProfile() {
+	public edu.berkeley.path.beats.jaxb.CapacityProfile createCapacityProfile() {
 		return new CapacityProfile();
 	}
 	
 	@Override
-	public com.relteq.sirius.jaxb.ControllerSet createControllerSet() {
+	public edu.berkeley.path.beats.jaxb.ControllerSet createControllerSet() {
 		return new ControllerSet();
 	}
 	
 	@Override
-	public com.relteq.sirius.jaxb.DemandProfile createDemandProfile() {
+	public edu.berkeley.path.beats.jaxb.DemandProfile createDemandProfile() {
 		return new DemandProfile();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.DemandProfileSet createDemandProfileSet() {
+	public edu.berkeley.path.beats.jaxb.DemandProfileSet createDemandProfileSet() {
 		return new DemandProfileSet();
 	}
 	
 	@Override
-	public com.relteq.sirius.jaxb.FundamentalDiagram createFundamentalDiagram() {
+	public edu.berkeley.path.beats.jaxb.FundamentalDiagram createFundamentalDiagram() {
 		return new FundamentalDiagram();
 	}
 	
 	@Override
-	public com.relteq.sirius.jaxb.FundamentalDiagramProfile createFundamentalDiagramProfile() {
+	public edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile createFundamentalDiagramProfile() {
 		return new FundamentalDiagramProfile();
 	}	
 	
 	@Override
-	public com.relteq.sirius.jaxb.InitialDensitySet createInitialDensitySet() {
+	public edu.berkeley.path.beats.jaxb.InitialDensitySet createInitialDensitySet() {
 		return new InitialDensitySet();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Link createLink() {
+	public edu.berkeley.path.beats.jaxb.Link createLink() {
 		return new Link();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Network createNetwork() {
+	public edu.berkeley.path.beats.jaxb.Network createNetwork() {
 		return new Network();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Node createNode() {
+	public edu.berkeley.path.beats.jaxb.Node createNode() {
 		return new Node();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Scenario createScenario() {
+	public edu.berkeley.path.beats.jaxb.Scenario createScenario() {
 		return new Scenario();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.ScenarioElement createScenarioElement() {
+	public edu.berkeley.path.beats.jaxb.ScenarioElement createScenarioElement() {
 		return new ScenarioElement();
 	}
 	
 	@Override
-	public com.relteq.sirius.jaxb.Signal createSignal() {
+	public edu.berkeley.path.beats.jaxb.Signal createSignal() {
 		return new Signal();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.SplitratioProfile createSplitratioProfile() {
+	public edu.berkeley.path.beats.jaxb.SplitratioProfile createSplitratioProfile() {
 		return new SplitRatioProfile();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.SplitRatioProfileSet createSplitRatioProfileSet() {
+	public edu.berkeley.path.beats.jaxb.SplitRatioProfileSet createSplitRatioProfileSet() {
 		return new SplitRatioProfileSet();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Sensor createSensor() {
+	public edu.berkeley.path.beats.jaxb.Sensor createSensor() {
 		return new Sensor();
 	}
 
 	@Override
-	public com.relteq.sirius.jaxb.Parameters createParameters() {
+	public edu.berkeley.path.beats.jaxb.Parameters createParameters() {
 		return new Parameters();
 	}
 

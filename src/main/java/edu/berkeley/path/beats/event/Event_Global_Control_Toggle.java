@@ -26,9 +26,9 @@
 
 package edu.berkeley.path.beats.event;
 
-import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator.Event;
-import com.relteq.sirius.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.Event;
+import edu.berkeley.path.beats.simulator.Scenario;
 
 public class Event_Global_Control_Toggle extends Event {
 
@@ -52,8 +52,8 @@ public class Event_Global_Control_Toggle extends Event {
 
 	@Override
 	public void populate(Object jaxbobject) {
-		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
+		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
 		if (null != params && params.has("on_off_switch"))
 			this.ison = params.get("on_off_switch").equalsIgnoreCase("on");
 		else

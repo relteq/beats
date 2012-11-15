@@ -50,7 +50,7 @@ public class DataSource {
 			format = DataSource.Format.BHL;		
 	}
 
-	public DataSource(com.relteq.sirius.sensor.DataSource d) {
+	public DataSource(edu.berkeley.path.beats.sensor.DataSource d) {
 		this.urlname = d.getUrl();
 		this.format = d.getFormat();
 	}

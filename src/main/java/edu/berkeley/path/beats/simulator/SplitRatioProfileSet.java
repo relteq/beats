@@ -28,7 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfileSet {
+final class SplitRatioProfileSet extends edu.berkeley.path.beats.jaxb.SplitRatioProfileSet {
 
 	protected Scenario myScenario;
 	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
@@ -46,7 +46,7 @@ final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfil
 		
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 
-		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
+		for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
 			((SplitRatioProfile) sr).populate(myScenario);
 	}
 
@@ -57,7 +57,7 @@ final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfil
 
 		// check that there is at most one profile for each node
 		ArrayList<String> nodeids = new ArrayList<String>();
-		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile()){
+		for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile()){
 			String newid = sr.getNodeId();
 			if(nodeids.contains(newid))
 				SiriusErrorLog.addError("Multiple split ratio profiles were provided for node " + newid);
@@ -69,12 +69,12 @@ final class SplitRatioProfileSet extends com.relteq.sirius.jaxb.SplitRatioProfil
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("Vehicle types list in demand profile id=" +getId()+ " does not match that of settings.");
 		
-		for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
+		for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
 			((SplitRatioProfile)sr).validate();		
 	}
 
 	protected void update() {
-    	for(com.relteq.sirius.jaxb.SplitratioProfile sr : getSplitratioProfile())
+    	for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
     		((SplitRatioProfile) sr).update();	
 	}
 	

@@ -37,15 +37,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.relteq.sirius.simulator.Controller;
-import com.relteq.sirius.control.Controller_CRM_HERO;
-import com.relteq.sirius.simulator.Link;
-import com.relteq.sirius.simulator.Node;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.Sensor;
-import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.sensor.SensorLoopStation;
-import com.relteq.sirius.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.control.Controller_CRM_HERO;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Sensor;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.sensor.SensorLoopStation;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 
 public class Controller_CRM_HERO extends Controller {
 
@@ -135,7 +135,7 @@ public class Controller_CRM_HERO extends Controller {
 	@Override
 	public void populate(Object jaxbobject) {
 
-		com.relteq.sirius.jaxb.Controller jaxbc = (com.relteq.sirius.jaxb.Controller) jaxbobject;
+		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
 		if(jaxbc.getTargetElements()==null)
 			return;
@@ -152,7 +152,7 @@ public class Controller_CRM_HERO extends Controller {
 		
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			com.relteq.sirius.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onrampLink = myScenario.getLinkWithId(s.getId());	
 		}
 		
@@ -160,7 +160,7 @@ public class Controller_CRM_HERO extends Controller {
 		// Feedback elements can be "mainlineSensor","mainlineLink", and "queueSensor"
 		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
 			
-			for(com.relteq.sirius.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
+			for(edu.berkeley.path.beats.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
 				
 				if(s.getUsage()==null)
 					return;
@@ -220,7 +220,7 @@ public class Controller_CRM_HERO extends Controller {
 		ArrayList<String> setPossibleSlavesUnordered = new  ArrayList<String>();
 		
 		if(jaxbc.getParameters()!=null)
-			for(com.relteq.sirius.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
+			for(edu.berkeley.path.beats.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 								
 				if(p.getName().equals("gainAlinea")){
 					gain_in_mps = Double.parseDouble(p.getValue());
@@ -457,7 +457,7 @@ public class Controller_CRM_HERO extends Controller {
 		ArrayList<String> controllersOrdered = new ArrayList<String>();
 							
 		//Most Downstream Node	
-		for(com.relteq.sirius.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
+		for(edu.berkeley.path.beats.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
         	if( ((Link)aLink).getType().equals("freeway")  && ((Link)aLink).getEnd_node().getType().equals("terminal")                ) { 	
         		nodesOrdered.add(((Link)aLink).getEnd_node());
         		if(printMessages)
@@ -469,7 +469,7 @@ public class Controller_CRM_HERO extends Controller {
 		//Freeway Links and Nodes  Arranged from Downstream to Upstream by Id
 		int isTerminalNode=0;	
 		while (isTerminalNode==0) {
-			for(com.relteq.sirius.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
+			for(edu.berkeley.path.beats.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
 	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId().equals(nodesOrdered.get(nodesOrdered.size()-1).getId())  ) { 
 	        		linksOrdered.add(((Link)aLink));
 	        		nodesOrdered.add(((Link)aLink).getBegin_node());	
@@ -485,13 +485,13 @@ public class Controller_CRM_HERO extends Controller {
 		
 		// HERO Controllers Arranged from Downstream to Upstream by Controller Id
 		for(Node aNode: nodesOrdered){	
-			for (com.relteq.sirius.jaxb.Link aLink: aNode.getInput_link()){ 
+			for (edu.berkeley.path.beats.jaxb.Link aLink: aNode.getInput_link()){ 
 				//System.out.println("Input Link: "+ aLink.getId());
 				if( ((Link)aLink).getType().equals("onramp") ){
 					if(printMessages)
 						System.out.println("Node "+ aNode.getId()+": "+ aLink.getType()+ " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
 					
-					for(com.relteq.sirius.jaxb.Controller aController: myScenario.getControllerSet().getController()) {
+					for(edu.berkeley.path.beats.jaxb.Controller aController: myScenario.getControllerSet().getController()) {
 						if(aController.getTargetElements().getScenarioElement().get(0).getId().equals(aLink.getId()) && aController.getType().equals("CRM_hero"))   {
 							if(printMessages)
 								System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 

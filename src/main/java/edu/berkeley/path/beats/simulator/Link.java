@@ -28,9 +28,9 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-import com.relteq.sirius.jaxb.DestinationNetwork;
+import edu.berkeley.path.beats.jaxb.DestinationNetwork;
 
-import com.relteq.sirius.calibrator.FDParameters;
+import edu.berkeley.path.beats.calibrator.FDParameters;
 
 /** Link class.
 * 

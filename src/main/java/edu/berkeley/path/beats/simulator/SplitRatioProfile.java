@@ -28,7 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
+final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioProfile {
 
 	protected Scenario myScenario;
 	protected Node myNode;
@@ -77,7 +77,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 		if(myScenario.getSplitRatioProfileSet()!=null)
 			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
 		
-		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
+		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
 
 			// destination network index in the node
 			dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
@@ -170,7 +170,7 @@ final class SplitRatioProfile extends com.relteq.sirius.jaxb.SplitratioProfile {
 
 		// check link ids
 		int dn_node_index,in_index,out_index;
-		for(com.relteq.sirius.jaxb.Splitratio sr : getSplitratio()){
+		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
 
 			// destination network 
 			dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	

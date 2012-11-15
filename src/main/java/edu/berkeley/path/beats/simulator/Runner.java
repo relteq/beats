@@ -80,7 +80,7 @@ public final class Runner {
 //}
 
 //System.out.print("\nNodes:");
-//for(com.relteq.sirius.jaxb.Node jnode : scenario.getNetworkList().getNetwork().get(0).getNodeList().getNode()){
+//for(edu.berkeley.path.beats.jaxb.Node jnode : scenario.getNetworkList().getNetwork().get(0).getNodeList().getNode()){
 //Node node = (Node) jnode;
 //System.out.println("\n\tid=" + node.getId());
 //System.out.println("\toutlinks: " + Arrays.asList(node.output_link).toString());
@@ -93,7 +93,7 @@ public final class Runner {
 //}
 //
 //System.out.print("\nLinks:");
-//for(com.relteq.sirius.jaxb.Link jlink : scenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()){
+//for(edu.berkeley.path.beats.jaxb.Link jlink : scenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()){
 //Link link = (Link) jlink;
 //System.out.println("\n\tid=" + link.getId());
 //System.out.println("\tnumDNetworks=" + link.numDNetworks);

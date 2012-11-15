@@ -29,13 +29,13 @@ package edu.berkeley.path.beats.event;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.relteq.sirius.simulator.ObjectFactory;
-import com.relteq.sirius.simulator.SiriusErrorLog;
-import com.relteq.sirius.simulator.SiriusException;
-import com.relteq.sirius.simulator.Event;
-import com.relteq.sirius.simulator.Link;
-import com.relteq.sirius.simulator.Scenario;
-import com.relteq.sirius.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.Event;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.ScenarioElement;
 
 public class Event_Link_Lanes extends Event {
 
@@ -63,8 +63,8 @@ public class Event_Link_Lanes extends Event {
 
 	@Override
 	public void populate(Object jaxbobject) {
-		com.relteq.sirius.jaxb.Event jaxbe = (com.relteq.sirius.jaxb.Event) jaxbobject;
-		com.relteq.sirius.simulator.Parameters params = (com.relteq.sirius.simulator.Parameters) jaxbe.getParameters();
+		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
+		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
 		// reset_to_nominal
 		if (null != params && params.has("reset_to_nominal"))
 			this.resetToNominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
@@ -95,7 +95,7 @@ public class Event_Link_Lanes extends Event {
 		for(ScenarioElement s : targets){
 			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)
-				newlanes = ((com.relteq.sirius.jaxb.Link)targetlink).getLanes().doubleValue();
+				newlanes = ((edu.berkeley.path.beats.jaxb.Link)targetlink).getLanes().doubleValue();
 			else
 				newlanes =  targetlink.get_Lanes();
 			newlanes += deltalanes;

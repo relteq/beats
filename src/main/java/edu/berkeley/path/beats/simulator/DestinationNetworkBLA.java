@@ -33,7 +33,7 @@ import java.util.Set;
 
 public final class DestinationNetworkBLA {
 	
-	protected com.relteq.sirius.jaxb.DestinationNetwork dnetwork;
+	protected edu.berkeley.path.beats.jaxb.DestinationNetwork dnetwork;
 	protected Scenario myScenario;
 	protected int myIndex;
 	
@@ -47,7 +47,7 @@ public final class DestinationNetworkBLA {
 	// construction
 	/////////////////////////////////////////////////////////////////////
     
-	public DestinationNetworkBLA(com.relteq.sirius.jaxb.DestinationNetwork dnetwork,Scenario myScenario,int myIndex){
+	public DestinationNetworkBLA(edu.berkeley.path.beats.jaxb.DestinationNetwork dnetwork,Scenario myScenario,int myIndex){
 		this.dnetwork = dnetwork;
 		this.myScenario = myScenario;
 		this.myIndex = myIndex;
@@ -63,10 +63,10 @@ public final class DestinationNetworkBLA {
 		// special case for background networks
 		if(dnetwork==null){ 
 			// add it to all links and nodes in the scenario
-			for(com.relteq.sirius.jaxb.Network network : myScenario.getNetworkList().getNetwork()){
-				for(com.relteq.sirius.jaxb.Link jlink : network.getLinkList().getLink() )
+			for(edu.berkeley.path.beats.jaxb.Network network : myScenario.getNetworkList().getNetwork()){
+				for(edu.berkeley.path.beats.jaxb.Link jlink : network.getLinkList().getLink() )
 					((Link)jlink).addDestinationNetwork(myIndex);
-				for(com.relteq.sirius.jaxb.Node jnode : network.getNodeList().getNode() )
+				for(edu.berkeley.path.beats.jaxb.Node jnode : network.getNodeList().getNode() )
 					((Node)jnode).addDestinationNetwork(myIndex,null,null);
 			}
 			return;
@@ -78,7 +78,7 @@ public final class DestinationNetworkBLA {
 			HashMap<Node,ArrayList<Link>> node2inlinks = new HashMap<Node,ArrayList<Link>>();
 			
 			// loop through link references
-			for(com.relteq.sirius.jaxb.LinkReference linkref : dnetwork.getLinkReferences().getLinkReference()){
+			for(edu.berkeley.path.beats.jaxb.LinkReference linkref : dnetwork.getLinkReferences().getLinkReference()){
 				Link link = myScenario.getLinkWithId(linkref.getId());
 				links.add(link);
 				

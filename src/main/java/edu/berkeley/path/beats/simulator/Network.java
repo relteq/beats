@@ -64,7 +64,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	protected void constructLinkNodeMaps(){
 		Node node;
 		if(getLinkList()!=null)
-			for (com.relteq.sirius.jaxb.Link jlink : getLinkList().getLink()){
+			for (edu.berkeley.path.beats.jaxb.Link jlink : getLinkList().getLink()){
 				Link link = (Link) jlink;
 				node = link.end_node;
 				if(!node.isTerminal)

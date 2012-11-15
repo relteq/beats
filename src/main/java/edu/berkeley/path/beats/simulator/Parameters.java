@@ -26,14 +26,14 @@
 
 package edu.berkeley.path.beats.simulator;
 
-public class Parameters extends com.relteq.sirius.jaxb.Parameters {
+public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
 	/**
 	 * Tests whether a parameter with the given name exists
 	 * @param name
 	 * @return true, if such a parameter exists; false, otherwise
 	 */
 	public boolean has(String name) {
-		for (com.relteq.sirius.jaxb.Parameter param : getParameter()) {
+		for (edu.berkeley.path.beats.jaxb.Parameter param : getParameter()) {
 			if (name.equals(param.getName())) return true;
 		}
 		return false;
@@ -45,9 +45,9 @@ public class Parameters extends com.relteq.sirius.jaxb.Parameters {
 	 * @return null, if such a parameter does not exist
 	 */
 	public String get(String name) {
-		java.util.ListIterator<com.relteq.sirius.jaxb.Parameter> iter = getParameter().listIterator(getParameter().size());
+		java.util.ListIterator<edu.berkeley.path.beats.jaxb.Parameter> iter = getParameter().listIterator(getParameter().size());
 		while (iter.hasPrevious()) {
-			com.relteq.sirius.jaxb.Parameter param = iter.previous();
+			edu.berkeley.path.beats.jaxb.Parameter param = iter.previous();
 			if (name.equals(param.getName())) return param.getValue();
 		}
 		return null;

@@ -33,11 +33,11 @@ import org.apache.torque.NoRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
-import com.relteq.sirius.om.Scenarios;
-import com.relteq.sirius.om.ScenariosPeer;
-import com.relteq.sirius.om.SimulationRuns;
-import com.relteq.sirius.om.SimulationRunsPeer;
-import com.relteq.sirius.simulator.SiriusException;
+import edu.berkeley.path.beats.om.Scenarios;
+import edu.berkeley.path.beats.om.ScenariosPeer;
+import edu.berkeley.path.beats.om.SimulationRuns;
+import edu.berkeley.path.beats.om.SimulationRunsPeer;
+import edu.berkeley.path.beats.simulator.SiriusException;
 
 /**
  * Implements "list" commands
@@ -45,7 +45,7 @@ import com.relteq.sirius.simulator.SiriusException;
 public class Lister {
 
 	public static void listScenarios() throws SiriusException {
-		com.relteq.sirius.db.Service.ensureInit();
+		edu.berkeley.path.beats.db.Service.ensureInit();
 		try {
 			Criteria crit = new Criteria();
 			crit.addAscendingOrderByColumn(ScenariosPeer.ID);
@@ -65,7 +65,7 @@ public class Lister {
 	}
 
 	public static void listRuns(long scenario_id) throws SiriusException {
-		com.relteq.sirius.db.Service.ensureInit();
+		edu.berkeley.path.beats.db.Service.ensureInit();
 		DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		try {
 			Scenarios db_scenario = ScenariosPeer.retrieveByPK(scenario_id);

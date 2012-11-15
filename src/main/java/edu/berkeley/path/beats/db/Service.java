@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
 
-import com.relteq.sirius.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.SiriusException;
 
 /**
  * DB service initialization and shutdown

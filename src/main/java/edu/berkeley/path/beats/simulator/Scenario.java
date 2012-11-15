@@ -86,6 +86,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
 	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
+	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;	
 	/** @y.exclude */	protected int numLinks;
 	double outdt;
@@ -141,7 +142,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		if(destinationNetworks!=null){
 			for(int i=0;i<destinationNetworks.getDestinationNetwork().size();i++){
-				com.relteq.sirius.jaxb.DestinationNetwork dnetwork = destinationNetworks.getDestinationNetwork().get(i);
+				edu.berkeley.path.beats.jaxb.DestinationNetwork dnetwork = destinationNetworks.getDestinationNetwork().get(i);
 				DestinationNetworkBLA x = new DestinationNetworkBLA(dnetwork,this,destination_networks.size());
 				x.populate();
 				destination_networks.add(x);
@@ -150,7 +151,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// construct maps between link and node flow channels
 		if(networkList!=null)
-			for( com.relteq.sirius.jaxb.Network network : networkList.getNetwork() )
+			for( edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork() )
 				((Network) network).constructLinkNodeMaps();
 		
 		if(signalList!=null)
@@ -351,8 +352,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 	
 	protected void reset_cumulative(){
-		for(com.relteq.sirius.jaxb.Network jnetwork : this.getNetworkList().getNetwork()){
-			for(com.relteq.sirius.jaxb.Link jlink : jnetwork.getLinkList().getLink())
+		for(edu.berkeley.path.beats.jaxb.Network jnetwork : this.getNetworkList().getNetwork()){
+			for(edu.berkeley.path.beats.jaxb.Link jlink : jnetwork.getLinkList().getLink())
 				((Link)jlink).reset_cumulative();
 		}
 	}
@@ -857,7 +858,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //					density[i][j] = 0d;
 //			}
 //			else{
-//				com.relteq.sirius.jaxb.Link link = network.getLinkList().getLink().get(i);
+//				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
 //				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
 //				for(j=0;j<numVehicleTypes;j++)
 //					density[i][j] = init_density[j];
