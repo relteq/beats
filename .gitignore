@@ -3,11 +3,10 @@
 sirius.jar
 output_*
 *.asv
-*.class
-/torque/
+/src/main/generated-java/
 velocity.log
-/sirius/
 /derby.log
+/src/org/apache/torque/linkage/
 *.pptx
 
 *~
@@ -15,7 +14,6 @@ target
 .cache
 *.jar
 .project
-.classpath
 .settings
 .project
 bin/
