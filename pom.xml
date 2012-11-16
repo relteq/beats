@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+c?xml version="1.0" encoding="UTF-8"?>
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -13,8 +13,6 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <torque.sql.dir>${project.build.directory}/generated-sql</torque.sql.dir>
-    <torque.override.dir>${basedir}/torque-override</torque.override.dir>
-    <torque.enableJava5Features>false</torque.enableJava5Features>
   </properties>
 
   <scm>
@@ -35,7 +33,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generatePackage>edu.berkeley.path.beats.jaxb</generatePackage>
+              <generctePackage>edu.berkeley.path.beats.jaxb</generatePackage>
             </configuration>
           </execution>
         </executions>
@@ -47,6 +45,9 @@
         <configuration>
           <schemaDir>${basedir}/data</schemaDir>
           <targetDatabase>derby</targetDatabase>
+	  <options>
+		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
+	  </options>
         </configuration>
         <executions>
           <execution>
@@ -54,6 +55,9 @@
             <phase>generate-sources</phase>
             <configuration>
               <targetPackage>edu.berkeley.path.beats.om</targetPackage>
+	  <options>
+		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
+	  </options>
             </configuration>
             <goals>
               <goal>om</goal>
@@ -65,6 +69,9 @@
             <configuration>
               <targetDatabase>derby</targetDatabase>
               <outputDir>${torque.sql.dir}/derby</outputDir>
+	  <options>
+		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
+	  </options>
             </configuration>
             <goals>
               <goal>sql</goal>
@@ -76,6 +83,9 @@
             <configuration>
               <targetDatabase>postgresql</targetDatabase>
               <outputDir>${torque.sql.dir}/postgres</outputDir>
+	  <options>
+		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
+	  </options>
             </configuration>
             <goals>
               <goal>sql</goal>
@@ -87,6 +97,9 @@
             <configuration>
               <targetDatabase>oracle</targetDatabase>
               <outputDir>${torque.sql.dir}/oracle</outputDir>
+	  <options>
+		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
+	  </options>
             </configuration>
             <goals>
               <goal>sql</goal>
