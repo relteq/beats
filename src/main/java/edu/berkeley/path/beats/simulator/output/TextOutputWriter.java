@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusFormatter;
-import edu.berkeley.path.beats.simulator.SiriusMath;
 
 public final class TextOutputWriter extends OutputWriterBase {
 	protected Writer out_time = null;
@@ -52,6 +52,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
+		scenario.requestLinkCumulatives();
 	}
 
 	@Override
@@ -72,45 +73,32 @@ public final class TextOutputWriter extends OutputWriterBase {
 		
 		if(scenario==null)
 			return;
-		
-		Double [] numbers;
-		double invsteps;
-		
-		if(scenario.getCurrentTimeStep()==1)
-			invsteps = 1f;
-		else
-			invsteps = 1f/((double)outsteps);
-			
+
 		try {
 			out_time.write(String.format("%f\n",time));
 			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
 				List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 
-				int n = links.size();
-				Link link;
-				for(int i=0;i<n-1;i++){
-					link = (Link) links.get(i);
-					numbers = SiriusMath.times(link.getCumulativeDensity(0),invsteps);
-					out_density.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
+				for (int i = 0; i < links.size(); ++i){
+					Link link = (Link) links.get(i);
+					LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+					if (0 < i) out_density.write(TextOutputWriter.delim);
+					out_density.write(SiriusFormatter.csv(exportflows ? link_cum_data.getMeanDensity(0) : link.getDensityInVeh(0), ":"));
 					if(exportflows){
-						numbers = SiriusMath.times(link.getCumulativeOutFlow(0),invsteps);
-						out_outflow.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
-						numbers = SiriusMath.times(link.getCumulativeInFlow(0),invsteps);
-						out_inflow.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
+						if (0 < i) {
+							out_outflow.write(TextOutputWriter.delim);
+							out_inflow.write(TextOutputWriter.delim);
+						}
+						out_outflow.write(SiriusFormatter.csv(link_cum_data.getMeanOutputFlow(0), ":"));
+						out_inflow.write(SiriusFormatter.csv(link_cum_data.getMeanInputFlow(0), ":"));
 					}
-					link.resetCumulative();
 				}
-				
-				link = (Link) links.get(n-1);
-				numbers = SiriusMath.times(link.getCumulativeDensity(0),invsteps);
-				out_density.write(SiriusFormatter.csv(numbers,":")+"\n");
-				if(exportflows){
-					numbers = SiriusMath.times(link.getCumulativeOutFlow(0),invsteps);
-					out_outflow.write(SiriusFormatter.csv(numbers,":")+"\n");
-					numbers = SiriusMath.times(link.getCumulativeInFlow(0),invsteps);
-					out_inflow.write(SiriusFormatter.csv(numbers,":")+"\n");
+
+				out_density.write("\n");
+				if (exportflows) {
+					out_outflow.write("\n");
+					out_inflow.write("\n");
 				}
-				link.resetCumulative();	
 			}
 			
 		} catch (IOException e) {

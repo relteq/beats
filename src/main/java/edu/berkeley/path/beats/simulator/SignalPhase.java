@@ -243,6 +243,8 @@ public class SignalPhase {
 
 	protected void update(boolean hold_approved,boolean forceoff_approved)
 	{
+		mySignal.completedPhases.clear();
+
 		double bulbt = bulbtimer.getT();
 
 		if(!protectd){

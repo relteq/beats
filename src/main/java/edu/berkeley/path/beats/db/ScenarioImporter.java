@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.db.importer;
+package edu.berkeley.path.beats.db;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -45,7 +45,7 @@ import edu.berkeley.path.beats.util.Data2D;
 /**
  * Imports a scenario
  */
-public class ScenarioLoader {
+public class ScenarioImporter {
 	Connection conn = null;
 
 	private Long project_id;
@@ -73,11 +73,11 @@ public class ScenarioLoader {
 		return links.get(id).getId();
 	}
 
-	public ScenarioLoader() {
+	public ScenarioImporter() {
 		project_id = Long.valueOf(0);
 	}
 
-	private static Logger logger = Logger.getLogger(ScenarioLoader.class);
+	private static Logger logger = Logger.getLogger(ScenarioImporter.class);
 
 	/**
 	 * Loads a scenario from a file
@@ -89,7 +89,7 @@ public class ScenarioLoader {
 		edu.berkeley.path.beats.jaxb.Scenario scenario =
 				edu.berkeley.path.beats.simulator.ObjectFactory.createAndLoadScenario(filename);
 		logger.info("Loaded configuration file '" + filename + "'");
-		Scenarios db_scenario = new ScenarioLoader().load(scenario);
+		Scenarios db_scenario = new ScenarioImporter().load(scenario);
 		logger.info("Scenario imported, ID=" + db_scenario.getId());
 		return db_scenario;
 	}
@@ -672,7 +672,6 @@ public class ScenarioLoader {
 	 * @throws TorqueException
 	 */
 	private void save(edu.berkeley.path.beats.jaxb.Weavingfactors wf, WeavingFactorSets db_wfset, VehicleTypes[] db_vt) throws TorqueException {
-		// TODO delimiter = ':' or ','?
 		Data1D data1d = new Data1D(wf.getContent(), ":");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
@@ -943,7 +942,6 @@ public class ScenarioLoader {
 		db_dbcp.setSampleRate(cp.getDt());
 		db_dbcp.setStartTime(cp.getStartTime());
 		db_dbcp.save(conn);
-		// TODO delimiter = ':' or ','?
 		Data1D data1d = new Data1D(cp.getContent(), ",");
 		if (!data1d.isEmpty()) {
 			BigDecimal[] data = data1d.getData();
@@ -1282,7 +1280,7 @@ public class ScenarioLoader {
 		if (null == params) return;
 		ScenarioElementTypes db_scelt = getScenarioElementTypes(db_obj);
 		for (edu.berkeley.path.beats.jaxb.Parameter param : params.getParameter()) {
-			Parameters db_param = new Parameters();
+			edu.berkeley.path.beats.om.Parameters db_param = new edu.berkeley.path.beats.om.Parameters();
 			db_param.setElementId(db_obj.getId());
 			db_param.setScenarioElementTypes(db_scelt);
 			db_param.setName(param.getName());
