@@ -279,7 +279,9 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setJamDensity(double2decimal(link.getDensityJamInVeh(0) / link.getLengthInMeters()));
 		// capacity drop, vehicle per second
 		db_ldt.setCapacityDrop(double2decimal(link.getCapacityDropInVeh(0) / scenario.getSimDtInSeconds()));
-
+		
+		// replace nulls with zeros
+		edu.berkeley.path.beats.processor.LinkDataTotal.removeNulls(db_ldt);
 		db_ldt.save();
 		return db_ldt;
 	}
@@ -327,6 +329,8 @@ public class DBOutputWriter extends OutputWriterBase {
 					}
 				}
 			}
+			// replace nulls with zeros
+			edu.berkeley.path.beats.processor.LinkDataDetailed.removeNulls(db_ldd);
 			db_ldd.save();
 		}
 	}
