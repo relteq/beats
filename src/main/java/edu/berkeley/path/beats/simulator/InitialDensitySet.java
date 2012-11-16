@@ -26,9 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;

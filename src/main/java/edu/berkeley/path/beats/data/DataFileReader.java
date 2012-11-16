@@ -67,6 +67,8 @@ public class DataFileReader {
 //    		case BHL:
 //    			ReadDataSource(data,datasource,BHL);
 //    			break;
+			default:
+				break;
     		}
     	}
     	 
