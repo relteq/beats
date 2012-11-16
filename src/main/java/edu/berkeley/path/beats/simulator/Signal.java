@@ -386,7 +386,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	/**
 	 * @return a list of completed phases
 	 */
-	public java.util.List<PhaseData> getCompletedPhases() {
+	java.util.List<PhaseData> getCompletedPhases() {
 		return completedPhases;
 	}
 

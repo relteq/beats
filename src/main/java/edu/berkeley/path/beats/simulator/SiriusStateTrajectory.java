@@ -62,6 +62,8 @@ public final class SiriusStateTrajectory {
 			int numLinks = myScenario.getNetworkList().getNetwork().get(i).getLinkList().getLink().size();
 			this.networkState[i] = new NewtorkStateTrajectory(numLinks);
 		}
+
+		this.myScenario.requestLinkCumulatives();
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -88,15 +90,9 @@ public final class SiriusStateTrajectory {
 			return N.flow[i][j][k];
 	}
 
-	protected void recordstate(int timestep,double time,boolean exportflows,int outsteps) {
+	protected void recordstate(int timestep,double time,boolean exportflows,int outsteps) throws SiriusException {
 		
 		int i,j;
-		double invsteps;
-		
-		if(timestep==1)
-			invsteps = 1f;
-		else
-			invsteps = 1f/((double)outsteps);
 	
 		int timeindex = timestep/outsteps;
 
@@ -105,10 +101,11 @@ public final class SiriusStateTrajectory {
 			List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 			for(i=0;i<networkState[netindex].getNumLinks();i++){
 				Link link = (Link) links.get(i);				
+				LinkCumulativeData link_cum_data = myScenario.getCumulatives(link);
 				for(j=0;j<numVehicleTypes;j++){
-					networkState[netindex].density[i][j][timeindex] = link.cumulative_density[0][j]*invsteps;
+					networkState[netindex].density[i][j][timeindex] = exportflows ? link_cum_data.getMeanDensity(0, j) : link.getDensity(0, j);
 					if(exportflows)
-						networkState[netindex].flow[i][j][timeindex-1] = link.cumulative_outflow[0][j]*invsteps;
+						networkState[netindex].flow[i][j][timeindex-1] = link_cum_data.getMeanOutputFlow(0, j);
 				}
 			}
 			netindex++;

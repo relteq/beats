@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.db.exporter;
+package edu.berkeley.path.beats.db;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -40,9 +40,9 @@ import edu.berkeley.path.beats.simulator.SiriusException;
 /**
  * Loads a scenario from the database
  */
-public class ScenarioRestorer {
+public class ScenarioExporter {
 	public static void export(long id, String filename) throws SiriusException {
-		edu.berkeley.path.beats.util.ScenarioUtil.save(new ScenarioRestorer().restore(id), filename);
+		edu.berkeley.path.beats.util.ScenarioUtil.save(new ScenarioExporter().restore(id), filename);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class ScenarioRestorer {
 	 * @throws SiriusException
 	 */
 	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) new ScenarioRestorer().restore(id));
+		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) new ScenarioExporter().restore(id));
 		if (null == scenario)
 			throw new SiriusException("Could not load scenario " + id + " from the database. See error log for details.");
 		return scenario;
@@ -60,11 +60,11 @@ public class ScenarioRestorer {
 
 	edu.berkeley.path.beats.simulator.JaxbObjectFactory factory = null;
 
-	private ScenarioRestorer() {
+	private ScenarioExporter() {
 		factory = new edu.berkeley.path.beats.simulator.JaxbObjectFactory();
 	}
 
-	private static Logger logger = Logger.getLogger(ScenarioRestorer.class);
+	private static Logger logger = Logger.getLogger(ScenarioExporter.class);
 
 	private edu.berkeley.path.beats.jaxb.Scenario restore(long id) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
@@ -397,7 +397,6 @@ public class ScenarioRestorer {
 				wf.setLinkOut(id2str(db_wf.getOutLinkId()));
 				sb.setLength(0);
 			} else { // same weaving factor, different vehicle type
-				// TODO delimiter = ':' or ','?
 				sb.append(':');
 			}
 			sb.append(db_wf.getFactor().toPlainString());
@@ -684,7 +683,6 @@ public class ScenarioRestorer {
 		List<DownstreamBoundaryCapacities> db_dbc_l = db_dbcp.getDownstreamBoundaryCapacitiess(crit);
 		StringBuilder sb = null;
 		for (DownstreamBoundaryCapacities db_dbc : db_dbc_l) {
-			// TODO delimiter = ',' or ':'?
 			if (null == sb) sb = new StringBuilder();
 			else sb.append(',');
 			sb.append(db_dbc.getDownstreamBoundaryCapacity().toPlainString());
@@ -893,14 +891,14 @@ public class ScenarioRestorer {
 		crit.addJoin(ParametersPeer.ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
 		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_obj.getElementType());
 		@SuppressWarnings("unchecked")
-		List<Parameters> db_param_l = ParametersPeer.doSelect(crit);
-		for (Parameters db_param : db_param_l)
+		List<edu.berkeley.path.beats.om.Parameters> db_param_l = ParametersPeer.doSelect(crit);
+		for (edu.berkeley.path.beats.om.Parameters db_param : db_param_l)
 			params.getParameter().add(restoreParameter(db_param));
 
 		return params;
 	}
 
-	private edu.berkeley.path.beats.jaxb.Parameter restoreParameter(Parameters db_param) {
+	private edu.berkeley.path.beats.jaxb.Parameter restoreParameter(edu.berkeley.path.beats.om.Parameters db_param) {
 		edu.berkeley.path.beats.jaxb.Parameter param = factory.createParameter();
 		param.setName(db_param.getName());
 		param.setValue(db_param.getValue());
@@ -923,7 +921,38 @@ public class ScenarioRestorer {
 	private edu.berkeley.path.beats.jaxb.Table restoreTable(Tables db_table) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Table table = factory.createTable();
 		table.setName(db_table.getName());
+		table.setColumnNames(restoreColumnNames(db_table));
 
+		java.util.Map<String, Integer> colname2index = new java.util.HashMap<String, Integer>();
+		int index = 0;
+		for (edu.berkeley.path.beats.jaxb.ColumnName colname : table.getColumnNames().getColumnName())
+			colname2index.put(colname.getName(), Integer.valueOf(index++));
+
+		Criteria crit = new Criteria();
+		crit.addJoin(TabularDataPeer.TABLE_ID, TabularDataKeysPeer.TABLE_ID);
+		crit.addJoin(TabularDataPeer.COLUMN_NAME, TabularDataKeysPeer.COLUMN_NAME);
+		crit.addAscendingOrderByColumn(TabularDataPeer.ROW_NUMBER);
+		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
+		@SuppressWarnings("unchecked")
+		List<TabularData> db_td_l = db_table.getTabularDatas(crit);
+		for (TabularData db_td : db_td_l) {
+			while (table.getRow().size() <= db_td.getRowNumber()) {
+				edu.berkeley.path.beats.jaxb.Row row = factory.createRow();
+				for (int i = 0; i < table.getColumnNames().getColumnName().size(); ++i)
+					row.getColumn().add(null);
+				table.getRow().add(row);
+			}
+			edu.berkeley.path.beats.jaxb.Row row = table.getRow().get(db_td.getRowNumber());
+			int colnum = colname2index.get(db_td.getColumnName()).intValue();
+			if (null != row.getColumn().get(colnum))
+				logger.warn("Table " + table.getName() + ", row " + db_td.getRowNumber() + ": duplicate column '" + db_td.getColumnName() + "'");
+			row.getColumn().set(colnum, db_td.getValue());
+		}
+
+		return table;
+	}
+
+	private edu.berkeley.path.beats.jaxb.ColumnNames restoreColumnNames(Tables db_table) throws TorqueException {
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
 		@SuppressWarnings("unchecked")
@@ -931,42 +960,7 @@ public class ScenarioRestorer {
 		edu.berkeley.path.beats.jaxb.ColumnNames colnames = factory.createColumnNames();
 		for (TabularDataKeys db_tdk : db_tdk_l)
 			colnames.getColumnName().add(restoreColumnName(db_tdk));
-		table.setColumnNames(colnames);
-
-		crit.clear();
-		crit.addJoin(TabularDataPeer.TABLE_ID, TabularDataKeysPeer.TABLE_ID);
-		crit.addJoin(TabularDataPeer.COLUMN_NAME, TabularDataKeysPeer.COLUMN_NAME);
-		crit.addAscendingOrderByColumn(TabularDataPeer.ROW_NUMBER);
-		crit.addAscendingOrderByColumn(TabularDataKeysPeer.COLUMN_NUMBER);
-		@SuppressWarnings("unchecked")
-		List<TabularData> db_td_l = db_table.getTabularDatas(crit);
-		edu.berkeley.path.beats.jaxb.Row row = null;
-		Integer rownum = null;
-		java.util.Iterator<edu.berkeley.path.beats.jaxb.ColumnName> citer = null;
-		for (TabularData db_td : db_td_l) {
-			if (null != rownum && !rownum.equals(db_td.getRowNumber())) {
-				table.getRow().add(row);
-				row = null;
-			}
-			if (null == row) {
-				row = factory.createRow();
-				citer = colnames.getColumnName().iterator();
-			}
-			while (citer.hasNext()) {
-				edu.berkeley.path.beats.jaxb.ColumnName colname = citer.next();
-				if (colname.getName().equals(db_td.getColumnName())) {
-					row.getColumn().add(db_td.getValue());
-					break;
-				} else {
-					row.getColumn().add(null);
-					logger.warn("Column " + colname.getName() + " skipped (table=" + db_td.getId() + ", row=" + db_td.getRowNumber() + ")");
-				}
-			}
-		}
-		if (null != row)
-			table.getRow().add(row);
-
-		return table;
+		return colnames;
 	}
 
 	private edu.berkeley.path.beats.jaxb.ColumnName restoreColumnName(TabularDataKeys db_tdk) {
