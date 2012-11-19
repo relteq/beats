@@ -126,7 +126,7 @@ public final class Runner {
 			outputfileprefix = "output";
 
 		// Output format
-		if(args.length>1)
+		if(args.length>2)
 			output_format = args[2];	
 		else
 			output_format = "xml";
