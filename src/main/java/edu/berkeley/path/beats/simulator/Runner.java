@@ -38,9 +38,9 @@ import edu.berkeley.path.beats.om.DefSimSettingsPeer;
 
 public final class Runner {
 
-	private static String outputtype = "text";
 	private static String configfilename;
 	private static String outputfileprefix;
+	private static String output_format;
 
 	private static Logger logger = Logger.getLogger(Runner.class);
 
@@ -60,7 +60,7 @@ public final class Runner {
 
 			Properties owr_props = new Properties();
 			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
-			owr_props.setProperty("type", outputtype);
+			owr_props.setProperty("type", output_format);
 			scenario.run(simsettings, owr_props);
 			System.out.println("done in " + (System.currentTimeMillis()-time));
 		} catch (SiriusException exc) {
@@ -74,15 +74,15 @@ public final class Runner {
 		
 	}
 
-	public static void simulate_output(String[] args) {
-		outputtype = "xml";
-		main(args);
-	}
-
-	public static void debug(String[] args) {
-		outputtype = "text";
-		main(args);
-	}
+//	public static void simulate_output(String[] args) {
+//		output_format = "xml";
+//		main(args);
+//	}
+//
+//	public static void debug(String[] args) {
+//		output_format = "text";
+//		main(args);
+//	}
 
 	private static SimulationSettings parseInput(String[] args){
 
@@ -92,13 +92,14 @@ public final class Runner {
 			str += "-----\n" + "\n";
 			str += "args[0]: Configuration file name. (required)\n";
 			str += "args[1]: Output file name.\n";
-			str += "args[2]: Start time [seconds after midnight]." + "\n";
+			str += "args[2]: Output file format.\n";
+			str += "args[3]: Start time [seconds after midnight]." + "\n";
 			str += "         Defailt: Minimum start time of all demand profiles." + "\n";
-			str += "args[3]: Duration [seconds]." + "\n";
+			str += "args[4]: Duration [seconds]." + "\n";
 			str += "         Defailt: 86,400 seconds." + "\n";
-			str += "args[4]: Output sampling time [seconds]." + "\n";
+			str += "args[5]: Output sampling time [seconds]." + "\n";
 			str += "         Default: 300 seconds." + "\n";
-			str += "args[5]: Number of simulations." + "\n";
+			str += "args[6]: Number of simulations." + "\n";
 			str += "         Default: 1." + "\n";
 			str += "\nSimulation modes:" + "\n";
 			str += "----------------\n" + "\n";
@@ -124,8 +125,14 @@ public final class Runner {
 		else
 			outputfileprefix = "output";
 
+		// Output format
+		if(args.length>2)
+			output_format = args[2];	
+		else
+			output_format = "xml";
+		
 		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
-		simsettings.parseArgs(args, 2);
+		simsettings.parseArgs(args, 3);
 		return simsettings;
 	}
 
