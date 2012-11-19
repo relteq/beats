@@ -118,8 +118,7 @@ public class Runner {
 			
 			// End of CSV output
 			
-			
-			
+
 			if (cmd.equals("import") || cmd.equals("i")) {
 				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
 				edu.berkeley.path.beats.db.ScenarioImporter.load(arguments[0]);
@@ -137,9 +136,7 @@ public class Runner {
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
 				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
-				edu.berkeley.path.beats.simulator.Runner.simulate_output(arguments);
-			} else if (cmd.equals("debug")) {
-				edu.berkeley.path.beats.simulator.Runner.debug(arguments);
+				edu.berkeley.path.beats.simulator.Runner.main(arguments);
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {

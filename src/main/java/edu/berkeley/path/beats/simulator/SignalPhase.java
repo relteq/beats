@@ -172,6 +172,10 @@ public class SignalPhase {
 			isthrough = true;
 			myRingGroup = 1;
 			break;
+		case NULL:
+			break;
+		default:
+			break;
 		}		
 	}
 	
@@ -235,6 +239,10 @@ public class SignalPhase {
 		case RED:	
 			// iff near end of red clear time and not starting again.
 			permitopposinghold =  SiriusMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.dt) && !hold_requested;
+			break;
+		case DARK:
+			break;
+		default:
 			break;
 		}	
 
@@ -330,6 +338,10 @@ public class SignalPhase {
 				else
 					done = true;
 	
+				break;
+			case DARK:
+				break;
+			default:
 				break;
 			}
 			

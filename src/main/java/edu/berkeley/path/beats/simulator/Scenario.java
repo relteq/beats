@@ -71,6 +71,7 @@ import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
 * @author Gabriel Gomes
 * @version VERSION NUMBER
 */
+@SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	/** @y.exclude */	protected static enum ModeType {  normal, 
@@ -532,15 +533,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Vehicle type weights.
 	 * @return	Array of doubles with the weights of the vehicles types.
 	 */
-	public Double [] getVehicleTypeWeights(){
-		Double [] vehtypeweights = new Double [numVehicleTypes];
-		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-			vehtypeweights[0] = 1d;
-		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
-		return vehtypeweights;
-	}
+//	public Double [] getVehicleTypeWeights(){
+//		Double [] vehtypeweights = new Double [numVehicleTypes];
+//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+//			vehtypeweights[0] = 1d;
+//		else
+//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
+//		return vehtypeweights;
+//	}
 	
 	/** Vehicle type index from name
 	 * @return integer index of the vehicle type.
