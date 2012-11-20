@@ -744,7 +744,7 @@
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
-					<xs:pattern value="IRM_alinea|IRM_time_of_day|IRM_traffic_responsive|CRM_swarm|CRM_hero|VSL_time_of_day|SIG_pretimed|SIG_actuated"/>
+					<xs:pattern value="IRM_ALINEA|IRM_TOD|IRM_TOS|CRM_SWARM|CRM_HERO|VSL_TOD|SIG_TOD|SIG_Actuated"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>

@@ -82,6 +82,22 @@
 	</xsl:attribute>
 </xsl:template>
 
+<xsl:template match="controller/@type">
+	<xsl:attribute name="{name(.)}">
+		<xsl:choose>
+			<xsl:when test="string(.)='IRM_alinea'">IRM_ALINEA</xsl:when>
+			<xsl:when test="string(.)='IRM_time_of_day'">IRM_TOD</xsl:when>
+			<xsl:when test="string(.)='IRM_traffic_responsive'">IRM_TOS</xsl:when>
+			<xsl:when test="string(.)='CRM_swarm'">CRM_SWARM</xsl:when>
+			<xsl:when test="string(.)='CRM_hero'">CRM_HERO</xsl:when>
+			<xsl:when test="string(.)='VSL_time_of_day'">VSL_TOD</xsl:when>
+			<xsl:when test="string(.)='SIG_pretimed'">SIG_TOD</xsl:when>
+			<xsl:when test="string(.)='SIG_actuated'">SIG_Actuated</xsl:when>
+			<xsl:otherwise><xsl:value-of select="string(.)"/></xsl:otherwise>
+		</xsl:choose>
+	</xsl:attribute>
+</xsl:template>
+
 <xsl:template match="sensor/data_sources">
 	<table name="{local-name()}">
 		<column_names>
