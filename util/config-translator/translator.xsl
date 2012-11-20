@@ -72,6 +72,16 @@
 	</xsl:copy>
 </xsl:template>
 
+<xsl:template match="sensor/@type">
+	<xsl:attribute name="{name(.)}">
+		<xsl:choose>
+			<xsl:when test="string(.)='static_point'">loop</xsl:when>
+			<xsl:when test="string(.)='static_area'">camera</xsl:when>
+			<xsl:otherwise><xsl:value-of select="string(.)"/></xsl:otherwise>
+		</xsl:choose>
+	</xsl:attribute>
+</xsl:template>
+
 <xsl:template match="sensor/data_sources">
 	<table name="{local-name()}">
 		<column_names>

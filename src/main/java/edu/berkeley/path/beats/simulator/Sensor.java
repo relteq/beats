@@ -47,8 +47,8 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 
 	/** Type of sensor. */
 	public static enum Type	{  
-	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	static_point,
-	                                                            static_area,
+	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop,
+	                                                            camera,
 	/** see {@link ObjectFactory#createSensor_Floating} 	*/  moving_point };
 				   	   	       
 	/////////////////////////////////////////////////////////////////////

@@ -166,11 +166,11 @@ public final class ObjectFactory {
 			return null;
 		Sensor S;
 		switch(myType){
-			case static_point:
+			case loop:
 				S = new SensorLoopStation();
 				break;
 
-			case static_area:
+			case camera:
 				S = null; 
 				break;
 

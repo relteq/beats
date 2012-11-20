@@ -472,7 +472,7 @@
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
-					<xs:pattern value="static_point|static_area|moving_point"/>
+					<xs:pattern value="loop|magnetic|radar|camera|TMC"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>

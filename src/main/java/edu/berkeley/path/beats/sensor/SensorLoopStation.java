@@ -56,7 +56,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		if(myScenario==null)
 			return;
 		this.myScenario  = myScenario;
-	    this.myType = Sensor.Type.static_point;
+	    this.myType = Sensor.Type.loop;
 	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
 
