@@ -153,7 +153,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.VehicleType restoreVehicleType(VehicleTypes db_vt) {
 		edu.berkeley.path.beats.jaxb.VehicleType vt = factory.createVehicleType();
-		vt.setName(db_vt.getDescription());
+		vt.setName(db_vt.getName());
 		vt.setWeight(db_vt.getWeight());
 		return vt;
 	}
@@ -201,7 +201,7 @@ public class ScenarioExporter {
 		if (!db_ntd_l.isEmpty()) {
 			if (1 < db_ntd_l.size())
 				logger.warn("Found " + db_ntd_l.size() + " node types for node " + db_node.getId());
-			node.setType(db_ntd_l.get(0).getNodeTypes().getDescription());
+			node.setType(db_ntd_l.get(0).getNodeTypes().getName());
 		} else
 			logger.warn("No node types for node " + db_node.getId());
 
@@ -312,7 +312,7 @@ public class ScenarioExporter {
 		link.setLength(db_link.getLength());
 
 		LinkTypeDet db_ltdet = LinkTypeDetPeer.retrieveByPK(db_link.getId(), db_link.getNetworkId());
-		link.setType(db_ltdet.getLinkTypes().getDescription());
+		link.setType(db_ltdet.getLinkTypes().getName());
 
 		link.setInSync(db_link.getInSync());
 		return link;
@@ -637,7 +637,7 @@ public class ScenarioExporter {
 		edu.berkeley.path.beats.jaxb.Sensor sensor = factory.createSensor();
 		sensor.setId(id2str(db_sensor.getId()));
 		sensor.setLinkPosition(db_sensor.getLinkPosition());
-		sensor.setType(db_sensor.getSensorTypes().getDescription());
+		sensor.setType(db_sensor.getSensorTypes().getName());
 		sensor.setSensorIdOriginal(db_sensor.getOriginalId());
 		if (null != db_sensor.getLaneNumber())
 			sensor.setLaneNumber(BigInteger.valueOf(db_sensor.getLaneNumber().longValue()));
@@ -710,7 +710,7 @@ public class ScenarioExporter {
 		edu.berkeley.path.beats.jaxb.Controller cntr = factory.createController();
 		cntr.setId(id2str(db_cntr.getId()));
 		// TODO cntr.setName();
-		cntr.setType(db_cntr.getControllerTypes().getDescription());
+		cntr.setType(db_cntr.getControllerTypes().getName());
 		cntr.setDt(db_cntr.getDt());
 		cntr.setEnabled(Boolean.TRUE);
 		cntr.setJavaClass(db_cntr.getJavaClass());
@@ -740,7 +740,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.QueueController restoreQueueController(QueueControllers db_qc) throws TorqueException {
 		if (null == db_qc) return null;
 		edu.berkeley.path.beats.jaxb.QueueController qc = factory.createQueueController();
-		qc.setType(db_qc.getQueueControllerTypes().getDescription());
+		qc.setType(db_qc.getQueueControllerTypes().getName());
 		qc.setJavaClass(db_qc.getJavaClass());
 		qc.setParameters(restoreParameters(db_qc));
 		return qc;
@@ -783,7 +783,7 @@ public class ScenarioExporter {
 		event.setId(id2str(db_event.getId()));
 		event.setTstamp(db_event.getActionTime());
 		event.setEnabled(db_event.getEnabled());
-		event.setType(db_event.getEventTypes().getDescription());
+		event.setType(db_event.getEventTypes().getName());
 		event.setJavaClass(db_event.getJavaClass());
 		event.setDescription(db_event.getDescription());
 		event.setDisplayPosition(restoreDisplayPosition(db_event.getDisplayGeometry()));
@@ -889,7 +889,7 @@ public class ScenarioExporter {
 		Criteria crit = new Criteria();
 		crit.add(ParametersPeer.ELEMENT_ID, db_obj.getId());
 		crit.addJoin(ParametersPeer.ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
-		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_obj.getElementType());
+		crit.add(ScenarioElementTypesPeer.NAME, db_obj.getElementType());
 		@SuppressWarnings("unchecked")
 		List<edu.berkeley.path.beats.om.Parameters> db_param_l = ParametersPeer.doSelect(crit);
 		for (edu.berkeley.path.beats.om.Parameters db_param : db_param_l)
@@ -909,7 +909,7 @@ public class ScenarioExporter {
 		Criteria crit = new Criteria();
 		crit.add(TablesPeer.ELEMENT_ID, db_obj.getId());
 		crit.addJoin(TablesPeer.ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
-		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_obj.getElementType());
+		crit.add(ScenarioElementTypesPeer.NAME, db_obj.getElementType());
 		@SuppressWarnings("unchecked")
 		List<Tables> db_table_l = TablesPeer.doSelect(crit);
 		List<edu.berkeley.path.beats.jaxb.Table> table_l = new java.util.ArrayList<edu.berkeley.path.beats.jaxb.Table>(db_table_l.size());
@@ -975,7 +975,7 @@ public class ScenarioExporter {
 		Criteria crit = new Criteria();
 		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_ID, db_parent.getId());
 		crit.addJoin(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
-		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_parent.getElementType());
+		crit.add(ScenarioElementTypesPeer.NAME, db_parent.getElementType());
 		crit.add(ReferencedScenarioElementsPeer.TYPE, "target");
 		@SuppressWarnings("unchecked")
 		List<ReferencedScenarioElements> db_elem_l = ReferencedScenarioElementsPeer.doSelect(crit);
@@ -989,7 +989,7 @@ public class ScenarioExporter {
 		Criteria crit = new Criteria();
 		crit.add(ReferencedScenarioElementsPeer.PARENT_ELEMENT_ID, db_parent.getId());
 		crit.addJoin(ReferencedScenarioElementsPeer.PARENT_ELEMENT_TYPE_ID, ScenarioElementTypesPeer.ID);
-		crit.add(ScenarioElementTypesPeer.DESCRIPTION, db_parent.getElementType());
+		crit.add(ScenarioElementTypesPeer.NAME, db_parent.getElementType());
 		crit.add(ReferencedScenarioElementsPeer.TYPE, "feedback");
 		@SuppressWarnings("unchecked")
 		List<ReferencedScenarioElements> db_elem_l = ReferencedScenarioElementsPeer.doSelect(crit);
@@ -1001,7 +1001,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.ScenarioElement restoreScenarioElement(ReferencedScenarioElements db_elem) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.ScenarioElement elem = factory.createScenarioElement();
 		elem.setId(id2str(db_elem.getElementId()));
-		elem.setType(db_elem.getScenarioElementTypesRelatedByElementTypeId().getDescription());
+		elem.setType(db_elem.getScenarioElementTypesRelatedByElementTypeId().getName());
 		elem.setUsage(db_elem.getUsage());
 		return elem;
 	}

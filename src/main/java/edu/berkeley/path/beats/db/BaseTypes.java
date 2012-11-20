@@ -6,6 +6,7 @@ import org.apache.torque.TorqueException;
 
 @SuppressWarnings("serial")
 public abstract class BaseTypes extends BaseObject {
+	public abstract void setName(String value);
 	public abstract void setDescription(String value);
 	public void setInUse(Boolean value) {}
 
