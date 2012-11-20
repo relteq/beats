@@ -7,7 +7,7 @@
     <units>US</units>
   </settings>
   <ControllerSet>
-    <controller dt="300" type="IRM_alinea" id="-1" enabled="true">
+    <controller dt="300" type="IRM_ALINEA" id="-1" enabled="true">
       <targetElements>
         <scenarioElement id="-289" type="link"/>
       </targetElements>
@@ -7933,7 +7933,7 @@
     </network>
   </NetworkList>
   <SensorList>
-    <sensor id="-1" type="static_point">
+    <sensor id="-1" type="loop">
       <display_position>
         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
@@ -8038,7 +8038,7 @@
       </table>
       <link_reference id="-144"/>
     </sensor>
-    <sensor id="-2" type="static_point">
+    <sensor id="-2" type="loop">
       <display_position>
         <point elevation="0" lat="34.1217" lng="-117.6962"/>
       </display_position>
@@ -8143,7 +8143,7 @@
       </table>
       <link_reference id="-288"/>
     </sensor>
-    <sensor id="-3" type="static_point">
+    <sensor id="-3" type="loop">
       <display_position>
         <point elevation="0" lat="34.1205" lng="-117.6972"/>
       </display_position>
@@ -8248,7 +8248,7 @@
       </table>
       <link_reference id="-345"/>
     </sensor>
-    <sensor id="-4" type="static_point">
+    <sensor id="-4" type="loop">
       <display_position>
         <point elevation="0" lat="34.1213" lng="-117.6958"/>
       </display_position>
@@ -8353,7 +8353,7 @@
       </table>
       <link_reference id="-344"/>
     </sensor>
-    <sensor id="-5" type="static_point">
+    <sensor id="-5" type="loop">
       <display_position>
         <point elevation="0" lat="34.1201" lng="-117.7016"/>
       </display_position>
@@ -8458,7 +8458,7 @@
       </table>
       <link_reference id="-286"/>
     </sensor>
-    <sensor id="-6" type="static_point">
+    <sensor id="-6" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.702"/>
       </display_position>
@@ -8563,7 +8563,7 @@
       </table>
       <link_reference id="-142"/>
     </sensor>
-    <sensor id="-7" type="static_point">
+    <sensor id="-7" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.7107"/>
       </display_position>
@@ -8668,7 +8668,7 @@
       </table>
       <link_reference id="-139"/>
     </sensor>
-    <sensor id="-8" type="static_point">
+    <sensor id="-8" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.7118"/>
       </display_position>
@@ -8773,7 +8773,7 @@
       </table>
       <link_reference id="-283"/>
     </sensor>
-    <sensor id="-9" type="static_point">
+    <sensor id="-9" type="loop">
       <display_position>
         <point elevation="0" lat="34.1201" lng="-117.7207"/>
       </display_position>
@@ -8878,7 +8878,7 @@
       </table>
       <link_reference id="-136"/>
     </sensor>
-    <sensor id="-10" type="static_point">
+    <sensor id="-10" type="loop">
       <display_position>
         <point elevation="0" lat="34.1201" lng="-117.7217"/>
       </display_position>
@@ -8983,7 +8983,7 @@
       </table>
       <link_reference id="-280"/>
     </sensor>
-    <sensor id="-11" type="static_point">
+    <sensor id="-11" type="loop">
       <display_position>
         <point elevation="0" lat="34.1203" lng="-117.7279"/>
       </display_position>
@@ -9088,7 +9088,7 @@
       </table>
       <link_reference id="-134"/>
     </sensor>
-    <sensor id="-12" type="static_point">
+    <sensor id="-12" type="loop">
       <display_position>
         <point elevation="0" lat="34.1202" lng="-117.7272"/>
       </display_position>
@@ -9193,7 +9193,7 @@
       </table>
       <link_reference id="-278"/>
     </sensor>
-    <sensor id="-13" type="static_point">
+    <sensor id="-13" type="loop">
       <display_position>
         <point elevation="0" lat="34.1204" lng="-117.7347"/>
       </display_position>
@@ -9298,7 +9298,7 @@
       </table>
       <link_reference id="-276"/>
     </sensor>
-    <sensor id="-14" type="static_point">
+    <sensor id="-14" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.7334"/>
       </display_position>
@@ -9403,7 +9403,7 @@
       </table>
       <link_reference id="-339"/>
     </sensor>
-    <sensor id="-15" type="static_point">
+    <sensor id="-15" type="loop">
       <display_position>
         <point elevation="0" lat="34.1204" lng="-117.7336"/>
       </display_position>
@@ -9508,7 +9508,7 @@
       </table>
       <link_reference id="-132"/>
     </sensor>
-    <sensor id="-16" type="static_point">
+    <sensor id="-16" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.7385"/>
       </display_position>
@@ -9613,7 +9613,7 @@
       </table>
       <link_reference id="-338"/>
     </sensor>
-    <sensor id="-17" type="static_point">
+    <sensor id="-17" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.7481"/>
       </display_position>
@@ -9718,7 +9718,7 @@
       </table>
       <link_reference id="-128"/>
     </sensor>
-    <sensor id="-18" type="static_point">
+    <sensor id="-18" type="loop">
       <display_position>
         <point elevation="0" lat="34.1199" lng="-117.7485"/>
       </display_position>
@@ -9823,7 +9823,7 @@
       </table>
       <link_reference id="-272"/>
     </sensor>
-    <sensor id="-19" type="static_point">
+    <sensor id="-19" type="loop">
       <display_position>
         <point elevation="0" lat="34.1197" lng="-117.761"/>
       </display_position>
@@ -9928,7 +9928,7 @@
       </table>
       <link_reference id="-268"/>
     </sensor>
-    <sensor id="-20" type="static_point">
+    <sensor id="-20" type="loop">
       <display_position>
         <point elevation="0" lat="34.1192" lng="-117.7599"/>
       </display_position>
@@ -10033,7 +10033,7 @@
       </table>
       <link_reference id="-337"/>
     </sensor>
-    <sensor id="-21" type="static_point">
+    <sensor id="-21" type="loop">
       <display_position>
         <point elevation="0" lat="34.1198" lng="-117.7601"/>
       </display_position>
@@ -10138,7 +10138,7 @@
       </table>
       <link_reference id="-124"/>
     </sensor>
-    <sensor id="-22" type="static_point">
+    <sensor id="-22" type="loop">
       <display_position>
         <point elevation="0" lat="34.1193" lng="-117.7654"/>
       </display_position>
@@ -10243,7 +10243,7 @@
       </table>
       <link_reference id="-336"/>
     </sensor>
-    <sensor id="-23" type="static_point">
+    <sensor id="-23" type="loop">
       <display_position>
         <point elevation="0" lat="34.1196" lng="-117.7703"/>
       </display_position>
@@ -10348,7 +10348,7 @@
       </table>
       <link_reference id="-121"/>
     </sensor>
-    <sensor id="-24" type="static_point">
+    <sensor id="-24" type="loop">
       <display_position>
         <point elevation="0" lat="34.1196" lng="-117.77"/>
       </display_position>
@@ -10453,7 +10453,7 @@
       </table>
       <link_reference id="-265"/>
     </sensor>
-    <sensor id="-25" type="static_point">
+    <sensor id="-25" type="loop">
       <display_position>
         <point elevation="0" lat="34.1198" lng="-117.7826"/>
       </display_position>
@@ -10558,7 +10558,7 @@
       </table>
       <link_reference id="-335"/>
     </sensor>
-    <sensor id="-26" type="static_point">
+    <sensor id="-26" type="loop">
       <display_position>
         <point elevation="0" lat="34.1199" lng="-117.7813"/>
       </display_position>
@@ -10663,7 +10663,7 @@
       </table>
       <link_reference id="-262"/>
     </sensor>
-    <sensor id="-27" type="static_point">
+    <sensor id="-27" type="loop">
       <display_position>
         <point elevation="0" lat="34.1198" lng="-117.7798"/>
       </display_position>
@@ -10768,7 +10768,7 @@
       </table>
       <link_reference id="-118"/>
     </sensor>
-    <sensor id="-28" type="static_point">
+    <sensor id="-28" type="loop">
       <display_position>
         <point elevation="0" lat="34.1196" lng="-117.789"/>
       </display_position>
@@ -10873,7 +10873,7 @@
       </table>
       <link_reference id="-334"/>
     </sensor>
-    <sensor id="-29" type="static_point">
+    <sensor id="-29" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.8233"/>
       </display_position>
@@ -10978,7 +10978,7 @@
       </table>
       <link_reference id="-249"/>
     </sensor>
-    <sensor id="-30" type="static_point">
+    <sensor id="-30" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.8221"/>
       </display_position>
@@ -11083,7 +11083,7 @@
       </table>
       <link_reference id="-105"/>
     </sensor>
-    <sensor id="-31" type="static_point">
+    <sensor id="-31" type="loop">
       <display_position>
         <point elevation="0" lat="34.1192" lng="-117.8232"/>
       </display_position>
@@ -11188,7 +11188,7 @@
       </table>
       <link_reference id="-333"/>
     </sensor>
-    <sensor id="-32" type="static_point">
+    <sensor id="-32" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.8282"/>
       </display_position>
@@ -11293,7 +11293,7 @@
       </table>
       <link_reference id="-332"/>
     </sensor>
-    <sensor id="-33" type="static_point">
+    <sensor id="-33" type="loop">
       <display_position>
         <point elevation="0" lat="34.1211" lng="-117.8301"/>
       </display_position>
@@ -11398,7 +11398,7 @@
       </table>
       <link_reference id="-103"/>
     </sensor>
-    <sensor id="-34" type="static_point">
+    <sensor id="-34" type="loop">
       <display_position>
         <point elevation="0" lat="34.121" lng="-117.8292"/>
       </display_position>
@@ -11503,7 +11503,7 @@
       </table>
       <link_reference id="-247"/>
     </sensor>
-    <sensor id="-35" type="static_point">
+    <sensor id="-35" type="loop">
       <display_position>
         <point elevation="0" lat="34.1207" lng="-117.8334"/>
       </display_position>
@@ -11608,7 +11608,7 @@
       </table>
       <link_reference id="-331"/>
     </sensor>
-    <sensor id="-36" type="static_point">
+    <sensor id="-36" type="loop">
       <display_position>
         <point elevation="0" lat="34.1208" lng="-117.8306"/>
       </display_position>
@@ -11713,7 +11713,7 @@
       </table>
       <link_reference id="-330"/>
     </sensor>
-    <sensor id="-37" type="static_point">
+    <sensor id="-37" type="loop">
       <display_position>
         <point elevation="0" lat="34.1177" lng="-117.8455"/>
       </display_position>
@@ -11818,7 +11818,7 @@
       </table>
       <link_reference id="-242"/>
     </sensor>
-    <sensor id="-38" type="static_point">
+    <sensor id="-38" type="loop">
       <display_position>
         <point elevation="0" lat="34.1172" lng="-117.8452"/>
       </display_position>
@@ -11923,7 +11923,7 @@
       </table>
       <link_reference id="-329"/>
     </sensor>
-    <sensor id="-39" type="static_point">
+    <sensor id="-39" type="loop">
       <display_position>
         <point elevation="0" lat="34.1177" lng="-117.8461"/>
       </display_position>
@@ -12028,7 +12028,7 @@
       </table>
       <link_reference id="-98"/>
     </sensor>
-    <sensor id="-40" type="static_point">
+    <sensor id="-40" type="loop">
       <display_position>
         <point elevation="0" lat="34.12" lng="-117.8711"/>
       </display_position>
@@ -12133,7 +12133,7 @@
       </table>
       <link_reference id="-328"/>
     </sensor>
-    <sensor id="-41" type="static_point">
+    <sensor id="-41" type="loop">
       <display_position>
         <point elevation="0" lat="34.1205" lng="-117.8772"/>
       </display_position>
@@ -12238,7 +12238,7 @@
       </table>
       <link_reference id="-327"/>
     </sensor>
-    <sensor id="-42" type="static_point">
+    <sensor id="-42" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.8714"/>
       </display_position>
@@ -12343,7 +12343,7 @@
       </table>
       <link_reference id="-90"/>
     </sensor>
-    <sensor id="-43" type="static_point">
+    <sensor id="-43" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.8718"/>
       </display_position>
@@ -12448,7 +12448,7 @@
       </table>
       <link_reference id="-234"/>
     </sensor>
-    <sensor id="-44" type="static_point">
+    <sensor id="-44" type="loop">
       <display_position>
         <point elevation="0" lat="34.1209" lng="-117.8869"/>
       </display_position>
@@ -12553,7 +12553,7 @@
       </table>
       <link_reference id="-229"/>
     </sensor>
-    <sensor id="-45" type="static_point">
+    <sensor id="-45" type="loop">
       <display_position>
         <point elevation="0" lat="34.1205" lng="-117.8889"/>
       </display_position>
@@ -12658,7 +12658,7 @@
       </table>
       <link_reference id="-326"/>
     </sensor>
-    <sensor id="-46" type="static_point">
+    <sensor id="-46" type="loop">
       <display_position>
         <point elevation="0" lat="34.121" lng="-117.8863"/>
       </display_position>
@@ -12763,7 +12763,7 @@
       </table>
       <link_reference id="-85"/>
     </sensor>
-    <sensor id="-47" type="static_point">
+    <sensor id="-47" type="loop">
       <display_position>
         <point elevation="0" lat="34.1209" lng="-117.8902"/>
       </display_position>
@@ -12868,7 +12868,7 @@
       </table>
       <link_reference id="-84"/>
     </sensor>
-    <sensor id="-48" type="static_point">
+    <sensor id="-48" type="loop">
       <display_position>
         <point elevation="0" lat="34.1201" lng="-117.8911"/>
       </display_position>
@@ -12973,7 +12973,7 @@
       </table>
       <link_reference id="-325"/>
     </sensor>
-    <sensor id="-49" type="static_point">
+    <sensor id="-49" type="loop">
       <display_position>
         <point elevation="0" lat="34.1209" lng="-117.8915"/>
       </display_position>
@@ -13078,7 +13078,7 @@
       </table>
       <link_reference id="-228"/>
     </sensor>
-    <sensor id="-50" type="static_point">
+    <sensor id="-50" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.893"/>
       </display_position>
@@ -13183,7 +13183,7 @@
       </table>
       <link_reference id="-324"/>
     </sensor>
-    <sensor id="-51" type="static_point">
+    <sensor id="-51" type="loop">
       <display_position>
         <point elevation="0" lat="34.1209" lng="-117.9045"/>
       </display_position>
@@ -13288,7 +13288,7 @@
       </table>
       <link_reference id="-224"/>
     </sensor>
-    <sensor id="-52" type="static_point">
+    <sensor id="-52" type="loop">
       <display_position>
         <point elevation="0" lat="34.1201" lng="-117.9065"/>
       </display_position>
@@ -13393,7 +13393,7 @@
       </table>
       <link_reference id="-323"/>
     </sensor>
-    <sensor id="-53" type="static_point">
+    <sensor id="-53" type="loop">
       <display_position>
         <point elevation="0" lat="34.1208" lng="-117.9052"/>
       </display_position>
@@ -13498,7 +13498,7 @@
       </table>
       <link_reference id="-80"/>
     </sensor>
-    <sensor id="-54" type="static_point">
+    <sensor id="-54" type="loop">
       <display_position>
         <point elevation="0" lat="34.1203" lng="-117.9081"/>
       </display_position>
@@ -13603,7 +13603,7 @@
       </table>
       <link_reference id="-322"/>
     </sensor>
-    <sensor id="-55" type="static_point">
+    <sensor id="-55" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.9072"/>
       </display_position>
@@ -13708,7 +13708,7 @@
       </table>
       <link_reference id="-78"/>
     </sensor>
-    <sensor id="-56" type="static_point">
+    <sensor id="-56" type="loop">
       <display_position>
         <point elevation="0" lat="34.1206" lng="-117.9077"/>
       </display_position>
@@ -13813,7 +13813,7 @@
       </table>
       <link_reference id="-222"/>
     </sensor>
-    <sensor id="-57" type="static_point">
+    <sensor id="-57" type="loop">
       <display_position>
         <point elevation="0" lat="34.1211" lng="-117.9105"/>
       </display_position>
@@ -13918,7 +13918,7 @@
       </table>
       <link_reference id="-321"/>
     </sensor>
-    <sensor id="-58" type="static_point">
+    <sensor id="-58" type="loop">
       <display_position>
         <point elevation="0" lat="34.1252" lng="-117.9151"/>
       </display_position>
@@ -14023,7 +14023,7 @@
       </table>
       <link_reference id="-220"/>
     </sensor>
-    <sensor id="-59" type="static_point">
+    <sensor id="-59" type="loop">
       <display_position>
         <point elevation="0" lat="34.1252" lng="-117.9151"/>
       </display_position>
@@ -14128,7 +14128,7 @@
       </table>
       <link_reference id="-76"/>
     </sensor>
-    <sensor id="-60" type="static_point">
+    <sensor id="-60" type="loop">
       <display_position>
         <point elevation="0" lat="34.125" lng="-117.9152"/>
       </display_position>
@@ -14233,7 +14233,7 @@
       </table>
       <link_reference id="-320"/>
     </sensor>
-    <sensor id="-61" type="static_point">
+    <sensor id="-61" type="loop">
       <display_position>
         <point elevation="0" lat="34.1299" lng="-117.9322"/>
       </display_position>
@@ -14338,7 +14338,7 @@
       </table>
       <link_reference id="-319"/>
     </sensor>
-    <sensor id="-62" type="static_point">
+    <sensor id="-62" type="loop">
       <display_position>
         <point elevation="0" lat="34.1305" lng="-117.9314"/>
       </display_position>
@@ -14443,7 +14443,7 @@
       </table>
       <link_reference id="-70"/>
     </sensor>
-    <sensor id="-63" type="static_point">
+    <sensor id="-63" type="loop">
       <display_position>
         <point elevation="0" lat="34.1303" lng="-117.9319"/>
       </display_position>
@@ -14548,7 +14548,7 @@
       </table>
       <link_reference id="-214"/>
     </sensor>
-    <sensor id="-64" type="static_point">
+    <sensor id="-64" type="loop">
       <display_position>
         <point elevation="0" lat="34.1338" lng="-117.955"/>
       </display_position>
@@ -14653,7 +14653,7 @@
       </table>
       <link_reference id="-207"/>
     </sensor>
-    <sensor id="-65" type="static_point">
+    <sensor id="-65" type="loop">
       <display_position>
         <point elevation="0" lat="34.1332" lng="-117.9561"/>
       </display_position>
@@ -14758,7 +14758,7 @@
       </table>
       <link_reference id="-318"/>
     </sensor>
-    <sensor id="-66" type="static_point">
+    <sensor id="-66" type="loop">
       <display_position>
         <point elevation="0" lat="34.1338" lng="-117.955"/>
       </display_position>
@@ -14863,7 +14863,7 @@
       </table>
       <link_reference id="-63"/>
     </sensor>
-    <sensor id="-67" type="static_point">
+    <sensor id="-67" type="loop">
       <display_position>
         <point elevation="0" lat="34.1352" lng="-117.9607"/>
       </display_position>
@@ -14968,7 +14968,7 @@
       </table>
       <link_reference id="-61"/>
     </sensor>
-    <sensor id="-68" type="static_point">
+    <sensor id="-68" type="loop">
       <display_position>
         <point elevation="0" lat="34.1348" lng="-117.9593"/>
       </display_position>
@@ -15073,7 +15073,7 @@
       </table>
       <link_reference id="-205"/>
     </sensor>
-    <sensor id="-69" type="static_point">
+    <sensor id="-69" type="loop">
       <display_position>
         <point elevation="0" lat="34.1342" lng="-117.9594"/>
       </display_position>
@@ -15178,7 +15178,7 @@
       </table>
       <link_reference id="-317"/>
     </sensor>
-    <sensor id="-70" type="static_point">
+    <sensor id="-70" type="loop">
       <display_position>
         <point elevation="0" lat="34.1356" lng="-117.9673"/>
       </display_position>
@@ -15283,7 +15283,7 @@
       </table>
       <link_reference id="-203"/>
     </sensor>
-    <sensor id="-71" type="static_point">
+    <sensor id="-71" type="loop">
       <display_position>
         <point elevation="0" lat="34.1353" lng="-117.9663"/>
       </display_position>
@@ -15388,7 +15388,7 @@
       </table>
       <link_reference id="-59"/>
     </sensor>
-    <sensor id="-72" type="static_point">
+    <sensor id="-72" type="loop">
       <display_position>
         <point elevation="0" lat="34.1351" lng="-117.9624"/>
       </display_position>
@@ -15493,7 +15493,7 @@
       </table>
       <link_reference id="-316"/>
     </sensor>
-    <sensor id="-73" type="static_point">
+    <sensor id="-73" type="loop">
       <display_position>
         <point elevation="0" lat="34.1354" lng="-117.9777"/>
       </display_position>
@@ -15598,7 +15598,7 @@
       </table>
       <link_reference id="-56"/>
     </sensor>
-    <sensor id="-74" type="static_point">
+    <sensor id="-74" type="loop">
       <display_position>
         <point elevation="0" lat="34.135" lng="-117.9767"/>
       </display_position>
@@ -15703,7 +15703,7 @@
       </table>
       <link_reference id="-315"/>
     </sensor>
-    <sensor id="-75" type="static_point">
+    <sensor id="-75" type="loop">
       <display_position>
         <point elevation="0" lat="34.1354" lng="-117.9773"/>
       </display_position>
@@ -15808,7 +15808,7 @@
       </table>
       <link_reference id="-200"/>
     </sensor>
-    <sensor id="-76" type="static_point">
+    <sensor id="-76" type="loop">
       <display_position>
         <point elevation="0" lat="34.1351" lng="-117.978"/>
       </display_position>
@@ -15913,7 +15913,7 @@
       </table>
       <link_reference id="-314"/>
     </sensor>
-    <sensor id="-77" type="static_point">
+    <sensor id="-77" type="loop">
       <display_position>
         <point elevation="0" lat="34.1352" lng="-117.979"/>
       </display_position>
@@ -16018,7 +16018,7 @@
       </table>
       <link_reference id="-199"/>
     </sensor>
-    <sensor id="-78" type="static_point">
+    <sensor id="-78" type="loop">
       <display_position>
         <point elevation="0" lat="34.1354" lng="-117.979"/>
       </display_position>
@@ -16123,7 +16123,7 @@
       </table>
       <link_reference id="-55"/>
     </sensor>
-    <sensor id="-79" type="static_point">
+    <sensor id="-79" type="loop">
       <display_position>
         <point elevation="0" lat="34.1352" lng="-117.9861"/>
       </display_position>
@@ -16228,7 +16228,7 @@
       </table>
       <link_reference id="-313"/>
     </sensor>
-    <sensor id="-80" type="static_point">
+    <sensor id="-80" type="loop">
       <display_position>
         <point elevation="0" lat="34.1353" lng="-117.9957"/>
       </display_position>
@@ -16333,7 +16333,7 @@
       </table>
       <link_reference id="-50"/>
     </sensor>
-    <sensor id="-81" type="static_point">
+    <sensor id="-81" type="loop">
       <display_position>
         <point elevation="0" lat="34.1354" lng="-117.996"/>
       </display_position>
@@ -16438,7 +16438,7 @@
       </table>
       <link_reference id="-194"/>
     </sensor>
-    <sensor id="-82" type="static_point">
+    <sensor id="-82" type="loop">
       <display_position>
         <point elevation="0" lat="34.1351" lng="-117.9987"/>
       </display_position>
@@ -16543,7 +16543,7 @@
       </table>
       <link_reference id="-312"/>
     </sensor>
-    <sensor id="-83" type="static_point">
+    <sensor id="-83" type="loop">
       <display_position>
         <point elevation="0" lat="34.1353" lng="-118.0033"/>
       </display_position>
@@ -16648,7 +16648,7 @@
       </table>
       <link_reference id="-311"/>
     </sensor>
-    <sensor id="-84" type="static_point">
+    <sensor id="-84" type="loop">
       <display_position>
         <point elevation="0" lat="34.1394" lng="-118.0158"/>
       </display_position>
@@ -16753,7 +16753,7 @@
       </table>
       <link_reference id="-44"/>
     </sensor>
-    <sensor id="-85" type="static_point">
+    <sensor id="-85" type="loop">
       <display_position>
         <point elevation="0" lat="34.1387" lng="-118.015"/>
       </display_position>
@@ -16858,7 +16858,7 @@
       </table>
       <link_reference id="-188"/>
     </sensor>
-    <sensor id="-86" type="static_point">
+    <sensor id="-86" type="loop">
       <display_position>
         <point elevation="0" lat="34.139" lng="-118.0157"/>
       </display_position>
@@ -16963,7 +16963,7 @@
       </table>
       <link_reference id="-310"/>
     </sensor>
-    <sensor id="-87" type="static_point">
+    <sensor id="-87" type="loop">
       <display_position>
         <point elevation="0" lat="34.1418" lng="-118.0191"/>
       </display_position>
@@ -17068,7 +17068,7 @@
       </table>
       <link_reference id="-308"/>
     </sensor>
-    <sensor id="-88" type="static_point">
+    <sensor id="-88" type="loop">
       <display_position>
         <point elevation="0" lat="34.1409" lng="-118.0186"/>
       </display_position>
@@ -17173,7 +17173,7 @@
       </table>
       <link_reference id="-309"/>
     </sensor>
-    <sensor id="-89" type="static_point">
+    <sensor id="-89" type="loop">
       <display_position>
         <point elevation="0" lat="34.1413" lng="-118.0179"/>
       </display_position>
@@ -17278,7 +17278,7 @@
       </table>
       <link_reference id="-187"/>
     </sensor>
-    <sensor id="-90" type="static_point">
+    <sensor id="-90" type="loop">
       <display_position>
         <point elevation="0" lat="34.1412" lng="-118.018"/>
       </display_position>
@@ -17383,7 +17383,7 @@
       </table>
       <link_reference id="-43"/>
     </sensor>
-    <sensor id="-91" type="static_point">
+    <sensor id="-91" type="loop">
       <display_position>
         <point elevation="0" lat="34.1473" lng="-118.0307"/>
       </display_position>
@@ -17488,7 +17488,7 @@
       </table>
       <link_reference id="-307"/>
     </sensor>
-    <sensor id="-92" type="static_point">
+    <sensor id="-92" type="loop">
       <display_position>
         <point elevation="0" lat="34.1463" lng="-118.0279"/>
       </display_position>
@@ -17593,7 +17593,7 @@
       </table>
       <link_reference id="-39"/>
     </sensor>
-    <sensor id="-93" type="static_point">
+    <sensor id="-93" type="loop">
       <display_position>
         <point elevation="0" lat="34.1465" lng="-118.0283"/>
       </display_position>
@@ -17698,7 +17698,7 @@
       </table>
       <link_reference id="-183"/>
     </sensor>
-    <sensor id="-94" type="static_point">
+    <sensor id="-94" type="loop">
       <display_position>
         <point elevation="0" lat="34.1477" lng="-118.0324"/>
       </display_position>
@@ -17803,7 +17803,7 @@
       </table>
       <link_reference id="-306"/>
     </sensor>
-    <sensor id="-95" type="static_point">
+    <sensor id="-95" type="loop">
       <display_position>
         <point elevation="0" lat="34.1488" lng="-118.0478"/>
       </display_position>
@@ -17908,7 +17908,7 @@
       </table>
       <link_reference id="-33"/>
     </sensor>
-    <sensor id="-96" type="static_point">
+    <sensor id="-96" type="loop">
       <display_position>
         <point elevation="0" lat="34.1486" lng="-118.0532"/>
       </display_position>
@@ -18013,7 +18013,7 @@
       </table>
       <link_reference id="-304"/>
     </sensor>
-    <sensor id="-97" type="static_point">
+    <sensor id="-97" type="loop">
       <display_position>
         <point elevation="0" lat="34.1488" lng="-118.0491"/>
       </display_position>
@@ -18118,7 +18118,7 @@
       </table>
       <link_reference id="-177"/>
     </sensor>
-    <sensor id="-98" type="static_point">
+    <sensor id="-98" type="loop">
       <display_position>
         <point elevation="0" lat="34.1486" lng="-118.0495"/>
       </display_position>
@@ -18223,7 +18223,7 @@
       </table>
       <link_reference id="-305"/>
     </sensor>
-    <sensor id="-99" type="static_point">
+    <sensor id="-99" type="loop">
       <display_position>
         <point elevation="0" lat="34.148" lng="-118.0717"/>
       </display_position>
@@ -18328,7 +18328,7 @@
       </table>
       <link_reference id="-346"/>
     </sensor>
-    <sensor id="-100" type="static_point">
+    <sensor id="-100" type="loop">
       <display_position>
         <point elevation="0" lat="34.1487" lng="-118.0658"/>
       </display_position>
@@ -18433,7 +18433,7 @@
       </table>
       <link_reference id="-172"/>
     </sensor>
-    <sensor id="-101" type="static_point">
+    <sensor id="-101" type="loop">
       <display_position>
         <point elevation="0" lat="34.1486" lng="-118.0651"/>
       </display_position>
@@ -18538,7 +18538,7 @@
       </table>
       <link_reference id="-28"/>
     </sensor>
-    <sensor id="-102" type="static_point">
+    <sensor id="-102" type="loop">
       <display_position>
         <point elevation="0" lat="34.1483" lng="-118.0678"/>
       </display_position>
@@ -18643,7 +18643,7 @@
       </table>
       <link_reference id="-303"/>
     </sensor>
-    <sensor id="-103" type="static_point">
+    <sensor id="-103" type="loop">
       <display_position>
         <point elevation="0" lat="34.1483" lng="-118.0708"/>
       </display_position>
@@ -18748,7 +18748,7 @@
       </table>
       <link_reference id="-302"/>
     </sensor>
-    <sensor id="-104" type="static_point">
+    <sensor id="-104" type="loop">
       <display_position>
         <point elevation="0" lat="34.1486" lng="-118.0679"/>
       </display_position>
@@ -18853,7 +18853,7 @@
       </table>
       <link_reference id="-170"/>
     </sensor>
-    <sensor id="-105" type="static_point">
+    <sensor id="-105" type="loop">
       <display_position>
         <point elevation="0" lat="34.1487" lng="-118.0683"/>
       </display_position>
@@ -18958,7 +18958,7 @@
       </table>
       <link_reference id="-26"/>
     </sensor>
-    <sensor id="-106" type="static_point">
+    <sensor id="-106" type="loop">
       <display_position>
         <point elevation="0" lat="34.1477" lng="-118.0777"/>
       </display_position>
@@ -19063,7 +19063,7 @@
       </table>
       <link_reference id="-24"/>
     </sensor>
-    <sensor id="-107" type="static_point">
+    <sensor id="-107" type="loop">
       <display_position>
         <point elevation="0" lat="34.1474" lng="-118.0813"/>
       </display_position>
@@ -19168,7 +19168,7 @@
       </table>
       <link_reference id="-300"/>
     </sensor>
-    <sensor id="-108" type="static_point">
+    <sensor id="-108" type="loop">
       <display_position>
         <point elevation="0" lat="34.1477" lng="-118.0786"/>
       </display_position>
@@ -19273,7 +19273,7 @@
       </table>
       <link_reference id="-168"/>
     </sensor>
-    <sensor id="-109" type="static_point">
+    <sensor id="-109" type="loop">
       <display_position>
         <point elevation="0" lat="34.1476" lng="-118.0796"/>
       </display_position>
@@ -19378,7 +19378,7 @@
       </table>
       <link_reference id="-301"/>
     </sensor>
-    <sensor id="-110" type="static_point">
+    <sensor id="-110" type="loop">
       <display_position>
         <point elevation="0" lat="34.1515" lng="-118.0916"/>
       </display_position>
@@ -19483,7 +19483,7 @@
       </table>
       <link_reference id="-298"/>
     </sensor>
-    <sensor id="-111" type="static_point">
+    <sensor id="-111" type="loop">
       <display_position>
         <point elevation="0" lat="34.1524" lng="-118.0936"/>
       </display_position>
@@ -19588,7 +19588,7 @@
       </table>
       <link_reference id="-19"/>
     </sensor>
-    <sensor id="-112" type="static_point">
+    <sensor id="-112" type="loop">
       <display_position>
         <point elevation="0" lat="34.1518" lng="-118.0916"/>
       </display_position>
@@ -19693,7 +19693,7 @@
       </table>
       <link_reference id="-163"/>
     </sensor>
-    <sensor id="-113" type="static_point">
+    <sensor id="-113" type="loop">
       <display_position>
         <point elevation="0" lat="34.1476" lng="-118.0844"/>
       </display_position>
@@ -19798,7 +19798,7 @@
       </table>
       <link_reference id="-299"/>
     </sensor>
-    <sensor id="-114" type="static_point">
+    <sensor id="-114" type="loop">
       <display_position>
         <point elevation="0" lat="34.1523" lng="-118.0974"/>
       </display_position>
@@ -19903,7 +19903,7 @@
       </table>
       <link_reference id="-297"/>
     </sensor>
-    <sensor id="-115" type="static_point">
+    <sensor id="-115" type="loop">
       <display_position>
         <point elevation="0" lat="34.1523" lng="-118.1022"/>
       </display_position>
@@ -20008,7 +20008,7 @@
       </table>
       <link_reference id="-296"/>
     </sensor>
-    <sensor id="-116" type="static_point">
+    <sensor id="-116" type="loop">
       <display_position>
         <point elevation="0" lat="34.1524" lng="-118.11"/>
       </display_position>
@@ -20113,7 +20113,7 @@
       </table>
       <link_reference id="-14"/>
     </sensor>
-    <sensor id="-117" type="static_point">
+    <sensor id="-117" type="loop">
       <display_position>
         <point elevation="0" lat="34.1524" lng="-118.1088"/>
       </display_position>
@@ -20218,7 +20218,7 @@
       </table>
       <link_reference id="-158"/>
     </sensor>
-    <sensor id="-118" type="static_point">
+    <sensor id="-118" type="loop">
       <display_position>
         <point elevation="0" lat="34.1522" lng="-118.1107"/>
       </display_position>
@@ -20323,7 +20323,7 @@
       </table>
       <link_reference id="-295"/>
     </sensor>
-    <sensor id="-119" type="static_point">
+    <sensor id="-119" type="loop">
       <display_position>
         <point elevation="0" lat="34.1523" lng="-118.1179"/>
       </display_position>
@@ -20428,7 +20428,7 @@
       </table>
       <link_reference id="-11"/>
     </sensor>
-    <sensor id="-120" type="static_point">
+    <sensor id="-120" type="loop">
       <display_position>
         <point elevation="0" lat="34.1521" lng="-118.1186"/>
       </display_position>
@@ -20533,7 +20533,7 @@
       </table>
       <link_reference id="-294"/>
     </sensor>
-    <sensor id="-121" type="static_point">
+    <sensor id="-121" type="loop">
       <display_position>
         <point elevation="0" lat="34.1522" lng="-118.119"/>
       </display_position>
@@ -20638,7 +20638,7 @@
       </table>
       <link_reference id="-155"/>
     </sensor>
-    <sensor id="-122" type="static_point">
+    <sensor id="-122" type="loop">
       <display_position>
         <point elevation="0" lat="34.1518" lng="-118.1247"/>
       </display_position>
@@ -20743,7 +20743,7 @@
       </table>
       <link_reference id="-293"/>
     </sensor>
-    <sensor id="-123" type="static_point">
+    <sensor id="-123" type="loop">
       <display_position>
         <point elevation="0" lat="34.1516" lng="-118.1284"/>
       </display_position>
@@ -20848,7 +20848,7 @@
       </table>
       <link_reference id="-152"/>
     </sensor>
-    <sensor id="-124" type="static_point">
+    <sensor id="-124" type="loop">
       <display_position>
         <point elevation="0" lat="34.1515" lng="-118.1306"/>
       </display_position>
@@ -20953,7 +20953,7 @@
       </table>
       <link_reference id="-292"/>
     </sensor>
-    <sensor id="-125" type="static_point">
+    <sensor id="-125" type="loop">
       <display_position>
         <point elevation="0" lat="34.1516" lng="-118.1295"/>
       </display_position>
@@ -21058,7 +21058,7 @@
       </table>
       <link_reference id="-8"/>
     </sensor>
-    <sensor id="-126" type="static_point">
+    <sensor id="-126" type="loop">
       <display_position>
         <point elevation="0" lat="34.1514" lng="-118.1362"/>
       </display_position>
@@ -21163,7 +21163,7 @@
       </table>
       <link_reference id="-291"/>
     </sensor>
-    <sensor id="-127" type="static_point">
+    <sensor id="-127" type="loop">
       <display_position>
         <point elevation="0" lat="34.1517" lng="-118.143"/>
       </display_position>
@@ -21268,7 +21268,7 @@
       </table>
       <link_reference id="-4"/>
     </sensor>
-    <sensor id="-128" type="static_point">
+    <sensor id="-128" type="loop">
       <display_position>
         <point elevation="0" lat="34.1517" lng="-118.1427"/>
       </display_position>
@@ -21373,7 +21373,7 @@
       </table>
       <link_reference id="-148"/>
     </sensor>
-    <sensor id="-129" type="static_point">
+    <sensor id="-129" type="loop">
       <display_position>
         <point elevation="0" lat="34.1514" lng="-118.1433"/>
       </display_position>
@@ -21478,7 +21478,7 @@
       </table>
       <link_reference id="-290"/>
     </sensor>
-    <sensor id="-130" type="static_point">
+    <sensor id="-130" type="loop">
       <display_position>
         <point elevation="0" lat="34.1512" lng="-118.1516"/>
       </display_position>
@@ -21583,7 +21583,7 @@
       </table>
       <link_reference id="-289"/>
     </sensor>
-    <sensor id="-131" type="static_point">
+    <sensor id="-131" type="loop">
       <display_position>
         <point elevation="0" lat="34.1514" lng="-118.1517"/>
       </display_position>
@@ -21688,7 +21688,7 @@
       </table>
       <link_reference id="-145"/>
     </sensor>
-    <sensor id="-132" type="static_point">
+    <sensor id="-132" type="loop">
       <display_position>
         <point elevation="0" lat="34.1513" lng="-118.152"/>
       </display_position>
