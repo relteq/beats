@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 
@@ -43,21 +42,6 @@ import edu.berkeley.path.beats.simulator.SiriusException;
  * Administers the Sirius Database
  */
 public class Admin {
-	
-	public static void initTorqueAPI() throws Exception 
-	{
-
-		Parameters params = Parameters.fromEnvironment();
-		try 
-		{
-			Torque.init(params.toConfiguration());
-
-		} 
-		catch (TorqueException exc) 
-		{
-			exc.printStackTrace();
-		}
-	}
 
 	/**
 	 * Initializes the database.
