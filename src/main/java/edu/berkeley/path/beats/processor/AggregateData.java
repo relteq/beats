@@ -48,6 +48,7 @@ public class AggregateData extends OutputToCSV {
 		doAggregate(table, arguments, "1day");
 		doAggregate(table, arguments, "total");
 		
+		
 	}
 	
 	/**
