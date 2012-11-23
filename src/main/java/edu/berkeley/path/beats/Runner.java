@@ -28,8 +28,8 @@ package edu.berkeley.path.beats;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.db.Admin;
 import edu.berkeley.path.beats.db.OutputToCSV;
+import edu.berkeley.path.beats.db.Service;
 import edu.berkeley.path.beats.om.LinkDataDetailed;
 import edu.berkeley.path.beats.om.LinkDataTotal;
 import edu.berkeley.path.beats.om.LinkPerformanceDetailed;
@@ -66,7 +66,7 @@ public class Runner {
 			// Run report
 			if (cmd.equals("report") || cmd.equals("r")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				
 				// Calculate performance measures
 				PdfReport pdf = new PdfReport();
@@ -77,7 +77,7 @@ public class Runner {
 			// Aggregate data
 			if (cmd.equals("process") || cmd.equals("p")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				
 				// Calculate performance measures
 				 PerformanceData.doPerformance(arguments);
@@ -90,32 +90,32 @@ public class Runner {
 			// CSV output
 			if (cmd.equals("link_data_total") || cmd.equals("ldt")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_data_total",LinkDataTotal.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("link_data_detailed") || cmd.equals("ldd")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_data_detailed",LinkDataDetailed.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("link_performance_total") || cmd.equals("lpt")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_performance_total", LinkPerformanceTotal.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("link_performance_detailed") || cmd.equals("lpd")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_performance_detailed", LinkPerformanceDetailed.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("signal_data") || cmd.equals("sd")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("signal_data", SignalData.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("signal_phase_performance") || cmd.equals("spp")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("signal_phase_performance", SignalPhasePerformance.getFieldNames(), arguments);
 				
 			} else

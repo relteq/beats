@@ -534,7 +534,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		@Override
 		public boolean register() {
 	        for(Link link : target2index.keySet())
-	        	if(!link.registerFlowController(this,target2index.get(link)))
+	        	if (null != link && !link.registerFlowController(this,target2index.get(link)))
 	        		return false;
 			return true;
 		}
