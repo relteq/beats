@@ -59,9 +59,12 @@ public class ScenarioExporter {
 	}
 
 	edu.berkeley.path.beats.simulator.JaxbObjectFactory factory = null;
+	edu.berkeley.path.beats.util.polyline.DecoderIF polyline_decoder;
 
 	private ScenarioExporter() {
 		factory = new edu.berkeley.path.beats.simulator.JaxbObjectFactory();
+		polyline_decoder = new edu.berkeley.path.beats.util.polyline.GoogleDecoder();
+		polyline_decoder.setObjectFactory(factory);
 	}
 
 	private static Logger logger = Logger.getLogger(ScenarioExporter.class);
@@ -1007,12 +1010,31 @@ public class ScenarioExporter {
 	}
 
 	private edu.berkeley.path.beats.jaxb.Position restorePosition(String geometry) {
-		// TODO Auto-generated method stub
-		return null;
+		if (null == geometry) return null;
+		List<edu.berkeley.path.beats.jaxb.Point> point_l = decodePolyline(geometry);
+		if (null != point_l) return null;
+		edu.berkeley.path.beats.jaxb.Position pos = factory.createPosition();
+		pos.getPoint().addAll(point_l);
+		return pos;
 	}
 
 	private edu.berkeley.path.beats.jaxb.DisplayPosition restoreDisplayPosition(String geometry) {
-		// TODO Auto-generated method stub
+		if (null == geometry) return null;
+		List<edu.berkeley.path.beats.jaxb.Point> point_l = decodePolyline(geometry);
+		if (null == point_l) return null;
+		edu.berkeley.path.beats.jaxb.DisplayPosition pos = factory.createDisplayPosition();
+		pos.getPoint().addAll(point_l);
+		return pos;
+	}
+
+	private List<edu.berkeley.path.beats.jaxb.Point> decodePolyline(String path) {
+		if (null == path) return null;
+		polyline_decoder.reset();
+		try {
+			return polyline_decoder.decode(path);
+		} catch (SiriusException exc) {
+			logger.error("Failed to restore a list of points", exc);
+		}
 		return null;
 	}
 
