@@ -16,10 +16,9 @@ public class PerformanceData extends AggregateData {
 
 	
 	public static void doPerformance(String[] arguments) throws TorqueException, IOException, DataSetException  {
-		
-
-		doPerformance("link_performance_detailed", arguments);
+			
 		doPerformance("link_performance_total", arguments);
+		doPerformance("link_performance_detailed", arguments);
 		
 	}
 	
@@ -48,14 +47,15 @@ public class PerformanceData extends AggregateData {
 		
 		reportToStandard("Unique key combinations: " + listOfKeys.size());
 		
+		
+		// Clean previously processed data
+		AggregateData.CleanPreviousAggregation(table, arguments,(String)null);
+		
 		// Loop by key combinations 
 			
 		for (int i=0; i < listOfKeys.size(); i++ ) {
 			
 			nProcessed=0;
-			
-			// Clean previously processed data
-			AggregateData.CleanPreviousAggregation(table, arguments,(String)null);
 			
 			if ( getValueFromDB("COUNT(ts)", table, arguments, (Record)listOfKeys.get(i), "raw").asInt()  > 0 ) {
 				
@@ -67,9 +67,18 @@ public class PerformanceData extends AggregateData {
 					try {
 						
 						// Get data from the source table
+						String mainQuery = setKeys(query, getSourceTable(table), (Record)listOfKeys.get(i));
+						
+						originalData = BasePeer.executeQuery( "SELECT * " + mainQuery + " ORDER BY ts ASC" );
+						
 
-						originalData = BasePeer.executeQuery( "SELECT * " + setKeys(query, getSourceTable(table), (Record)listOfKeys.get(i)) + " ORDER BY ts ASC" );
-
+						Record r;
+/*						
+						for ( int j =1; j<=((Record)originalData.get(0)).size(); j++) {
+							AggregateData.reportToStandard("Raw data: j=" + j + " " +   ((Record)originalData.get(0)).getValue(j).asString() );
+						}
+						
+*/						
 						if (originalData.size() > 0 ) {
 							
 							long 	timestamp = 0;
@@ -152,12 +161,15 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 	 * @param aggregation
 	 * @return delay
 	 */
-	public static BigDecimal delay(BigDecimal vht, BigDecimal vmt, BigDecimal speed) {
+	public static BigDecimal delay(BigDecimal vht, BigDecimal vmt, BigDecimal freeFlowSpeed) {
 		
-		
-		if ( speed.doubleValue() <= 0 )  return null;
-		else 
-		return vht.subtract(vmt.divide(speed));
+		if ( freeFlowSpeed == null || freeFlowSpeed.doubleValue() <= 1E-10 )  return new BigDecimal(0);
+		else {
+
+			double x = vht.doubleValue() - vmt.doubleValue()/freeFlowSpeed.doubleValue();
+			
+			return new BigDecimal(x);
+		}
 		
 	}
 	
@@ -172,14 +184,11 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 	public static BigDecimal productivityLoss(BigDecimal out_flow, BigDecimal capacity, int lanes, double length, long timeDelta) {
 		
 
-		if ( capacity.doubleValue() <= 0 )  return null;
+		if ( capacity.doubleValue() <= 1E-10 )  return null;
 		else {
 			// need to ad logic for  v and V
 			
-			return  (  BigDecimal.valueOf(
-											( 1.0 -  (out_flow.doubleValue() / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0/60.0/60.0 
-										 ) 
-					);
+			return  (  BigDecimal.valueOf(( 1.0 -  (out_flow.doubleValue() / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0 ) );
 			
 			}
 		}
@@ -232,10 +241,13 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		
 		try {
 			
-			return ((Record) BasePeer.executeQuery("SELECT lanes FROM links WHERE length>0 "+ twoKeys).get(0)).getValue(1).asInt();
+			twoKeys= twoKeys.replaceFirst("AND id", "AND link_id"); // link_lanes table uses link_id as a key while links table uses id for same thing.  Isn't it stupid?
+			
+			return ((Record) BasePeer.executeQuery("SELECT lanes FROM link_lanes WHERE lanes > 0 "+ twoKeys).get(0)).getValue(1).asInt();
 					
 		} catch (Exception e) {
 			
+			e.printStackTrace();
 			return 0;
 		}
 		
@@ -287,12 +299,14 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 			}
 						
 			try {
+				
 
 				return ((Record) BasePeer.executeQuery("SELECT length FROM links WHERE length>0"+ twoKeys).get(0)).getValue(1).asDouble();
 				
 				
 			} catch (Exception e) {
 				
+				e.printStackTrace();
 				return 0.0;
 			}
 			
@@ -370,7 +384,7 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 			
 		
 		/**
-		 * calculates Actual Travel Time and Worst Travel Time
+		 * calculates Actual Travel Time and Worst Travel Time.  Equation 3.4
 		 * @param speedData
 		 * @param linkLength
 		 * @param worst = 1 for regular speed and worst = 2 for worst speed
@@ -388,23 +402,24 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 								
 					v = ((Record)speedData.get(i)).getValue(speedColumn).asBigDecimal() ;
 					 
-					 if ( v != null  ) distance += v.doubleValue() * getRawTimeDeltaInHours(speedData , i, tsColumn);								
+					 if ( v != null  ) distance += v.doubleValue() * getRawTimeDeltaInSeconds(speedData , i, tsColumn);								
 					
 					if ( distance >= linkLength ) {
 						
-						// stop calculation
-						return BigDecimal.valueOf(getRawTimeDeltaInHours(speedData, recordNumber, i, tsColumn));
+						// stop calculation.  Equation 3.4 can outputs zero as a valid travel time.  Need to review the equation 
+						return BigDecimal.valueOf(getRawTimeDeltaInSeconds(speedData, recordNumber, i, tsColumn));
 						
 					}
 				}
 				
-				return null;
+				return new BigDecimal(0);
 				
 			} catch (DataSetException e) {
 				
-				return null;
+				return new BigDecimal(0);
 			}
 		}
+		
 		
 		
 		/**
@@ -413,32 +428,33 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		 * @param recordNumber
 		 * @return time delta in hours
 		 */
-		public static double getRawTimeDeltaInHours(List speedData, int recordNumber, int tsColumn ) {
+		public static double getRawTimeDeltaInSeconds(List speedData, int recordNumber, int tsColumn ) {
 
 			if ( recordNumber < speedData.size() - 1 ) {
 
-				return getRawTimeDeltaInHours(speedData, recordNumber, recordNumber+1, tsColumn );
+				return getRawTimeDeltaInSeconds(speedData, recordNumber, recordNumber+1, tsColumn );
 			}
 			else {
 				
-				return getRawTimeDeltaInHours(speedData, recordNumber-1, recordNumber, tsColumn );	
+				return getRawTimeDeltaInSeconds(speedData, recordNumber-1, recordNumber, tsColumn );	
 			}
 
 		}
+		
 		
 		/**
 		 * get raw time interval for a specific record number (it may change from record to record)
 		 * @param speedData
 		 * @param recordNumber
-		 * @return time delta in hours
+		 * @return time delta in seconds
 		 */
-		public static double getRawTimeDeltaInHours(List speedData, int recordNumber1, int recordNumber2, int tsColumn ) {
+		public static double getRawTimeDeltaInSeconds(List speedData, int recordNumber1, int recordNumber2, int tsColumn ) {
 					
 			try {		
 
 				return ((double)( ((Record)speedData.get(recordNumber2)).getValue(tsColumn).asTimestamp().getTime() 
 						- ((Record)speedData.get(recordNumber1)).getValue(tsColumn).asTimestamp().getTime()) )
-						/1000.0/60.0/60.0;
+						/1000.0;
 		
 			} catch (DataSetException e) {
 				
@@ -446,4 +462,5 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 			}			
 
 		}
+	
 }

@@ -913,7 +913,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// construct list of stations to extract from datafile 
 		for(Sensor sensor : sensorlist.sensors){
-			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -940,7 +940,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// distribute data to sensors
 		for(Sensor sensor : sensorlist.sensors){
 			
-			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;
