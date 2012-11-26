@@ -209,7 +209,7 @@
       </table>
     </sensor>
     <sensor id="2" type="static_point">
-      <link_reference id="100"/>
+      <link_reference id="2"/>
       <display_position>
         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
@@ -266,9 +266,6 @@
     </splitratioProfile>
     <splitratioProfile dt="300" node_id="4">
       <splitratio link_in="3" link_out="4">0.8</splitratio>
-    </splitratioProfile>
-    <splitratioProfile dt="300" node_id="500">
-      <splitratio link_in="4" link_out="5">1</splitratio>
     </splitratioProfile>
   </SplitRatioProfileSet>
   <EventSet>
