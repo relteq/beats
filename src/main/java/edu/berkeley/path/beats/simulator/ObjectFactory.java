@@ -75,35 +75,35 @@ public final class ObjectFactory {
 			return null;
 		Controller C;
 		switch(myType){
-			case IRM_alinea:
+			case IRM_ALINEA:
 				C = new Controller_IRM_Alinea();
 				break;
 				
-			case IRM_time_of_day:
+			case IRM_TOD:
 				C = new Controller_IRM_Time_of_Day();
 				break;
 				
-			case IRM_traffic_responsive:
+			case IRM_TOS:
 				C = new Controller_IRM_Traffic_Responsive();
 				break;
 	
-			case CRM_swarm:
+			case CRM_SWARM:
 				C = new Controller_CRM_SWARM();
 				break;
 				
-			case CRM_hero:
+			case CRM_HERO:
 				C = new Controller_CRM_HERO();
 				break;
 				
-			case VSL_time_of_day:
+			case VSL_TOD:
 				C = new Controller_VSL_Time_of_Day();
 				break;
 				
-			case SIG_pretimed:
+			case SIG_TOD:
 				C = new Controller_SIG_Pretimed();
 				break;
 				
-			case SIG_actuated:
+			case SIG_Actuated:
 				C = new Controller_SIG_Actuated();
 				break;
 				
@@ -166,18 +166,14 @@ public final class ObjectFactory {
 			return null;
 		Sensor S;
 		switch(myType){
-			case static_point:
+			case loop:
 				S = new SensorLoopStation();
 				break;
 
-			case static_area:
+			case camera:
 				S = null; 
 				break;
 
-			case moving_point:
-				S = new SensorFloating();
-				break;
-				
 			default:
 				S = null;
 				break;

@@ -196,7 +196,7 @@
         <demandProfile knob="1" dt="300" link_id_origin="-1">0.0277778:0.0138889</demandProfile>
     </DemandProfileSet>
     <ControllerSet>
-        <controller type="IRM_alinea" id="-1" dt="5" enabled="true">
+        <controller type="IRM_ALINEA" id="-1" dt="5" enabled="true">
             <targetElements>
                 <scenarioElement type="link" id="-6"/>
             </targetElements>
