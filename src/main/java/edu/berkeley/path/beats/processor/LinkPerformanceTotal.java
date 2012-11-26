@@ -38,35 +38,45 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
 		LinkDataTotal obj = new LinkDataTotal();
 		
 		long timeDelta =0;
-		double timeDeltaInHours =0.0;
+		double timeDeltaInSeconds =0.0;
+		
+		LinkDataTotalPeer.populateObject((Record)data.get(recordNumber), 1, obj);
+		
+		setPrimaryKey(obj.getPrimaryKey());	
+		
+		
+		if ( previousTs > 0 ) timeDelta = getTs().getTime() - previousTs;
+		timeDeltaInSeconds = timeDelta / 1000.0;	
+		
+		// Equation 3.5 
+		if ( obj.getDensity() != null && obj.getSpeed() != null)
+		//	setVmt(new BigDecimal(obj.getOutFlow().doubleValue() * linkLength) );
+			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * linkLength * timeDeltaInSeconds) );	
+		else
+			setVmt(new BigDecimal(0));
+		
+		// Equation 3.6
+		if ( obj.getDensity() != null )
+			setVht( new BigDecimal(obj.getDensity().doubleValue() * linkLength * timeDeltaInSeconds) ); 
+		else
+			setVht(new BigDecimal(0));
+		
+		// Equation 3.7
+		if ( obj.getFreeFlowSpeed() != null && getVht() !=null && getVmt() !=null )
+			setDelay(PerformanceData.delay(getVht(), getVmt(), obj.getFreeFlowSpeed()));
+		else
+			setDelay(new BigDecimal(0));
+		
+		// Equation 3.8
+		if (obj.getSpeed() != null && obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) == 0)
+			setProductivityLoss(BigDecimal.valueOf(0.0));
+		else {
 				
-			LinkDataTotalPeer.populateObject((Record)data.get(recordNumber), 1, obj);
-			
-			setPrimaryKey(obj.getPrimaryKey());
-			
-			
-			if ( obj.getOutFlow() != null )
-				setVmt(obj.getOutFlow().multiply(BigDecimal.valueOf(linkLength)));
-			
-			
-			if ( previousTs > 0 ) timeDelta = getTs().getTime() - previousTs;
-			timeDeltaInHours = timeDelta / 1000.0/60.0/60.0;
-			
-			if ( obj.getDensity() != null )
-				setVht(obj.getDensity().multiply(BigDecimal.valueOf(timeDeltaInHours))); 
-			
-			
-			if ( obj.getSpeed() != null && getVht() !=null && getVmt() !=null )
-				setDelay(PerformanceData.delay(getVht(), getVmt(), obj.getSpeed()));
-			
-			
-			if (obj.getSpeed() != null && obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) == 0)
-				setProductivityLoss(BigDecimal.valueOf(0.0));
-			else {
-					
-				if ( obj.getOutFlow() != null && obj.getCapacity() != null)
-					setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) ); 
-			}	
+			if ( obj.getOutFlow() != null && obj.getCapacity() != null)
+				setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) );
+			else
+				setProductivityLoss(new BigDecimal(0));
+		}	
 			
 /*
 
@@ -76,12 +86,13 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
     /** The value for the vcRatio field 
     private BigDecimal vcRatio; 
  */
-			
-			
-			setTravelTime(PerformanceData.actualTravelTime(recordNumber, data, linkLength, getColumnNumber("speed"), getColumnNumber("ts") ));			
-			
-			setNew(true);
-			save();	
+						
+		setTravelTime(PerformanceData.actualTravelTime(recordNumber, data, linkLength, obj.getColumnNumber("speed"), obj.getColumnNumber("ts") ));			
+
+///		AggregateData.reportToStandard("Performance: " + getTs() + " #" + recordNumber + " Vmt=" + getVmt() + " Vht=" + getVht() + " Delay="+getDelay() + " travelTime=" + getTravelTime() + " freeFlowSpeed=" + obj.getFreeFlowSpeed() );
+		
+		setNew(true);
+		save();	
 	
 		return getTs().getTime();
 	}
@@ -172,29 +183,37 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
     	
     	
     	BigDecimal zero = new BigDecimal(0);
+    	ColumnMap[] columns;
     	
 
     	try {
+    		
+    		columns = obj.getTableMap().getColumns();
+    		
 			for (int i=0; i< obj.getTableMap().getColumns().length; i++) {
 
-				if ( obj.getByPosition(i) == null ) {
-					
-					try {
-						obj.setByPosition(i, zero);
-					} catch (TorqueException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	    		if ( columns[i].isPrimaryKey() ||  columns[i].isForeignKey() ) {
+	    			
+	    		} else {
+					if ( obj.getByPosition(i) == null ) {
+						
+						try {
+							obj.setByPosition(i, zero);
+						} catch (TorqueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
+	    		}
 			}
+			
 		} catch (TorqueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-    		   	
+		}   	
 	
     }
     
@@ -268,10 +287,10 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
     			
     				// include key name and value
     				if (columns[i].getColumnName().equals("link_id")) {
-    					str  += " AND id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND id=" + rec.getValue(n).asString() ;	
     				} else 
     				if (columns[i].getColumnName().equals("network_id")) {
-    					str  += " AND network_id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND network_id=" + rec.getValue(n).asString() ;	
     				}
     					
     				n++;	
@@ -335,7 +354,6 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
 			    	
 		     	for (int i=0; i< columns.length; i++) {
 		     		
-		     		// AggregateData.reportToStandard("Column " + columns[i].getColumnName() + " " + columns[i].getPosition() );
 		 			
 		 			if ( columns[i].getColumnName().equals(name)  ) return i+1;	   		
 	     	}

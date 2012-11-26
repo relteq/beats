@@ -52,6 +52,10 @@ public class Runner {
 	 * @param args command-line arguments
 	 */
 	public static void main(String[] args) {
+		
+		System.out.println("Working Directory = " +
+	              System.getProperty("user.dir"));
+		
 		try {
 			if (0 == args.length) throw new InvalidUsageException();
 			String cmd = args[0];

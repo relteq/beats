@@ -73,8 +73,11 @@ public class ScenarioImporter {
 		return links.get(id).getId();
 	}
 
+	private edu.berkeley.path.beats.util.polyline.EncoderBase polyline_encoder;
+
 	public ScenarioImporter() {
 		project_id = Long.valueOf(0);
+		polyline_encoder = new edu.berkeley.path.beats.util.polyline.GoogleEncoder();
 	}
 
 	private static Logger logger = Logger.getLogger(ScenarioImporter.class);
@@ -314,7 +317,6 @@ public class ScenarioImporter {
 		db_node.setNodeFamilies(db_nf);
 		db_node.setNetworks(db_network);
 		db_node.setGeom(pos2str(node.getPosition()));
-		db_node.setGeom("");
 		db_node.setInSync(node.isInSync());
 
 		// node type
@@ -1371,15 +1373,17 @@ public class ScenarioImporter {
 			logger.error("Object " + elem.getType() + " [id=" + elem.getId() + "] not found");
 	}
 
-	private static String pos2str(edu.berkeley.path.beats.jaxb.Position position) {
-		if (null == position) return null;
-		// TODO method stub
-		return "";
+	private String pos2str(edu.berkeley.path.beats.jaxb.Position position) {
+		return null == position ? null : encodePolyline(position.getPoint());
 	}
 
 	private String pos2str(edu.berkeley.path.beats.jaxb.DisplayPosition position) {
-		if (null == position) return null;
-		// TODO method stub
-		return "";
+		return null == position ? null : encodePolyline(position.getPoint());
+	}
+
+	private String encodePolyline(List<edu.berkeley.path.beats.jaxb.Point> point_l) {
+		polyline_encoder.reset();
+		polyline_encoder.add(point_l);
+		return polyline_encoder.getResult();
 	}
 }
