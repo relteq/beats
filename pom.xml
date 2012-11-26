@@ -24,6 +24,19 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>edu.berkeley.path.beats.Runner</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
         <version>0.8.2</version>
@@ -33,7 +46,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <generctePackage>edu.berkeley.path.beats.jaxb</generatePackage>
+              <generatePackage>edu.berkeley.path.beats.jaxb</generatePackage>
             </configuration>
           </execution>
         </executions>
@@ -45,19 +58,19 @@
         <configuration>
           <schemaDir>${basedir}/data</schemaDir>
           <targetDatabase>derby</targetDatabase>
-	  <options>
-		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
-	  </options>
         </configuration>
         <executions>
           <execution>
             <id>om</id>
             <phase>generate-sources</phase>
             <configuration>
+              <systemProperties>
+                <systemProperty>
+                  <name>torque.override.dir</name>
+                  <value>${basedir}/torque-override</value>
+                </systemProperty>
+              </systemProperties>
               <targetPackage>edu.berkeley.path.beats.om</targetPackage>
-	  <options>
-		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
-	  </options>
             </configuration>
             <goals>
               <goal>om</goal>
@@ -67,11 +80,14 @@
             <id>sql-derby</id>
             <phase>generate-resources</phase>
             <configuration>
+              <systemProperties>
+                <systemProperty>
+                  <name>torque.override.dir</name>
+                  <value>${basedir}/torque-override</value>
+                </systemProperty>
+              </systemProperties>
               <targetDatabase>derby</targetDatabase>
               <outputDir>${torque.sql.dir}/derby</outputDir>
-	  <options>
-		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
-	  </options>
             </configuration>
             <goals>
               <goal>sql</goal>
@@ -81,11 +97,14 @@
             <id>sql-postgres</id>
             <phase>generate-resources</phase>
             <configuration>
+              <systemProperties>
+                <systemProperty>
+                  <name>torque.override.dir</name>
+                  <value>${basedir}/torque-override</value>
+                </systemProperty>
+              </systemProperties>
               <targetDatabase>postgresql</targetDatabase>
               <outputDir>${torque.sql.dir}/postgres</outputDir>
-	  <options>
-		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
-	  </options>
             </configuration>
             <goals>
               <goal>sql</goal>
@@ -95,11 +114,14 @@
             <id>sql-oracle</id>
             <phase>generate-resources</phase>
             <configuration>
+              <systemProperties>
+                <systemProperty>
+                  <name>torque.override.dir</name>
+                  <value>${basedir}/torque-override</value>
+                </systemProperty>
+              </systemProperties>
               <targetDatabase>oracle</targetDatabase>
               <outputDir>${torque.sql.dir}/oracle</outputDir>
-	  <options>
-		<torque.override.dir>${basedir}/torque-override</torque.override.dir>
-	  </options>
             </configuration>
             <goals>
               <goal>sql</goal>
@@ -127,6 +149,7 @@
           </archive>
         </configuration>
       </plugin>
+<!--
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -141,6 +164,7 @@
           </execution>
         </executions>
       </plugin>
+-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
@@ -266,14 +290,14 @@
       <version>3.3.1</version>
     </dependency>
     <dependency>
-    	<groupId>com.itextpdf</groupId>
-    	<artifactId>itextpdf</artifactId>
-    	<version>5.3.1</version>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itextpdf</artifactId>
+      <version>5.3.1</version>
     </dependency>
     <dependency>
-    	<groupId>org.jfree</groupId>
-    	<artifactId>jfreechart</artifactId>
-    	<version>1.0.14</version>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <version>1.0.14</version>
     </dependency>
   </dependencies>
 </project>
