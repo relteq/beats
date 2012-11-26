@@ -174,10 +174,6 @@ public final class ObjectFactory {
 				S = null; 
 				break;
 
-			case moving_point:
-				S = new SensorFloating();
-				break;
-				
 			default:
 				S = null;
 				break;

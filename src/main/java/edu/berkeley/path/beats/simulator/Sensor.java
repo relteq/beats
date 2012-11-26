@@ -45,11 +45,19 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/** Current link where the sensor is located. */
 	protected Link myLink = null;
 
-	/** Type of sensor. */
+	/** Type of sensor.
+	 *
+	 * TMC = Traffic Message Channel.
+	 * This is a static way of reporting probe measurements
+	 * employed by INRIX, Navteq, etc.
+	 */
 	public static enum Type	{  
 	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop,
-	                                                            camera,
-	/** see {@link ObjectFactory#createSensor_Floating} 	*/  moving_point };
+		magnetic,
+		radar,
+		camera,
+		TMC
+	};
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
