@@ -216,14 +216,14 @@ public class ScenarioImporter {
 	 */
 	private VehicleTypes save(edu.berkeley.path.beats.jaxb.VehicleType vt, VehicleTypeSets db_vts) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(VehicleTypesPeer.DESCRIPTION, vt.getName());
+		crit.add(VehicleTypesPeer.NAME, vt.getName());
 		crit.add(VehicleTypesPeer.SIZE_FACTOR, vt.getWeight());
 		@SuppressWarnings("unchecked")
 		List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit, conn);
 		VehicleTypes db_vtype = null;
 		if (db_vt_l.isEmpty()) {
 			db_vtype = new VehicleTypes();
-			db_vtype.setDescription(vt.getName());
+			db_vtype.setName(vt.getName());
 			db_vtype.setWeight(vt.getWeight());
 			db_vtype.setIsStandard(Boolean.FALSE);
 			db_vtype.save(conn);
@@ -278,9 +278,16 @@ public class ScenarioImporter {
 		return db_network;
 	}
 
+	private <T extends BaseTypes> T createType(T obj, String name) throws TorqueException {
+		obj.setName(name);
+		obj.setInUse(Boolean.TRUE);
+		obj.save(conn);
+		return obj;
+	}
+
 	private NodeTypes getNodeTypes(String node_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(NodeTypesPeer.DESCRIPTION, node_type);
+		crit.add(NodeTypesPeer.NAME, node_type);
 		@SuppressWarnings("unchecked")
 		List<NodeTypes> db_nt_l = NodeTypesPeer.doSelect(crit, conn);
 		if (!db_nt_l.isEmpty()) {
@@ -288,11 +295,8 @@ public class ScenarioImporter {
 				logger.warn("Found " + db_nt_l.size() + " node types '" + node_type + "'");
 			return db_nt_l.get(0);
 		} else {
-			NodeTypes db_nt = new NodeTypes();
-			db_nt.setDescription(node_type);
-			db_nt.setInUse(Boolean.TRUE);
-			db_nt.save(conn);
-			return db_nt;
+			logger.warn("Node type '" + node_type + "' does not exist");
+			return createType(new NodeTypes(), node_type);
 		}
 	}
 
@@ -365,7 +369,7 @@ public class ScenarioImporter {
 
 	private LinkTypes getLinkTypes(String linktype) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(LinkTypesPeer.DESCRIPTION, linktype);
+		crit.add(LinkTypesPeer.NAME, linktype);
 		@SuppressWarnings("unchecked")
 		List<LinkTypes> db_lt_l = LinkTypesPeer.doSelect(crit, conn);
 		if (!db_lt_l.isEmpty()) {
@@ -373,11 +377,8 @@ public class ScenarioImporter {
 				logger.warn("Found " + db_lt_l.size() + " link types '" + linktype + "'");
 			return db_lt_l.get(0);
 		} else {
-			LinkTypes db_lt = new LinkTypes();
-			db_lt.setDescription(linktype);
-			db_lt.setInUse(Boolean.TRUE);
-			db_lt.save(conn);
-			return db_lt;
+			logger.warn("Link type '" + linktype + "' does not exist");
+			return createType(new LinkTypes(), linktype);
 		}
 	}
 
@@ -537,15 +538,12 @@ public class ScenarioImporter {
 
 	private SensorTypes getSensorType(String sensor_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(SensorTypesPeer.DESCRIPTION, sensor_type);
+		crit.add(SensorTypesPeer.NAME, sensor_type);
 		@SuppressWarnings("unchecked")
 		List<SensorTypes> db_st_l = SensorTypesPeer.doSelect(crit, conn);
 		if (db_st_l.isEmpty()) {
-			SensorTypes db_st = new SensorTypes();
-			db_st.setDescription(sensor_type);
-			db_st.setInUse(Boolean.TRUE);
-			db_st.save(conn);
-			return db_st;
+			logger.warn("Sensor type '" + sensor_type + "' does not exist");
+			return createType(new SensorTypes(), sensor_type);
 		} else {
 			if (1 < db_st_l.size())
 				logger.warn("Found " + db_st_l.size() + " sensor types '" + sensor_type + "'");
@@ -592,7 +590,7 @@ public class ScenarioImporter {
 		for (edu.berkeley.path.beats.jaxb.VehicleType vt : order.getVehicleType()) {
 			reordered_vt[i] = null;
 			for (VehicleTypes db_vt : vehicle_type)
-				if (vt.getName().equals(db_vt.getDescription())) {
+				if (vt.getName().equals(db_vt.getName())) {
 					reordered_vt[i] = db_vt;
 					break;
 				}
@@ -749,14 +747,12 @@ public class ScenarioImporter {
 
 	private FundamentalDiagramTypes getFundamentalDiagramTypes(String fd_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(FundamentalDiagramTypesPeer.DESCRIPTION, fd_type);
+		crit.add(FundamentalDiagramTypesPeer.NAME, fd_type);
 		@SuppressWarnings("unchecked")
 		List<FundamentalDiagramTypes> db_fdt_l = FundamentalDiagramTypesPeer.doSelect(crit, conn);
 		if (db_fdt_l.isEmpty()) {
-			FundamentalDiagramTypes db_fdt = new FundamentalDiagramTypes();
-			db_fdt.setDescription(fd_type);
-			db_fdt.save(conn);
-			return db_fdt;
+			logger.warn("FD type '" + fd_type + "' does not exist");
+			return createType(new FundamentalDiagramTypes(), fd_type);
 		} else {
 			if (1 < db_fdt_l.size())
 				logger.warn("Found " + db_fdt_l.size() + " fundamental diagram types '" + fd_type + "'");
@@ -773,7 +769,7 @@ public class ScenarioImporter {
 	private FundamentalDiagramProfileSets save(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet fdps) throws TorqueException {
 		FundamentalDiagramProfileSets db_fdps = new FundamentalDiagramProfileSets();
 		db_fdps.setProjectId(getProjectId());
-		db_fdps.setFundamentalDiagramTypes(getFundamentalDiagramTypes("default"));
+		db_fdps.setFundamentalDiagramTypes(getFundamentalDiagramTypes("triangular"));
 		db_fdps.setName(fdps.getName());
 		db_fdps.setDescription(fdps.getDescription());
 		db_fdps.save(conn);
@@ -978,15 +974,12 @@ public class ScenarioImporter {
 
 	private ControllerTypes getControllerType(String controller_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(ControllerTypesPeer.DESCRIPTION, controller_type);
+		crit.add(ControllerTypesPeer.NAME, controller_type);
 		@SuppressWarnings("unchecked")
 		List<ControllerTypes> db_ct_l = ControllerTypesPeer.doSelect(crit, conn);
 		if (db_ct_l.isEmpty()) {
-			ControllerTypes db_ct = new ControllerTypes();
-			db_ct.setDescription(controller_type);
-			db_ct.setInUse(true);
-			db_ct.save(conn);
-			return db_ct;
+			logger.warn("Controller type '" + controller_type + "' does not exist");
+			return createType(new ControllerTypes(), controller_type);
 		} else {
 			if (1 < db_ct_l.size())
 				logger.warn("Found " + db_ct_l.size() + " controller types '" + controller_type + "'");
@@ -1018,15 +1011,12 @@ public class ScenarioImporter {
 
 	private QueueControllerTypes getQueueControllerType(String qc_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(QueueControllerTypesPeer.DESCRIPTION, qc_type);
+		crit.add(QueueControllerTypesPeer.NAME, qc_type);
 		@SuppressWarnings("unchecked")
 		List<QueueControllerTypes> db_qct_l = QueueControllerTypesPeer.doSelectVillageRecords(crit, conn);
 		if (db_qct_l.isEmpty()) {
-			QueueControllerTypes db_qct = new QueueControllerTypes();
-			db_qct.setDescription(qc_type);
-			db_qct.setInUse(Boolean.TRUE);
-			db_qct.save(conn);
-			return db_qct;
+			logger.warn("Queue controller type '" + qc_type + "' does not exist");
+			return createType(new QueueControllerTypes(), qc_type);
 		} else {
 			if (1 < db_qct_l.size())
 				logger.warn("Found " + db_qct_l.size() + " queue controller types '" + qc_type + "'");
@@ -1092,7 +1082,7 @@ public class ScenarioImporter {
 
 	private EventTypes getEventType(String event_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(EventTypesPeer.DESCRIPTION, event_type);
+		crit.add(EventTypesPeer.NAME, event_type);
 		@SuppressWarnings("unchecked")
 		List<EventTypes> db_event_type_l = EventTypesPeer.doSelect(crit, conn);
 		if (!db_event_type_l.isEmpty()) {
@@ -1100,11 +1090,8 @@ public class ScenarioImporter {
 				logger.warn("Found " + db_event_type_l.size() + " event types '" + event_type + "'");
 			return db_event_type_l.get(0);
 		} else {
-			EventTypes db_event_type = new EventTypes();
-			db_event_type.setDescription(event_type);
-			db_event_type.setInUse(Boolean.TRUE);
-			db_event_type.save(conn);
-			return db_event_type;
+			logger.warn("Event type '" + event_type + "' does not exist");
+			return createType(new EventTypes(), event_type);
 		}
 	}
 
@@ -1252,15 +1239,12 @@ public class ScenarioImporter {
 
 	private ScenarioElementTypes getScenarioElementTypes(String scenario_element_type) throws TorqueException {
 		Criteria crit = new Criteria();
-		crit.add(ScenarioElementTypesPeer.DESCRIPTION, scenario_element_type);
+		crit.add(ScenarioElementTypesPeer.NAME, scenario_element_type);
 		@SuppressWarnings("unchecked")
 		List<ScenarioElementTypes> db_scelt_l = ScenarioElementTypesPeer.doSelect(crit, conn);
 		if (db_scelt_l.isEmpty()) {
-			ScenarioElementTypes db_scelt = new ScenarioElementTypes();
-			db_scelt.setDescription(scenario_element_type);
-			db_scelt.setInUse(Boolean.TRUE);
-			db_scelt.save(conn);
-			return db_scelt;
+			logger.warn("Scenario element type '" + scenario_element_type + "' does not exist");
+			return createType(new ScenarioElementTypes(), scenario_element_type);
 		} else {
 			if (1 < db_scelt_l.size())
 				logger.warn("Found " + db_scelt_l.size() + " scenario element types '" + scenario_element_type + "'");

@@ -28,13 +28,16 @@ package edu.berkeley.path.beats.db;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
+import org.apache.torque.util.Transaction;
 
-import edu.berkeley.path.beats.om.Projects;
+import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
 
@@ -85,17 +88,7 @@ public class Admin {
 				System.err);
 		logger.info("Database tables created");
 
-		try {
-			Projects db_project = new Projects();
-			db_project.setId(Long.valueOf(0));
-			db_project.setName("default");
-			db_project.save();
-			logger.info("Project 'default' [id=1] created");
-		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
-		} catch (Exception exc) {
-			throw new SiriusException(exc);
-		}
+		new Initializer().run();
 		logger.info("Database " + params.getDBName() + " initialized");
 	}
 
@@ -155,4 +148,224 @@ public class Admin {
 			}
 		}
 	}
+
+	private static class Initializer {
+		public Initializer() {}
+		Connection conn = null;
+		public void run() throws SiriusException {
+			try {
+				conn = Transaction.begin();
+
+				createDefaultProject();
+				addNodeTypes();
+				addLinkTypes();
+				addFDTypes();
+				addSensorTypes();
+				addControllerTypes();
+				addQueueControllerTypes();
+				addEventTypes();
+				addScenarioElementTypes();
+				addApplicationTypes();
+				addQuantityTypes();
+				addAggregationTypes();
+				addVehicleTypes();
+
+				Transaction.commit(conn);
+				conn = null;
+			} catch (TorqueException exc) {
+				throw new SiriusException(exc);
+			} finally {
+				if (null != conn) {
+					Transaction.safeRollback(conn);
+					conn = null;
+				}
+			}
+		}
+		private void createDefaultProject() throws TorqueException {
+			Projects db_project = new Projects();
+			db_project.setId(Long.valueOf(0));
+			db_project.setName("default");
+			db_project.save(conn);
+			logger.info("Project 'default' [id=" + db_project.getId() + "] created");
+		}
+		private void addType(BaseTypes db_type, String name, String description) throws TorqueException {
+			db_type.setName(name);
+			db_type.setDescription(description);
+			db_type.setInUse(Boolean.TRUE);
+			db_type.save(conn);
+		}
+		private void addNodeTypes() throws TorqueException {
+			addNodeType("freeway", "Nodes at on-ramp/interconnect merges, off-ramp/interconnect splits, HOV/HOT gates on freeways.");
+			addNodeType("highway", "Same as above for highways.");
+			addNodeType("signalized_intersection", "Signals can be placed on nodes only of this type.");
+			addNodeType("stop_intersection", null);
+			addNodeType("simple", "Single-Input-Single-Output (SISO) node, where the input and the output links have the same properties.");
+			addNodeType("terminal", "Node that has only 1 input or only 1 output link – it is either the begin node for an origin link, or the end node for the destination link.");
+			addNodeType("other", null);
+			logger.info("Added node types");
+		}
+		private void addNodeType(String name, String description) throws TorqueException {
+			addType(new NodeTypes(), name, description);
+		}
+
+		private void addLinkTypes() throws TorqueException {
+			addLinkType("freeway", null);
+			addLinkType("highway", null);
+			addLinkType("onramp", null);
+			addLinkType("offramp", null);
+			addLinkType("freeway_connector", "Link between two freeways (highways) or a freeway and a highway.");
+			addLinkType("HOV", "Lane for high occupancy vehicles.");
+			addLinkType("HOT", "Lane for high occupancy vehicles or those who pay toll.");
+			addLinkType("toll", "Toll Lane.");
+			addLinkType("heavy_vehicle", "Heavy Vehicle Lane.");
+			addLinkType("bus", "Bus Lane.");
+			addLinkType("street", null);
+			addLinkType("intersection_approach", "An input link for Signalized Intersection node, parallel to left and right pockets, that is there for the through movement.");
+			addLinkType("left_turn_pocket", null);
+			addLinkType("right_turn_pocket", null);
+			logger.info("Added link types");
+		}
+		private void addLinkType(String name, String description) throws TorqueException {
+			addType(new LinkTypes(), name, description);
+		}
+		private void addFDTypes() throws TorqueException {
+			addFDType("triangular", null);
+			addFDType("trapezoidal", null);
+			addFDType("linear-hyperbolic", "Invertible fundamental diagram whose right side is linear.");
+			addFDType("greenshields", "Fundamental diagram in the form of parabola.");
+			logger.info("Added fundamental diagram types");
+		}
+		private void addFDType(String name, String description) throws TorqueException {
+			addType(new FundamentalDiagramTypes(), name, description);
+		}
+		private void addSensorTypes() throws TorqueException {
+			addSensorType("loop", null);
+			addSensorType("magnetic", null);
+			addSensorType("radar", null);
+			addSensorType("camera", null);
+			addSensorType("TMC", "TMC stands for Traffic Message Channel. This is a static way of reporting probe measurements employed by INRIX, Navteq, etc.");
+			logger.info("Added sensor types");
+		}
+		private void addSensorType(String name, String description) throws TorqueException {
+			addType(new SensorTypes(), name, description);
+		}
+		private void addControllerTypes() throws TorqueException {
+			addControllerType("IRM_ALINEA", "IRM stands for Isolated Ramp Metering – ramp metering on individual on-ramps. ALINEA is the name of RM algorithm.");
+			addControllerType("IRM_TOD", "TOD stands for Time Of Day – fixed rates for given times of the day.");
+			addControllerType("IRM_TOS", "Traffic responsive controller based on lookup tables.");
+			addControllerType("CRM_HERO", "CRM stands for Coordinated Ramp Metering. HERO is the name of CRM algorithm.");
+			addControllerType("CRM_SWARM", "SWARM is the name of another CRM algorithm, developed by Delcan.");
+			addControllerType("VSL_TOD", "VSL stands for Variable Speed Limit, TOD – for Time Of Day.");
+			addControllerType("VSL_ALINEA", "VSL with ALINEA algorithm.");
+			addControllerType("ML_TOLL_Reaction", "ML – Managed Lanes. Models drivers’ reaction to tolls.");
+			addControllerType("ML_TOLL_Pricing", "Controller that computes toll pricing.");
+			addControllerType("ML_Shoulder", "Controller that opens a shoulder as an extra lane based on traffic condition.");
+			addControllerType("SIG_TOD", "Signal controller based on TOD plan (also known as “pre-timed signal control”.");
+			addControllerType("SIG_Actuated", "Actuated signal control.");
+			addControllerType("SIG_Synchronized", "Actuated signal control synchronized over multiple intersections.");
+			addControllerType("SIG_TUC", "One of the adaptive signal control algorithms. TUC stands for Traffic-responsive Urban Control.");
+			addControllerType("FAC_1", "Freeway Arterial Coordination – scenario 1.");
+			addControllerType("FAC_2", "Scenario 2.");
+			addControllerType("FAC_3", "Scenario 3.");
+			addControllerType("FAC_4", "Scenario 4.");
+			logger.info("Added controller types");
+		}
+		private void addControllerType(String name, String description) throws TorqueException {
+			addType(new ControllerTypes(), name, description);
+		}
+		private void addQueueControllerTypes() throws TorqueException {
+			addQueueContorllerType("queue_override", "Queue controllers are there to override RM controller rates to avoid queue spillbacks. Queue Override is the simplest algorithm doing just that.");
+			addQueueContorllerType("proportional", "Proportional algorithm.");
+			addQueueContorllerType("proportional_integral", "Proportional-Integral algorithm.");
+			logger.info("Added queue controller types");
+		}
+		private void addQueueContorllerType(String name, String description) throws TorqueException {
+			addType(new QueueControllerTypes(), name, description);
+		}
+		private void addEventTypes() throws TorqueException {
+			addEventType("link_lanes", "Changes number of lanes in a link.");
+			addEventType("fundamental_diagram", "Changes fundamental diagram assigned to a link.");
+			addEventType("link_demand_knob", "Changes coefficient by which demand is multiplied at given origin link.");
+			addEventType("node_split_ratio", "Changes split ratios at a node.");
+			addEventType("control_toggle", null);
+			addEventType("global_control_toggle", "Turns all controllers on and off.");
+			addEventType("global_demand_knob", "Changes demand coefficients at all origin links of scenario networks.");
+			logger.info("Added event types");
+		}
+		private void addEventType(String name, String description) throws TorqueException {
+			addType(new EventTypes(), name, description);
+		}
+		private void addScenarioElementTypes() throws TorqueException {
+			for (String name : new String[] {"link", "node", "network", "signal", "sensor", "controller", "event"})
+				addType(new ScenarioElementTypes(), name, null);
+			logger.info("Added scenario element types");
+		}
+		private void addApplicationTypes() throws TorqueException {
+			addApplicationType("estimator", null);
+			addApplicationType("simulator", null);
+			addApplicationType("basic_calibrator", "Calibrates only fundamental diagrams. Currently implemented in BeATS.");
+			addApplicationType("calibrator", null);
+			logger.info("Added application types");
+		}
+		private void addApplicationType(String name, String description) throws TorqueException {
+			addType(new ApplicationTypes(), name, description);
+		}
+		private void addQuantityTypes() throws TorqueException {
+			addQuantityType("standard", "Non-stochastic standard output.");
+			addQuantityType("mean", null);
+			addQuantityType("median", null);
+			addQuantityType("STD", "Standard deviation.");
+			addQuantityType("1Q", null);
+			addQuantityType("3Q", null);
+			addQuantityType("95percentile", null);
+			addQuantityType("min", null);
+			addQuantityType("max", null);
+			addQuantityType("best_case", "Best case.");
+			addQuantityType("worst_case", "Worst case.");
+			logger.info("Added quantity types");
+		}
+		private void addQuantityType(String name, String description) throws TorqueException {
+			addType(new QuantityTypes(), name, description);
+		}
+		private void addAggregationTypes() throws TorqueException {
+			addAggregationType("raw", "Output of simulator, estimator, other programs. Other aggregations result from processing ‘raw’ data.");
+			addAggregationType("total", null);
+			addAggregationType("1min", null);
+			addAggregationType("5min", null);
+			addAggregationType("15min", null);
+			addAggregationType("1hour", null);
+			addAggregationType("1day", null);
+			logger.info("Added aggregation types");
+		}
+		private void addAggregationType(String name, String description) throws TorqueException {
+			addType(new AggregationTypes(), name, description);
+		}
+		private void addVehicleTypes() throws TorqueException {
+			addVehicleType("general", 1.0);
+			addVehicleType("SOV", "Single Occupancy Vehicle.", 1.0);
+			addVehicleType("HOV", 1.0);
+			addVehicleType("hybrid", 1.0);
+			addVehicleType("electric", 1.0);
+			addVehicleType("truck2", 1.5);
+			addVehicleType("truck3", 2.0);
+			addVehicleType("truck4", 3.0);
+			addVehicleType("truck5", 4.0);
+			addVehicleType("truck6", 5.0);
+			addVehicleType("bus", 1.5);
+			addVehicleType("bus2", 2.5);
+			addVehicleType("motorcycle", 0.8);
+		}
+		private void addVehicleType(String name, double weight) throws TorqueException {
+			addVehicleType(name, null, weight);
+		}
+		private void addVehicleType(String name, String description, double weight) throws TorqueException {
+			VehicleTypes db_vt = new VehicleTypes();
+			db_vt.setName(name);
+			db_vt.setDescription(description);
+			db_vt.setWeight(BigDecimal.valueOf(weight));
+			db_vt.setIsStandard(Boolean.TRUE);
+			db_vt.save(conn);
+		}
+	}
+
 }
