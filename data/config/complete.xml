@@ -173,7 +173,7 @@
     </network>
   </NetworkList>
   <SensorList>
-    <sensor id="1" type="static_point">
+    <sensor id="1" type="loop">
       <link_reference id="1"/>
       <display_position>
         <point elevation="0" lat="34.1215" lng="-117.6967"/>
@@ -208,8 +208,8 @@
         </row>
       </table>
     </sensor>
-    <sensor id="2" type="static_point">
-      <link_reference id="2"/>
+    <sensor id="2" type="loop">
+      <link_reference id="100"/>
       <display_position>
         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
@@ -267,6 +267,9 @@
     <splitratioProfile dt="300" node_id="4">
       <splitratio link_in="3" link_out="4">0.8</splitratio>
     </splitratioProfile>
+    <splitratioProfile dt="300" node_id="500">
+      <splitratio link_in="4" link_out="5">1</splitratio>
+    </splitratioProfile>
   </SplitRatioProfileSet>
   <EventSet>
     <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">
@@ -290,7 +293,7 @@
     <demandProfile dt="300" knob="1" link_id_origin="1">100</demandProfile>
   </DemandProfileSet>
   <ControllerSet>
-    <controller dt="5" type="IRM_alinea" id="1" enabled="true">
+    <controller dt="5" type="IRM_ALINEA" id="1" enabled="true">
       <parameters>
         <parameter name="gain" value="50"/>
       </parameters>
