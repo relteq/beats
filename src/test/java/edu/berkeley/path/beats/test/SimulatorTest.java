@@ -47,8 +47,20 @@ public class SimulatorTest {
     private String output_folder = "data/test/output/";
     private String config_folder = "data/test/config/";
     
-	private static String [] config_names = {"multipletypes",
-											 "multipletypes-SI"};
+	private static String [] config_names = {
+												"Albany-and-Berkeley",
+												"_scenario_2009_02_12",
+												"_scenario_constantsplits",
+												//"_smalltest",
+												"_smalltest_multipletypes",
+												//"complete",
+												"multipletypes-SI",
+												"multipletypes",
+												//"scenario_twotypes",
+												"test_event",
+												"testfwy2",
+												"testfwy_w" };
+	
 	private static String [] quantities = {"density","inflow","outflow"};
 		
 	private static String CONF_SUFFIX = ".xml";
