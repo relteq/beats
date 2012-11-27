@@ -502,6 +502,17 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
+	/** Number of vehicles for a given vehicle type in normalized units (vehicles/link). 
+	 * @return Number of vehicles of a given vehicle type in the link. 0 if something goes wrong.
+	 */
+	public double getDensityInVeh(int ensemble,int vehicletype) {
+		try{
+			return density[ensemble][vehicletype];
+		} catch(Exception e){
+			return 0d;
+		}
+	}
+	
 	/** Total of vehicles in normalized units (vehicles/link). 
 	 * The return value equals the sum of {@link Link#getDensityInVeh}.
 	 * @return total number of vehicles in the link. 0 if something goes wrong.
@@ -516,6 +527,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return 0d;
 		}
 	}
+	
 	
 	/** Total of vehicles in (vehicles/meter).
 	 * @return total density of vehicles in the link. 0 if something goes wrong.
