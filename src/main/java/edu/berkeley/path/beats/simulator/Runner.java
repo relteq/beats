@@ -51,18 +51,25 @@ public final class Runner {
 		try {
 			// process input parameters
 			SimulationSettings simsettings = parseInput(args);
-			if (null == simsettings) return;
+			if (null == simsettings) 
+				return;
 
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 			if (null == scenario)
 				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
 
+			// set output format properties
 			Properties owr_props = new Properties();
-			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
+			if (null != outputfileprefix) 
+				owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", output_format);
+			
+			// run the scenario
 			scenario.run(simsettings, owr_props);
+			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
+			
 		} catch (SiriusException exc) {
 			exc.printStackTrace();
 		} finally {
@@ -73,16 +80,6 @@ public final class Runner {
 		}
 		
 	}
-
-//	public static void simulate_output(String[] args) {
-//		output_format = "xml";
-//		main(args);
-//	}
-//
-//	public static void debug(String[] args) {
-//		output_format = "text";
-//		main(args);
-//	}
 
 	private static SimulationSettings parseInput(String[] args){
 

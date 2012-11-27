@@ -30,9 +30,14 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SimulationSettings;
+import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusFormatter;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 
@@ -42,50 +47,66 @@ public class SimulatorTest {
     private String output_folder = "data/test/output/";
     private String config_folder = "data/test/config/";
     
-	private static String [] config_names = {
-											 "_scenario_2009_02_12",
-											 "Albany & Berkeley_sirius",
-										 	 "_smalltest_multipletypes",
-											 "complete",
-											 "test_event",
-		                                     "_scenario_constantsplits" };
+	private static String [] config_names = {"multipletypes",
+											 "multipletypes-SI"};
+	private static String [] quantities = {"density","inflow","outflow"};
 		
 	private static String CONF_SUFFIX = ".xml";
-	private static String [] outfile = {"_density_0.txt" , 
-								  	    "_inflow_0.txt" , 
-									    "_outflow_0.txt" , 
-									    "_time_0.txt"};
 	
 	@Test
 	public void testSimulator() {
-		
-		for(String config_name : config_names ){
 
-			String [] args = {config_folder+config_name+CONF_SUFFIX, 
-					output_folder+config_name,
-					String.format("%d", 0), 
-					String.format("%d", 3600), 
-					String.format("%d", 300),
-					String.format("%d", 1) };
+		Scenario scenario;
 			
-			System.out.println("Running " + config_name);
-			edu.berkeley.path.beats.simulator.Runner.main(args);
+		try {
+			
+			for(String config_name : config_names ){
 
-			for(String str : outfile){
-				String filename = config_name + str;
-				try {
-					System.out.println("Checking " + filename);
-					System.out.println("Reading " + fixture_folder+filename);
-					ArrayList<ArrayList<ArrayList<Double>>> A = SiriusFormatter.readCSV(fixture_folder+filename,"\t",":");
-					System.out.println("Reading " + output_folder+filename);
-					ArrayList<ArrayList<ArrayList<Double>>> B = SiriusFormatter.readCSV(output_folder+filename,"\t",":");
-					assertTrue("The files are not equal.",SiriusMath.equals3D(A,B));
-				} catch (IOException e) {
-					System.out.println(e.getMessage());
-					fail("problem reading a file");
-				}
+				System.out.println(config_name);
+				
+				String configfile = config_folder+config_name+CONF_SUFFIX;
+				String outputprefix = output_folder+config_name;
+	
+				// process input parameters
+				SimulationSettings simsettings = new SimulationSettings(0d,3600d,30d,1);
+	
+				// load configuration file
+				System.out.println("\tLoading");
+				scenario = ObjectFactory.createAndLoadScenario(configfile);
+	
+				if (null == scenario)
+					throw new SiriusException("UNEXPECTED! Scenario was not loaded");
+	
+				// set output format properties
+				Properties owr_props = new Properties();
+				owr_props.setProperty("prefix", outputprefix);
+				owr_props.setProperty("type", "text");
+				
+				// run the scenario
+				System.out.println("\tRunning");
+				scenario.run(simsettings, owr_props);
+				
+				String [] vehicleTypes = scenario.getVehicleTypeNames();
+								
+				// compare output
+				System.out.println("\tComparing outputS");
+				for(String vt : vehicleTypes)
+					for(String q : quantities){
+						String filename = config_name+"_"+q+"_"+vt+"_0.txt";
+						ArrayList<ArrayList<Double>> A = SiriusFormatter.readCSV(fixture_folder+filename,"\t");
+						ArrayList<ArrayList<Double>> B = SiriusFormatter.readCSV(output_folder+filename,"\t");
+						assertTrue("The files are not equal.",SiriusMath.equals2D(A,B));
+					}
+			
 			}
-		}
+
+		} catch (SiriusException exc) {
+			exc.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
 	}
 
 }
