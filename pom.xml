@@ -9,8 +9,6 @@
   <artifactId>beats</artifactId>
   <version>0.1-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
-  <!-- 
-  -->
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
