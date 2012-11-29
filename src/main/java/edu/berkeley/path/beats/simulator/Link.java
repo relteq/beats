@@ -988,15 +988,15 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	/**
 	 * @param ensemble
-	 * @return the cumulative densities for the given ensemble, for all vehicle types
+	 * @return the cumulative densities for the given ensemble
 	 */
 	public double[][] getCumulativeDensityPerDnAndVtInVeh(int ensemble) {
-		return cumulative_density[ensemble];
+		return cumulative_density[ensemble];		
 	}
 
 	/**
 	 * @param ensemble
-	 * @return the cumulative incoming flow for the given ensemble, for all vehicle types
+	 * @return the cumulative incoming flow for the given ensemble
 	 */
 	public double[][] getCumulativeInFlowPerDnAndVtInVeh(int ensemble) {
 		return cumulative_inflow[ensemble];
@@ -1004,12 +1004,57 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/**
 	 * @param ensemble
-	 * @return the cumulative outgoing flow for the given ensemble, for all vehicle types
+	 * @return the cumulative outgoing flow for the given ensemble
 	 */
 	public double[][] getCumulativeOutFlowPerDnAndVtInVeh(int ensemble) {
 		return cumulative_outflow[ensemble];
 	}
+	
+	/**
+	 * @param ensemble
+	 * @return the cumulative densities for the given ensemble
+	 */
+	public double[] getCumulativeDensityPerVtInVeh(int ensemble) {
+		int numDN = myNetwork.myScenario.numDenstinationNetworks;
+		int numVT = myNetwork.myScenario.numVehicleTypes;
+		double [] x = SiriusMath.zeros(numVT);
+		int d,j;
+		for(d=0;d<numDN;d++)
+			for(j=0;j<numVT;j++)
+				x[j] = cumulative_density[ensemble][d][j];
+		return x;		
+	}
 
+	/**
+	 * @param ensemble
+	 * @return the cumulative incoming flow for the given ensemble
+	 */
+	public double[] getCumulativeInFlowPerVtInVeh(int ensemble) {
+		int numDN = myNetwork.myScenario.numDenstinationNetworks;
+		int numVT = myNetwork.myScenario.numVehicleTypes;
+		double [] x = SiriusMath.zeros(numVT);
+		int d,j;
+		for(d=0;d<numDN;d++)
+			for(j=0;j<numVT;j++)
+				x[j] = cumulative_inflow[ensemble][d][j];
+		return x;
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative outgoing flow for the given ensemble
+	 */
+	public double[] getCumulativeOutFlowPerVtInVeh(int ensemble) {
+		int numDN = myNetwork.myScenario.numDenstinationNetworks;
+		int numVT = myNetwork.myScenario.numVehicleTypes;
+		double [] x = SiriusMath.zeros(numVT);
+		int d,j;
+		for(d=0;d<numDN;d++)
+			for(j=0;j<numVT;j++)
+				x[j] = cumulative_outflow[ensemble][d][j];
+		return x;
+	}
+	
 	/**
 	 * resets cumulative densities and flows
 	 */

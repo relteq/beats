@@ -552,7 +552,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// public API: get
 	/////////////////////////////////////////////////////////////////////
@@ -589,6 +588,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public int getTotalTimeStepsToSimulate(){
 		 return clock.getTotalSteps();
+	}
+	
+	/** Number of destination networks included in the scenario.
+	 * @return Integer number of destination network
+	 */
+	public int getNumDestinationNetworks() {
+		return numDenstinationNetworks;
 	}
 	
 	/** Number of vehicle types included in the scenario.
