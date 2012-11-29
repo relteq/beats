@@ -125,8 +125,8 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	@Override
-	public Double[] getDensityInVPM(int ensemble) {
-		return SiriusMath.times(myLink.getDensityInVeh(ensemble), 1 / myLink.getLengthInMeters());
+	public double [] getDensityPerVtInVPM(int ensemble) {
+		return SiriusMath.times(myLink.getDensityPerVtInVeh(ensemble), 1 / myLink.getLengthInMeters());
 	}
 
 	@Override
@@ -138,15 +138,10 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	public double getTotalDensityInVPM(int ensemble) {
 		return myLink.getTotalDensityInVeh(ensemble) / myLink.getLengthInMeters();
 	}
-
-//	@Override
-//	public double getOccupancy(int ensemble) {
-//		return myLink.getTotalDensityInVeh(ensemble)/myLink.getLengthInMiles()/this.getRho_jam()*100;
-//	}
 	
 	@Override
-	public Double[] getFlowInVPS(int ensemble) {
-		return SiriusMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
+	public double [] getFlowPerVtInVPS(int ensemble) {
+		return SiriusMath.times(myLink.getOutflowPerVtInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
 	}
 
 	@Override

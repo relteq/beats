@@ -111,7 +111,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 				Link link;
 				for(int i=0;i<n-1;i++){
 					link = (Link) links.get(i);
-					numbers = SiriusMath.times(link.getCumulativeDensity(0),invsteps);
+					numbers = SiriusMath.times(link.getCumulativeDensityPerDnAndVtInVeh(0),invsteps);
 					out_density.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
 					if(exportflows){
 						numbers = SiriusMath.times(scenario.getCumulativeOutflow(0,dn,vt),invsteps);
@@ -123,12 +123,12 @@ public final class TextOutputWriter extends OutputWriterBase {
 				}
 				
 				link = (Link) links.get(n-1);
-				numbers = SiriusMath.times(link.getCumulativeDensity(0),invsteps);
+				numbers = SiriusMath.times(link.getCumulativeDensityPerDnAndVtInVeh(0),invsteps);
 				out_density.write(SiriusFormatter.csv(numbers,":")+"\n");
 				if(exportflows){
-					numbers = SiriusMath.times(link.getCumulativeOutFlow(0),invsteps);
+					numbers = SiriusMath.times(link.getCumulativeOutFlowPerDnAndVtInVeh(0),invsteps);
 					out_outflow.write(SiriusFormatter.csv(numbers,":")+"\n");
-					numbers = SiriusMath.times(link.getCumulativeInFlow(0),invsteps);
+					numbers = SiriusMath.times(link.getCumulativeInFlowPerDnAndVtInVeh(0),invsteps);
 					out_inflow.write(SiriusFormatter.csv(numbers,":")+"\n");
 				}
 				link.resetCumulative();	

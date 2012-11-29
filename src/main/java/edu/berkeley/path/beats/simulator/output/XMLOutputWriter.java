@@ -148,9 +148,9 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", dens_formatter.format(SiriusMath.times(_link.getCumulativeDensity(0), invsteps)));
+					xmlsw.writeAttribute("d", dens_formatter.format(SiriusMath.times(_link.getCumulativeDensityPerDnAndVtInVeh(0), invsteps)));
 					// f = flow per dt, vehicles
-					if (exportflows) xmlsw.writeAttribute("f", flow_formatter.format(_link.getCumulativeOutFlow(0)));
+					if (exportflows) xmlsw.writeAttribute("f", flow_formatter.format(_link.getCumulativeOutFlowPerDnAndVtInVeh(0)));
 					_link.resetCumulative();
 					// mf = capacity, vehicles per second
 					double mf = _link.getCapacityInVPS(0);

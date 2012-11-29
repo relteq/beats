@@ -1056,7 +1056,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
 
-	public Double [][][] getSplitRatio(){
+	public double [][][] getSplitRatio(){
 		if(splitratio==null)
 			return null;
 		else{
@@ -1071,7 +1071,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @param vehTypeInd vehicle type index
 	 * @return the split ratio
 	 */
-	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
+	public double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
 		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
 

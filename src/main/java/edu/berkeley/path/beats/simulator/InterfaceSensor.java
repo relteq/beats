@@ -40,7 +40,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of densities.
 	 */
-	public Double[] getDensityInVPM(int ensemble);
+	public double[] getDensityPerVtInVPM(int ensemble);
 	
 	/** Measured total density in veh/meter.
 	 * 
@@ -67,7 +67,6 @@ public interface InterfaceSensor {
 	 */
 	public double getOccupancy(int ensemble);
 	
-	
 	/** Measured flow per vehicle type in veh/sec.
 	 * 
 	 * <p> The output array contains measured flows.
@@ -76,8 +75,7 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of flows.
 	 */	
-	
-	public Double[] getFlowInVPS(int ensemble);
+	public double[] getFlowPerVtInVPS(int ensemble);
 	
 	/** Measured total flow in veh/sec.
 	 * 

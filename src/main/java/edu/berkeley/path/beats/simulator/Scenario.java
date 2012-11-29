@@ -991,7 +991,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		int i,j;
 		for(i=0;i<network.getLinkList().getLink().size();i++){
 			Link link = (Link) network.getLinkList().getLink().get(i);
-			Double [] linkdensity = link.getDensityInVeh(ensemble);
+			Double [] linkdensity = link.getDensityPerDnAndVtInVeh(ensemble);
 			for(j=0;j<numVehicleTypes;j++)
 				density[i][j] = linkdensity[j];
 		}

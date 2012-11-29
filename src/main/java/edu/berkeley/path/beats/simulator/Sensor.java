@@ -63,13 +63,14 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
 
-//	/** Default implementation of {@link InterfaceSensor#getDensityInVPM()} 
-//	 * @return <code>null</code>
-//	 * */
-//	@Override
-//	public double[] getDensityInVPM(int ensemble) {
-//		return null;
-//	}
+
+	/** Default implementation of {@link InterfaceSensor#getgetDensityPerVtInVPM()} 
+	 * @return <code>null</code>
+	 * */
+	@Override
+	public double[] getDensityPerVtInVPM(int ensemble) {
+		return null;
+	}
 
 	/** Default implementation of {@link InterfaceSensor#getOccupancy()} 
 	 * @return <code>Double.NaN</code>
@@ -91,7 +92,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	 * @return <code>null</code>
 	 * */
 	@Override
-	public Double[] getFlowInVPS(int ensemble) {
+	public double[] getFlowPerVtInVPS(int ensemble) {
 		return null;
 	}
 
@@ -176,5 +177,5 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	public void update() throws SiriusException {
 		return;
 	}
-	
+
 }

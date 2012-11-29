@@ -30,8 +30,6 @@ import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.DestinationNetwork;
 
-import edu.berkeley.path.beats.calibrator.FDParameters;
-
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -562,7 +560,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				linktype.compareTo(Link.Type.street)!=0;		
 	}
 	
-	
 	// Link geometry ....................
 	
 	/** network that contains this link */
@@ -606,23 +603,64 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * The return matrix is indexed first by destination network in the order given by Scenaroi.getDestinationNetworkNames(), and second
 	 * by vehicle type in the order given by Scenario.getVehicleTypeNames(). 
 	 * @param ensemble Ensemble number 
-	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
+	 * @return number of vehicles of each destination network andeach type in the link. <code>null</code> if something goes wrong.
 	 */
-	public double[][] getDensityInVeh(int ensemble) {
+	public double[][] getDensityPerDnAndVtInVeh(int ensemble) {
 		try{
 			int numDN = myNetwork.myScenario.numDenstinationNetworks;
 			int numVT = myNetwork.myScenario.numVehicleTypes;
-			double [][] dens = SiriusMath.zeros(numDN,numVT);
+			double [][] x = SiriusMath.zeros(numDN,numVT);
 			int d,k;
 			for(d=0;d<numDNetworks;d++)
 				for(k=0;k<numVT;k++)
-					dens[myDNindex.get(d)][k] = density[ensemble][d][k];
-			return dens;
+					x[myDNindex.get(d)][k] = density[ensemble][d][k];
+			return x;
 		} catch(Exception e){
 			return null;
 		}
 	}
 
+	/** Density of vehicles per vehicle type in normalized units [vehicles]. 
+	 * The return matrix is indexed first by destination network in the order given by Scenaroi.getDestinationNetworkNames(), and second
+	 * by vehicle type in the order given by Scenario.getVehicleTypeNames(). 
+	 * @param ensemble Ensemble number 
+	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
+	 */
+	public double[] getDensityPerVtInVeh(int ensemble) {
+		try{
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [] x = SiriusMath.zeros(numVT);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					x[k] += density[ensemble][d][k];
+			return x;
+		} catch(Exception e){
+			return null;
+		}
+	}	
+	
+	/** Density of vehicles per destination network in normalized units [vehicles]. 
+	 * The return matrix is indexed first by destination network in the order given by Scenaroi.getDestinationNetworkNames(), and second
+	 * by vehicle type in the order given by Scenario.getVehicleTypeNames(). 
+	 * @param ensemble Ensemble number 
+	 * @return number of vehicles of each destination network in the link. <code>null</code> if something goes wrong.
+	 */
+	public double[] getDensityPerDnInVeh(int ensemble) {
+		try{
+			int numDN = myNetwork.myScenario.numDenstinationNetworks;
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [] x = SiriusMath.zeros(numDN);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					x[myDNindex.get(d)] += density[ensemble][d][k];
+			return x;
+		} catch(Exception e){
+			return null;
+		}
+	}
+		
 	/** Total of vehicles in normalized units (vehicles/link). 
 	 * The return value equals the sum of {@link Link#getDensityInVeh}.
 	 * @return total number of vehicles in the link. 0 if something goes wrong.
@@ -646,13 +684,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 	
-	/** Number of vehicles per vehicle type exiting the link 
+	/** Number of vehicles per vehicle type and destination network exiting the link 
 	 * during the current time step. The return array is indexed by 
 	 * vehicle type in the order given in the <code>settings</code> 
 	 * portion of the input file. 
 	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public double [][] getOutflowInVeh(int ensemble) {
+	public double [][] getOutflowPerDnAndVtInVeh(int ensemble) {
 		try{
 			int numDN = myNetwork.myScenario.numDenstinationNetworks;
 			int numVT = myNetwork.myScenario.numVehicleTypes;
@@ -666,7 +704,48 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return null;
 		}
 	}
+	
+	/** Number of vehicles per vehicle type exiting the link 
+	 * during the current time step. The return array is indexed by 
+	 * vehicle type in the order given in the <code>settings</code> 
+	 * portion of the input file. 
+	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
+	 */
+	public double [] getOutflowPerVtInVeh(int ensemble) {
+		try{
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [] f = SiriusMath.zeros(numVT);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					f[k] += outflow[ensemble][d][k];
+			return f;
+		} catch(Exception e){
+			return null;
+		}
+	}
 
+	/** Number of vehicles per destination network exiting the link 
+	 * during the current time step. The return array is indexed by 
+	 * vehicle type in the order given in the <code>settings</code> 
+	 * portion of the input file. 
+	 * @return array of exiting flows per destination network. <code>null</code> if something goes wrong.
+	 */
+	public double [] getOutflowPerDnInVeh(int ensemble) {
+		try{
+			int numDN = myNetwork.myScenario.numDenstinationNetworks;
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [] f = SiriusMath.zeros(numDN);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					f[myDNindex.get(d)] += outflow[ensemble][d][k];
+			return f;
+		} catch(Exception e){
+			return null;
+		}
+	}	
+	
 	/** Total number of vehicles exiting the link during the current
 	 * time step.  The return value equals the sum of 
 	 * {@link Link#getOutflowInVeh}.
@@ -681,13 +760,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** Number of vehicles per vehicle type entering the link 
+	/** Number of vehicles per vehicle type and destination network entering the link 
 	 * during the current time step. The return array is indexed by 
 	 * vehicle type in the order given in the <code>settings</code> 
 	 * portion of the input file. 
 	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public double[][] getInflowInVeh(int ensemble) {
+	public double[][] getInflowPerDnAndVtInVeh(int ensemble) {
 		try{
 			int numDN = myNetwork.myScenario.numDenstinationNetworks;
 			int numVT = myNetwork.myScenario.numVehicleTypes;
@@ -701,6 +780,47 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return null;
 		}	
 	}
+	
+	/** Number of vehicles per vehicle type entering the link 
+	 * during the current time step. The return array is indexed by 
+	 * vehicle type in the order given in the <code>settings</code> 
+	 * portion of the input file. 
+	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
+	 */
+	public double[] getInflowPerVtInVeh(int ensemble) {
+		try{
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [] f = SiriusMath.zeros(numVT);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					f[k] += inflow[ensemble][d][k];
+			return f;
+		} catch(Exception e){
+			return null;
+		}	
+	}	
+	
+	/** Number of vehicles per destination network entering the link 
+	 * during the current time step. The return array is indexed by 
+	 * vehicle type in the order given in the <code>settings</code> 
+	 * portion of the input file. 
+	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
+	 */
+	public double[] getInflowPerDnInVeh(int ensemble) {
+		try{
+			int numDN = myNetwork.myScenario.numDenstinationNetworks;
+			int numVT = myNetwork.myScenario.numVehicleTypes;
+			double [] f = SiriusMath.zeros(numDN);
+			int d,k;
+			for(d=0;d<numDNetworks;d++)
+				for(k=0;k<numVT;k++)
+					f[myDNindex.get(d)] += inflow[ensemble][d][k];
+			return f;
+		} catch(Exception e){
+			return null;
+		}	
+	}	
 
 	/** Total number of vehicles entering the link during the current
 	 * time step.  The return value equals the sum of 
@@ -863,12 +983,47 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		else
 			return FD.getWNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
 	}
-		
+
+	// Cumulatives ........................................................
+	
+	/**
+	 * @param ensemble
+	 * @return the cumulative densities for the given ensemble, for all vehicle types
+	 */
+	public double[][] getCumulativeDensityPerDnAndVtInVeh(int ensemble) {
+		return cumulative_density[ensemble];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative incoming flow for the given ensemble, for all vehicle types
+	 */
+	public double[][] getCumulativeInFlowPerDnAndVtInVeh(int ensemble) {
+		return cumulative_inflow[ensemble];
+	}
+
+	/**
+	 * @param ensemble
+	 * @return the cumulative outgoing flow for the given ensemble, for all vehicle types
+	 */
+	public double[][] getCumulativeOutFlowPerDnAndVtInVeh(int ensemble) {
+		return cumulative_outflow[ensemble];
+	}
+
+	/**
+	 * resets cumulative densities and flows
+	 */
+	public void resetCumulative() {
+		reset_cumulative();
+	}
+
+	// Other ........................................................
+	
 	/** Replace link density with given values.
 	 *  [This is API call is being made available for implementation of particle filtering.
 	 *  Use with caution.]
 	 */
-	public void overrideDensityWithVeh(Double[][] x,int ensemble){
+	public void overrideDensityWithVeh(double[][] x,int ensemble){
 		if(ensemble<0 || ensemble>=density.length)
 			return;
 		if(x.length!=density[0].length)
@@ -879,37 +1034,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		for(i=0;i<x.length;i++)
 			for(j=0;j<x[i].length;j++)
 				density[ensemble][i][j] = x[i][j];
-	}
-
-	/**
-	 * @param ensemble
-	 * @return the cumulative densities for the given ensemble, for all vehicle types
-	 */
-	public Double[] getCumulativeDensity(int ensemble) {
-		return cumulative_density[ensemble];
-	}
-
-	/**
-	 * @param ensemble
-	 * @return the cumulative incoming flow for the given ensemble, for all vehicle types
-	 */
-	public Double[] getCumulativeInFlow(int ensemble) {
-		return cumulative_inflow[ensemble];
-	}
-
-	/**
-	 * @param ensemble
-	 * @return the cumulative outgoing flow for the given ensemble, for all vehicle types
-	 */
-	public Double[] getCumulativeOutFlow(int ensemble) {
-		return cumulative_outflow[ensemble];
-	}
-
-	/**
-	 * resets cumulative densities and flows
-	 */
-	public void resetCumulative() {
-		reset_cumulative();
 	}
 
 }

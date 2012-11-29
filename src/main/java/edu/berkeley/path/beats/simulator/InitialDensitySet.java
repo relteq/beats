@@ -33,8 +33,8 @@ import java.util.List;
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
-	private Double [][] initial_density; 	// [veh/meter] indexed by link and type
-	private Link [] link;					// ordered array of references
+	//private Double [][] initial_density; 	// [veh/meter] indexed by link and type
+	//private Link [] link;					// ordered array of references
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 	protected double timestamp;
 	private ArrayList<LinkDestinationIC> data;
