@@ -67,42 +67,49 @@ public class SimulationSettings {
 	public void setStartTime(Double startTime) {
 		this.startTime = startTime;
 	}
+	
 	/**
 	 * @param startTime decimal start time, sec
 	 */
 	public void setStartTime(BigDecimal startTime) {
 		this.startTime = null == startTime ? null : startTime.doubleValue();
 	}
+	
 	/**
 	 * @param duration the duration to set, sec
 	 */
 	public void setDuration(Double duration) {
 		this.duration = duration;
 	}
+	
 	/**
 	 * @param duration decimal duration, sec
 	 */
 	public void setDuration(BigDecimal duration) {
 		this.duration = null == duration ? null : duration.doubleValue();
 	}
+	
 	/**
 	 * @param outputDt the output sample rate to set, sec
 	 */
 	public void setOutputDt(Double outputDt) {
 		this.outputDt = outputDt;
 	}
+	
 	/**
 	 * @param outputDt decimal output sample rate, sec
 	 */
 	public void setOutputDt(BigDecimal outputDt) {
 		this.outputDt = null == outputDt ? null : outputDt.doubleValue();
 	}
+	
 	/**
 	 * @param numRuns the number of repetitions to set
 	 */
 	public void setNumRuns(Integer numRuns) {
 		this.numRuns = numRuns;
 	}
+	
 	/**
 	 * @param ss the parent simulation settings
 	 */
@@ -194,4 +201,5 @@ public class SimulationSettings {
 	public static SimulationSettings defaults() {
 		return new SimulationSettings(Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
 	}
+
 }

@@ -68,6 +68,10 @@ public class LinkCumulativeData {
 		else
 			return SiriusMath.times(iflow[ensemble], 1.0d / nsteps);
 	}
+	
+	public Double getMeanInputFlow(int ensemble, int vt_ind) {
+		return 0 == nsteps ? Double.NaN : iflow[ensemble][vt_ind] / nsteps;
+	}
 
 	public double getCumulativeOutputFlow(int ensemble, int vehtypenum) {
 		return oflow[ensemble][vehtypenum];

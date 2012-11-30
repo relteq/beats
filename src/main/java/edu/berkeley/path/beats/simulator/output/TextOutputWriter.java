@@ -47,6 +47,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 	protected Writer [][] out_inflow;
 	protected static String delim = "\t";
 	private String prefix;
+	private int numVT;
 
 	public TextOutputWriter(Scenario scenario, Properties props){
 		super(scenario);
@@ -57,6 +58,8 @@ public final class TextOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void open(int run_id) throws SiriusException {
+		String [] VTnames = scenario.getVehicleTypeNames();
+		numVT = scenario.getNumVehicleTypes();
 		try {
 			String suffix;
 			int numDN = scenario.getNumDestinationNetworks();

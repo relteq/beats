@@ -51,63 +51,25 @@ public final class Runner {
 		try {
 			// process input parameters
 			SimulationSettings simsettings = parseInput(args);
-			if (null == simsettings) return;
+			if (null == simsettings) 
+				return;
 		
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 			if (null == scenario)
 				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
 
-
-		
-////////////////////////////////////
-//System.out.println("Destination networks:");
-//for(DestinationNetworkBLA d : scenario.destination_networks){
-//
-//System.out.println("\t" + d.myIndex + "\t" + (d.dnetwork==null?"background":d.dnetwork.getId()) );
-//System.out.print("\t\tLinks: [");
-//for(Link link : d.links)
-//System.out.print(link.getId() + " ");
-//System.out.println("]");
-//
-//
-//System.out.print("\t\tNodes: [");
-//for(Node nodes : d.myInNodes)
-//System.out.print(nodes.getId() + " ");
-//System.out.println("]");
-//}
-
-//System.out.print("\nNodes:");
-//for(edu.berkeley.path.beats.jaxb.Node jnode : scenario.getNetworkList().getNetwork().get(0).getNodeList().getNode()){
-//Node node = (Node) jnode;
-//System.out.println("\n\tid=" + node.getId());
-//System.out.println("\toutlinks: " + Arrays.asList(node.output_link).toString());
-//System.out.println("\tinlinks: " + Arrays.asList(node.input_link).toString());		
-//System.out.println("\tnumDNetworks=" + node.numDNetworks);
-//System.out.println("\tmyDNGlobalIndex=" + node.myDNGlobalIndex.toString());
-//System.out.println("\tdn2outlinkindex=" + node.dn2outlinkindex.toString());
-//System.out.println("\tdn2inlinkindex=" + node.dn2inlinkindex.toString());
-//System.out.println("\tistrivialsplit=" + node.dn_isSingleOut.toString());
-//}
-//
-//System.out.print("\nLinks:");
-//for(edu.berkeley.path.beats.jaxb.Link jlink : scenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()){
-//Link link = (Link) jlink;
-//System.out.println("\n\tid=" + link.getId());
-//System.out.println("\tnumDNetworks=" + link.numDNetworks);
-//System.out.println("\tmyDNindex=" + link.myDNindex.toString());
-//
-//System.out.println("\tdn_beginNodeMap=" + link.dn_beginNodeMap.toString());
-//System.out.println("\tdn_endNodeMap=" + link.dn_endNodeMap.toString());
-//}
-
-////////////////////////////////////
-
+			// set output format properties
 			Properties owr_props = new Properties();
-			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
+			if (null != outputfileprefix) 
+				owr_props.setProperty("prefix", outputfileprefix);
 			owr_props.setProperty("type", output_format);
+			
+			// run the scenario
 			scenario.run(simsettings, owr_props);
+			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
+			
 		} catch (SiriusException exc) {
 			exc.printStackTrace();
 		} finally {
@@ -118,16 +80,6 @@ public final class Runner {
 		}
 		
 	}
-
-//	public static void simulate_output(String[] args) {
-//		output_format = "xml";
-//		main(args);
-//	}
-//
-//	public static void debug(String[] args) {
-//		output_format = "text";
-//		main(args);
-//	}
 
 	private static SimulationSettings parseInput(String[] args){
 

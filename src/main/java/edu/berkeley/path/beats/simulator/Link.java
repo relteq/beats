@@ -647,6 +647,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 	
+	
 	/** Total of vehicles in (vehicles/meter).
 	 * @return total density of vehicles in the link. 0 if something goes wrong.
 	 */
