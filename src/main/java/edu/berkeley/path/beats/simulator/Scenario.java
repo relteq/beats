@@ -30,12 +30,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
+import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
@@ -103,6 +106,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// data
 	private boolean sensor_data_loaded = false;
+
+	private Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -184,7 +189,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// populate events 
 		eventset.populate(this);
-		
+
+		cumulatives = new Cumulatives(this);
 	}
 
 	/** @y.exclude */
@@ -276,7 +282,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// reset events
 		eventset.reset();
-		
+
+		cumulatives.reset();
+
 		return true;
 		
 	}	
@@ -322,7 +330,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update the network state......................
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
 			((Network) network).update();
-        
+
+		cumulatives.update();
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -1243,7 +1252,47 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
+		cumulatives.reset();
 	}
+
+	/**
+	 * Initializes a link cumulative data storage,
+	 * if that has not yet been done.
+	 * Calling this method multiple times is safe
+	 */
+	public void requestLinkCumulatives() {
+		cumulatives.storeLinks();
+	}
+
+	/**
+	 * Initializes a signal phase storage,
+	 * if that has not yet been done.
+	 * Calling this method multiple times is safe
+	 */
+	public void requestSignalPhases() {
+		cumulatives.storeSignalPhases();
+	}
+
+	/**
+	 * Retrieves link cumulative data for the given link
+	 * @param link
+	 * @return link cumulative data
+	 * @throws SiriusException if the link cumulative data storage has not been initialized
+	 */
+	public LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+		return cumulatives.get(link);
+	}
+
+	/**
+	 * Retrieves completed phases for the given signal
+	 * @param signal
+	 * @return completed signal phases
+	 * @throws SiriusException if the signal phase storage has not been initialized
+	 */
+	public SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+		return cumulatives.get(signal);
+	}
+
 
 	/////////////////////////////////////////////////////////////////////
 	// nested classes
@@ -1303,6 +1352,105 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				timeend = timestart;
 		}
 
+	}
+
+	private static class Cumulatives {
+		private Scenario scenario;
+
+		/** link id -> cumulative data */
+		java.util.Map<String, LinkCumulativeData> links = null;
+
+		/** signal id -> completed phases */
+		java.util.Map<String, SignalPhases> phases = null;
+
+		private static Logger logger = Logger.getLogger(Cumulatives.class);
+
+		public Cumulatives(Scenario scenario) {
+			this.scenario = scenario;
+		}
+
+		public void storeLinks() {
+			if (null == links) {
+				links = new java.util.HashMap<String, LinkCumulativeData>();
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
+						if (links.containsKey(link.getId()))
+							logger.warn("Duplicate link: id=" + link.getId());
+						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
+					}
+				logger.info("Link cumulative data have been requested");
+			}
+		}
+
+		public void storeSignalPhases() {
+			if (null == phases) {
+				phases = new HashMap<String, SignalPhases>();
+				if (null != scenario.getSignalList())
+					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalList().getSignal()) {
+						if (phases.containsKey(signal.getId()))
+							logger.warn("Duplicate signal: id=" + signal.getId());
+						phases.put(signal.getId(), new SignalPhases(signal));
+					}
+				logger.info("Signal phases have been requested");
+			}
+		}
+
+		public void reset() {
+			if (null != links) {
+				Iterator<LinkCumulativeData> iter = links.values().iterator();
+				while (iter.hasNext()) iter.next().reset();
+			}
+			if (null != phases) {
+				Iterator<SignalPhases> iter = phases.values().iterator();
+				while (iter.hasNext()) iter.next().reset();
+			}
+		}
+
+		public void update() throws SiriusException {
+			if (null != links) {
+				java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
+				while (iter.hasNext()) iter.next().update();
+			}
+			if (null != phases) {
+				Iterator<SignalPhases> iter = phases.values().iterator();
+				while (iter.hasNext()) iter.next().update();
+			}
+		}
+
+		public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+			if (null == links) throw new SiriusException("Link cumulative data were not requested");
+			return links.get(link.getId());
+		}
+
+		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+			if (null == phases) throw new SiriusException("Signal phases were not requested");
+			return phases.get(signal.getId());
+		}
+	}
+
+	/**
+	 * Signal phase storage
+	 */
+	public static class SignalPhases {
+		private edu.berkeley.path.beats.jaxb.Signal signal;
+		private List<Signal.PhaseData> phases;
+
+		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
+			this.signal = signal;
+			phases = new java.util.ArrayList<Signal.PhaseData>();
+		}
+
+		public List<Signal.PhaseData> getPhaseList() {
+			return phases;
+		}
+
+		void update() {
+			phases.addAll(((Signal) signal).getCompletedPhases());
+		}
+
+		void reset() {
+			phases.clear();
+		}
 	}
 
 }

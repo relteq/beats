@@ -35,10 +35,10 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusFormatter;
-import edu.berkeley.path.beats.simulator.SiriusMath;
 
 public final class TextOutputWriter extends OutputWriterBase {
 	protected Writer out_time = null;
@@ -52,6 +52,7 @@ public final class TextOutputWriter extends OutputWriterBase {
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
+		scenario.requestLinkCumulatives();
 	}
 
 	@Override

@@ -38,6 +38,7 @@ import org.apache.torque.util.Criteria;
 
 import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusMath;
@@ -77,6 +78,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				logger.error("Failed to load vehicle types for scenario " + db_scenario.getId(), exc);
 			}
 		}
+		scenario.requestLinkCumulatives();
 	}
 
 	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
@@ -207,18 +209,15 @@ public class DBOutputWriter extends OutputWriterBase {
 		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
 		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
 		ts.set(Calendar.SECOND, (int) (time - min * 60));
-		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.getCurrentTimeStep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
 
 		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 				Link _link = (Link) link;
 				try {
-					LinkDataTotal db_ldt = fill_total(_link, params);
-					fill_detailed(_link, params, db_ldt.getSpeed());
+					LinkDataTotal db_ldt = fill_total(_link, exportflows);
+					fill_detailed(_link, exportflows, db_ldt.getSpeed());
 				} catch (Exception exc) {
 					throw new SiriusException(exc);
-				} finally {
-					_link.resetCumulative();
 				}
 			}
 		}
@@ -232,7 +231,7 @@ public class DBOutputWriter extends OutputWriterBase {
 	 * @return the stored row
 	 * @throws Exception
 	 */
-	private LinkDataTotal fill_total(Link link, OutputParameters params) throws Exception {
+	private LinkDataTotal fill_total(Link link, boolean exportflows) throws Exception {
 		LinkDataTotal db_ldt = new LinkDataTotal();
 		db_ldt.setLinkId(str2id(link.getId()));
 		db_ldt.setNetworkId(str2id(link.getMyNetwork().getId()));
@@ -241,16 +240,17 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setTs(ts.getTime());
 		db_ldt.setAggregationTypes(db_aggregation_type_raw);
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
+
+		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
 		// mean density, vehicles
-		double density = SiriusMath.sum(link.getCumulativeDensityPerVtInVeh(0)) / params.getNsteps();
+		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : SiriusMath.sum(link.getDensityInVeh(0));
 		db_ldt.setDensity(double2decimal(density));
 
-		if (params.doExportFlows()) {
+		if (exportflows) {
 			// input flow, vehicles
-			db_ldt.setInFlow(double2decimal(SiriusMath.sum(link.getCumulativeInFlowPerVtInVeh(0))));
+			db_ldt.setInFlow(double2decimal(link_cum_data.getCumulativeTotalInputFlow(0)));
 			// output flow, vehicles
-			double outflow = SiriusMath.sum(link.getCumulativeOutFlowPerVtInVeh(0));
-			db_ldt.setOutFlow(double2decimal(outflow));
+			db_ldt.setOutFlow(double2decimal(link_cum_data.getCumulativeTotalOutputFlow(0)));
 
 			// free flow speed, m/s
 			double ffspeed = link.getVfInMPS(0);
@@ -258,7 +258,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			if (density <= 0)
 				db_ldt.setSpeed(double2decimal(ffspeed));
 			else {
-				double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+				double speed = link_cum_data.getMeanTotalOutputFlow(0) * link.getLengthInMeters() / (scenario.getSimDtInSeconds() * density);
 				if (!Double.isNaN(speed)) {
 					if (!Double.isNaN(ffspeed) && speed > ffspeed)
 						db_ldt.setSpeed(double2decimal(ffspeed));
@@ -291,7 +291,8 @@ public class DBOutputWriter extends OutputWriterBase {
 	 * @param total_speed speed for the cell as a whole, m/s
 	 * @throws Exception
 	 */
-	private void fill_detailed(Link link, OutputParameters params, BigDecimal total_speed) throws Exception {
+	private void fill_detailed(Link link, boolean exportflows, BigDecimal total_speed) throws Exception {
+		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
@@ -304,19 +305,18 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = link.getCumulativeDensityPerVtInVeh(0)[vt_ind] / params.getNsteps();
+			double density = exportflows ? link_cum_data.getMeanDensity(0, vt_ind) : link.getDensityInVeh(0)[vt_ind];
 			db_ldd.setDensity(double2decimal(density));
-			if (params.doExportFlows()) {
+			if (exportflows) {
 				// input flow, vehicles
-				db_ldd.setInFlow(double2decimal(link.getCumulativeInFlowPerVtInVeh(0)[vt_ind]));
+				db_ldd.setInFlow(double2decimal(link_cum_data.getCumulativeInputFlow(0, vt_ind)));
 				// output flow, vehicles
-				double outflow = link.getCumulativeOutFlowPerVtInVeh(0)[vt_ind];
-				db_ldd.setOutFlow(double2decimal(outflow));
+				db_ldd.setOutFlow(double2decimal(link_cum_data.getCumulativeOutputFlow(0, vt_ind)));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+					double speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimDtInSeconds() * density);
 					if (!Double.isNaN(speed)) {
 						// free flow speed, m/s
 						double ffspeed = link.getVfInMPS(0);
@@ -328,28 +328,6 @@ public class DBOutputWriter extends OutputWriterBase {
 				}
 			}
 			db_ldd.save();
-		}
-	}
-
-	private class OutputParameters {
-		boolean export_flows;
-		int nsteps;
-		double output_period; // sec
-
-		public OutputParameters(boolean export_flows, int nsteps, double output_period) {
-			this.export_flows = export_flows;
-			this.nsteps = nsteps;
-			this.output_period = output_period;
-		}
-
-		public boolean doExportFlows() {
-			return export_flows;
-		}
-		public int getNsteps() {
-			return nsteps;
-		}
-		public double getOutputPeriod() {
-			return output_period;
 		}
 	}
 

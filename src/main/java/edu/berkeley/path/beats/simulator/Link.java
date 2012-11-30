@@ -98,45 +98,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
-//	/** get the cumulative density indexed by global destination network and 
-//	 * vehicle types **/
-//	public double[][] getCumulative_density(int ensemble) {
-//		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
-//		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
-//		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
-//		int i,j;
-//		for(i=0;i<numDNetworks;i++)
-//			for(j=0;j<numVehicleTypes;j++)
-//				X[myDNindex.get(i)][j] = cumulative_density[ensemble][i][j];
-//		return X;
-//	}
-//
-//	/** get the cumulative inflow indexed by global destination network and 
-//	 * vehicle types **/
-//	public double[][] getCumulative_inflow(int ensemble) {
-//		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
-//		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
-//		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
-//		int i,j;
-//		for(i=0;i<numDNetworks;i++)
-//			for(j=0;j<numVehicleTypes;j++)
-//				X[myDNindex.get(i)][j] = cumulative_inflow[ensemble][i][j];
-//		return X;
-//	}
-//
-//	/** get the cumulative outflow indexed by global destination network and 
-//	 * vehicle types **/
-//	public double[][] getCumulative_outflow(int ensemble) {
-//		int numDestinationNetworks = myNetwork.myScenario.numDenstinationNetworks;
-//		int numVehicleTypes = myNetwork.myScenario.numVehicleTypes;
-//		double [][] X = SiriusMath.zeros(numDestinationNetworks, numVehicleTypes);
-//		int i,j;
-//		for(i=0;i<numDNetworks;i++)
-//			for(j=0;j<numVehicleTypes;j++)
-//				X[myDNindex.get(i)][j] = cumulative_outflow[ensemble][i][j];
-//		return X;
-//	}
-	
 	/** @y.exclude */
 	protected void reset_cumulative(){
 		int n1 = myNetwork.myScenario.numEnsemble;

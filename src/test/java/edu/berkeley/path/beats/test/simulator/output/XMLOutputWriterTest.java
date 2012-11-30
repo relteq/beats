@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
  
-package edu.berkeley.path.beats.test.simulator;
+package edu.berkeley.path.beats.test.simulator.output;
 
 import static org.junit.Assert.*;
 
@@ -78,7 +78,7 @@ public class XMLOutputWriterTest {
 		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		ClassLoader classLoader = XMLOutputWriterTest.class.getClassLoader();
 		ischema = factory.newSchema(classLoader.getResource("sirius.xsd"));
-		oschema = factory.newSchema(new File("data" + File.separator + "schema" + File.separator + "sirius_output.xsd"));
+		oschema = factory.newSchema(classLoader.getResource("sirius_output.xsd"));
 	}
 
 	/**
