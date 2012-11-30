@@ -462,7 +462,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			density = new double[numEnsemble][numDNetworks][numVehicleTypes];
 			totaldensity = SiriusMath.zeros(numEnsemble);
 			if(myScenario.getInitialDensitySet()!=null)
-				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(getId(),myDNindex);	
+				density[0] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityPerDnAndVtForLinkIdInVeh(getId(),myDNindex);	
 			else 
 				density[0] = SiriusMath.zeros(numDNetworks,myScenario.getNumVehicleTypes());
 			totaldensity[0] = SiriusMath.sumsum(density[0]);

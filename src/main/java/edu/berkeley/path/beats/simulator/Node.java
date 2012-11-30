@@ -29,7 +29,7 @@ package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import edu.berkeley.path.beats.simulator.DestinationNetworkBLA;
+import edu.berkeley.path.beats.jaxb.DestinationNetwork;
 
 // NOTE
 // SEE IF THE ENSEMBLE DIMENSION CAN BE ELIMINATED FOR OUTDEMANDKNOWN AND DSRATIO
@@ -202,7 +202,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @param linkid
 	 * @return
 	 */
-	protected int getInputLinkIndex(int dn_index,String linkid){
+	public int getInputLinkIndex(int dn_index,String linkid){
 		try {
 			for(int i=0;i<dn2inlinkindex.get(dn_index).size();i++){
 				int index = dn2inlinkindex.get(dn_index).get(i);
@@ -262,7 +262,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @param linkid
 	 * @return
 	 */
-	protected int getOutputLinkIndex(String linkid){
+	public int getOutputLinkIndex(String linkid){
 		if(output_link==null)
 			return -1;
 		for(int i=0;i<output_link.length;i++){
@@ -944,7 +944,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
     }
 */
     
-
 /*
     private Float3DMatrix resolveUnassignedSplits_C(SR){
     	for(int i=0;i<nIn;i++){
@@ -961,7 +960,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
     }    
     */
 	
-    
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
@@ -1056,23 +1054,23 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
 
-	public double [][][] getSplitRatio(){
-		if(splitratio==null)
-			return null;
-		else{
-			return splitratio.cloneData();
-		}
-	}
+//	public double [][][] getSplitRatio(){
+//		if(splitratio==null)
+//			return null;
+//		else{
+//			return splitratio.cloneData();
+//		}
+//	}
 
-	/**
-	 * Retrieves a split ratio for the given input/output link pair and vehicle type
-	 * @param inLinkInd input link index
-	 * @param outLinkInd output link index
-	 * @param vehTypeInd vehicle type index
-	 * @return the split ratio
-	 */
-	public double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
-	}
+//	/**
+//	 * Retrieves a split ratio for the given input/output link pair and vehicle type
+//	 * @param inLinkInd input link index
+//	 * @param outLinkInd output link index
+//	 * @param vehTypeInd vehicle type index
+//	 * @return the split ratio
+//	 */
+//	public double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
+//		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
+//	}
 
 }

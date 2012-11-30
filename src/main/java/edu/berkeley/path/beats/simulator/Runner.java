@@ -26,8 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.Arrays;
-import java.math.BigDecimal;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;

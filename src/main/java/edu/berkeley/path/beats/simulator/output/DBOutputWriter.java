@@ -242,14 +242,14 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setAggregationTypes(db_aggregation_type_raw);
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
 		// mean density, vehicles
-		double density = SiriusMath.sum(link.getCumulativeDensityPerDnAndVtInVeh(0)) / params.getNsteps();
+		double density = SiriusMath.sum(link.getCumulativeDensityPerVtInVeh(0)) / params.getNsteps();
 		db_ldt.setDensity(double2decimal(density));
 
 		if (params.doExportFlows()) {
 			// input flow, vehicles
-			db_ldt.setInFlow(double2decimal(SiriusMath.sum(link.getCumulativeInFlowPerDnAndVtInVeh(0))));
+			db_ldt.setInFlow(double2decimal(SiriusMath.sum(link.getCumulativeInFlowPerVtInVeh(0))));
 			// output flow, vehicles
-			double outflow = SiriusMath.sum(link.getCumulativeOutFlowPerDnAndVtInVeh(0));
+			double outflow = SiriusMath.sum(link.getCumulativeOutFlowPerVtInVeh(0));
 			db_ldt.setOutFlow(double2decimal(outflow));
 
 			// free flow speed, m/s
@@ -304,13 +304,13 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = link.getCumulativeDensityPerDnAndVtInVeh(0)[vt_ind] / params.getNsteps();
+			double density = link.getCumulativeDensityPerVtInVeh(0)[vt_ind] / params.getNsteps();
 			db_ldd.setDensity(double2decimal(density));
 			if (params.doExportFlows()) {
 				// input flow, vehicles
-				db_ldd.setInFlow(double2decimal(link.getCumulativeInFlowPerDnAndVtInVeh(0)[vt_ind]));
+				db_ldd.setInFlow(double2decimal(link.getCumulativeInFlowPerVtInVeh(0)[vt_ind]));
 				// output flow, vehicles
-				double outflow = link.getCumulativeOutFlowPerDnAndVtInVeh(0)[vt_ind];
+				double outflow = link.getCumulativeOutFlowPerVtInVeh(0)[vt_ind];
 				db_ldd.setOutFlow(double2decimal(outflow));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);

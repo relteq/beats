@@ -100,7 +100,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public double [][] getDensityForLinkIdInVeh(String linkid,ArrayList<Integer> dest_net_global_index){
+	public double [][] getDensityPerDnAndVtForLinkIdInVeh(String linkid,ArrayList<Integer> dest_net_global_index){
 		int numDestination = dest_net_global_index.size();
 		double [][] d = SiriusMath.zeros(numDestination,myScenario.getNumVehicleTypes());
 		for(LinkDestinationIC ld : data){
@@ -110,7 +110,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 					int dest_index = dest_net_global_index.indexOf(ld.dn_global_index);
 					if(dest_index>=0)
 						for(int j=0;j<vehicletypeindex.length;j++)
-							d[dest_index][vehicletypeindex[j]] = ld.initial_density[j]*ld.link.getLengthInMiles();
+							d[dest_index][vehicletypeindex[j]] = ld.initial_density[j]*ld.link.getLengthInMeters();
 				}
 			}
 		}

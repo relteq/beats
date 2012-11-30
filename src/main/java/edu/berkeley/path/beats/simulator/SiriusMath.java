@@ -333,8 +333,8 @@ public final class SiriusMath {
 		return std_dev*SiriusMath.random.nextGaussian();
 	}
 	
-	// set ooperations
-	public static boolean setEquals(Collection a, Collection b){
+	// set operations
+	public static boolean setEquals(Collection<?> a, Collection<?> b){
 		if(a==null || b==null)
 			return false;
 		else

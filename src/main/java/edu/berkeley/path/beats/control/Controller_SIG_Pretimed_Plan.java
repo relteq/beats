@@ -62,7 +62,7 @@ public class Controller_SIG_Pretimed_Plan extends edu.berkeley.path.beats.jaxb.P
 
 				// check whether the signal is in the target list
 				edu.berkeley.path.beats.jaxb.Intersection jaxbi = jaxbplan.getIntersection().get(i);				
-				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
+				Signal mySignal = myScenario.getSignalWithNodeId(jaxbi.getNodeId());
 
 				if(mySignal==null)
 					continue;

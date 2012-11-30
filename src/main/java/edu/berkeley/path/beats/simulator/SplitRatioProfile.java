@@ -80,7 +80,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
 
 			// destination network index in the node
-			dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
+			dn_node_index = myNode.getDestinationNetworkIndex(getDestinationNetworkId()); 	
 			if(dn_node_index<0)
 				continue; 
 			
@@ -173,9 +173,9 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
 
 			// destination network 
-			dn_node_index = myNode.getDestinationNetworkIndex(sr.getDestinationNetworkId()); 	
+			dn_node_index = myNode.getDestinationNetworkIndex(getDestinationNetworkId()); 	
 			if(dn_node_index<0)
-				SiriusErrorLog.addError("Bad destination network id=" + sr.getDestinationNetworkId() + " in split ratio profile with node id=" + getNodeId());
+				SiriusErrorLog.addError("Bad destination network id=" + getDestinationNetworkId() + " in split ratio profile with node id=" + getNodeId());
 
 			// check in and out links are on node and destination network
 			in_index = myNode.getInputLinkIndex(dn_node_index,sr.getLinkIn());
