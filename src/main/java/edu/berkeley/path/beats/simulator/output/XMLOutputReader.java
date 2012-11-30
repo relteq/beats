@@ -39,7 +39,6 @@ import edu.berkeley.path.beats.simulator.JaxbObjectFactory;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-@SuppressWarnings("restriction")
 class XMLOutputReader {
 	public static void main(String[] args) {
 		if (args.length < 1) {

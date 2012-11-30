@@ -44,7 +44,6 @@ import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusException;
 
 
-@SuppressWarnings("restriction")
 public class ScenarioUtil {
 
 	private static Logger logger = Logger.getLogger(ScenarioUtil.class);

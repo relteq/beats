@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.StringTokenizer;
 /** 3D matrix class used for representing time-invariant split ratio matrices.
  * 
 * @author Gabriel Gomes

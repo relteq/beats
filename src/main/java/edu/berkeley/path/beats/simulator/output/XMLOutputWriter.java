@@ -45,7 +45,6 @@ import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
 
-@SuppressWarnings("restriction")
 public final class XMLOutputWriter extends OutputWriterBase {
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
@@ -186,8 +185,9 @@ public final class XMLOutputWriter extends OutputWriterBase {
 							xmlsw.writeAttribute("il", _node.getInput_link()[ili].getId());
 							xmlsw.writeAttribute("ol", _node.getOutput_link()[oli].getId());
 							sr_formatter.clear();
-							for (int vti = 0; vti < scenario.getNumVehicleTypes(); ++vti)
-								sr_formatter.add(_node.getSplitRatio(ili, oli, vti));
+// TODO: fix getSplitRatio function
+//							for (int vti = 0; vti < scenario.getNumVehicleTypes(); ++vti)
+//								sr_formatter.add(_node.getSplitRatio(ili, oli, vti));
 							xmlsw.writeAttribute("r", sr_formatter.getResult());
 							xmlsw.writeEndElement(); // io
 						}

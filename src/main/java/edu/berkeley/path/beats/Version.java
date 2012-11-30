@@ -40,7 +40,6 @@ import javax.xml.stream.XMLStreamReader;
 /**
  * Retrieves and stores application schema and engine versions
  */
-@SuppressWarnings("restriction")
 public class Version {
 	String schemaVersion;
 	String engineVersion;

@@ -478,7 +478,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         	for(int e=0;e<this.myNetwork.myScenario.numEnsemble;e++)
         		inflow[e] = SiriusMath.makecopy(sourcedemand);
                 
-        int e,p,j;
+        int e;
+//        int p,j;
 		for(e=0;e<myNetwork.myScenario.numEnsemble;e++){
 //			for(p=0;p<numDNetworks;p++){
 //				for(j=0;j<myNetwork.myScenario.getNumVehicleTypes();j++){

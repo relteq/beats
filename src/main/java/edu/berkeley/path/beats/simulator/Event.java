@@ -211,19 +211,19 @@ public abstract class Event extends edu.berkeley.path.beats.jaxb.Event implement
     	link.revertFundamentalDiagramEvent();
     }    
 
-	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
-		if(node==null)
-			return;
-		Double4DMatrix X = new Double4DMatrix(node,Double.NaN);
-		X.copydata(node.splitratio);
-		
-		for(int j=0;j<node.getnOut();j++)
-			X.set(inputindex, j,vehicletypeindex,splitrow.get(j));
-		if(!node.validateSplitRatioMatrix(X))
-			return;
-		node.setSplitratio(X);
-		node.hasactivesplitevent = true;
-	}
+//	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
+//		if(node==null)
+//			return;
+//		Double4DMatrix X = new Double4DMatrix(node,Double.NaN);
+//		X.copydata(node.splitratio);
+//		
+//		for(int j=0;j<node.getnOut();j++)
+//			X.set(inputindex, j,vehicletypeindex,splitrow.get(j));
+//		if(!node.validateSplitRatioMatrix(X))
+//			return;
+//		node.setSplitratio(X);
+//		node.hasactivesplitevent = true;
+//	}
 
 	protected static class SplitRatio {
 		private int input_index;

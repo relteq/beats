@@ -71,7 +71,6 @@ import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
 * @author Gabriel Gomes
 * @version VERSION NUMBER
 */
-@SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	/** @y.exclude */	protected static enum ModeType {  normal, 

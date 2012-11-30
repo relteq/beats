@@ -165,12 +165,12 @@ public class Event_Node_Split_Ratio extends Event {
 	
 	@Override
 	public void activate() throws SiriusException{
-		if(myNode==null)
-			return;
-		if(resetToNominal)
-			revertNodeEventSplitRatio(myNode);
-		else
-			setNodeEventSplitRatio(myNode, splitratios);
+//		if(myNode==null)
+//			return;
+//		if(resetToNominal)
+//			revertNodeEventSplitRatio(myNode);
+//		else
+//			setNodeEventSplitRatio(myNode, splitratios);
 	}
 
 }
