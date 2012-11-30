@@ -56,6 +56,7 @@ import edu.berkeley.path.beats.sensor.*;
  * 
 * @author Gabriel Gomes
 */
+@SuppressWarnings("restriction")
 public final class ObjectFactory {
 
 	/////////////////////////////////////////////////////////////////////

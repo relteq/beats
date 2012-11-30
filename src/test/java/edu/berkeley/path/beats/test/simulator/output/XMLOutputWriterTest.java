@@ -153,11 +153,11 @@ public class XMLOutputWriterTest {
 	protected void runSirius(String confpath, String outpath) {
 		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
 		String [] args = {confpath, outpath.substring(0, outpath.length() - OUT_SUFFIX.length()), //
-				String.format("%d", 0), String.format("%d", 3600), String.format("%d", 600)};
+				"xml",String.format("%d", 0), String.format("%d", 3600), String.format("%d", 600)};
 		System.out.print("ARGS:");
 		for (int iii = 0; iii < args.length; ++ iii) System.out.print(" " + args[iii]);
 		System.out.println();
-		Runner.simulate_output(args);
+		Runner.main(args);
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();

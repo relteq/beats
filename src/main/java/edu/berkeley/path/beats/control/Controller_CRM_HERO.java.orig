@@ -26,12 +26,15 @@
 
 package edu.berkeley.path.beats.control;
 
+<<<<<<< HEAD
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+=======
+>>>>>>> 02cd3cf697ca78a3b61dfeb7e1f45388a389d0c9
 import java.text.DecimalFormat;
 import java.util.ArrayList; 
 import java.util.HashSet;

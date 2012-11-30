@@ -270,6 +270,10 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 					if(!o.protectd)
 						o.setPhaseColor(Signal.BulbColor.RED);
 					break;
+			case DARK:
+				break;
+			default:
+				break;
 			}
 		}
 		
@@ -381,6 +385,10 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 				return true;
 			else
 				return false;
+		case NULL:
+			break;
+		default:
+			break;
 		}
 		return false;
 	}
