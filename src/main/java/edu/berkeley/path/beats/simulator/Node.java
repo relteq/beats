@@ -220,7 +220,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @param linkid
 	 * @return
 	 */
-	protected int getInputLinkIndex(String linkid){
+	public int getInputLinkIndex(String linkid){
 		if(input_link==null)
 			return -1;
 		for(int i=0;i<input_link.length;i++){

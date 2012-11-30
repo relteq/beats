@@ -242,8 +242,9 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
 
 		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+		
 		// mean density, vehicles
-		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : SiriusMath.sum(link.getDensityInVeh(0));
+		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : SiriusMath.sum(link.getDensityPerVtInVeh(0));
 		db_ldt.setDensity(double2decimal(density));
 
 		if (exportflows) {
@@ -305,7 +306,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = exportflows ? link_cum_data.getMeanDensity(0, vt_ind) : link.getDensityInVeh(0)[vt_ind];
+			double density = exportflows ? link_cum_data.getMeanDensity(0, vt_ind) : link.getDensityForVtInVeh(0,vt_ind);
 			db_ldd.setDensity(double2decimal(density));
 			if (exportflows) {
 				// input flow, vehicles

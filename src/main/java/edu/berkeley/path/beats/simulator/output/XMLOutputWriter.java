@@ -136,7 +136,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					Link _link = (Link) link;
 					LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", dens_formatter.format(exportflows ? link_cum_data.getMeanDensity(0) : _link.getDensityInVeh(0)));
+					xmlsw.writeAttribute("d", dens_formatter.format(exportflows ? link_cum_data.getMeanDensity(0) : _link.getDensityPerVtInVeh(0)));
 					if (exportflows) {
 						// f = flow per dt, vehicles
 						xmlsw.writeAttribute("f", flow_formatter.format(link_cum_data.getCumulativeOutputFlow(0)));
