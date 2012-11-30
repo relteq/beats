@@ -1,40 +1,60 @@
-function []=plot_text(configfile,outprefix)
+function []=plot_text(configfile,outname)
 
-path = fullfile(fileparts(fileparts(mfilename('fullpath'))),'loadOutput');
-addpath(path);
-X = readSiriusOutput_txt(configfile,outprefix);
-rmpath(path);
+addpath([fileparts(fileparts(mfilename('fullpath'))) filesep 'xml_io_tools_2007_07']);
 
-% aggregate vehicle types
-density = reshape(sum(X.density,2),X.numDN,X.numTime,X.numLinks);
-flow = reshape(sum(X.flow,2),X.numDN,X.numTime-1,X.numLinks);
+[outpath,outprefix] = fileparts(outname);
 
-% aggregate desination networks
-density = reshape(sum(density,1),X.numTime,X.numLinks);
-flow = reshape(sum(flow,1),X.numTime-1,X.numLinks);
+fprintf('Reading %s\n', configfile);
+scenario = xml_read(configfile);
+
+if(length(length(scenario.NetworkList.network))~=1)
+    error('plot_text does not work for scenarios with multiple networks')
+end
+
+dt = round(2*scenario.NetworkList.network(1).ATTRIBUTE.dt)/2;
+
+%  temp
+outdt = dt/3600;
+clear dt
+
+% density in veh/mile
+density = load(sprintf('%s%s%s_%s_0.txt',outpath,filesep,outprefix,'density'));
+for i=1:length(scenario.NetworkList.network(1).LinkList.link)
+    lgth = scenario.NetworkList.network(1).LinkList.link(i).ATTRIBUTE.length;
+    density(:,i) = density(:,i)/lgth;
+end
+
+% flow in veh/hr
+flow = load(sprintf('%s%s%s_%s_0.txt',outpath,filesep,outprefix,'outflow'));
+flow = flow/outdt;
+
+% speed in mile/hr
+speed = flow./density(1:(end - 1),:);
 
 figure
-plot(X.time(1:end-1)/3600,flow)
-ylabel('Flow in veh/hr')
-xlabel('time [hr]')
+plot(speed)
+title('Speed in [length]/hr')
 
 figure
-plot(X.time/3600,density)
-ylabel('Density in veh/mile')
-xlabel('time [hr]')
+plot(flow)
+title('Flow in veh/hr')
 
-% figure
-% set(pcolor(simdata.speed), 'EdgeAlpha', 0);
-% colorbar;
-% title('Speed in [length]/hr')
-% 
-% figure
-% set(pcolor(flow), 'EdgeAlpha', 0);
-% colorbar;
-% title('Flow in veh/hr')
-% 
-% figure
-% set(pcolor(density), 'EdgeAlpha', 0);
-% colorbar;
-% title('Density in veh/[length]')
+figure
+plot(density)
+title('Density in veh/[length]')
+
+figure
+set(pcolor(speed), 'EdgeAlpha', 0);
+colorbar;
+title('Speed in [length]/hr')
+
+figure
+set(pcolor(flow), 'EdgeAlpha', 0);
+colorbar;
+title('Flow in veh/hr')
+
+figure
+set(pcolor(density), 'EdgeAlpha', 0);
+colorbar;
+title('Density in veh/[length]')
 

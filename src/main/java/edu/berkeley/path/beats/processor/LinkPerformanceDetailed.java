@@ -4,6 +4,7 @@ package edu.berkeley.path.beats.processor;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.torque.TorqueException;
@@ -13,6 +14,7 @@ import com.workingdogs.village.Record;
 
 
 import edu.berkeley.path.beats.om.LinkDataDetailedPeer;
+import edu.berkeley.path.beats.om.LinkDataTotalPeer;
 import edu.berkeley.path.beats.om.LinkPerformanceDetailedPeer;
 
 public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerformanceDetailed {
@@ -37,31 +39,48 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
 		LinkDataDetailed obj = new LinkDataDetailed();
 		
 		long timeDelta =0;
-		double timeDeltaInHours =0.0;
-				
-			LinkDataDetailedPeer.populateObject((Record)data.get(recordNumber), 1, obj);
-			
-			setPrimaryKey(obj.getPrimaryKey());
-			
-			
-			if ( obj.getOutFlow() != null )
-				setVmt(obj.getOutFlow().multiply(BigDecimal.valueOf(linkLength)));
-			
+		double timeDeltaInSeconds =0.0;
+		
+		
+		LinkDataDetailedPeer.populateObject((Record)data.get(recordNumber), 1, obj);
 
-			
-			if ( previousTs > 0 ) timeDelta = getTs().getTime() - previousTs;
-			timeDeltaInHours = timeDelta / 1000.0/60.0/60.0;
-			
-			if ( obj.getDensity() != null )
-				setVht(obj.getDensity().multiply(BigDecimal.valueOf(timeDeltaInHours))); 
-			
-			
-			if ( obj.getSpeed() != null && getVht() !=null && getVmt() !=null )
-				setDelay(PerformanceData.delay(getVht(), getVmt(), obj.getSpeed()));
+		setPrimaryKey(obj.getPrimaryKey());
 
-			
-			setNew(true);
-			save();	
+		if ( previousTs > 0 ) timeDelta = getTs().getTime() - previousTs;
+		timeDeltaInSeconds = timeDelta / 1000.0;
+
+		
+		BigDecimal freeFlowSpeed = LinkDataTotalPeer.retrieveByPK(
+				obj.getNetworkId(), 
+				obj.getLinkId(), 
+				obj.getAppRunId(), 
+				obj.getAppTypeId(), 
+				obj.getTs(), 
+				obj.getAggTypeId(), 
+				obj.getValueTypeId()
+				).getFreeFlowSpeed();		
+		
+		// Equation 3.5 
+		if ( obj.getOutFlow() != null )
+		//	setVmt(new BigDecimal(obj.getOutFlow().doubleValue() * linkLength) );
+			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * linkLength * timeDeltaInSeconds) );
+		else
+			setVmt(new BigDecimal(0));
+		
+		// Equation 3.6
+		if ( obj.getDensity() != null )
+			setVht( new BigDecimal(obj.getDensity().doubleValue() * linkLength * timeDeltaInSeconds) ); 
+		else
+			setVht(new BigDecimal(0));
+		
+		// Equation 3.7
+		if ( obj.getSpeed() != null && getVht() !=null && getVmt() !=null )
+			setDelay(PerformanceData.delay(getVht(), getVmt(), freeFlowSpeed));
+		else
+			setDelay(new BigDecimal(0));
+		
+		setNew(true);
+		save();	
 	
 		return getTs().getTime();
 	}
@@ -150,29 +169,37 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
     	
     	
     	BigDecimal zero = new BigDecimal(0);
+    	ColumnMap[] columns;
     	
 
     	try {
+    		
+    		columns = obj.getTableMap().getColumns();
+    		
 			for (int i=0; i< obj.getTableMap().getColumns().length; i++) {
 
-				if ( obj.getByPosition(i) == null ) {
-					
-					try {
-						obj.setByPosition(i, zero);
-					} catch (TorqueException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	    		if ( columns[i].isPrimaryKey() ||  columns[i].isForeignKey() ) {
+	    			
+	    		} else {
+					if ( obj.getByPosition(i) == null ) {
+						
+						try {
+							obj.setByPosition(i, zero);
+						} catch (TorqueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
+	    		}
 			}
+			
 		} catch (TorqueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-    		   	
+		}  	
 	
     }
     
@@ -246,10 +273,10 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
     			
     				// include key name and value
     				if (columns[i].getColumnName().equals("link_id")) {
-    					str  += " AND id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND id=" + rec.getValue(n).asString() ;	
     				} else 
     				if (columns[i].getColumnName().equals("network_id")) {
-    					str  += " AND network_id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND network_id" + rec.getValue(n).asString() ;	
     				}
     					
     				n++;	

@@ -86,14 +86,14 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	 * </ul>
 	 */
 	protected static enum Type {  
-	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_alinea,
-	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_time_of_day,
-	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_traffic_responsive,
-	  /** see {@link ObjectFactory#createController_CRM_SWARM}				*/ 	CRM_swarm,
-      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_hero,
-      /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_time_of_day,
-      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_pretimed,
-      /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_actuated };
+	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_ALINEA,
+	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
+	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
+	  /** see {@link ObjectFactory#createController_CRM_SWARM}				*/ 	CRM_SWARM,
+      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
+      /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_TOD,
+      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_TOD,
+      /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_Actuated };
 								      
 //	protected static enum QueueControlType	{NULL, queue_override,
 //											       proportional,

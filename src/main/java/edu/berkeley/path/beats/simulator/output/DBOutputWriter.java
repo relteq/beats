@@ -36,6 +36,7 @@ import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
+import edu.berkeley.path.beats.db.BaseTypes;
 import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
@@ -72,7 +73,7 @@ public class DBOutputWriter extends OutputWriterBase {
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
 				for (VehicleTypes db_vt : db_vt_l)
 					for (int i = 0; i < scenario.getNumVehicleTypes(); ++i)
-						if (db_vt.getDescription().equals(scenario.getVehicleTypeNames()[i]))
+						if (db_vt.getName().equals(scenario.getVehicleTypeNames()[i]))
 							db_vehicle_type[i] = db_vt;
 			} catch (TorqueException exc) {
 				logger.error("Failed to load vehicle types for scenario " + db_scenario.getId(), exc);
@@ -98,17 +99,21 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	private Calendar ts = null;
 
+	private static <T extends BaseTypes> T createType(T obj, String name) throws Exception {
+		obj.setName(name);
+		obj.setInUse(Boolean.TRUE);
+		obj.save();
+		return obj;
+	}
+
 	public static ApplicationTypes getApplicationTypes(String application_type) throws Exception {
 		Criteria crit = new Criteria();
-		crit.add(ApplicationTypesPeer.DESCRIPTION, application_type);
+		crit.add(ApplicationTypesPeer.NAME, application_type);
 		@SuppressWarnings("unchecked")
 		List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit);
 		if (db_at_l.isEmpty()) {
-			ApplicationTypes db_at = new ApplicationTypes();
-			db_at.setDescription(application_type);
-			db_at.setInUse(Boolean.TRUE);
-			db_at.save();
-			return db_at;
+			logger.warn("Application type '" + application_type + "' does not exist");
+			return createType(new ApplicationTypes(), application_type);
 		} else {
 			if (1 < db_at_l.size())
 				logger.warn("Found " + db_at_l.size() + " application types '" + application_type + "'");
@@ -118,15 +123,12 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	public static AggregationTypes getAggregationTypes(String aggregation_type) throws Exception {
 		Criteria crit = new Criteria();
-		crit.add(AggregationTypesPeer.DESCRIPTION, aggregation_type);
+		crit.add(AggregationTypesPeer.NAME, aggregation_type);
 		@SuppressWarnings("unchecked")
 		List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit);
 		if (db_at_l.isEmpty()) {
-			AggregationTypes db_at = new AggregationTypes();
-			db_at.setDescription(aggregation_type);
-			db_at.setInUse(Boolean.TRUE);
-			db_at.save();
-			return db_at;
+			logger.warn("Aggregation type '" + aggregation_type + "' does not exist");
+			return createType(new AggregationTypes(), aggregation_type);
 		} else {
 			if (1 < db_at_l.size())
 				logger.warn("Found " + db_at_l.size() + " aggregation types '" + aggregation_type + "'");
@@ -136,15 +138,12 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	public static QuantityTypes getQuantityTypes(String quantity_type) throws Exception {
 		Criteria crit = new Criteria();
-		crit.add(QuantityTypesPeer.DESCRIPTION, quantity_type);
+		crit.add(QuantityTypesPeer.NAME, quantity_type);
 		@SuppressWarnings("unchecked")
 		List<QuantityTypes> db_qt_l = QuantityTypesPeer.doSelect(crit);
 		if (db_qt_l.isEmpty()) {
-			QuantityTypes db_qt = new QuantityTypes();
-			db_qt.setDescription(quantity_type);
-			db_qt.setInUse(Boolean.TRUE);
-			db_qt.save();
-			return db_qt;
+			logger.warn("Quantity type '" + quantity_type + "' does not exist");
+			return createType(new QuantityTypes(), quantity_type);
 		} else {
 			if (1 < db_qt_l.size())
 				logger.warn("Found " + db_qt_l.size() + " quantity types '" + quantity_type + "'");
@@ -185,7 +184,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_simulation_run.setStatus(-1);
 			db_simulation_run.save();
 
-			db_application_type = getApplicationTypes("simulation");
+			db_application_type = getApplicationTypes("simulator");
 			db_aggregation_type_raw = getAggregationTypes("raw");
 			db_quantity_type_mean = getQuantityTypes("mean");
 

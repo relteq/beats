@@ -43,7 +43,7 @@ public class SensorFloating extends Sensor {
 			return;
 		this.myScenario  = myScenario;
 		// this.id = GENERATE AN ID;
-	    this.myType = Sensor.Type.moving_point;
+		// TODO this.myType = ?
 	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
 		

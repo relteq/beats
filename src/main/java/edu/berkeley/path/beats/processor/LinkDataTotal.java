@@ -102,23 +102,29 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
     	
     	
     	BigDecimal zero = new BigDecimal(0);
-    	
+    	ColumnMap[] columns;
 
     	try {
+    		columns = obj.getTableMap().getColumns();
+    		
 			for (int i=0; i< obj.getTableMap().getColumns().length; i++) {
-
-				if ( obj.getByPosition(i) == null ) {
-					
-					try {
-						obj.setByPosition(i, zero);
-					} catch (TorqueException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	    		
+				if ( columns[i].isPrimaryKey() ||  columns[i].isForeignKey() ) {
+	    			
+	    		} else {
+					if ( obj.getByPosition(i) == null ) {
+						
+						try {
+							obj.setByPosition(i, zero);
+						} catch (TorqueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
+	    		}
 			}
 		} catch (TorqueException e) {
 			// TODO Auto-generated catch block
@@ -198,10 +204,10 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
     			
     				// include key name and value
     				if (columns[i].getColumnName().equals("link_id")) {
-    					str  += " AND id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND id=" + rec.getValue(n).asString() ;	
     				} else 
     				if (columns[i].getColumnName().equals("network_id")) {
-    					str  += " AND network_id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND network_id=" + rec.getValue(n).asString() ;	
     				}
     					
     				n++;	

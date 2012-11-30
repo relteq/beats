@@ -82,20 +82,20 @@ public class Cleaner {
 			List<SimulationRuns> db_sr_l = SimulationRunsPeer.doSelect(crit, conn);
 
 			crit.clear();
-			crit.add(ApplicationTypesPeer.DESCRIPTION, "simulation");
+			crit.add(ApplicationTypesPeer.NAME, "simulator");
 			@SuppressWarnings("unchecked")
 			List<ApplicationTypes> db_appt_l = ApplicationTypesPeer.doSelect(crit, conn);
 			if (db_appt_l.isEmpty()) {
-				logger.warn("Application type 'simulation' does not exist");
+				logger.warn("Application type 'simulator' does not exist");
 				return;
 			} else if (1 < db_appt_l.size()) {
-				logger.error("Application type 'simulation' is not unique");
+				logger.error("Application type 'simulator' is not unique");
 				return;
 			}
 			final Long app_type_id = db_appt_l.get(0).getId();
 
 			crit.clear();
-			crit.add(AggregationTypesPeer.DESCRIPTION, "raw");
+			crit.add(AggregationTypesPeer.NAME, "raw");
 			@SuppressWarnings("unchecked")
 			List<AggregationTypes> db_aggt_l = AggregationTypesPeer.doSelect(crit, conn);
 			if (db_aggt_l.isEmpty()) {
