@@ -28,10 +28,12 @@ package edu.berkeley.path.beats.test;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import org.junit.After;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
@@ -65,11 +67,26 @@ public class SimulatorTest {
 		
 	private static String CONF_SUFFIX = ".xml";
 	
+	@After
+	public void clearOutput(){
+		File file = new File(output_folder);        
+        String[] myFiles;      
+        if(file.isDirectory()){  
+            myFiles = file.list();  
+            for (int i=0; i<myFiles.length; i++) {  
+                File myFile = new File(file, myFiles[i]);   
+                myFile.delete();  
+            }  
+         }  
+	} 
+	
 	@Test
 	public void testSimulator() {
 
 		Scenario scenario;
-			
+
+		System.out.println("Test");
+					
 		try {
 			
 			for(String config_name : config_names ){
@@ -115,10 +132,8 @@ public class SimulatorTest {
 		} catch (SiriusException exc) {
 			exc.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		
+		} 		
 	}
 
 }
