@@ -29,15 +29,12 @@ package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/** Base implementation of {@link InterfaceController}.
- * 
- * <p> This is the base class for all controllers contained in a scenario. 
- * It provides a full default implementation of <code>InterfaceController</code>
- * so that extended classes need only implement a portion of the interface.
+/** Base class for controllers. 
+ * Provides a default implementation of <code>InterfaceController</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public abstract class Controller implements InterfaceComponent,InterfaceController {
+public class Controller implements InterfaceComponent,InterfaceController {
 	
 	/** Scenario that contains this controller */
 	protected Scenario myScenario;										       								       
@@ -75,7 +72,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/** Table of parameters. */
 	protected Table table;
 	
-	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
 	 * <ul>
@@ -94,10 +90,6 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
       /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_TOD,
       /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_TOD,
       /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_Actuated };
-								      
-//	protected static enum QueueControlType	{NULL, queue_override,
-//											       proportional,
-//											       proportional_integral  };
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -105,8 +97,8 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 
 	/** @y.exclude */
 	 protected Controller(){}
-	
-	/** @y.exclude */
+
+	 /** @y.exclude */
 	 protected Controller(ArrayList<ScenarioElement> targets){
 		 this.targets = targets;
 		 this.control_maxflow  = new Double [targets.size()];
@@ -208,7 +200,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
-
+		
 	/** @y.exclude */
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType){
 		this.myScenario = myScenario;
@@ -253,6 +245,18 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	}
 
 	/** @y.exclude */
+	@Override
+	public void populate(Object jaxbobject) {
+	}
+
+	/** @y.exclude */
+	@Override
+	public void update() throws SiriusException {
+	}
+
+	/** @y.exclude */
+	@Override
+	/** @y.exclude */
 	public void validate() {
 		
 		// check that type was read correctly
@@ -277,11 +281,27 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	}
 
 	/** @y.exclude */
+	@Override
 	public void reset() {
 		//switch on conroller if it is always on by default.
 		if (activationTimes==null)
 			ison = true;
 	}
+
+	/** @y.exclude */
+	@Override
+	public boolean register() {
+		return false;
+	}
+
+	/** @y.exclude */
+	@Override
+	public boolean deregister() {
+		return false;
+	}
+
+
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -380,6 +400,7 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		}
 		
 	}
+
 	
 	
 }

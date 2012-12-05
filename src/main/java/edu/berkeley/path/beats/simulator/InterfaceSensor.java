@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** Interface implemented by all sensors.
+/** Sensor interface.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
@@ -67,7 +67,6 @@ public interface InterfaceSensor {
 	 */
 	public double getOccupancy(int ensemble);
 	
-	
 	/** Measured flow per vehicle type in veh/sec.
 	 * 
 	 * <p> The output array contains measured flows.
@@ -76,7 +75,6 @@ public interface InterfaceSensor {
 	 * 
 	 * @return Array of flows.
 	 */	
-	
 	public Double[] getFlowInVPS(int ensemble);
 	
 	/** Measured total flow in veh/sec.
