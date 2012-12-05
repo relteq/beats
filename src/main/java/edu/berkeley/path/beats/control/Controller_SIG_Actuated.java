@@ -43,32 +43,4 @@ public class Controller_SIG_Actuated extends Controller {
 		// TODO Auto-generated constructor stub
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
-	/////////////////////////////////////////////////////////////////////
-	
-	@Override
-	public void populate(Object jaxbobject) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean register() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean deregister() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

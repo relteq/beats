@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.control;
 
 import java.util.Vector;
 
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -67,7 +68,10 @@ public class Controller_SIG_Pretimed extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -194,16 +198,6 @@ public class Controller_SIG_Pretimed extends Controller {
 
 		for(int i=0;i<plan.length;i++)
 			plan[i].reset();
-	}
-
-	@Override
-	public boolean register() {
-		return true; // signal controllers don't have to register, because the signal does this for them.
-	}
-
-	@Override
-	public boolean deregister() {		
-		return false;  // signal controllers cannot deregister, because the signal does this for them.
 	}
 	
 }

@@ -47,28 +47,4 @@ public class SensorFloating extends Sensor {
 	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
 		
-	/////////////////////////////////////////////////////////////////////
-	// InterfaceSensor
-	/////////////////////////////////////////////////////////////////////	
-
-	@Override
-	public void populate(Object jaxbobject) {
-	}
-	
-	@Override
-	public void validate() {
-	}
-
-	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

@@ -26,6 +26,11 @@
 
 package edu.berkeley.path.beats.simulator;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 @SuppressWarnings("serial")
 public class SiriusException extends Exception {
 

@@ -33,6 +33,7 @@ import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.control.Controller_CRM_HERO;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -124,7 +125,10 @@ public class Controller_CRM_HERO extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -297,8 +301,6 @@ public class Controller_CRM_HERO extends Controller {
 		}
 	}
 	
-	
-	
 	@Override
 	public void validate() {
 		
@@ -365,11 +367,6 @@ public class Controller_CRM_HERO extends Controller {
 		}
 		
 		
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
 	}
 
 	@Override
@@ -498,7 +495,6 @@ public class Controller_CRM_HERO extends Controller {
 		}
 	return controllersOrdered;
 	}	
-	
 	
 	/////////////////////////////////////////////////////////////////////
 	// Methods related to HERO Algorithm 

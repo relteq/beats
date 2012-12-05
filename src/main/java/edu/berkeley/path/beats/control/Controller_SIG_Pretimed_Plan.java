@@ -180,6 +180,4 @@ public class Controller_SIG_Pretimed_Plan extends edu.berkeley.path.beats.jaxb.P
 		}
 	}
 
-	
-	
 }
