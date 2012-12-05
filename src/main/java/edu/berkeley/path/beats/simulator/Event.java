@@ -84,12 +84,14 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** @y.exclude */
 	@Override
 	/** @y.exclude */
 	public void populate(Object jaxbobject) {
 	}
 
+	/** @y.exclude */
 	@Override
 	/** @y.exclude */
 	public void validate() {
@@ -110,12 +112,14 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 
 	}
 
+	/** @y.exclude */
 	@Override
 	/** @y.exclude */
 	public void reset() {
 		return;
 	}
 
+	/** @y.exclude */
 	@Override
 	/** @y.exclude */
 	public void update() {

@@ -129,7 +129,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 				istablevalid=false;					
 		}			
 		
-		if (todActivationTimes[0]>this.myStartTime())
+		if (todActivationTimes[0]>this.getFirstStartTime())
 			istablevalid=false;
 		}
 	

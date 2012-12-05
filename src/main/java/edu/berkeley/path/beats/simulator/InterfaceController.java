@@ -45,7 +45,7 @@ public interface InterfaceController {
 	 */
 	public boolean register();
 	
-	/** deRegister the controller with its targets. 
+	/** Deregister the controller with its targets. 
 	 * 
 	 * <p> All controllers must deregister with their targets when they are no longer active
 	 *  This is to prevent clashes, in which two or more controllers access the same variable at different simulation periods 

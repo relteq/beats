@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-
 /** Base class for sensors. 
  * Provides a default implementation of <code>InterfaceSensor</code>.
  *
@@ -69,57 +68,43 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
 
-	/** Default implementation of {@link InterfaceSensor#getDensityInVPM(int ensemble)} 
-	 * @return <code>null</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getOccupancy(int ensemble)} 
-	 * @return <code>Double.NaN</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public double getOccupancy(int ensemble) {
 		return Double.NaN;
 	}
-	
-	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVPM(int ensemble)} 
-	 * @return <code>Double.NaN</code>
-	 * */
+
+	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVPM(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getFlowInVPS(int ensemble)}
-	 * @return <code>null</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
 		return null;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getTotalFlowInVPS(int ensemble)}
-	 * @return <code>Double.NaN</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getSpeedInMPS(int ensemble)}
-	 * @return <code>Double.NaN</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public double getSpeedInMPS(int ensemble) {
 		return Double.NaN;
 	}
-	
-	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVeh(int ensemble)} 
-	 * @return <code>Double.NaN</code>
-	 * */
+
+	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;
@@ -129,24 +114,17 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// API
 	/////////////////////////////////////////////////////////////////////
 
-	/** The scenario that contains this sensor.
-	 * @return id String
-	 * */
+	/** The scenario that contains this sensor. */
 	public Scenario getMyScenario() {
 		return myScenario;
 	}
 
-	/** Sensor type. 
-	 * @return type _Sensor.Type
-	 * */
+	/** Sensor type. */
 	public Sensor.Type getMyType() {
 		return myType;
 	}
 
-	/** Current link where the sensor is located. 
-	 * <p> This value may change in time if the sensor is mobile.
-	 * @return link  _Link
-	 * */
+	/** Link where the sensor is located. */
 	public Link getMyLink() {
 		return myLink;
 	}

@@ -175,25 +175,31 @@ public class Controller implements InterfaceComponent,InterfaceController {
 	
 	// Returns the start and end times of the controller.
 	
-	protected double myStartTime(){
+   	/** Returns the first start time of the controller. This is the minimum of the start
+   	 * times of all activation periods of the controller. 
+   	 * @return A double with the start time for the controller. 
+   	 */
+	protected double getFirstStartTime(){
 		double starttime=myScenario.getTimeStart();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
 				starttime=activationTimes.get(ActTimesIndex).getBegintime();
 			else
 				starttime=Math.min(starttime,activationTimes.get(ActTimesIndex).getBegintime());
-		
 		return starttime;
 	}
 	
-	protected double myEndTime(){
+   	/** Returns the last end time of the controller. This is the maximum of the end
+   	 * times of all activation periods of the controller. 
+   	 * @return A double with the end time for the controller. 
+   	 */
+	protected double getlastEndTime(){
 		double endtime=myScenario.getTimeEnd();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
 				endtime=activationTimes.get(ActTimesIndex).getEndtime();
 			else
 				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
-		
 		return endtime;
 	}
 	
@@ -300,33 +306,39 @@ public class Controller implements InterfaceComponent,InterfaceController {
 		return false;
 	}
 
-
-
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+   	/** Get the ID of the controller  */
 	public String getId() {
 		return id;
 	}	
 
+   	/** Get the type of the controller.  */
 	public Controller.Type getMyType() {
 		return myType;
 	}
 
+   	/** Get list of controller targets  */
 	public ArrayList<ScenarioElement> getTargets() {
 		return targets;
 	}
 
+   	/** Get list of controller feedback elements  */
 	public ArrayList<ScenarioElement> getFeedbacks() {
 		return feedbacks;
 	}
-	
+
+   	/** Get the controller update period in [seconds]  */
 	public double getDtinseconds() {
 		return dtinseconds;
 	}
 
+   	/** Get the on/off value of the controller 
+   	 * @return <code>true</code> if the controller is currently on, <code>off</code> otherwise. 
+   	 */
 	public boolean isIson() {
 		return ison;
 	}
@@ -401,6 +413,4 @@ public class Controller implements InterfaceComponent,InterfaceController {
 		
 	}
 
-	
-	
 }
