@@ -36,6 +36,11 @@ import org.apache.torque.TorqueException;
 import edu.berkeley.path.beats.om.DefSimSettings;
 import edu.berkeley.path.beats.om.DefSimSettingsPeer;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public final class Runner {
 
 	private static String configfilename;

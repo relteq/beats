@@ -52,11 +52,10 @@ import edu.berkeley.path.beats.sensor.*;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
  * <p>
- * Use the static methods in this class to load a scenario from XML, and to programmatically generate events, controllers, sensors, and scenario elements.
+ * Use the static methods in this class to load a scenario and to programmatically generate events, controllers, sensors, and scenario elements.
  * 
-* @author Gabriel Gomes
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-@SuppressWarnings("restriction")
 public final class ObjectFactory {
 
 	/////////////////////////////////////////////////////////////////////

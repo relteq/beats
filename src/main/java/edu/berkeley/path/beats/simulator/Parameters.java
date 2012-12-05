@@ -26,7 +26,12 @@
 
 package edu.berkeley.path.beats.simulator;
 
+/** XXX. 
+ * YYY
+ *
+*/
 public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
+	
 	/**
 	 * Tests whether a parameter with the given name exists
 	 * @param name
@@ -52,4 +57,5 @@ public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
 		}
 		return null;
 	}
+	
 }

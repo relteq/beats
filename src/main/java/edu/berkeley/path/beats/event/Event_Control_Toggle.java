@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.event;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
@@ -62,6 +63,9 @@ public class Event_Control_Toggle extends Event {
 	// InterfaceEvent
 	/////////////////////////////////////////////////////////////////////
 
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;

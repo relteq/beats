@@ -34,10 +34,6 @@ import java.util.HashMap;
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
-
-	public static enum CommandType {hold,forceoff};
-	protected static enum BulbColor {GREEN,YELLOW,RED,DARK};
-	public static enum NEMA {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 	
 	protected HashMap<NEMA,SignalPhase> nema2phase;
 
@@ -53,6 +49,30 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	
 	protected ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
 
+	/** Commands that may be issued by a controller to each signal phase.  */
+	public static enum CommandType {
+		/** Activate this phase **/		hold,
+		/** Deactivate this phase **/ 	forceoff };
+	
+	/** Phase indications. */	
+	protected static enum BulbColor {
+		/** Green light **/		GREEN,
+		/** Yellow light **/	YELLOW,
+		/** Red light **/		RED,
+		/** Bulb off **/		DARK };
+		
+	/** NEMA phase codes */
+	public static enum NEMA {
+		/** null **/	NULL,
+		/** EB left **/		_1,
+		/** WB through **/	_2,
+		/** SB left **/		_3,
+		/** NB through **/	_4,
+		/** WB left **/		_5,
+		/** EB through **/	_6,
+		/** NB left **/		_7,
+		/** SB through **/	_8};
+	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -398,6 +418,15 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		return completedPhases;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// internal class
+	/////////////////////////////////////////////////////////////////////
+
+	/** XXX. 
+	 * YYY
+	 *
+	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
+	 */
 	@SuppressWarnings("rawtypes")
 	public static class Command implements Comparable {
 		public Signal.CommandType type;
@@ -479,10 +508,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		
 	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// internal class
-	/////////////////////////////////////////////////////////////////////
-	
+	/** XXX. 
+	 * YYY
+	 *
+	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
+	 */
 	public class PhaseData{
 		public NEMA nema;
 		public double starttime;
@@ -497,6 +527,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	// Each signal communicates with links via a PhaseController.
 	// Phase controller does two things: a) it registers the signal control,
 	// and b) it implements the phase indication. 
+	/** XXX. 
+	 * YYY
+	 *
+	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
+	 */
 	protected class PhaseController extends Controller {
 
 		private HashMap<Link,Integer> target2index;
@@ -574,6 +609,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		}
 		
 	}
+
 }
 
 

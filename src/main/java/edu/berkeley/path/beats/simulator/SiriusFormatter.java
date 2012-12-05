@@ -31,6 +31,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public class SiriusFormatter {
 
 	public static String csv(Double [] V,String delim){
