@@ -46,6 +46,7 @@ public class Lister {
 
 	public static void listScenarios() throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
+		
 		try {
 			Criteria crit = new Criteria();
 			crit.addAscendingOrderByColumn(ScenariosPeer.ID);

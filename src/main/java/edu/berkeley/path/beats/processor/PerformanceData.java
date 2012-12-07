@@ -18,7 +18,7 @@ public class PerformanceData extends AggregateData {
 	public static void doPerformance(String[] arguments) throws TorqueException, IOException, DataSetException  {
 			
 		doPerformance("link_performance_total", arguments);
-		doPerformance("link_performance_detailed", arguments);
+//		doPerformance("link_performance_detailed", arguments);
 		
 	}
 	
@@ -168,6 +168,8 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 
 			double x = vht.doubleValue() - vmt.doubleValue()/freeFlowSpeed.doubleValue();
 			
+			if ( x <1E-3 ) x = 0.0; // assuming that delay less than 1 ms does not make sense 
+			
 			return new BigDecimal(x);
 		}
 		
@@ -186,9 +188,10 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 
 		if ( capacity.doubleValue() <= 1E-10 )  return null;
 		else {
-			// need to ad logic for  v and V
+
+			// According to Alex K, out_flow is per output time delta not per sec
 			
-			return  (  BigDecimal.valueOf(( 1.0 -  (out_flow.doubleValue() / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0 ) );
+			return  (  BigDecimal.valueOf(( 1.0 -  (out_flow.doubleValue()/timeDelta / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0 ) );
 			
 			}
 		}
@@ -393,7 +396,8 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		public static BigDecimal actualTravelTime(int recordNumber, List speedData, double linkLength, int speedColumn, int tsColumn ) {
 			
 			double distance =0.0;
-			BigDecimal v;		
+			BigDecimal v;
+			double remainingTravelTime;
 		
 			try {
 				
@@ -404,10 +408,17 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 					 
 					 if ( v != null  ) distance += v.doubleValue() * getRawTimeDeltaInSeconds(speedData , i, tsColumn);								
 					
-					if ( distance >= linkLength ) {
+					if ( distance >= linkLength ) {						
 						
-						// stop calculation.  Equation 3.4 can outputs zero as a valid travel time.  Need to review the equation 
-						return BigDecimal.valueOf(getRawTimeDeltaInSeconds(speedData, recordNumber, i, tsColumn));
+						if ( v.doubleValue()>1E-10 ) {			
+							
+							remainingTravelTime = (distance - linkLength)/v.doubleValue();
+						}
+						else 
+							remainingTravelTime = 0.0;
+						
+						// stop calculation.  
+						return BigDecimal.valueOf(getRawTimeDeltaInSeconds(speedData, recordNumber, i, tsColumn) + remainingTravelTime);
 						
 					}
 				}

@@ -62,14 +62,15 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
 		
 		// Equation 3.5 
 		if ( obj.getOutFlow() != null )
-		//	setVmt(new BigDecimal(obj.getOutFlow().doubleValue() * linkLength) );
-			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * linkLength * timeDeltaInSeconds) );
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * /* linkLength */ timeDeltaInSeconds) );
 		else
 			setVmt(new BigDecimal(0));
 		
 		// Equation 3.6
 		if ( obj.getDensity() != null )
-			setVht( new BigDecimal(obj.getDensity().doubleValue() * linkLength * timeDeltaInSeconds) ); 
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVht( new BigDecimal(obj.getDensity().doubleValue() * /* linkLength */ timeDeltaInSeconds) ); 
 		else
 			setVht(new BigDecimal(0));
 		

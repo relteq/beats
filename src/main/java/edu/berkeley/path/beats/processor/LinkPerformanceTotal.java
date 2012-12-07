@@ -50,14 +50,15 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
 		
 		// Equation 3.5 
 		if ( obj.getDensity() != null && obj.getSpeed() != null)
-		//	setVmt(new BigDecimal(obj.getOutFlow().doubleValue() * linkLength) );
-			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * linkLength * timeDeltaInSeconds) );	
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * /* linkLength */ timeDeltaInSeconds) );	
 		else
 			setVmt(new BigDecimal(0));
 		
 		// Equation 3.6
 		if ( obj.getDensity() != null )
-			setVht( new BigDecimal(obj.getDensity().doubleValue() * linkLength * timeDeltaInSeconds) ); 
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVht( new BigDecimal(obj.getDensity().doubleValue() * /* linkLength */ timeDeltaInSeconds) ); 
 		else
 			setVht(new BigDecimal(0));
 		
@@ -72,19 +73,21 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
 			setProductivityLoss(BigDecimal.valueOf(0.0));
 		else {
 				
-			if ( obj.getOutFlow() != null && obj.getCapacity() != null)
+			if ( obj.getOutFlow() != null && obj.getCapacity() != null && obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) != 0  )
 				setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) );
 			else
 				setProductivityLoss(new BigDecimal(0));
 		}	
 			
+		
+		if ( obj.getCapacity().doubleValue() > 0 && obj.getSpeed() != null)
+			setVcRatio(new BigDecimal(obj.getSpeed().doubleValue() / obj.getCapacity().doubleValue()) );
+		else
+			setVcRatio(new BigDecimal(0) );
 /*
 
-    /** The value for the los field 
-    private BigDecimal los;
+    The value for the los field: need equation
 
-    /** The value for the vcRatio field 
-    private BigDecimal vcRatio; 
  */
 						
 		setTravelTime(PerformanceData.actualTravelTime(recordNumber, data, linkLength, obj.getColumnNumber("speed"), obj.getColumnNumber("ts") ));			

@@ -41,9 +41,9 @@ public class AggregateData extends OutputToCSV {
 	 */
 	public static void doAggregateAllIntervals(String table, String[] arguments) throws IOException, TorqueException, DataSetException {
 		
-		doAggregate(table, arguments, "1min");
-		doAggregate(table, arguments, "5min");
-		doAggregate(table, arguments, "15min");
+//		doAggregate(table, arguments, "1min");
+//		doAggregate(table, arguments, "5min");
+//		doAggregate(table, arguments, "15min");
 		doAggregate(table, arguments, "1hour");
 		doAggregate(table, arguments, "1day");
 		doAggregate(table, arguments, "total");
@@ -150,7 +150,7 @@ public class AggregateData extends OutputToCSV {
 		
 		CleanPreviousAggregation(table, arguments,  aggregationId);
 		
-		String aggregationColumns = getAggregationColumns(table);
+		String aggregationColumns = listToStringForAggregation(getAggregationColumns(table));
 		
 		long readStartTime=0, readAverage=0, numOfReads=0;
 		 
@@ -312,36 +312,29 @@ public static long getAggregationInMilliseconds(String aggregation) {
 	 * @throws Exception
 	 */
 			
-	public static String getAggregationColumns(String table )  {
+	public static ArrayList<String> getAggregationColumns(String table )  {
 		
 		if ( table.equals("link_data_total") ) {
-	
-			LinkDataTotal temp = new LinkDataTotal();
 			
-			return listToString(temp.getColumnsForAggreagtion());			
+			return (new LinkDataTotal()).getColumnsForAggreagtion();			
 				
 		} else
 		if ( table.equals("link_data_detailed") ) {
 
-			LinkDataDetailed temp = new LinkDataDetailed();
-			
-			return listToString(temp.getColumnsForAggreagtion());	
+			return (new LinkDataDetailed()).getColumnsForAggreagtion();	
 			
 		} else
 		if ( table.equals("link_performance_detailed") ) {
-
-			LinkPerformanceDetailed temp = new LinkPerformanceDetailed();
 			
-			return listToString(temp.getColumnsForAggreagtion());			
+			return (new LinkPerformanceDetailed()).getColumnsForAggreagtion();			
 			
 		} else
 		if ( table.equals("link_performance_total") ) {
 			
-			LinkPerformanceTotal temp = new LinkPerformanceTotal();
-			
-			return listToString(temp.getColumnsForAggreagtion());				} 
+			return (new LinkPerformanceTotal()).getColumnsForAggreagtion();				
+		} 
 		
-		return "*";
+		return null;
 	}
 	
 	/**
@@ -530,13 +523,35 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 		
 	}
 	
-	  
 	   /**
-	    * Convert list to a command usable in a select query
+	    * Convert list to a command usable in a select query for report
 	    * @param colList
 	    * @return String
 	    */
 	   public static String listToString(ArrayList<String> colList ) {
+		   
+		   if ( colList==null ) return " * ";
+		   
+		   String str = new String("");
+		
+		   for (int i=0; i<colList.size(); i++) {
+			   
+			   if ( i>0 ) str += ",";
+			   str += colList.get(i);
+			   
+		   }
+	 		   	   
+		   return str;	   
+	   }
+	   
+	   /**
+	    * Convert list to a command usable in a select query for aggregation
+	    * @param colList
+	    * @return String
+	    */
+	   public static String listToStringForAggregation(ArrayList<String> colList ) {
+		   
+		   if ( colList==null ) return " * ";
 		   
 		   String str = new String("");
 		

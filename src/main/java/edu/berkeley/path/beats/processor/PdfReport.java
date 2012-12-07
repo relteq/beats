@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
@@ -29,6 +30,9 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import edu.berkeley.path.beats.db.OutputToCSV;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -39,7 +43,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 
-public class PdfReport {
+public class PdfReport extends AggregateData {
+
 
 	private static Font headFont = new Font(Font.FontFamily.TIMES_ROMAN, 24,
 			Font.BOLD);
@@ -130,10 +135,15 @@ public class PdfReport {
     
 	public void outputPdf(String table) {
 		
+		AggregateData.reportToStandard("Report request: " + "report_request.xml" );
+		
 		ReportRequest rr = new  ReportRequest();
 		rr.readXMLFile("report_request.xml");
+
 		
+
 		try {
+		
 			Document document = new Document();
 			//PdfWriter.getInstance(document, new FileOutputStream(table+".pdf"));
 			
@@ -145,12 +155,21 @@ public class PdfReport {
 	        
 			document.open();
 			addMetaData(document);
-			addTitlePage(document, table);
-			addContent(document, table);
+			addTitlePage(document, rr);
+			
+			if ( rr.getDetailed() ) {
+				addContent(document, "link_data_detailed", rr);
+				addContent(document, "link_performance_detailed", rr);
+			} else {
+				addContent(document, "link_data_total", rr);
+				addContent(document, "link_performance_total", rr);
+			}
+			
 			document.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	// iText allows to add metadata to the PDF which can be viewed in your Adobe
@@ -186,7 +205,7 @@ public class PdfReport {
 		return p;
 	}
 
-	private static void addTitlePage(Document document, String table) throws DocumentException {
+	private static void addTitlePage(Document document, ReportRequest rr) throws DocumentException {
 		
 		Paragraph preface = new Paragraph();
 		
@@ -200,6 +219,7 @@ public class PdfReport {
 		preface.add(addCenter("INTEGRATED CORRIDOR MANAGEMENT PROJECT", catFont));
 
 		addEmptyLine(preface, 1);
+		addEmptyLine(preface, 3);
 		
 		//Date
 		
@@ -207,31 +227,54 @@ public class PdfReport {
 		preface.add(addCenter("Report generated: " + new java.sql.Timestamp(today.getTime()), smallBold));
 		
 		addEmptyLine(preface, 3);
+
 		
-		preface.add(addCenter("Tables used for this report: " + table, smallBold));
+		preface.add(addCenter("Tables used for this report: ", smallBold));
+		if ( rr.getDetailed() ) {
+				preface.add(addCenter("       - link_data_total", smallBold));
+				preface.add(addCenter("       - link_performance_total", smallBold));
+		} 
+		else {
+			preface.add(addCenter("       - link_data_detailed", smallBold));
+			preface.add(addCenter("       - link_performance_detailed", smallBold));
+		}
 
 		addEmptyLine(preface, 8);
-
+		
+		if ( rr.getDetailed() ) 
+			preface.add(addCenter("This is a color document", smallBold));
+		else
+			preface.add(addCenter("This is a B&W document", smallBold));
+		
 		document.add(preface);
 		
 		// Start a new page
 		document.newPage();
 	}
 
-	private static void addContent(Document document, String table) throws DocumentException, TorqueException, DataSetException, IOException {
+	private static void addContent(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
 		
+		String query;
 		
-		AggregateData.reportToStandard("Report for table: " +table);
-
+		reportToStandard("Report for table: " +table);
+	
+		rr.setChartId(0);
 		
 		// Get a list of column names
-		java.util.List listOfColumnNames =  BasePeer.executeQuery("SELECT COLUMNNAME FROM SYS.SYSCOLUMNS WHERE REFERENCEID IN (SELECT TABLEID FROM SYS.SYSTABLES WHERE TABLENAME=\'" + table.toUpperCase()  + "\' ) ORDER BY COLUMNNUMBER ASC");
-		AggregateData.reportToStandard("SELECT COLUMNNAME FROM SYS.SYSCOLUMNS WHERE REFERENCEID IN (SELECT TABLEID FROM SYS.SYSTABLES WHERE TABLENAME=\'" + table.toUpperCase()  + "\' ) ORDER BY COLUMNNUMBER ASC");
+		//@SuppressWarnings("rawtypes")
+		//java.util.List listOfColumnNames =  BasePeer.executeQuery("SELECT COLUMNNAME FROM SYS.SYSCOLUMNS WHERE REFERENCEID IN (SELECT TABLEID FROM SYS.SYSTABLES WHERE TABLENAME=\'" + table.toUpperCase()  + "\' ) ORDER BY COLUMNNUMBER ASC");
+		//reportToStandard("SELECT COLUMNNAME FROM SYS.SYSCOLUMNS WHERE REFERENCEID IN (SELECT TABLEID FROM SYS.SYSTABLES WHERE TABLENAME=\'" + table.toUpperCase()  + "\' ) ORDER BY COLUMNNUMBER ASC");
 		
-		// Get a list of keys 	
-			
-		java.util.List listOfKeys = BasePeer.executeQuery("select distinct " + AggregateData.getListOfKeys(table) + " from "  + table + " where aggregation=\'15min\'");
-		AggregateData.reportToStandard("Unique key combinations: " + listOfKeys.size());
+		// Get a list of keys 
+		
+		query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(table) + " from "  + table, rr.getAggregation()) ,rr.getContent() );
+
+		ArrayList<String> listOfColumnNames;
+		
+		@SuppressWarnings("rawtypes")
+		java.util.List listOfKeys = BasePeer.executeQuery(query);
+		
+		reportToStandard("Unique key combinations: " + listOfKeys.size());
 
 		for (int i=0; i < listOfKeys.size(); i++ ) {
 			
@@ -239,54 +282,62 @@ public class PdfReport {
 			
 			contentPage.add(addLeft("TABLE: " + table.toUpperCase(), subFont));
 			
-			String query = AggregateData.setKeys("select COUNT(ts) from " + table +" WHERE aggregation=\'15min'", table, (Record)listOfKeys.get(i) );
+			//query = AggregateData.setKeys("select COUNT(ts) from " + table +" WHERE aggregation=\'15min'", table, (Record)listOfKeys.get(i) );
 	
+			//ArrayList<String> t ;
+			//t.
+			//if (  (  (Record)(BasePeer.executeQuery(query).get(0))  ).getValue(1).asInt()  > 0 ) {
 			
-			if (  (  (Record)(BasePeer.executeQuery(query).get(0))  ).getValue(1).asInt()  > 0 ) {
+			contentPage.add( addLeft(formatKeys( AggregateData.setKeys("", table, (Record)listOfKeys.get(i)) ), subFont ) );
+			contentPage.add( addLeft(" aggregation="+rr.getAggregation(), subFont ) );
+
+			addEmptyLine(contentPage, 1);
 			
-				contentPage.add( addLeft(formatKeys( AggregateData.setKeys("", table, (Record)listOfKeys.get(i)) ), subFont ) );
-				contentPage.add( addLeft(" aggregation=15min", subFont ) );
-
-				addEmptyLine(contentPage, 1);
-				
-				query =  AggregateData.setKeys("select * from " + table + " WHERE aggregation=\'15min\'", table, (Record)listOfKeys.get(i) );				
-				
-				java.util.List data = BasePeer.executeQuery(query);
-				//AggregateData.reportToStandard("Size " + data.size() );
-				
-				// Add generated chart and table
-				contentPage.add(createTable(listOfColumnNames, data));
-
-			} 
+			listOfColumnNames = getAggregationColumns(table);
+			
+			String columns = "ts, " + listToString( listOfColumnNames);
+			query =  AggregateData.setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
+		
+			reportToStandard("Query: " + query);
+			
+			java.util.List data = BasePeer.executeQuery(query);
+			//AggregateData.reportToStandard("Size " + data.size() );
+			
+			// Add generated chart and table
+			if (table == "link_data_total") {
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("in_flow", "out_flow")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("speed", "free_flow_speed", "critical_speed", "congestion_wave_speed")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("density", "jam_density", "capasity","capasity_drop")), listOfColumnNames, data, rr));
+			}
+			else if (table == "link_data_detailed") {
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("in_flow", "out_flow")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("speed")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("density")), listOfColumnNames, data, rr));				
+			}
+			else if (table == "link_performance_total") {
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("travel_time","delay")), listOfColumnNames, data, rr));
+//				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("los")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("vc_ratio")), listOfColumnNames, data, rr));
+			}
+			else if (table == "link_performance_detailed") {
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr));
+				contentPage.add(createTable(new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr));				
+			}
 						
 			// Now add all this to the document
 			document.add(contentPage);
 			document.newPage();
 		}
-
 		
 	}
 	
-	/**
-	 * returns column number from the list
-	 * @param names
-	 * @param name
-	 * @return
-	 * @throws DataSetException
-	 */
-	public static int getColumnNumber(java.util.List names, String name) throws DataSetException {
-		
-		for (int i=0; i<names.size(); i++) {
-			if ( name.equals(  ((Record)names.get(i)).getValue(1).asString() ) ) {
-				return i;
-			}
-		}
-		
-		return 0;
-	}
 
 	/**
-	 * remove ANS=D from the key string
+	 * remove ANDs from the key string
 	 * @param s
 	 * @return formatted string
 	 */
@@ -306,17 +357,29 @@ public class PdfReport {
 		return s;
 	}
 	
-	private static Paragraph createTable(java.util.List listOfColumnNames, java.util.List data)
+	private static Paragraph createTable(ArrayList<String> useTheseColumns, ArrayList<String> listOfColumnNames, java.util.List data, ReportRequest rr)
 			throws DataSetException, DocumentException, IOException {
 
 		XYSeriesCollection chartData = new XYSeriesCollection();
 		java.util.List<XYSeries> curves = new ArrayList<XYSeries>();
 		Paragraph section = new Paragraph();
 		
-		int numberOfColumns = 6;
-		PdfPTable table = new PdfPTable(numberOfColumns);
+		PdfPTable table = new PdfPTable(useTheseColumns.size()+1);
+		int[] colunmNumber = new int[useTheseColumns.size()+1];
+		float[] tableWidth = new float[useTheseColumns.size()+1];
 		
-		table.setTotalWidth(new float[] {80f,48f,48f, 48f,48f,48f});
+		tableWidth[0]= 80f;
+		colunmNumber[0] = 1; 	// this is to indicate the position of the time stamp in the select statement results 
+								// ts must be at the first position
+								// select result record data numbering starts at 1 , not zero
+		
+		for (int i=0; i<useTheseColumns.size(); i++) {
+			
+			tableWidth[i+1] = 40f;
+			colunmNumber[i+1] = listOfColumnNames.indexOf(useTheseColumns.get(i)) + 2;
+		}
+		
+		table.setTotalWidth(tableWidth);
 
 		
 		// t.setBorderColor(BaseColor.GRAY);
@@ -327,9 +390,9 @@ public class PdfReport {
 
 		table.addCell(new PdfPCell(new Phrase("Time Stamp",subFont)));
 
-		for (int i=0; i<numberOfColumns-1; i++ ) {
+		for (int i=0; i<useTheseColumns.size(); i++ ) {
 			
-			String name = new String(((Record)listOfColumnNames.get(i+5)).getValue(1).asString().toLowerCase());
+			String name = useTheseColumns.get(i);
 			table.addCell(new PdfPCell(new Phrase(name,subFont)));
 			curves.add(i,new XYSeries(name) );
 		}
@@ -337,16 +400,18 @@ public class PdfReport {
 		table.setHeaderRows(1);
 
 		// Get first time stamp in milliseconds
-		long startOfTheChart = ((Record)data.get(0)).getValue(getColumnNumber(listOfColumnNames,"TS")+1).asTimestamp().getTime();
+		// ts must be the first in the column list
+		
+		long startOfTheChart = ((Record)data.get(0)).getValue(1).asTimestamp().getTime();
 		
 		for (int row=0; row< data.size(); row++) {
 			
-			table.addCell(new PdfPCell(new Phrase(((Record)data.get(row)).getValue(getColumnNumber(listOfColumnNames,"TS")+1).asString().toLowerCase(),subFont)));
-			long t = ((Record)data.get(row)).getValue(getColumnNumber(listOfColumnNames,"TS")+1).asTimestamp().getTime();
+			table.addCell(new PdfPCell(new Phrase(((Record)data.get(row)).getValue(1).asString().toLowerCase(),subFont)));
+			long t = ((Record)data.get(row)).getValue(1).asTimestamp().getTime();
 			
-			for (int i=0; i<numberOfColumns-1; i++ ) {
+			for (int i=0; i<useTheseColumns.size(); i++ ) {
 				
-				BigDecimal d = ((Record)data.get(row)).getValue(i+6).asBigDecimal();
+				BigDecimal d = ((Record)data.get(row)).getValue(colunmNumber[i+1]).asBigDecimal();
 				
 				if ( d == null ) {
 					
@@ -366,14 +431,14 @@ public class PdfReport {
 			}	
 		}
 		
-		for (int i=0; i<numberOfColumns-1; i++ ) {
+		for (int i=0; i<useTheseColumns.size(); i++ ) {
 			
 			chartData.addSeries(curves.get(i));
 		}
 		
 		section.add(addCenter("CHART", subFont));
 		addEmptyLine(section, 1);
-		section.add(createChart(chartData));
+		section.add(createChart(chartData, rr));
 		addEmptyLine(section, 1);
 		section.add(addCenter("DATA", subFont));
 		addEmptyLine(section, 1);
@@ -391,7 +456,7 @@ public class PdfReport {
 	 * @throws IOException 
 	 * @throws BadElementException 
 	 */
-	private static Paragraph createChart(XYSeriesCollection chartData) throws IOException, BadElementException {
+	private static Paragraph createChart(XYSeriesCollection chartData, ReportRequest rr) throws IOException, BadElementException {
 		
 		Paragraph section = new Paragraph();
 		
@@ -414,7 +479,7 @@ public class PdfReport {
 	        chart.getXYPlot().getDomainAxis().setLabelFont( chart.getXYPlot().getDomainAxis().getLabelFont().deriveFont(new Float(12f)) );
 	        chart.getXYPlot().getRenderer().setSeriesOutlineStroke(1,  new BasicStroke(10.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 50, new float[] { 1f, 2f }, 0));
 	        chart.getXYPlot().getRangeAxis().setLabelFont( chart.getXYPlot().getRangeAxis().getLabelFont().deriveFont(new Float(14f)) );
-	        chart.getXYPlot().getLegendItems().get(1).setLabelFont( chart.getXYPlot().getRangeAxis().getLabelFont().deriveFont(new Float(14f)) );
+	        chart.getXYPlot().getLegendItems().get(0).setLabelFont( chart.getXYPlot().getRangeAxis().getLabelFont().deriveFont(new Float(14f)) );
 	                
 	        chart.getXYPlot().getRenderer().setBaseOutlineStroke(new BasicStroke(4f));
 	        chart.getXYPlot().getRenderer().setBaseStroke(new BasicStroke(4f));
@@ -423,12 +488,14 @@ public class PdfReport {
 	        
 	        //AggregateData.reportToStandard("Weight: " +  chart.getXYPlot().getWeight() );
 	       
-
-		java.io.File chartFile = new File("chart.jpg");
+	    String fileName;
+	    fileName = "chart" + rr.getChartId() + ".png";
+	    rr.incrementChartId();
+		java.io.File chartFile = new File(fileName);
 		
-		org.jfree.chart.ChartUtilities.saveChartAsJPEG(chartFile, 1.0f, chart, 900, 600);
+		org.jfree.chart.ChartUtilities.saveChartAsPNG(chartFile, /*1.0f,*/ chart, 900, 600);
 		
-		Image chartImage = Image.getInstance("chart.jpg");
+		Image chartImage = Image.getInstance(fileName);
 		
 		chartImage.setAlignment(Element.ALIGN_CENTER);
 		

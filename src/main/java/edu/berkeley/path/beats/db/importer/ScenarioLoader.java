@@ -96,6 +96,7 @@ public class ScenarioLoader {
 
 	public Scenarios load(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
+		
 		try {
 			conn = Transaction.begin();
 			Scenarios db_scenario = save(scenario);

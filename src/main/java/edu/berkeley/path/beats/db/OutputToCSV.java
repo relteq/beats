@@ -14,6 +14,7 @@ import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
 
 import edu.berkeley.path.beats.processor.AggregateData;
+import edu.berkeley.path.beats.processor.Content;
 import edu.berkeley.path.beats.processor.LinkDataTotal;
 
 public class OutputToCSV {
@@ -68,6 +69,104 @@ public class OutputToCSV {
 	}
 	
 
+	/**
+	 * Get Scenario and Run selection for SELECTs
+	 * @param query
+	 * @param arguments
+	 * @return
+	 */
+	public static String getScenarioAndRunSelection(String query, List<Content>content) {
+		
+		int conditionNumber = 0;
+		
+		if ( query.indexOf("WHERE") > 0 ) 
+			query += " AND app_run_id IN (SELECT id FROM simulation_runs WHERE ";
+		else
+			query += " WHERE app_run_id IN (SELECT id FROM simulation_runs WHERE ";
+		
+		if ( content.size() == 0 ) return query;
+		
+		for ( int i=0; i<content.size(); i++)  {
+			
+			String runs = content.get(i).getRuns();
+			String scenarioId = content.get(i).getScenarioId();
+			
+			String temp;
+			
+			while ( runs != null ) {
+				
+				conditionNumber++;
+				
+				int c = runs.indexOf(',');
+				
+				if ( c < 0 ) {
+					temp = runs;
+					runs = null;
+				}
+				else {
+					temp = runs.substring(0, c);
+					runs = runs.substring(c+1);
+				}
+
+				int index = -1;
+				
+				String temp1, temp2;
+				
+				if ( (index = temp.indexOf('-')) > 0) {
+					
+					temp1 = temp.substring(0,index);
+					
+					temp2 = temp.substring(index+1);
+
+					
+					try
+				    {
+						
+					 int runIDStart = Integer.parseInt(temp1.trim());		 
+					 int runIDStop  = Integer.parseInt(temp2.trim());
+					 
+					 if ( conditionNumber > 1 ) 
+						 query += " OR ( scenario_id=" + scenarioId + " AND run_number >=" + runIDStart + " AND run_number <=" + runIDStop + " )";
+					 else
+						 query += "( scenario_id=" + scenarioId + " AND run_number >=" + runIDStart + " AND run_number <=" + runIDStop + " )";
+						 
+						
+				    }
+				    catch (NumberFormatException nfe)
+				    {
+				      continue;
+				    }
+					
+				} 
+				else {				
+					
+					 try
+					    {
+						 
+						 int runID = Integer.parseInt(temp.trim());
+						 
+						 if ( conditionNumber > 1 ) 
+							 query += " OR ( scenario_id=" + scenarioId + " AND run_number =" + runID + " )";
+						 else
+							 query += "( scenario_id=" + scenarioId + " AND run_number =" + runID + " )";
+							 
+						
+					    }
+					    catch (NumberFormatException nfe)
+					    {
+					      continue;
+					    }
+				}
+				
+			}
+		}
+		
+			query += " )";	
+			
+			return query;
+	}
+	
+	
 	/**
 	 * Get Scenario and Run selection for SELECTs
 	 * @param query
