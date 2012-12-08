@@ -254,8 +254,11 @@ public final class ObjectFactory {
     	
     	// create unmarshaller .......................................................
         try {
+		//Reset the classloader for main thread; need this if I want to run properly
+  		//with JAXB within MATLAB. (luis)
+		Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
         	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-            u = context.createUnmarshaller();
+	        u = context.createUnmarshaller();
         } catch( JAXBException je ) {
         	throw new SiriusException("Failed to create context for JAXB unmarshaller", je);
         }
