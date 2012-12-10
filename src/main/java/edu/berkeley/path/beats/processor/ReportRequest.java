@@ -1,3 +1,34 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,19 +63,21 @@ public class ReportRequest {
 	private long start_time;
 	private long duration;
 	private Boolean color;
-	String aggregation;
-	Boolean detailed;
-	Boolean linkPerformance;
-	Boolean linkData;
-	Boolean onRampPerformance;
-	Boolean onRampData;
-	Boolean routePerformance;
-	Boolean routeData;
-	Boolean networkPerformance;
-	String units;
+	private String aggregation;
+	private Boolean detailed;
+	private Boolean linkPerformance;
+	private Boolean linkData;
+	private Boolean onRampPerformance;
+	private Boolean onRampData;
+	private Boolean routePerformance;
+	private Boolean routeData;
+	private Boolean networkPerformance;
+	private String units;
 
 	int chartID=0;
 	
+	public Long 	getStartTimeInMilliseconds() { return start_time*1000; }
+	public Long 	getDurationInMilliseconds() { return duration*1000; }
 	public Long 	getStartTime() { return start_time; }
 	public Long 	getDuration() { return duration; }
 	public Boolean 	getColor() { return color; }
@@ -129,6 +162,20 @@ public class ReportRequest {
 	            }
 	          }
 	          
+	          if (event.isStartElement()) {
+		            if (event.asStartElement().getName().getLocalPart()
+		                .equals("units")) {
+		              event = eventReader.nextEvent();
+		              
+		              units = (event.asCharacters().getData());
+		              
+		              AggregateData.reportToStandard("Units: " + units);
+		              
+		              contentList.add(item);
+		              continue;
+		            }
+		          }
+	          
 	        }
 
 	      }
@@ -158,7 +205,7 @@ public class ReportRequest {
 			duration = 		getLongAttributeValue	(doc,"time_range", "duration");
 			
 			aggregation = 	getStringAttributeValue	(doc, "display", "aggregation");
-			//units = 		getStringTagValue		(doc, "data_sources", "units");
+			//units = 		getStringTagValue		(doc, "sirius_report", "units");
 			color = 		getBolleanAttributeValue(doc, "display", "color");
 			detailed = 		getBolleanAttributeValue(doc, "display", "detailed");
 			linkData = 		getBolleanAttributeValue(doc, "links", "data");
@@ -239,10 +286,10 @@ public class ReportRequest {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 	 
 				Element eElement = (Element) nNode;
-				
-				AggregateData.reportToStandard(tagName + " " + name + " " + ( eElement.getAttribute(name).indexOf("true") > 0 ) );
-				
-				if ( eElement.getAttribute(name).indexOf("true") > 0 )   return true;
+				String s = eElement.getAttribute(name);
+				// AggregateData.reportToStandard(tagName + " " + name + " " + ( eElement.getAttribute(name).indexOf("true") > 0 ) );
+				AggregateData.reportToStandard(tagName + " " + name + " " + s );
+				if ( s.indexOf("true") >= 0 )   return true;
 				else return false;
 		
 			}	else
@@ -283,4 +330,7 @@ public class ReportRequest {
 		 
 			return nValue.getNodeValue();
 	}
+	
+
+
 }

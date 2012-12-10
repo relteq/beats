@@ -1,7 +1,47 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
+
 package edu.berkeley.path.beats.processor;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,7 +54,6 @@ import org.apache.torque.util.BasePeer;
 
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
-import com.itextpdf.awt.geom.Rectangle;
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -35,9 +74,11 @@ import edu.berkeley.path.beats.db.OutputToCSV;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -50,14 +91,16 @@ public class PdfReport extends AggregateData {
 			Font.BOLD);
 	private static Font catFont = new Font(Font.FontFamily.TIMES_ROMAN, 18,
 			Font.BOLD);
-	private static Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 10,
+	private static Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12,
 			Font.NORMAL);
+	private static Font normalBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
+			Font.BOLD);
 
 	private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 9,
 			Font.NORMAL);
-	private static Font smallFont = new Font(Font.FontFamily.HELVETICA, 9,
+	private static Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 9,
 			Font.NORMAL);
-	private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 12,
+	private static Font smallBold = new Font(Font.FontFamily.TIMES_ROMAN, 10,
 			Font.BOLD);
 	/**
      * Inner class to add a table as header.
@@ -224,32 +267,51 @@ public class PdfReport extends AggregateData {
 		//Date
 		
 		java.util.Date today = new java.util.Date();	
-		preface.add(addCenter("Report generated: " + new java.sql.Timestamp(today.getTime()), smallBold));
+		preface.add(addCenter("Report generated: " + new java.sql.Timestamp(today.getTime()), normalBold));
+		
+		addEmptyLine(preface, 3);	
+		preface.add(addCenter("This Report Includes:", normalBold));
+		addEmptyLine(preface, 1);
+		preface.add(addCenter(dataIncluded("Link", rr.getDetailed(), rr.getLinkData(), rr.getLinkPerformance()), smallBold));
+		preface.add(addCenter(dataIncluded("Onramp", rr.getDetailed(), rr.getOnRampData(), rr.getOnRampPerformance()), smallBold));
+		preface.add(addCenter(dataIncluded("Route", rr.getDetailed(), rr.getRouteData(), rr.getRoutePerformance()), smallBold));
+		
+		addEmptyLine(preface, 8);
+
+		if ( rr.getUnits().equals("US") ) 
+			preface.add(addCenter("Units: US", normalBold));
+		else
+			preface.add(addCenter("Units: Metric", normalBold));
 		
 		addEmptyLine(preface, 3);
-
-		
-		preface.add(addCenter("Tables used for this report: ", smallBold));
-		if ( rr.getDetailed() ) {
-				preface.add(addCenter("       - link_data_total", smallBold));
-				preface.add(addCenter("       - link_performance_total", smallBold));
-		} 
-		else {
-			preface.add(addCenter("       - link_data_detailed", smallBold));
-			preface.add(addCenter("       - link_performance_detailed", smallBold));
-		}
-
-		addEmptyLine(preface, 8);
-		
-		if ( rr.getDetailed() ) 
-			preface.add(addCenter("This is a color document", smallBold));
-		else
-			preface.add(addCenter("This is a B&W document", smallBold));
-		
 		document.add(preface);
 		
 		// Start a new page
 		document.newPage();
+	}
+	
+	private static String dataIncluded(String type, Boolean det, Boolean data, Boolean per) {
+		
+		String s = new String();
+		
+		s = "";
+		
+		if ( det ) 
+
+			s += "Detailed ";
+		
+		s += (type + " ");
+		
+		if ( data && per )  {
+
+			s += "Data and Performance";
+		}
+		else if ( data )
+			s += "Data";
+		else if ( per )
+			s += "Performance";
+		
+		return s;
 	}
 
 	private static void addContent(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
@@ -259,11 +321,6 @@ public class PdfReport extends AggregateData {
 		reportToStandard("Report for table: " +table);
 	
 		rr.setChartId(0);
-		
-		// Get a list of column names
-		//@SuppressWarnings("rawtypes")
-		//java.util.List listOfColumnNames =  BasePeer.executeQuery("SELECT COLUMNNAME FROM SYS.SYSCOLUMNS WHERE REFERENCEID IN (SELECT TABLEID FROM SYS.SYSTABLES WHERE TABLENAME=\'" + table.toUpperCase()  + "\' ) ORDER BY COLUMNNUMBER ASC");
-		//reportToStandard("SELECT COLUMNNAME FROM SYS.SYSCOLUMNS WHERE REFERENCEID IN (SELECT TABLEID FROM SYS.SYSTABLES WHERE TABLENAME=\'" + table.toUpperCase()  + "\' ) ORDER BY COLUMNNUMBER ASC");
 		
 		// Get a list of keys 
 		
@@ -282,11 +339,14 @@ public class PdfReport extends AggregateData {
 			
 			contentPage.add(addLeft("TABLE: " + table.toUpperCase(), subFont));
 			
-			//query = AggregateData.setKeys("select COUNT(ts) from " + table +" WHERE aggregation=\'15min'", table, (Record)listOfKeys.get(i) );
-	
-			//ArrayList<String> t ;
-			//t.
-			//if (  (  (Record)(BasePeer.executeQuery(query).get(0))  ).getValue(1).asInt()  > 0 ) {
+			
+			// Get starting time stamp			
+			query =  AggregateData.setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
+			long start = rr.getStartTimeInMilliseconds();					
+			start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
+			
+			// Get max time stamp for this report
+			long stop = start +  rr.getDurationInMilliseconds();
 			
 			contentPage.add( addLeft(formatKeys( AggregateData.setKeys("", table, (Record)listOfKeys.get(i)) ), subFont ) );
 			contentPage.add( addLeft(" aggregation="+rr.getAggregation(), subFont ) );
@@ -295,9 +355,11 @@ public class PdfReport extends AggregateData {
 			
 			listOfColumnNames = getAggregationColumns(table);
 			
+			// Form main select
 			String columns = "ts, " + listToString( listOfColumnNames);
-			query =  AggregateData.setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
-		
+			query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
+		    query = setTimeInterval(query, start-1, stop);
+		    
 			reportToStandard("Query: " + query);
 			
 			java.util.List data = BasePeer.executeQuery(query);
@@ -366,7 +428,10 @@ public class PdfReport extends AggregateData {
 		
 		PdfPTable table = new PdfPTable(useTheseColumns.size()+1);
 		int[] colunmNumber = new int[useTheseColumns.size()+1];
+		double[] unitMultiplier = new double[useTheseColumns.size()];
 		float[] tableWidth = new float[useTheseColumns.size()+1];
+		
+		if (data.size() == 0 ) return section;	// Return empty if no data to report
 		
 		tableWidth[0]= 80f;
 		colunmNumber[0] = 1; 	// this is to indicate the position of the time stamp in the select statement results 
@@ -377,6 +442,11 @@ public class PdfReport extends AggregateData {
 			
 			tableWidth[i+1] = 40f;
 			colunmNumber[i+1] = listOfColumnNames.indexOf(useTheseColumns.get(i)) + 2;
+			if ( rr.getUnits().equals("US") )
+				unitMultiplier[i] = toUS(useTheseColumns.get(i));
+			else
+				unitMultiplier[i] = toMetric(useTheseColumns.get(i));
+			
 		}
 		
 		table.setTotalWidth(tableWidth);
@@ -403,6 +473,7 @@ public class PdfReport extends AggregateData {
 		// ts must be the first in the column list
 		
 		long startOfTheChart = ((Record)data.get(0)).getValue(1).asTimestamp().getTime();
+		startOfTheChart -= getAggregationInMilliseconds(rr.getAggregation());
 		
 		for (int row=0; row< data.size(); row++) {
 			
@@ -419,10 +490,14 @@ public class PdfReport extends AggregateData {
 					
 				} else {	
 					
+					// Convert to the right units
+					d = BigDecimal.valueOf(d.doubleValue()*unitMultiplier[i]);
+					
 					// Add to the chart 
 					curves.get(i).add(((double)(t - startOfTheChart))/1000.0/60.0/60.0, d.doubleValue());
 					
 					// Add to the table
+					
 					d=d.setScale(8,BigDecimal.ROUND_HALF_UP);
 					table.addCell(new PdfPCell(new Phrase(d.toString(),subFont)));
 
@@ -436,11 +511,11 @@ public class PdfReport extends AggregateData {
 			chartData.addSeries(curves.get(i));
 		}
 		
-		section.add(addCenter("CHART", subFont));
+		section.add(addCenter("CHART:" + " " + listToString(useTheseColumns), subFont));
 		addEmptyLine(section, 1);
 		section.add(createChart(chartData, rr));
 		addEmptyLine(section, 1);
-		section.add(addCenter("DATA", subFont));
+		section.add(addCenter("DATA:" + " " + listToString(useTheseColumns), subFont));
 		addEmptyLine(section, 1);
 		section.add(table);
 		addEmptyLine(section, 1);
@@ -484,10 +559,36 @@ public class PdfReport extends AggregateData {
 	        chart.getXYPlot().getRenderer().setBaseOutlineStroke(new BasicStroke(4f));
 	        chart.getXYPlot().getRenderer().setBaseStroke(new BasicStroke(4f));
 	        chart.getXYPlot().getRenderer().setSeriesOutlineStroke(1, new BasicStroke(4f));
-	        chart.getXYPlot().setWeight(1);
 	        
-	        //AggregateData.reportToStandard("Weight: " +  chart.getXYPlot().getWeight() );
+	        Dimension dimension = new Dimension(6,6);
+	        Shape shape = new Rectangle(dimension);
+	        chart.getXYPlot().getRenderer(0).setSeriesShape(0, shape);
+	        
+	        // set a few custom plot features
+	        XYPlot plot = (XYPlot) chart.getPlot();
+	        Shape[] cross = DefaultDrawingSupplier.createStandardSeriesShapes();
+	        plot.setBackgroundPaint(new Color(0xffffe0));
+	        plot.setDomainGridlinesVisible(true);
+	        plot.setDomainGridlinePaint(Color.lightGray);
+	        plot.setRangeGridlinePaint(Color.lightGray);
+	        XYItemRenderer renderer = (XYItemRenderer) plot.getRenderer();
+	        renderer.setSeriesShape(0, cross[0]);
+	        //renderer.setSeriesPaint(1, Color.green);
+	        renderer.setSeriesItemLabelsVisible(1, true);
+	        
+	        Stroke dash = new BasicStroke(2.0f,                      // Width
+                    BasicStroke.CAP_SQUARE,    	// End cap
+                    BasicStroke.JOIN_MITER,    	// Join style
+                    10.0f,                     	// Miter limit
+                    new float[] {2.0f,4.0f}, 	// Dash pattern
+                    0.0f);                     // Dash phase
+	        
+	        renderer.setSeriesStroke(1,dash);
+	        plot.setRenderer(renderer);
+
+	        renderer.setSeriesItemLabelsVisible(1, true);
 	       
+	        
 	    String fileName;
 	    fileName = "chart" + rr.getChartId() + ".png";
 	    rr.incrementChartId();
@@ -513,4 +614,67 @@ public class PdfReport extends AggregateData {
 			paragraph.add(new Paragraph(" "));
 		}
 	}
+	
+	/**
+	 * return a Unit conversion multiplier from database units to metric units
+	 * @param name
+	 * @return
+	 */
+	public static double toMetric(String name) {
+		
+		if ( name.equals("in_flow")) 	return 3600.0; 			// vehicle/hour
+		if ( name.equals("out_flow")) 	return 3600.0; 			// vehicle/hour
+		if ( name.equals("density")) 	return 1000.0; 			// vehicle/km
+		if ( name.equals("jam_density"))return 1000.0; 			// vehicle/km
+		
+		if ( name.equals("speed")) 					return 3600.0/1000.0; 	// km/hour		
+		if ( name.equals("free_flow_speed")) 		return 3600.0/1000.0; 	// km/hour
+		if ( name.equals("critical_speed")) 		return 3600.0/1000.0; 	// km/hour
+		if ( name.equals("congestion_wave_speed")) 	return 3600.0/1000.0; 	// km/hour
+		
+		if ( name.equals("capasity")) 		return 3600.0; 	// vehicle/hour
+		if ( name.equals("capasity_drop")) 	return 3600.0; 	// vehicle/hour
+		
+		if ( name.equals("vht")) 	return 1.0/3600.0; 	// vehicle*hour
+		if ( name.equals("vmt") ) 	return 1.0/1000.0; 	// vehicle*km
+		if ( name.equals("delay") ) return 1.0/3600.0; 	// vehicle*hour
+		
+		if ( name.equals("travel_time") ) 		return 1.0/3600.0; 			// hour
+		if ( name.equals("productivity_loss") )	return 1.0/3600.0/1000.0; 	// lane*km*hour
+		if ( name.equals("vc_ratio") ) 			return 1.0/1000.0; 			// km/vehicle
+		
+		return 1.0;
+	}
+	
+	/**
+	 * return a Unit conversion multiplier from database units to US units
+	 * @param name
+	 * @return
+	 */
+	public static double toUS(String name) {
+		
+		if ( name == "in_flow" ) 	return 3600.0; 			// vehicle/hour
+		if ( name == "out_flow" ) 	return 3600.0; 			// vehicle/hour
+		if ( name == "density" ) 	return 1000.0*1.609344;	// vehicle/mile
+		if ( name == "jam_density" ) return 1000.0*1.609344;// vehicle/mile
+		
+		if ( name == "speed" ) 					return 3600.0/1000.0/1.609344; 	// mile/hour		
+		if ( name == "free_flow_speed" ) 		return 3600.0/1000.0/1.609344; 	// mile/hour
+		if ( name == "critical_speed" ) 		return 3600.0/1000.0/1.609344; 	// mile/hour
+		if ( name == "congestion_wave_speed" ) 	return 3600.0/1000.0/1.609344; 	// mile/hour
+		
+		if ( name == "capasity" ) 		return 3600.0; 	// vehicle/hour
+		if ( name == "capasity_drop" ) 	return 3600.0; 	// vehicle/hour
+		
+		if ( name == "vht" ) 	return 1.0/3600.0; 			// vehicle*hour
+		if ( name == "vmt" ) 	return 1.0/1000.0/1.609344;	// vehicle*mile
+		if ( name == "delay" ) 	return 1.0/3600.0; 			// vehicle*hour
+		
+		if ( name == "travel_time" ) 		return 1.0/3600.0; 					// hour
+		if ( name == "productivity_loss" ) 	return 1.0/3600.0/1000.0/1.609344; 	// lane*mile*hour
+		if ( name == "vc_ratio" ) 			return 1.0/1000.0/1.609344;			// mile/hour; 			// mile/vehicle
+		
+		return 1.0;
+	}
+	
 }
