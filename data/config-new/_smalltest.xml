@@ -58,23 +58,6 @@
       <targetElements>
         <scenarioElement id="-2" type="link"/>
       </targetElements>
-      <table name="Plan Sequence">
-        <column_names>
-          <column_name name="Plan ID" key="true"/>
-          <column_name name="Start Time" key="false"/>
-          <column_name name="Cycle Length" key="false"/>
-        </column_names>
-      </table>
-      <table name="Plan List">
-        <column_names>
-          <column_name name="Plan ID" key="true"/>
-          <column_name name="Intersection" key="true"/>
-          <column_name name="Offset" key="false"/>
-          <column_name name="Movement A" key="true"/>
-          <column_name name="Movement B" key="true"/>
-          <column_name name="Green Time" key="false"/>
-        </column_names>
-      </table>
     </controller>
   </ControllerSet>
   <SensorList>

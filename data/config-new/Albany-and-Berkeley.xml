@@ -825,24 +825,51 @@
         <column_names>
           <column_name name="Plan ID" key="true"/>
           <column_name name="Start Time" key="false"/>
-          <column_name name="Cycle Length" key="false"/>
         </column_names>
         <row>
           <column>2</column>
           <column>0</column>
-          <column>60</column>
         </row>
         <row>
           <column>1</column>
           <column>122</column>
+        </row>
+      </table>
+      <table name="Cycle Length">
+        <column_names>
+          <column_name name="Plan ID" key="true"/>
+          <column_name name="Cycle Length" key="false"/>
+        </column_names>
+        <row>
+          <column>1</column>
           <column>60</column>
+        </row>
+        <row>
+          <column>2</column>
+          <column>60</column>
+        </row>
+      </table>
+      <table name="Offsets">
+        <column_names>
+          <column_name name="Plan ID" key="true"/>
+          <column_name name="Intersection" key="true"/>
+          <column_name name="Offset" key="false"/>
+        </column_names>
+        <row>
+          <column>1</column>
+          <column>-62</column>
+          <column>0</column>
+        </row>
+        <row>
+          <column>2</column>
+          <column>-62</column>
+          <column>0</column>
         </row>
       </table>
       <table name="Plan List">
         <column_names>
           <column_name name="Plan ID" key="true"/>
           <column_name name="Intersection" key="true"/>
-          <column_name name="Offset" key="false"/>
           <column_name name="Movement A" key="true"/>
           <column_name name="Movement B" key="true"/>
           <column_name name="Green Time" key="false"/>
@@ -850,7 +877,6 @@
         <row>
           <column>1</column>
           <column>-62</column>
-          <column>0</column>
           <column>2</column>
           <column>6</column>
           <column>26</column>
@@ -858,7 +884,6 @@
         <row>
           <column>1</column>
           <column>-62</column>
-          <column>0</column>
           <column>4</column>
           <column/>
           <column>27</column>
@@ -866,7 +891,6 @@
         <row>
           <column>2</column>
           <column>-62</column>
-          <column>0</column>
           <column>2</column>
           <column>6</column>
           <column>26</column>
@@ -874,7 +898,6 @@
         <row>
           <column>2</column>
           <column>-62</column>
-          <column>0</column>
           <column>4</column>
           <column/>
           <column>27</column>
