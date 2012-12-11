@@ -82,45 +82,25 @@ public class Controller_SIG_Pretimed extends Controller {
 		if(jaxbc.getTargetElements().getScenarioElement()==null)
 			return;
 
-		// plan list table
-		Table tbl_pl = tables.get("Plan List");
-		if (null == tbl_pl) {
-			SiriusErrorLog.addError("Controller " + jaxbc.getId() + ": no 'Plan List' table");
-			return;
-		}
-
-		// plan sequence table
-		Table tbl_ps = tables.get("Plan Sequence");
-		if (null == tbl_ps) {
-			SiriusErrorLog.addError("Controller " + jaxbc.getId() + ": no 'Plan Sequence' table");
-			return;
-		}
-
-		// restoring plan sequence
-		PlanSequence plan_seq = new PlanSequence(tbl_ps);
+		// check all tables
+		for (String table_name : new String[] {"Cycle Length", "Offsets", "Plan List", "Plan Sequence"})
+			if (null == tables.get(table_name)) {
+				SiriusErrorLog.addError("Controller " + jaxbc.getId() + ": no '" + table_name + "' table");
+				return;
+			}
 
 		// restoring plan list
-		PlanList planlist = new PlanList(tbl_pl);
+		PlanList planlist = new PlanList(tables.get("Cycle Length"), tables.get("Offsets"), tables.get("Plan List"));
 		// processing plan list
 		plan = new java.util.HashMap<String, Controller_SIG_Pretimed_Plan>();
 		for (Plan plan_raw : planlist.getPlanList()) {
-			// cycle length - from the sequence
-			for (PlanRun plan_run : plan_seq.getPlanReference())
-				if (plan_run.getPlanId().equals(plan_raw.getId())) {
-					if (null == plan_raw.getCycleLength())
-						plan_raw.setCycleLength(Double.valueOf(plan_run.getCycleLength()));
-					else if (!plan_raw.getCycleLength().equals(plan_run.getCycleLength()))
-						logger.warn("Found a different cycle length: controller=" + jaxbc.getId() + ", plan=" + plan_raw.getId());
-				}
-			if (null == plan_raw.getCycleLength())
-				logger.warn("Plan " + plan_raw.getId() + " not found in the plan sequence (controller=" + jaxbc.getId() + ")");
-
-			// populate
 			Controller_SIG_Pretimed_Plan pretimed_plan = new Controller_SIG_Pretimed_Plan();
 			pretimed_plan.populate(this, myScenario, plan_raw);
 			plan.put(plan_raw.getId(), pretimed_plan);
 		}
 
+		// restoring plan sequence
+		PlanSequence plan_seq = new PlanSequence(tables.get("Plan Sequence"));
 		// processing plan sequence
 		final int seq_size = plan_seq.getPlanReference().size();
 		plansequence = new String[seq_size];
@@ -228,23 +208,57 @@ public class Controller_SIG_Pretimed extends Controller {
 
 	static class PlanList {
 		private List<Plan> plan_l;
-		public PlanList(Table tbl) {
-			plan_l = new ArrayList<Controller_SIG_Pretimed.Plan>();
-			for (int row = 0; row < tbl.getNoRows(); ++row)
-				process_row(tbl, row);
+		/**
+		 * Constructs a plan list from "Cycle Length", "Offsets", "Plan List" tables
+		 * @param plan_tbl the "Cycle Length" table
+		 * @param intersection_tbl the "Offsets" table
+		 * @param stage_tbl the "Plan List" table
+		 */
+		public PlanList(Table plan_tbl, Table intersection_tbl, Table stage_tbl) {
+			plan_l = new ArrayList<Controller_SIG_Pretimed.Plan>(plan_tbl.getNoRows());
+			process_plans(plan_tbl);
+			process_intersections(intersection_tbl);
+			process_stages(stage_tbl);
 		}
-		private void process_row(Table tbl, int row) {
-			final String id = tbl.getTableElement(row, "Plan ID");
-			Plan plan = getPlan(id);
-			if (null == plan) {
-				plan = new Plan(id);
-				plan_l.add(plan);
+		private void process_plans(Table tbl) {
+			for (int row = 0; row < tbl.getNoRows(); ++row)
+				plan_l.add(new Plan(tbl.getTableElement(row, "Plan ID"),
+						Double.parseDouble(tbl.getTableElement(row, "Cycle Length"))));
+		}
+		private void process_intersections(Table tbl) {
+			for (int row = 0; row < tbl.getNoRows(); ++row) {
+				String plan_id = tbl.getTableElement(row, "Plan ID");
+				Plan plan = getPlan(plan_id);
+				if (null == plan)
+					logger.error("Plan '" + plan_id + "' not found");
+				else
+					plan.addIntersection(new Intersection(tbl.getTableElement(row, "Intersection"),
+							Double.parseDouble(tbl.getTableElement(row, "Offset"))));
 			}
-			plan.process_row(tbl, row);
+		}
+		private void process_stages(Table tbl) {
+			for (int row = 0; row < tbl.getNoRows(); ++row) {
+				String plan_id = tbl.getTableElement(row, "Plan ID");
+				String node_id = tbl.getTableElement(row, "Intersection");
+				Plan plan = getPlan(plan_id);
+				if (null == plan)
+					logger.error("Plan '" + plan_id + "' not found");
+				else {
+					Intersection intersection = plan.getIntersection(node_id);
+					if (null == intersection)
+						logger.error("Plan '" + plan_id + "': Intersection '" + node_id + "' not found");
+					else
+						intersection.addStage(new Stage(
+								tbl.getTableElement(row, "Movement A"),
+								tbl.getTableElement(row, "Movement B"),
+								Double.parseDouble(tbl.getTableElement(row, "Green Time"))));
+				}
+			}
 		}
 		private Plan getPlan(String id) {
 			for (Plan plan : plan_l)
-				if (id.equals(plan.getId())) return plan;
+				if (plan.getId().equals(id))
+					return plan;
 			return null;
 		}
 		/**
@@ -259,9 +273,15 @@ public class Controller_SIG_Pretimed extends Controller {
 		private String id;
 		private Double cycle_length;
 		private List<Intersection> ip_l;
-		public Plan() {}
-		public Plan(String id) {
+		protected Plan() {}
+		/**
+		 * Constructs a plan for the given ID and cycle length
+		 * @param id plan ID
+		 * @param cycle_length cycle length [sec]
+		 */
+		public Plan(String id, Double cycle_length) {
 			this.id = id;
+			this.cycle_length = cycle_length;
 			this.ip_l = new ArrayList<Controller_SIG_Pretimed.Intersection>();
 		}
 		/**
@@ -273,7 +293,7 @@ public class Controller_SIG_Pretimed extends Controller {
 		/**
 		 * @param id the id to set
 		 */
-		public void setId(String id) {
+		protected void setId(String id) {
 			this.id = id;
 		}
 		/**
@@ -283,27 +303,24 @@ public class Controller_SIG_Pretimed extends Controller {
 			return cycle_length;
 		}
 		/**
-		 * @param cycle_length the cycle length [sec]
-		 */
-		public void setCycleLength(Double cycle_length) {
-			this.cycle_length = cycle_length;
-		}
-		/**
 		 * @return the intersection plan list
 		 */
 		public List<Intersection> getIntersection() {
 			return ip_l;
 		}
-		void process_row(Table tbl, int row) {
-			String id = tbl.getTableElement(row, "Intersection");
-			Intersection ip = getIntersectionPlan(id);
-			if (null == ip) {
-				ip = new Intersection(id, Double.parseDouble(tbl.getTableElement(row, "Offset")));
-				ip_l.add(ip);
-			}
-			ip.process_row(tbl, row);
+		/**
+		 * Adds an intersection to the intersection list
+		 * @param intersection the intersection to add
+		 */
+		void addIntersection(Intersection intersection) {
+			ip_l.add(intersection);
 		}
-		private Intersection getIntersectionPlan(String node_id) {
+		/**
+		 * Searches for an intersection with the given node ID
+		 * @param node_id the node ID
+		 * @return null, if an intersection was not found
+		 */
+		Intersection getIntersection(String node_id) {
 			for (Intersection ip : ip_l)
 				if (node_id.equals(ip.getNodeId()))
 					return ip;
@@ -315,6 +332,11 @@ public class Controller_SIG_Pretimed extends Controller {
 		private String node_id;
 		private Double offset;
 		private List<Stage> stage_l;
+		/**
+		 * Constructs an intersection for the given node ID and offset
+		 * @param node_id
+		 * @param offset
+		 */
 		public Intersection(String node_id, Double offset) {
 			this.node_id = node_id;
 			this.offset = offset;
@@ -338,11 +360,12 @@ public class Controller_SIG_Pretimed extends Controller {
 		public List<Stage> getStage() {
 			return stage_l;
 		}
-		void process_row(Table tbl, int row) {
-			stage_l.add(new Stage(
-					tbl.getTableElement(row, "Movement A"),
-					tbl.getTableElement(row, "Movement B"),
-					Double.parseDouble(tbl.getTableElement(row, "Green Time"))));
+		/**
+		 * Adds a stage to the stage list
+		 * @param stage the stage to add
+		 */
+		void addStage(Stage stage) {
+			stage_l.add(stage);
 		}
 	}
 
@@ -350,6 +373,12 @@ public class Controller_SIG_Pretimed extends Controller {
 		String movA;
 		String movB;
 		Double green_time;
+		/**
+		 * Constructs a stage for the given movements and green time
+		 * @param movA
+		 * @param movB
+		 * @param green_time the green time [sec]
+		 */
 		public Stage(String movA, String movB, Double green_time) {
 			this.movA = movA;
 			this.movB = movB;
@@ -381,12 +410,14 @@ public class Controller_SIG_Pretimed extends Controller {
 	private static class PlanRun implements Comparable<PlanRun> {
 		Double start_time;
 		String plan_id;
-		Double cycle_length;
-		public PlanRun(String plan_id, Double start_time, Double cycle_length) {
-			super();
+		/**
+		 * Constructs a plan reference for the given plan ID and start time
+		 * @param plan_id the plan ID
+		 * @param start_time the start time [sec]
+		 */
+		public PlanRun(String plan_id, Double start_time) {
 			this.start_time = start_time;
 			this.plan_id = plan_id;
-			this.cycle_length = cycle_length;
 		}
 		@Override
 		public int compareTo(PlanRun other) {
@@ -404,24 +435,24 @@ public class Controller_SIG_Pretimed extends Controller {
 		public String getPlanId() {
 			return plan_id;
 		}
-		/**
-		 * @return the cycle length [sec]
-		 */
-		public Double getCycleLength() {
-			return cycle_length;
-		}
 	}
 
 	private static class PlanSequence {
 		List<PlanRun> pr_l;
+		/**
+		 * Constructs a plan sequence from "Plan Sequence" table
+		 * @param tbl the "Plan Sequence" table
+		 */
 		public PlanSequence(Table tbl) {
 			pr_l = new ArrayList<Controller_SIG_Pretimed.PlanRun>();
 			for (int i = 0; i < tbl.getNoRows(); ++i)
 				pr_l.add(new PlanRun(tbl.getTableElement(i, "Plan ID"),
-						Double.parseDouble(tbl.getTableElement(i, "Start Time")),
-						Double.parseDouble(tbl.getTableElement(i, "Cycle Length"))));
+						Double.parseDouble(tbl.getTableElement(i, "Start Time"))));
 			java.util.Collections.sort(pr_l);
 		}
+		/**
+		 * @return the plan reference list
+		 */
 		public List<PlanRun> getPlanReference() {
 			return pr_l;
 		}
