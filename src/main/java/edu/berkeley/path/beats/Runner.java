@@ -211,7 +211,7 @@ public class Runner {
 				SiriusErrorLog.clearErrorMessage();
 			}
 			if (edu.berkeley.path.beats.db.Service.isInit()) {
-				logger.info("Shutting down the DB service");
+				logger.debug("Shutting down the DB service");
 				edu.berkeley.path.beats.db.Service.shutdown();
 			}
 		}
