@@ -1539,6 +1539,7 @@
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="speed" domain="DECIMAL"/>
+		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>

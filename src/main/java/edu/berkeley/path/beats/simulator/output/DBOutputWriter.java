@@ -328,6 +328,8 @@ public class DBOutputWriter extends OutputWriterBase {
 					}
 				}
 			}
+			// free flow speed, m/s
+			db_ldd.setFreeFlowSpeed(double2decimal(link.getVfInMPS(0)));
 			// replace nulls with zeros
 			edu.berkeley.path.beats.processor.LinkDataDetailed.removeNulls(db_ldd);
 			db_ldd.save();
