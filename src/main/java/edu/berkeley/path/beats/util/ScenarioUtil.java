@@ -120,12 +120,35 @@ public class ScenarioUtil {
 			javax.xml.validation.Schema schema = getSchema();
 			unmarshaller.setSchema(schema);
 			edu.berkeley.path.beats.simulator.ObjectFactory.setObjectFactory(unmarshaller, new edu.berkeley.path.beats.jaxb.ObjectFactory());
-			return (edu.berkeley.path.beats.jaxb.Scenario) unmarshaller.unmarshal(new FileInputStream(filename));
+			edu.berkeley.path.beats.jaxb.Scenario scenario = (edu.berkeley.path.beats.jaxb.Scenario) unmarshaller.unmarshal(new FileInputStream(filename));
+			checkSchemaVersion(scenario);
+			return scenario;
 		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc);
 		}
+	}
+
+	/**
+	 * Reports an error if the scenario schemaVersion attribute value
+	 * differs from the input schema version
+	 * @param scenario the scenario to check
+	 */
+	public static void checkSchemaVersion(edu.berkeley.path.beats.jaxb.Scenario scenario) {
+		String schema_version = null;
+		try {
+			schema_version = getSchemaVersion();
+		} catch (SiriusException exc) {
+			logger.error("Failed to retrieve a schema version");
+			return;
+		}
+		if (null == schema_version)
+			logger.warn("Schema version is NULL");
+		else if (null == scenario.getSchemaVersion())
+			logger.warn("Scenario schema version is NULL");
+		else if (!scenario.getSchemaVersion().equals(schema_version))
+			logger.warn("Scenario schema version " + scenario.getSchemaVersion() + " is incorrect. Should be: " + schema_version);
 	}
 
 	/**
