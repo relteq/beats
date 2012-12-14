@@ -72,9 +72,9 @@ public class AggregateData extends OutputToCSV {
 	 */
 	public static void doAggregateAllIntervals(String table, String[] arguments) throws IOException, TorqueException, DataSetException {
 		
-//		doAggregate(table, arguments, "1min");
-//		doAggregate(table, arguments, "5min");
-//		doAggregate(table, arguments, "15min");
+		doAggregate(table, arguments, "1min");
+		doAggregate(table, arguments, "5min");
+		doAggregate(table, arguments, "15min");
 		doAggregate(table, arguments, "1hour");
 		doAggregate(table, arguments, "1day");
 		doAggregate(table, arguments, "total");
@@ -423,9 +423,22 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 	
 }
 
+/**
+ * adds keys to the selection where statement
+ * @param query
+ * @param table
+ * @param record
+ * @return
+ */
+public static String setKeys(String query,String table, Record rec, String exclusion) {
 	
+	if ( query.indexOf("WHERE") < 0 ) return query += " WHERE " + getListOfKeys(table, rec, exclusion);
+		
+		return query + getListOfKeys(table, rec, exclusion);
+	
+}
 	/**
-	 * adds link_id and network_id to the selection where statement
+	 * adds keys to the selection where statement
 	 * @param query
 	 * @param table
 	 * @param record
@@ -455,7 +468,50 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 	}
 				
 		
+	/**
+	 * returns list of keys for SELECT statement
+	 * @param table
+	 * @return String
+	 */
+	public static String getListOfKeys(String table, String exclusion)  {
+		
+		try {	
+			
+			if ( table.equals("link_data_total") ) {		
+	
+				LinkDataTotal row = new LinkDataTotal();
+	
+					return row.getListOfKeys(exclusion);
+	
+				
+			} else
+			if ( table.equals("link_data_detailed") ) {
+	
+				LinkDataDetailed row = new LinkDataDetailed();
+				return row.getListOfKeys(exclusion);
+				
+			} else
+			if ( table.equals("link_performance_detailed") ) {
+	
+				LinkPerformanceDetailed row = new LinkPerformanceDetailed();
+				return row.getListOfKeys(exclusion);
+				
+			} else
+			if ( table.equals("link_performance_total") ) {
+	
+				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys(exclusion);
+			} 
+		
+		} catch (TorqueException e) {
 
+
+			return "*";
+		}
+		
+		return "*";
+		
+	}
 	
 	/**
 	 * returns list of keys for SELECT statement
@@ -501,7 +557,54 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 		return "*";
 		
 	}
+
 	
+	/**
+	 * returns list of keys for WHERE statement
+	 * @param table
+	 * @return String
+	 */
+	public static String getListOfKeys(String table, Record rec, String exclusion)  {
+		
+		try {	
+			
+			if ( table.equals("link_data_total") ) {		
+	
+				LinkDataTotal row = new LinkDataTotal();				
+				return row.getListOfKeys(rec,exclusion);				
+				
+			} else
+			if ( table.equals("link_data_detailed") ) {
+	
+				LinkDataDetailed row = new LinkDataDetailed();
+				return row.getListOfKeys(rec,exclusion);
+				
+			} else
+			if ( table.equals("link_performance_detailed") ) {
+	
+				LinkPerformanceDetailed row = new LinkPerformanceDetailed();
+				return row.getListOfKeys(rec,exclusion);
+				
+			} else
+			if ( table.equals("link_performance_total") ) {
+	
+				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys(rec,exclusion);
+			} 
+		
+		} catch (TorqueException e) {
+
+
+			return " ";
+		}
+		catch (DataSetException e) {
+			return " ";
+		}
+
+		
+		return " ";
+		
+	}
 	
 	/**
 	 * returns list of keys for WHERE statement

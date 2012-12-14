@@ -49,7 +49,7 @@ public class PerformanceData extends AggregateData {
 	public static void doPerformance(String[] arguments) throws TorqueException, IOException, DataSetException  {
 			
 		doPerformance("link_performance_total", arguments);
-//		doPerformance("link_performance_detailed", arguments);
+		doPerformance("link_performance_detailed", arguments);
 		
 	}
 	
