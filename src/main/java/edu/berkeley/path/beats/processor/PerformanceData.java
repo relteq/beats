@@ -1,3 +1,34 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 import java.io.IOException;
@@ -168,6 +199,8 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 
 			double x = vht.doubleValue() - vmt.doubleValue()/freeFlowSpeed.doubleValue();
 			
+			if ( x <1E-3 ) x = 0.0; // assuming that delay less than 1 ms does not make sense 
+			
 			return new BigDecimal(x);
 		}
 		
@@ -186,9 +219,10 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 
 		if ( capacity.doubleValue() <= 1E-10 )  return null;
 		else {
-			// need to ad logic for  v and V
+
+			// According to Alex K, out_flow is per output time delta not per sec
 			
-			return  (  BigDecimal.valueOf(( 1.0 -  (out_flow.doubleValue() / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0 ) );
+			return  (  BigDecimal.valueOf(( 1.0 -  (out_flow.doubleValue()/timeDelta / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0 ) );
 			
 			}
 		}
@@ -393,7 +427,8 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		public static BigDecimal actualTravelTime(int recordNumber, List speedData, double linkLength, int speedColumn, int tsColumn ) {
 			
 			double distance =0.0;
-			BigDecimal v;		
+			BigDecimal v;
+			double remainingTravelTime;
 		
 			try {
 				
@@ -404,10 +439,17 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 					 
 					 if ( v != null  ) distance += v.doubleValue() * getRawTimeDeltaInSeconds(speedData , i, tsColumn);								
 					
-					if ( distance >= linkLength ) {
+					if ( distance >= linkLength ) {						
 						
-						// stop calculation.  Equation 3.4 can outputs zero as a valid travel time.  Need to review the equation 
-						return BigDecimal.valueOf(getRawTimeDeltaInSeconds(speedData, recordNumber, i, tsColumn));
+						if ( v.doubleValue()>1E-10 ) {			
+							
+							remainingTravelTime = (distance - linkLength)/v.doubleValue();
+						}
+						else 
+							remainingTravelTime = 0.0;
+						
+						// stop calculation.  
+						return BigDecimal.valueOf(getRawTimeDeltaInSeconds(speedData, recordNumber, i, tsColumn) + remainingTravelTime);
 						
 					}
 				}

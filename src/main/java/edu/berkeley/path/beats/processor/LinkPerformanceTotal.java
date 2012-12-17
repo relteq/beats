@@ -1,3 +1,34 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 
@@ -50,14 +81,15 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
 		
 		// Equation 3.5 
 		if ( obj.getDensity() != null && obj.getSpeed() != null)
-		//	setVmt(new BigDecimal(obj.getOutFlow().doubleValue() * linkLength) );
-			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * linkLength * timeDeltaInSeconds) );	
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * /* linkLength */ timeDeltaInSeconds) );	
 		else
 			setVmt(new BigDecimal(0));
 		
 		// Equation 3.6
 		if ( obj.getDensity() != null )
-			setVht( new BigDecimal(obj.getDensity().doubleValue() * linkLength * timeDeltaInSeconds) ); 
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVht( new BigDecimal(obj.getDensity().doubleValue() * /* linkLength */ timeDeltaInSeconds) ); 
 		else
 			setVht(new BigDecimal(0));
 		
@@ -72,19 +104,21 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
 			setProductivityLoss(BigDecimal.valueOf(0.0));
 		else {
 				
-			if ( obj.getOutFlow() != null && obj.getCapacity() != null)
+			if ( obj.getOutFlow() != null && obj.getCapacity() != null && obj.getSpeed().compareTo(obj.getFreeFlowSpeed()) != 0  )
 				setProductivityLoss( PerformanceData.productivityLoss(obj.getOutFlow(), obj.getCapacity(), lanes, linkLength, timeDelta) );
 			else
 				setProductivityLoss(new BigDecimal(0));
 		}	
 			
+		
+		if ( obj.getCapacity().doubleValue() > 0 && obj.getSpeed() != null)
+			setVcRatio(new BigDecimal(obj.getSpeed().doubleValue() / obj.getCapacity().doubleValue()) );
+		else
+			setVcRatio(new BigDecimal(0) );
 /*
 
-    /** The value for the los field 
-    private BigDecimal los;
+    The value for the los field: need equation
 
-    /** The value for the vcRatio field 
-    private BigDecimal vcRatio; 
  */
 						
 		setTravelTime(PerformanceData.actualTravelTime(recordNumber, data, linkLength, obj.getColumnNumber("speed"), obj.getColumnNumber("ts") ));			
@@ -339,7 +373,42 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
     	return str;
     }
         
+        /**
+         * Form list of keys except exclusion, aggregation and timetamp
+         * @param exclusion
+         * @return
+         * @throws TorqueException
+         */
+                public String getListOfKeys(String exclusion) throws TorqueException {
+                	
+                	String str = new String("");
+                	
+                	ColumnMap[] columns = getTableMap().getColumns();
+                	
+                	for (int i=0; i< columns.length; i++) {
 
+                		if ( columns[i].isPrimaryKey() ) {
+                			
+                			if ( columns[i].getColumnName().equals("ts") 
+                					|| columns[i].getColumnName().equals("agg_type_id") 
+                					|| columns[i].getColumnName().equals(exclusion) 
+                					) {
+                				// do not include time stamp or aggregation
+                			}
+                			else  {
+                				// include key name
+                				if (str.length() > 1 ) str += ", ";
+                				
+                				str  += columns[i].getColumnName();	
+                			}
+
+                		}
+                		
+                	}
+                	  	   	
+            	return str;
+            }
+         
 
 	/**
 	 * returns column number for given name
@@ -365,5 +434,38 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
      	    	 	
 		return 0;
      }
-       
+     /**
+      * returns list of primary keys with values except exclusion, time stamp and aggregation
+      * @return string
+      * @throws TorqueException
+      * @throws DataSetException 
+      */
+     public String getListOfKeys(Record rec, String exclusion) throws TorqueException, DataSetException {
+     	
+     	String str = new String("");
+     	int n=1;
+     	
+     	ColumnMap[] columns = getTableMap().getColumns();
+     	
+     	for (int i=0; i< columns.length; i++) {
+
+     		if ( columns[i].isPrimaryKey() ) {
+     			
+     			if ( columns[i].getColumnName().equals("ts") 
+     					|| columns[i].getColumnName().equals("agg_type_id") 
+     					|| columns[i].getColumnName().equals(exclusion)) {
+     				// do not include time stamp or aggregation or the specified exclusion key
+     			}
+     			else  {
+     				    			
+     				// include key name and value
+     				
+     				str  += " AND " + columns[i].getColumnName() + "=" + rec.getValue(n++).asString() ;	
+     			}
+
+     		}
+     	}
+     		
+     	return str;
+     }       
 }
