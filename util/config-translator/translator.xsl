@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	exclude-result-prefixes="xs">
 
-<xsl:output method="xml" version="1.0" indent="yes"/>
+<xsl:output method="xml" version="1.0" indent="yes" encoding="utf-8"/>
 
 <xsl:template match="*">
 	<xsl:copy>
@@ -26,6 +28,14 @@
 </xsl:template>
 
 <xsl:template match="@*" mode="params"/>
+
+<xsl:template match="scenario">
+	<xsl:copy>
+		<xsl:apply-templates select="@*"/>
+		<xsl:attribute name="schemaVersion"><xsl:value-of select="document('../../src/main/resources/sirius.xsd')/xs:schema/@version"/></xsl:attribute>
+		<xsl:apply-templates/>
+	</xsl:copy>
+</xsl:template>
 
 <xsl:template match="network/DirectionsCache"/>
 

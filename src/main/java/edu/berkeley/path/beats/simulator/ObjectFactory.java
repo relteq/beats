@@ -292,6 +292,9 @@ public final class ObjectFactory {
         	throw new SiriusException("Unknown load error");
 		}
 
+		// check the scenario schema version
+		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
+
         // copy in input parameters ..................................................
         S.configfilename = configfilename;
 
