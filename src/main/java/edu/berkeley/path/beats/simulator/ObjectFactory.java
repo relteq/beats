@@ -254,8 +254,11 @@ public final class ObjectFactory {
     	
     	// create unmarshaller .......................................................
         try {
+		//Reset the classloader for main thread; need this if I want to run properly
+  		//with JAXB within MATLAB. (luis)
+		Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
         	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-            u = context.createUnmarshaller();
+	        u = context.createUnmarshaller();
         } catch( JAXBException je ) {
         	throw new SiriusException("Failed to create context for JAXB unmarshaller", je);
         }
@@ -603,20 +606,6 @@ public final class ObjectFactory {
 		return new edu.berkeley.path.beats.sensor.SensorLoopStation(myScenario,linkId);
 	}
 
-	/** Create a floating detector.
-	 * 
-	 * <p> This sensor models a sensor that moves with the traffic stream. This sensor type can be used
-	 * to model probe vehicles. The network and link ids in the parameter list correspond to the initial
-	 * position of the sensor.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return			Sensor The sensor object
-	 */
-	public static Sensor createSensor_Floating(Scenario myScenario,String linkId){
-		Sensor S = new edu.berkeley.path.beats.sensor.SensorFloating(myScenario,linkId);
-		return S;
-	}
 
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario element

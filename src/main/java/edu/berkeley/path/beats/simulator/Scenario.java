@@ -445,6 +445,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void saveToXML(String filename) throws SiriusException{
         try {
+		//Reset the classloader for main thread; need this if I want to run properly
+                //with JAXB within MATLAB. (luis)
+		Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
+	
         	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
         	Marshaller m = context.createMarshaller();
         	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
