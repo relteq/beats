@@ -260,7 +260,7 @@ public class Admin {
 			addControllerType("ML_TOLL_Reaction", "ML – Managed Lanes. Models drivers’ reaction to tolls.");
 			addControllerType("ML_TOLL_Pricing", "Controller that computes toll pricing.");
 			addControllerType("ML_Shoulder", "Controller that opens a shoulder as an extra lane based on traffic condition.");
-			addControllerType("SIG_TOD", "Signal controller based on TOD plan (also known as “pre-timed signal control”.");
+			addControllerType("SIG_Pretimed", "Pre-timed signal control.");
 			addControllerType("SIG_Actuated", "Actuated signal control.");
 			addControllerType("SIG_Synchronized", "Actuated signal control synchronized over multiple intersections.");
 			addControllerType("SIG_TUC", "One of the adaptive signal control algorithms. TUC stands for Traffic-responsive Urban Control.");

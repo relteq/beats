@@ -101,7 +101,7 @@
 			<xsl:when test="string(.)='CRM_swarm'">CRM_SWARM</xsl:when>
 			<xsl:when test="string(.)='CRM_hero'">CRM_HERO</xsl:when>
 			<xsl:when test="string(.)='VSL_time_of_day'">VSL_TOD</xsl:when>
-			<xsl:when test="string(.)='SIG_pretimed'">SIG_TOD</xsl:when>
+			<xsl:when test="string(.)='SIG_pretimed'">SIG_Pretimed</xsl:when>
 			<xsl:when test="string(.)='SIG_actuated'">SIG_Actuated</xsl:when>
 			<xsl:otherwise><xsl:value-of select="string(.)"/></xsl:otherwise>
 		</xsl:choose>

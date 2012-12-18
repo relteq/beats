@@ -88,7 +88,7 @@ public class Controller implements InterfaceComponent,InterfaceController {
 	  /** see {@link ObjectFactory#createController_CRM_SWARM}				*/ 	CRM_SWARM,
       /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
       /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_TOD,
-      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_TOD,
+      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed,
       /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_Actuated };
 	
 	/////////////////////////////////////////////////////////////////////

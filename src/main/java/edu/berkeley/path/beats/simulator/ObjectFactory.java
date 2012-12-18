@@ -98,7 +98,7 @@ public final class ObjectFactory {
 				C = new Controller_VSL_Time_of_Day();
 				break;
 				
-			case SIG_TOD:
+			case SIG_Pretimed:
 				C = new Controller_SIG_Pretimed();
 				break;
 				
