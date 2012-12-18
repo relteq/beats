@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -42,7 +43,6 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	private double[] todMeteringRates_normalized;			
 	private double[] todActivationTimes;
 	private int todActivationIndx;	
-	
 	
 	private boolean istablevalid;
 
@@ -73,7 +73,10 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
@@ -127,7 +130,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 				istablevalid=false;					
 		}			
 		
-		if (todActivationTimes[0]>this.myStartTime())
+		if (todActivationTimes[0]>this.getFirstStartTime())
 			istablevalid=false;
 		}
 	

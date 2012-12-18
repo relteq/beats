@@ -31,6 +31,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public final class SiriusMath {
 	
 	private static Random random = new Random();

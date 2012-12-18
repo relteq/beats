@@ -156,8 +156,8 @@
         <xs:element ref="description" minOccurs="0" maxOccurs="1" />
         <xs:element ref="settings" minOccurs="0"  maxOccurs="1" />
         <xs:element ref="NetworkList" minOccurs="0" maxOccurs="1" />
-	<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
-	<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
+		<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
+		<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="SplitRatioProfileSet" minOccurs="0" maxOccurs="1" />
@@ -472,7 +472,7 @@
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
-					<xs:pattern value="static_point|static_area|moving_point"/>
+					<xs:pattern value="loop|magnetic|radar|camera|TMC"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>
@@ -742,7 +742,7 @@
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
-					<xs:pattern value="IRM_alinea|IRM_time_of_day|IRM_traffic_responsive|CRM_swarm|CRM_hero|VSL_time_of_day|SIG_pretimed|SIG_actuated"/>
+					<xs:pattern value="IRM_ALINEA|IRM_TOD|IRM_TOS|CRM_SWARM|CRM_HERO|VSL_TOD|SIG_Pretimed|SIG_Actuated"/>
 				  </xs:restriction>
 				</xs:simpleType>
 			  </xs:attribute>

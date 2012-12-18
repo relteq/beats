@@ -10,6 +10,11 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
@@ -34,7 +39,7 @@ public class ScenarioUtil {
 		try {
 			return factory.newSchema(ScenarioUtil.class.getClassLoader().getResource(resourceName));
 		} catch (org.xml.sax.SAXException exc) {
-			throw new SiriusException(exc);
+			throw new SiriusException("Failed to load a schema '" + resourceName + "'", exc);
 		}
 	}
 
@@ -56,6 +61,52 @@ public class ScenarioUtil {
 		return getSchema("sirius_output.xsd");
 	}
 
+	private static String getSchemaVersion(String resourceName) throws SiriusException {
+		XMLStreamReader xmlsr;
+		try {
+			xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(ScenarioUtil.class.getClassLoader().getResourceAsStream(resourceName));
+		} catch (XMLStreamException exc) {
+			throw new SiriusException(exc);
+		} catch (FactoryConfigurationError exc) {
+			throw new SiriusException(exc);
+		}
+		try {
+			while (xmlsr.hasNext()) {
+				if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
+					javax.xml.namespace.QName qname = xmlsr.getName();
+					if ("schema".equals(qname.getLocalPart()) && XMLConstants.W3C_XML_SCHEMA_NS_URI.equals(qname.getNamespaceURI()))
+						return xmlsr.getAttributeValue(null, "version");
+				}
+				xmlsr.next();
+			}
+		} catch (XMLStreamException exc) {
+			throw new SiriusException(exc);
+		} finally {
+			try {
+				xmlsr.close();
+			} catch (XMLStreamException exc) {
+				logger.error("Error closing XML stream for resource '" + resourceName + "'", exc);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @return the input (scenario) XML schema version
+	 * @throws SiriusException
+	 */
+	public static String getSchemaVersion() throws SiriusException {
+		return getSchemaVersion("sirius.xsd");
+	}
+
+	/**
+	 * @return the output XML schema version
+	 * @throws SiriusException
+	 */
+	public static String getOutputSchemaVersion() throws SiriusException {
+		return getSchemaVersion("sirius_output.xsd");
+	}
+
 	/**
 	 * Loads a scenario from an XML file
 	 * @param filename input file name
@@ -69,12 +120,35 @@ public class ScenarioUtil {
 			javax.xml.validation.Schema schema = getSchema();
 			unmarshaller.setSchema(schema);
 			edu.berkeley.path.beats.simulator.ObjectFactory.setObjectFactory(unmarshaller, new edu.berkeley.path.beats.jaxb.ObjectFactory());
-			return (edu.berkeley.path.beats.jaxb.Scenario) unmarshaller.unmarshal(new FileInputStream(filename));
+			edu.berkeley.path.beats.jaxb.Scenario scenario = (edu.berkeley.path.beats.jaxb.Scenario) unmarshaller.unmarshal(new FileInputStream(filename));
+			checkSchemaVersion(scenario);
+			return scenario;
 		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc);
 		}
+	}
+
+	/**
+	 * Reports an error if the scenario schemaVersion attribute value
+	 * differs from the input schema version
+	 * @param scenario the scenario to check
+	 */
+	public static void checkSchemaVersion(edu.berkeley.path.beats.jaxb.Scenario scenario) {
+		String schema_version = null;
+		try {
+			schema_version = getSchemaVersion();
+		} catch (SiriusException exc) {
+			logger.error("Failed to retrieve a schema version");
+			return;
+		}
+		if (null == schema_version)
+			logger.warn("Schema version is NULL");
+		else if (null == scenario.getSchemaVersion())
+			logger.warn("Scenario schema version is NULL");
+		else if (!scenario.getSchemaVersion().equals(schema_version))
+			logger.warn("Scenario schema version " + scenario.getSchemaVersion() + " is incorrect. Should be: " + schema_version);
 	}
 
 	/**
@@ -85,7 +159,7 @@ public class ScenarioUtil {
 	 */
 	public static void save(edu.berkeley.path.beats.jaxb.Scenario scenario, String filename) throws SiriusException {
 		if (null == scenario.getSchemaVersion()) {
-			String schemaVersion = edu.berkeley.path.beats.Version.get().getSchemaVersion();
+			String schemaVersion = getSchemaVersion();
 			logger.debug("Schema version was not set. Assuming current version: " + schemaVersion);
 			scenario.setSchemaVersion(schemaVersion);
 		}

@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -101,7 +102,10 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -277,12 +281,6 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 			SiriusErrorLog.addError("Controller has an invalid table.");			
 	}
 	
-	
-	@Override
-	public void reset() {
-		super.reset();
-	}
-
 	@Override
 	public void update() {
 		
@@ -331,8 +329,6 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 
 	}
 	
-	
-
 	@Override
 	public boolean register() {
 		return registerFlowController(onramplink,0);

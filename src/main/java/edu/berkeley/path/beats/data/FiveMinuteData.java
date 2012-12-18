@@ -65,7 +65,7 @@ public class FiveMinuteData {
 	}
 	
 	/** get aggregate flow value in [veh/sec/lane]
-	 * @param time index
+	 * @param i
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getAggFlwInVPSPL(int i){
@@ -79,13 +79,17 @@ public class FiveMinuteData {
 			return Float.NaN;
 		}
 	}
-	
+
+	/** get aggregate flow value in [veh/sec]
+	 * @param i
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
 	public float getAggFlwInVPS(int i){
 		return getAggFlwInVPSPL(i)*lanes;
 	}
 
 	/** get aggregate speed value in [m/s]
-	 * @param time index
+	 * @param i
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getAggSpd(int i){
@@ -101,7 +105,7 @@ public class FiveMinuteData {
 	}	
 
 	/** get aggregate density value in [veh/meter/lane]
-	 * @param time index
+	 * @param i
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getAggDtyInVPMPL(int i){
@@ -115,7 +119,11 @@ public class FiveMinuteData {
 			return Float.NaN;
 		}
 	}
-	
+
+	/** get aggregate density value in [veh/meter]
+	 * @param i
+	 * @return a float, or <code>NaN</code> if something goes wrong.
+	 * */
 	public float getAggDtyInVPM(int i){
 		return getAggDtyInVPMPL(i)*lanes;
 	}
@@ -129,7 +137,7 @@ public class FiveMinuteData {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** add aggregate flow value in [veh/sec/lane]
-	 * @param value of flow
+	 * @param val
 	 * */
 	protected void addAggFlwInVPSPL(float val){
 		if(flw.isEmpty())
@@ -139,7 +147,7 @@ public class FiveMinuteData {
 	}
 	
 	/** add aggregate speed value in [m/s]
-	 * @param value of speed
+	 * @param val
 	 * */
 	protected void addAggSpd(float val){
 		if(spd.isEmpty())
@@ -153,9 +161,9 @@ public class FiveMinuteData {
 	}
 	
 	/** add array of per lane flow values in [veh/sec/lane]
-	 * @param array of flow values.
-	 * @param index to begining of sub-array.
-	 * @param index to end of sub-array.
+	 * @param row array of flow values.
+	 * @param start index to begining of sub-array.
+	 * @param end index to end of sub-array.
 	 * */
 	protected void addPerLaneFlw(ArrayList<Float> row,int start,int end){
 		ArrayList<Float> x = new ArrayList<Float>();
@@ -165,9 +173,9 @@ public class FiveMinuteData {
 	}
 
 	/** add array of per lane speed values in [m/s]
-	 * @param array of speed values.
-	 * @param index to begining of sub-array.
-	 * @param index to end of sub-array.
+	 * @param row array of speed values.
+	 * @param start index to begining of sub-array.
+	 * @param end index to end of sub-array.
 	 * */
 	protected void addPerLaneSpd(ArrayList<Float> row,int start,int end){
 		ArrayList<Float> x = new ArrayList<Float>();
@@ -181,7 +189,7 @@ public class FiveMinuteData {
 	/////////////////////////////////////////////////////////////////////
 	
 	/** Write aggregate values to a text file.
-	 * @param File name.
+	 * @param filename File name.
 	 * */
 	public void writeAggregateToFile(String filename) throws Exception{
 		Writer out = new OutputStreamWriter(new FileOutputStream(filename+"_"+vds+".txt"));

@@ -1,3 +1,34 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 import java.math.BigDecimal;
@@ -63,6 +94,41 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
 		return 1;
 		
 	}
+
+    /**
+     * returns list of primary keys with values except exclusion, time stamp and aggregation
+     * @return string
+     * @throws TorqueException
+     * @throws DataSetException 
+     */
+    public String getListOfKeys(Record rec, String exclusion) throws TorqueException, DataSetException {
+    	
+    	String str = new String("");
+    	int n=1;
+    	
+    	ColumnMap[] columns = getTableMap().getColumns();
+    	
+    	for (int i=0; i< columns.length; i++) {
+
+    		if ( columns[i].isPrimaryKey() ) {
+    			
+    			if ( columns[i].getColumnName().equals("ts") 
+    					|| columns[i].getColumnName().equals("agg_type_id") 
+    					|| columns[i].getColumnName().equals(exclusion)) {
+    				// do not include time stamp or aggregation or the specified exclusion key
+    			}
+    			else  {
+    				    			
+    				// include key name and value
+    				
+    				str  += " AND " + columns[i].getColumnName() + "=" + rec.getValue(n++).asString() ;	
+    			}
+
+    		}
+    	}
+    		
+    	return str;
+    }
     
     /**
      * returns list of primary keys with values except time stamp and aggregation
@@ -102,23 +168,29 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
     	
     	
     	BigDecimal zero = new BigDecimal(0);
-    	
+    	ColumnMap[] columns;
 
     	try {
+    		columns = obj.getTableMap().getColumns();
+    		
 			for (int i=0; i< obj.getTableMap().getColumns().length; i++) {
-
-				if ( obj.getByPosition(i) == null ) {
-					
-					try {
-						obj.setByPosition(i, zero);
-					} catch (TorqueException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	    		
+				if ( columns[i].isPrimaryKey() ||  columns[i].isForeignKey() ) {
+	    			
+	    		} else {
+					if ( obj.getByPosition(i) == null ) {
+						
+						try {
+							obj.setByPosition(i, zero);
+						} catch (TorqueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
+	    		}
 			}
 		} catch (TorqueException e) {
 			// TODO Auto-generated catch block
@@ -198,10 +270,10 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
     			
     				// include key name and value
     				if (columns[i].getColumnName().equals("link_id")) {
-    					str  += " AND id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND id=" + rec.getValue(n).asString() ;	
     				} else 
     				if (columns[i].getColumnName().equals("network_id")) {
-    					str  += " AND network_id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND network_id=" + rec.getValue(n).asString() ;	
     				}
     					
     				n++;	
@@ -215,13 +287,48 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
     	return str;
     }
     	
+
+	 /**
+     * returns list of primary keys except time stamp and aggregation
+     * @return string
+     * @throws TorqueException
+     */
+    public String getListOfKeys() throws TorqueException {
     	
-    	   /**
-         * returns list of primary keys except time stamp and aggregation
-         * @return string
-         * @throws TorqueException
-         */
-        public String getListOfKeys() throws TorqueException {
+    	String str = new String("");
+    	
+    	ColumnMap[] columns = getTableMap().getColumns();
+    	
+    	for (int i=0; i< columns.length; i++) {
+
+    		if ( columns[i].isPrimaryKey() ) {
+    			
+    			if ( columns[i].getColumnName().equals("ts") 
+    					|| columns[i].getColumnName().equals("agg_type_id") 
+
+    					) {
+    				// do not include time stamp or aggregation
+    			}
+    			else  {
+    				// include key name
+    				if (str.length() > 1 ) str += ", ";
+    				
+    				str  += columns[i].getColumnName();	
+    			}
+
+    		}
+    		
+    	}
+    	  	   	
+	return str;
+}
+/**
+ * Form list of keys except exclusion, aggregation and timetamp
+ * @param exclusion
+ * @return
+ * @throws TorqueException
+ */
+        public String getListOfKeys(String exclusion) throws TorqueException {
         	
         	String str = new String("");
         	
@@ -231,7 +338,10 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
 
         		if ( columns[i].isPrimaryKey() ) {
         			
-        			if ( columns[i].getColumnName().equals("ts") || columns[i].getColumnName().equals("agg_type_id") ) {
+        			if ( columns[i].getColumnName().equals("ts") 
+        					|| columns[i].getColumnName().equals("agg_type_id") 
+        					|| columns[i].getColumnName().equals(exclusion) 
+        					) {
         				// do not include time stamp or aggregation
         			}
         			else  {
@@ -244,9 +354,7 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
         		}
         		
         	}
-        	  	
-    	  	
-    	
+        	  	   	
     	return str;
     }
         

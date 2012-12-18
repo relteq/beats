@@ -62,16 +62,11 @@ import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
  * <li> events, </li>
  * <li> controllers, </li>
  * <li> fundamental diagram profiles, </li>
- * <li> path segments, </li>
- * <li> decision points, </li>
- * <li> routes, </li>
- * <li> background demand profiles, and </li>
- * <li> OD demand profiles. </li>
+ * <li> destination networks, and </li>
+ * <li> demand profiles. </li>
 *  </ul>
-* @author Gabriel Gomes
-* @version VERSION NUMBER
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-@SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	/** @y.exclude */	protected static enum ModeType {  normal, 
@@ -92,11 +87,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
-	double outdt;
+	/** @y.exclude */	protected double outdt;
 
 	// Model uncertainty
-	protected double std_dev_flow = 0.0d;	// [veh]
-	protected boolean has_flow_unceratinty;
+	/** @y.exclude */	protected double std_dev_flow = 0.0d;	// [veh]
+	/** @y.exclude */	protected boolean has_flow_unceratinty;
 	
 	// data
 	private boolean sensor_data_loaded = false;
@@ -114,12 +109,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** populate methods copy data from the jaxb state to extended objects. 
-	 * They do not throw exceptions or report mistakes. Data errors should be 
-	 * circumvented and left for the validation to report.
-	 * @throws SiriusException 
-	 * @y.exclude
-	 */
+	/** @y.exclude */
 	protected void populate() throws SiriusException {
 		
 		// network list
@@ -256,10 +246,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 	}	
 	
-	/** 
-	 * @throws SiriusException 
-	 * @y.exclude
-	 */
+	/** @y.exclude */
 	protected void update() throws SiriusException {	
 
         // sample profiles .............................	
@@ -328,7 +315,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// excluded from API
+	// public but excluded from API
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
@@ -388,7 +375,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
-	 * @param simsettings the simulation settings
+	 * @param simsettings Contains start time, duration, output dt, and number of runs.
 	 * @param owr_props the output writer properties
 	 * @throws SiriusException 
 	 */
@@ -458,6 +445,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void saveToXML(String filename) throws SiriusException{
         try {
+		//Reset the classloader for main thread; need this if I want to run properly
+                //with JAXB within MATLAB. (luis)
+		Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
+	
         	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
         	Marshaller m = context.createMarshaller();
         	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -530,9 +521,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return vehtypenames;
 	}
 	
-	/** Vehicle type weights.
-	 * @return	Array of doubles with the weights of the vehicles types.
-	 */
+//	/** Vehicle type weights.
+//	 * @return	Array of doubles with the weights of the vehicles types.
+//	 */
 //	public Double [] getVehicleTypeWeights(){
 //		Double [] vehtypeweights = new Double [numVehicleTypes];
 //		if(getSettings()==null || getSettings().getVehicleTypes()==null)
@@ -913,7 +904,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// construct list of stations to extract from datafile 
 		for(Sensor sensor : sensorlist.sensors){
-			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -940,7 +931,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// distribute data to sensors
 		for(Sensor sensor : sensorlist.sensors){
 			
-			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;

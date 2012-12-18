@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	exclude-result-prefixes="xs">
 
-<xsl:output method="xml" version="1.0" indent="yes"/>
+<xsl:output method="xml" version="1.0" indent="yes" encoding="utf-8"/>
 
 <xsl:template match="*">
 	<xsl:copy>
@@ -26,6 +28,14 @@
 </xsl:template>
 
 <xsl:template match="@*" mode="params"/>
+
+<xsl:template match="scenario">
+	<xsl:copy>
+		<xsl:apply-templates select="@*"/>
+		<xsl:attribute name="schemaVersion"><xsl:value-of select="document('../../src/main/resources/sirius.xsd')/xs:schema/@version"/></xsl:attribute>
+		<xsl:apply-templates/>
+	</xsl:copy>
+</xsl:template>
 
 <xsl:template match="network/DirectionsCache"/>
 
@@ -70,6 +80,32 @@
 			</parameters>
 		</xsl:if>
 	</xsl:copy>
+</xsl:template>
+
+<xsl:template match="sensor/@type">
+	<xsl:attribute name="{name(.)}">
+		<xsl:choose>
+			<xsl:when test="string(.)='static_point'">loop</xsl:when>
+			<xsl:when test="string(.)='static_area'">camera</xsl:when>
+			<xsl:otherwise><xsl:value-of select="string(.)"/></xsl:otherwise>
+		</xsl:choose>
+	</xsl:attribute>
+</xsl:template>
+
+<xsl:template match="controller/@type">
+	<xsl:attribute name="{name(.)}">
+		<xsl:choose>
+			<xsl:when test="string(.)='IRM_alinea'">IRM_ALINEA</xsl:when>
+			<xsl:when test="string(.)='IRM_time_of_day'">IRM_TOD</xsl:when>
+			<xsl:when test="string(.)='IRM_traffic_responsive'">IRM_TOS</xsl:when>
+			<xsl:when test="string(.)='CRM_swarm'">CRM_SWARM</xsl:when>
+			<xsl:when test="string(.)='CRM_hero'">CRM_HERO</xsl:when>
+			<xsl:when test="string(.)='VSL_time_of_day'">VSL_TOD</xsl:when>
+			<xsl:when test="string(.)='SIG_pretimed'">SIG_Pretimed</xsl:when>
+			<xsl:when test="string(.)='SIG_actuated'">SIG_Actuated</xsl:when>
+			<xsl:otherwise><xsl:value-of select="string(.)"/></xsl:otherwise>
+		</xsl:choose>
+	</xsl:attribute>
 </xsl:template>
 
 <xsl:template match="sensor/data_sources">

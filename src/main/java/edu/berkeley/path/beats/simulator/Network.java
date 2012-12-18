@@ -28,16 +28,8 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.List;
 
-/** Network in a scenario. 
- * <p>
- * A network is a collection of links, nodes, sensors, and signals that is
- * a) connected and b) limited by terminal nodes on all source and sink links. 
- * All elements within the network can be referred to by element id at the 
- * network level, or by composite (network id,element id) at the scenario level.
- * This class provides access to individual elements (links, nodes,
- * sensors, and signals) and to lists of elements.
-* @author Gabriel Gomes
-* @version VERSION NUMBER
+/** Network class
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 

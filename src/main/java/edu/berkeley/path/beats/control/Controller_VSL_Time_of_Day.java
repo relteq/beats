@@ -43,32 +43,4 @@ public class Controller_VSL_Time_of_Day extends Controller {
 		this.myScenario = myScenario;
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
-	/////////////////////////////////////////////////////////////////////
-	
-	@Override
-	public void populate(Object jaxbobject) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean register() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void update() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean deregister() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

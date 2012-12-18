@@ -1,9 +1,41 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.torque.TorqueException;
@@ -13,6 +45,7 @@ import com.workingdogs.village.Record;
 
 
 import edu.berkeley.path.beats.om.LinkDataDetailedPeer;
+import edu.berkeley.path.beats.om.LinkDataTotalPeer;
 import edu.berkeley.path.beats.om.LinkPerformanceDetailedPeer;
 
 public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerformanceDetailed {
@@ -37,31 +70,49 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
 		LinkDataDetailed obj = new LinkDataDetailed();
 		
 		long timeDelta =0;
-		double timeDeltaInHours =0.0;
-				
-			LinkDataDetailedPeer.populateObject((Record)data.get(recordNumber), 1, obj);
-			
-			setPrimaryKey(obj.getPrimaryKey());
-			
-			
-			if ( obj.getOutFlow() != null )
-				setVmt(obj.getOutFlow().multiply(BigDecimal.valueOf(linkLength)));
-			
+		double timeDeltaInSeconds =0.0;
+		
+		
+		LinkDataDetailedPeer.populateObject((Record)data.get(recordNumber), 1, obj);
 
-			
-			if ( previousTs > 0 ) timeDelta = getTs().getTime() - previousTs;
-			timeDeltaInHours = timeDelta / 1000.0/60.0/60.0;
-			
-			if ( obj.getDensity() != null )
-				setVht(obj.getDensity().multiply(BigDecimal.valueOf(timeDeltaInHours))); 
-			
-			
-			if ( obj.getSpeed() != null && getVht() !=null && getVmt() !=null )
-				setDelay(PerformanceData.delay(getVht(), getVmt(), obj.getSpeed()));
+		setPrimaryKey(obj.getPrimaryKey());
 
-			
-			setNew(true);
-			save();	
+		if ( previousTs > 0 ) timeDelta = getTs().getTime() - previousTs;
+		timeDeltaInSeconds = timeDelta / 1000.0;
+
+		
+		BigDecimal freeFlowSpeed = LinkDataTotalPeer.retrieveByPK(
+				obj.getNetworkId(), 
+				obj.getLinkId(), 
+				obj.getAppRunId(), 
+				obj.getAppTypeId(), 
+				obj.getTs(), 
+				obj.getAggTypeId(), 
+				obj.getValueTypeId()
+				).getFreeFlowSpeed();		
+		
+		// Equation 3.5 
+		if ( obj.getOutFlow() != null )
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVmt(new BigDecimal(obj.getDensity().doubleValue() * obj.getSpeed().doubleValue() * /* linkLength */ timeDeltaInSeconds) );
+		else
+			setVmt(new BigDecimal(0));
+		
+		// Equation 3.6
+		if ( obj.getDensity() != null )
+			// According to Alex K, the Density value in the database is already multiplied by the length of the link
+			setVht( new BigDecimal(obj.getDensity().doubleValue() * /* linkLength */ timeDeltaInSeconds) ); 
+		else
+			setVht(new BigDecimal(0));
+		
+		// Equation 3.7
+		if ( obj.getSpeed() != null && getVht() !=null && getVmt() !=null )
+			setDelay(PerformanceData.delay(getVht(), getVmt(), freeFlowSpeed));
+		else
+			setDelay(new BigDecimal(0));
+		
+		setNew(true);
+		save();	
 	
 		return getTs().getTime();
 	}
@@ -150,29 +201,37 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
     	
     	
     	BigDecimal zero = new BigDecimal(0);
+    	ColumnMap[] columns;
     	
 
     	try {
+    		
+    		columns = obj.getTableMap().getColumns();
+    		
 			for (int i=0; i< obj.getTableMap().getColumns().length; i++) {
 
-				if ( obj.getByPosition(i) == null ) {
-					
-					try {
-						obj.setByPosition(i, zero);
-					} catch (TorqueException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+	    		if ( columns[i].isPrimaryKey() ||  columns[i].isForeignKey() ) {
+	    			
+	    		} else {
+					if ( obj.getByPosition(i) == null ) {
+						
+						try {
+							obj.setByPosition(i, zero);
+						} catch (TorqueException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-				}
+	    		}
 			}
+			
 		} catch (TorqueException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-    		   	
+		}  	
 	
     }
     
@@ -246,10 +305,10 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
     			
     				// include key name and value
     				if (columns[i].getColumnName().equals("link_id")) {
-    					str  += " AND id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND id=" + rec.getValue(n).asString() ;	
     				} else 
     				if (columns[i].getColumnName().equals("network_id")) {
-    					str  += " AND network_id=\'" + rec.getValue(n).asString() + "\'";	
+    					str  += " AND network_id" + rec.getValue(n).asString() ;	
     				}
     					
     				n++;	
@@ -298,7 +357,42 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
     	return str;
     }
         
+        /**
+         * Form list of keys except exclusion, aggregation and timetamp
+         * @param exclusion
+         * @return
+         * @throws TorqueException
+         */
+                public String getListOfKeys(String exclusion) throws TorqueException {
+                	
+                	String str = new String("");
+                	
+                	ColumnMap[] columns = getTableMap().getColumns();
+                	
+                	for (int i=0; i< columns.length; i++) {
 
+                		if ( columns[i].isPrimaryKey() ) {
+                			
+                			if ( columns[i].getColumnName().equals("ts") 
+                					|| columns[i].getColumnName().equals("agg_type_id") 
+                					|| columns[i].getColumnName().equals(exclusion) 
+                					) {
+                				// do not include time stamp or aggregation
+                			}
+                			else  {
+                				// include key name
+                				if (str.length() > 1 ) str += ", ";
+                				
+                				str  += columns[i].getColumnName();	
+                			}
+
+                		}
+                		
+                	}
+                	  	   	
+            	return str;
+            }
+         
 
 	/**
 	 * returns column number for given name
@@ -324,5 +418,38 @@ public class LinkPerformanceDetailed extends edu.berkeley.path.beats.om.LinkPerf
      	    	 	
 		return 0;
      }
-       
+     /**
+      * returns list of primary keys with values except exclusion, time stamp and aggregation
+      * @return string
+      * @throws TorqueException
+      * @throws DataSetException 
+      */
+     public String getListOfKeys(Record rec, String exclusion) throws TorqueException, DataSetException {
+     	
+     	String str = new String("");
+     	int n=1;
+     	
+     	ColumnMap[] columns = getTableMap().getColumns();
+     	
+     	for (int i=0; i< columns.length; i++) {
+
+     		if ( columns[i].isPrimaryKey() ) {
+     			
+     			if ( columns[i].getColumnName().equals("ts") 
+     					|| columns[i].getColumnName().equals("agg_type_id") 
+     					|| columns[i].getColumnName().equals(exclusion)) {
+     				// do not include time stamp or aggregation or the specified exclusion key
+     			}
+     			else  {
+     				    			
+     				// include key name and value
+     				
+     				str  += " AND " + columns[i].getColumnName() + "=" + rec.getValue(n++).asString() ;	
+     			}
+
+     		}
+     	}
+     		
+     	return str;
+     }      
 }

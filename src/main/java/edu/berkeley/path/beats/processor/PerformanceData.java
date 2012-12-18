@@ -1,3 +1,34 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 import java.io.IOException;
@@ -16,10 +47,9 @@ public class PerformanceData extends AggregateData {
 
 	
 	public static void doPerformance(String[] arguments) throws TorqueException, IOException, DataSetException  {
-		
-
-		doPerformance("link_performance_detailed", arguments);
+			
 		doPerformance("link_performance_total", arguments);
+		doPerformance("link_performance_detailed", arguments);
 		
 	}
 	
@@ -48,14 +78,15 @@ public class PerformanceData extends AggregateData {
 		
 		reportToStandard("Unique key combinations: " + listOfKeys.size());
 		
+		
+		// Clean previously processed data
+		AggregateData.CleanPreviousAggregation(table, arguments,(String)null);
+		
 		// Loop by key combinations 
 			
 		for (int i=0; i < listOfKeys.size(); i++ ) {
 			
 			nProcessed=0;
-			
-			// Clean previously processed data
-			AggregateData.CleanPreviousAggregation(table, arguments,(String)null);
 			
 			if ( getValueFromDB("COUNT(ts)", table, arguments, (Record)listOfKeys.get(i), "raw").asInt()  > 0 ) {
 				
@@ -67,9 +98,18 @@ public class PerformanceData extends AggregateData {
 					try {
 						
 						// Get data from the source table
+						String mainQuery = setKeys(query, getSourceTable(table), (Record)listOfKeys.get(i));
+						
+						originalData = BasePeer.executeQuery( "SELECT * " + mainQuery + " ORDER BY ts ASC" );
+						
 
-						originalData = BasePeer.executeQuery( "SELECT * " + setKeys(query, getSourceTable(table), (Record)listOfKeys.get(i)) + " ORDER BY ts ASC" );
-
+						Record r;
+/*						
+						for ( int j =1; j<=((Record)originalData.get(0)).size(); j++) {
+							AggregateData.reportToStandard("Raw data: j=" + j + " " +   ((Record)originalData.get(0)).getValue(j).asString() );
+						}
+						
+*/						
 						if (originalData.size() > 0 ) {
 							
 							long 	timestamp = 0;
@@ -152,12 +192,17 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 	 * @param aggregation
 	 * @return delay
 	 */
-	public static BigDecimal delay(BigDecimal vht, BigDecimal vmt, BigDecimal speed) {
+	public static BigDecimal delay(BigDecimal vht, BigDecimal vmt, BigDecimal freeFlowSpeed) {
 		
-		
-		if ( speed.doubleValue() <= 0 )  return null;
-		else 
-		return vht.subtract(vmt.divide(speed));
+		if ( freeFlowSpeed == null || freeFlowSpeed.doubleValue() <= 1E-10 )  return new BigDecimal(0);
+		else {
+
+			double x = vht.doubleValue() - vmt.doubleValue()/freeFlowSpeed.doubleValue();
+			
+			if ( x <1E-3 ) x = 0.0; // assuming that delay less than 1 ms does not make sense 
+			
+			return new BigDecimal(x);
+		}
 		
 	}
 	
@@ -172,14 +217,12 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 	public static BigDecimal productivityLoss(BigDecimal out_flow, BigDecimal capacity, int lanes, double length, long timeDelta) {
 		
 
-		if ( capacity.doubleValue() <= 0 )  return null;
+		if ( capacity.doubleValue() <= 1E-10 )  return null;
 		else {
-			// need to ad logic for  v and V
+
+			// According to Alex K, out_flow is per output time delta not per sec
 			
-			return  (  BigDecimal.valueOf(
-											( 1.0 -  (out_flow.doubleValue() / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0/60.0/60.0 
-										 ) 
-					);
+			return  (  BigDecimal.valueOf(( 1.0 -  (out_flow.doubleValue()/timeDelta / capacity.doubleValue()) ) * lanes * length * timeDelta /1000.0 ) );
 			
 			}
 		}
@@ -232,10 +275,13 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		
 		try {
 			
-			return ((Record) BasePeer.executeQuery("SELECT lanes FROM links WHERE length>0 "+ twoKeys).get(0)).getValue(1).asInt();
+			twoKeys= twoKeys.replaceFirst("AND id", "AND link_id"); // link_lanes table uses link_id as a key while links table uses id for same thing.  Isn't it stupid?
+			
+			return ((Record) BasePeer.executeQuery("SELECT lanes FROM link_lanes WHERE lanes > 0 "+ twoKeys).get(0)).getValue(1).asInt();
 					
 		} catch (Exception e) {
 			
+			e.printStackTrace();
 			return 0;
 		}
 		
@@ -287,12 +333,14 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 			}
 						
 			try {
+				
 
 				return ((Record) BasePeer.executeQuery("SELECT length FROM links WHERE length>0"+ twoKeys).get(0)).getValue(1).asDouble();
 				
 				
 			} catch (Exception e) {
 				
+				e.printStackTrace();
 				return 0.0;
 			}
 			
@@ -370,7 +418,7 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 			
 		
 		/**
-		 * calculates Actual Travel Time and Worst Travel Time
+		 * calculates Actual Travel Time and Worst Travel Time.  Equation 3.4
 		 * @param speedData
 		 * @param linkLength
 		 * @param worst = 1 for regular speed and worst = 2 for worst speed
@@ -379,7 +427,8 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		public static BigDecimal actualTravelTime(int recordNumber, List speedData, double linkLength, int speedColumn, int tsColumn ) {
 			
 			double distance =0.0;
-			BigDecimal v;		
+			BigDecimal v;
+			double remainingTravelTime;
 		
 			try {
 				
@@ -388,23 +437,31 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 								
 					v = ((Record)speedData.get(i)).getValue(speedColumn).asBigDecimal() ;
 					 
-					 if ( v != null  ) distance += v.doubleValue() * getRawTimeDeltaInHours(speedData , i, tsColumn);								
+					 if ( v != null  ) distance += v.doubleValue() * getRawTimeDeltaInSeconds(speedData , i, tsColumn);								
 					
-					if ( distance >= linkLength ) {
+					if ( distance >= linkLength ) {						
 						
-						// stop calculation
-						return BigDecimal.valueOf(getRawTimeDeltaInHours(speedData, recordNumber, i, tsColumn));
+						if ( v.doubleValue()>1E-10 ) {			
+							
+							remainingTravelTime = (distance - linkLength)/v.doubleValue();
+						}
+						else 
+							remainingTravelTime = 0.0;
+						
+						// stop calculation.  
+						return BigDecimal.valueOf(getRawTimeDeltaInSeconds(speedData, recordNumber, i, tsColumn) + remainingTravelTime);
 						
 					}
 				}
 				
-				return null;
+				return new BigDecimal(0);
 				
 			} catch (DataSetException e) {
 				
-				return null;
+				return new BigDecimal(0);
 			}
 		}
+		
 		
 		
 		/**
@@ -413,32 +470,33 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		 * @param recordNumber
 		 * @return time delta in hours
 		 */
-		public static double getRawTimeDeltaInHours(List speedData, int recordNumber, int tsColumn ) {
+		public static double getRawTimeDeltaInSeconds(List speedData, int recordNumber, int tsColumn ) {
 
 			if ( recordNumber < speedData.size() - 1 ) {
 
-				return getRawTimeDeltaInHours(speedData, recordNumber, recordNumber+1, tsColumn );
+				return getRawTimeDeltaInSeconds(speedData, recordNumber, recordNumber+1, tsColumn );
 			}
 			else {
 				
-				return getRawTimeDeltaInHours(speedData, recordNumber-1, recordNumber, tsColumn );	
+				return getRawTimeDeltaInSeconds(speedData, recordNumber-1, recordNumber, tsColumn );	
 			}
 
 		}
+		
 		
 		/**
 		 * get raw time interval for a specific record number (it may change from record to record)
 		 * @param speedData
 		 * @param recordNumber
-		 * @return time delta in hours
+		 * @return time delta in seconds
 		 */
-		public static double getRawTimeDeltaInHours(List speedData, int recordNumber1, int recordNumber2, int tsColumn ) {
+		public static double getRawTimeDeltaInSeconds(List speedData, int recordNumber1, int recordNumber2, int tsColumn ) {
 					
 			try {		
 
 				return ((double)( ((Record)speedData.get(recordNumber2)).getValue(tsColumn).asTimestamp().getTime() 
 						- ((Record)speedData.get(recordNumber1)).getValue(tsColumn).asTimestamp().getTime()) )
-						/1000.0/60.0/60.0;
+						/1000.0;
 		
 			} catch (DataSetException e) {
 				
@@ -446,4 +504,5 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 			}			
 
 		}
+	
 }

@@ -430,11 +430,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 	
 	// Link type ........................
-	
+
+	/** Type of the link */
 	public Link.Type getMyType() {
 		return myType;
 	}
 	
+	/** Evaluate whether a link is of the freeway type */
 	public static boolean isFreewayType(Link link){
 		
 		if(link==null)
@@ -447,7 +449,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				linktype.compareTo(Link.Type.onramp)!=0 &&
 				linktype.compareTo(Link.Type.street)!=0;		
 	}
-	
 	
 	// Link geometry ....................
 	
@@ -502,6 +503,17 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
+	/** Number of vehicles for a given vehicle type in normalized units (vehicles/link). 
+	 * @return Number of vehicles of a given vehicle type in the link. 0 if something goes wrong.
+	 */
+	public double getDensityInVeh(int ensemble,int vehicletype) {
+		try{
+			return density[ensemble][vehicletype];
+		} catch(Exception e){
+			return 0d;
+		}
+	}
+	
 	/** Total of vehicles in normalized units (vehicles/link). 
 	 * The return value equals the sum of {@link Link#getDensityInVeh}.
 	 * @return total number of vehicles in the link. 0 if something goes wrong.
@@ -750,7 +762,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			density[ensemble][i] = x[i];
 	}
 
-	/**
+	/** Get the density in [veh] for a given ensemble and vehicle type.
 	 * @param ensemble number of ensemble
 	 * @param vt_ind vehicle type index
 	 * @return density for the given ensemble and vehicle type [vehicles]
@@ -759,7 +771,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return density[ensemble][vt_ind];
 	}
 
-	/**
+	/** Flow entering the link in [veh] for a given ensemble and vehicle type.
 	 * @param ensemble number of ensemble
 	 * @param vt_ind vehicle type index
 	 * @return input flow for the given ensemble and vehicle type [vehicles]

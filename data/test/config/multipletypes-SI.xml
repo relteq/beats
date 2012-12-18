@@ -196,10 +196,14 @@
         <demandProfile knob="1" dt="300" link_id_origin="-1">0.0277778:0.0138889</demandProfile>
     </DemandProfileSet>
     <ControllerSet>
+<<<<<<< HEAD
         <controller type="IRM_alinea" id="-1" dt="5" enabled="true">
             <parameters>
                 <parameter name="gain" value="22.352"/>
             </parameters>
+=======
+        <controller type="IRM_ALINEA" id="-1" dt="5" enabled="true">
+>>>>>>> master
             <targetElements>
                 <scenarioElement type="link" id="-6"/>
             </targetElements>

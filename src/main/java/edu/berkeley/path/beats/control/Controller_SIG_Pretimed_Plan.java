@@ -180,6 +180,4 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 		}
 	}
 
-	
-	
 }

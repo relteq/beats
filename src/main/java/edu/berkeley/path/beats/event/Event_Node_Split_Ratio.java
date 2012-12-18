@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.event;
 
 import java.util.ArrayList;
 
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
@@ -80,6 +81,9 @@ public class Event_Node_Split_Ratio extends Event {
 	// InterfaceEvent
 	/////////////////////////////////////////////////////////////////////
 
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 

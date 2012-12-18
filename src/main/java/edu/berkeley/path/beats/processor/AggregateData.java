@@ -1,3 +1,34 @@
+/**
+ * Copyright (c) 2012, Regents of the University of California
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *   Redistributions of source code must retain the above copyright notice,
+ *   this list of conditions and the following disclaimer.
+ *   Redistributions in binary form must reproduce the above copyright notice,
+ *   this list of conditions and the following disclaimer in the documentation
+ *   and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ **/
+
+/****************************************************************************/
+/************        Author: Alexey Goder alexey@goder.com  *****************/
+/************                    Dec 10, 2012               *****************/
+/****************************************************************************/
+
 package edu.berkeley.path.beats.processor;
 
 
@@ -48,6 +79,7 @@ public class AggregateData extends OutputToCSV {
 		doAggregate(table, arguments, "1day");
 		doAggregate(table, arguments, "total");
 		
+		
 	}
 	
 	/**
@@ -87,7 +119,7 @@ public class AggregateData extends OutputToCSV {
 			List aggList;
 			try {
 				
-				aggList = BasePeer.executeQuery("SELECT id FROM aggregation_types WHERE description=\'" + aggregation + "\'");
+				aggList = BasePeer.executeQuery("SELECT id FROM aggregation_types WHERE name=\'" + aggregation + "\'");
 				
 				
 				try {
@@ -102,7 +134,7 @@ public class AggregateData extends OutputToCSV {
 						newId = ((Record)BasePeer.executeQuery("SELECT MAX(id) FROM aggregation_types ").get(0)).getValue(1).asLong() + 1;
 						
 						obj.setId(newId);
-						obj.setDescription(aggregation);
+						obj.setName(aggregation);
 						obj.setCreatedBy("Alexey");
 						obj.setCreated(new java.util.Date());
 						try {
@@ -149,7 +181,7 @@ public class AggregateData extends OutputToCSV {
 		
 		CleanPreviousAggregation(table, arguments,  aggregationId);
 		
-		String aggregationColumns = getAggregationColumns(table);
+		String aggregationColumns = listToStringForAggregation(getAggregationColumns(table));
 		
 		long readStartTime=0, readAverage=0, numOfReads=0;
 		 
@@ -208,11 +240,7 @@ public class AggregateData extends OutputToCSV {
 				try {
 										
 					readStartTime = System.currentTimeMillis();
-					
-					
-					// reportToStandard("Main Query: " + "SELECT" + getAggregationColumns(table ) + currentQuery );
-					//reportToStandard("Rows for aggregation: " + ((Record)BasePeer.executeQuery("SELECT COUNT(TS) " + currentQuery).get(0)).getValue(1).asInt());
-					
+										
 					aggregatedData = BasePeer.executeQuery("SELECT" + aggregationColumns + currentQuery); // typical execution time 6 ms
 					
 					readAverage += (System.currentTimeMillis()- readStartTime);
@@ -311,36 +339,29 @@ public static long getAggregationInMilliseconds(String aggregation) {
 	 * @throws Exception
 	 */
 			
-	public static String getAggregationColumns(String table )  {
+	public static ArrayList<String> getAggregationColumns(String table )  {
 		
 		if ( table.equals("link_data_total") ) {
-	
-			LinkDataTotal temp = new LinkDataTotal();
 			
-			return listToString(temp.getColumnsForAggreagtion());			
+			return (new LinkDataTotal()).getColumnsForAggreagtion();			
 				
 		} else
 		if ( table.equals("link_data_detailed") ) {
 
-			LinkDataDetailed temp = new LinkDataDetailed();
-			
-			return listToString(temp.getColumnsForAggreagtion());	
+			return (new LinkDataDetailed()).getColumnsForAggreagtion();	
 			
 		} else
 		if ( table.equals("link_performance_detailed") ) {
-
-			LinkPerformanceDetailed temp = new LinkPerformanceDetailed();
 			
-			return listToString(temp.getColumnsForAggreagtion());			
+			return (new LinkPerformanceDetailed()).getColumnsForAggreagtion();			
 			
 		} else
 		if ( table.equals("link_performance_total") ) {
 			
-			LinkPerformanceTotal temp = new LinkPerformanceTotal();
-			
-			return listToString(temp.getColumnsForAggreagtion());				} 
+			return (new LinkPerformanceTotal()).getColumnsForAggreagtion();				
+		} 
 		
-		return "*";
+		return null;
 	}
 	
 	/**
@@ -402,9 +423,22 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 	
 }
 
+/**
+ * adds keys to the selection where statement
+ * @param query
+ * @param table
+ * @param record
+ * @return
+ */
+public static String setKeys(String query,String table, Record rec, String exclusion) {
 	
+	if ( query.indexOf("WHERE") < 0 ) return query += " WHERE " + getListOfKeys(table, rec, exclusion);
+		
+		return query + getListOfKeys(table, rec, exclusion);
+	
+}
 	/**
-	 * adds link_id and network_id to the selection where statement
+	 * adds keys to the selection where statement
 	 * @param query
 	 * @param table
 	 * @param record
@@ -434,7 +468,50 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 	}
 				
 		
+	/**
+	 * returns list of keys for SELECT statement
+	 * @param table
+	 * @return String
+	 */
+	public static String getListOfKeys(String table, String exclusion)  {
+		
+		try {	
+			
+			if ( table.equals("link_data_total") ) {		
+	
+				LinkDataTotal row = new LinkDataTotal();
+	
+					return row.getListOfKeys(exclusion);
+	
+				
+			} else
+			if ( table.equals("link_data_detailed") ) {
+	
+				LinkDataDetailed row = new LinkDataDetailed();
+				return row.getListOfKeys(exclusion);
+				
+			} else
+			if ( table.equals("link_performance_detailed") ) {
+	
+				LinkPerformanceDetailed row = new LinkPerformanceDetailed();
+				return row.getListOfKeys(exclusion);
+				
+			} else
+			if ( table.equals("link_performance_total") ) {
+	
+				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys(exclusion);
+			} 
+		
+		} catch (TorqueException e) {
 
+
+			return "*";
+		}
+		
+		return "*";
+		
+	}
 	
 	/**
 	 * returns list of keys for SELECT statement
@@ -480,7 +557,54 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 		return "*";
 		
 	}
+
 	
+	/**
+	 * returns list of keys for WHERE statement
+	 * @param table
+	 * @return String
+	 */
+	public static String getListOfKeys(String table, Record rec, String exclusion)  {
+		
+		try {	
+			
+			if ( table.equals("link_data_total") ) {		
+	
+				LinkDataTotal row = new LinkDataTotal();				
+				return row.getListOfKeys(rec,exclusion);				
+				
+			} else
+			if ( table.equals("link_data_detailed") ) {
+	
+				LinkDataDetailed row = new LinkDataDetailed();
+				return row.getListOfKeys(rec,exclusion);
+				
+			} else
+			if ( table.equals("link_performance_detailed") ) {
+	
+				LinkPerformanceDetailed row = new LinkPerformanceDetailed();
+				return row.getListOfKeys(rec,exclusion);
+				
+			} else
+			if ( table.equals("link_performance_total") ) {
+	
+				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys(rec,exclusion);
+			} 
+		
+		} catch (TorqueException e) {
+
+
+			return " ";
+		}
+		catch (DataSetException e) {
+			return " ";
+		}
+
+		
+		return " ";
+		
+	}
 	
 	/**
 	 * returns list of keys for WHERE statement
@@ -529,13 +653,35 @@ public static String setTimeInterval(String query, long time1, long time2)	{
 		
 	}
 	
-	  
 	   /**
-	    * Convert list to a command usable in a select query
+	    * Convert list to a command usable in a select query for report
 	    * @param colList
 	    * @return String
 	    */
 	   public static String listToString(ArrayList<String> colList ) {
+		   
+		   if ( colList==null ) return " * ";
+		   
+		   String str = new String("");
+		
+		   for (int i=0; i<colList.size(); i++) {
+			   
+			   if ( i>0 ) str += ", ";
+			   str += colList.get(i);
+			   
+		   }
+	 		   	   
+		   return str;	   
+	   }
+	   
+	   /**
+	    * Convert list to a command usable in a select query for aggregation
+	    * @param colList
+	    * @return String
+	    */
+	   public static String listToStringForAggregation(ArrayList<String> colList ) {
+		   
+		   if ( colList==null ) return " * ";
 		   
 		   String str = new String("");
 		

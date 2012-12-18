@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.data.FiveMinuteData;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -56,7 +57,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		if(myScenario==null)
 			return;
 		this.myScenario  = myScenario;
-	    this.myType = Sensor.Type.static_point;
+	    this.myType = Sensor.Type.loop;
 	    this.myLink = myScenario.getLinkWithId(linkId);
 	}
 
@@ -66,6 +67,9 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////	
 
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 		
@@ -95,7 +99,10 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 				logger.warn("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
 		}
 	}
-	
+
+	/** Implementation of {@link InterfaceComponent#validate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void validate() {
 		if(myLink==null)
@@ -206,7 +213,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	/** get aggregate flow value in [veh/sec]
-	 * @param time index
+	 * @param i time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getDataAggFlwInVPS(int i){
@@ -214,7 +221,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	/** get aggregate flow vlaue in [veh/sec/lane]
-	 * @param time index
+	 * @param i time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getDataAggFlwInVPSPL(int i){
@@ -222,7 +229,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 	
 	/** get aggregate speed value in [meters/sec]
-	 * @param time index
+	 * @param i time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getDataAggSpdInMPS(int i){
@@ -231,7 +238,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}	
 
 	/** get aggregate density value in [veh/meter]
-	 * @param time index
+	 * @param i time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getDataAggDtyInVPM(int i){
@@ -239,7 +246,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	/** get aggregate density value in [veh/meter]
-	 * @param time index
+	 * @param i time index
 	 * @return a float, or <code>NaN</code> if something goes wrong.
 	 * */
 	public float getDataAggDtyInVPMPL(int i){

@@ -52,6 +52,10 @@ public class Runner {
 	 * @param args command-line arguments
 	 */
 	public static void main(String[] args) {
+		
+		System.out.println("Working Directory = " +
+	              System.getProperty("user.dir"));
+		
 		try {
 			if (0 == args.length) throw new InvalidUsageException();
 			String cmd = args[0];
@@ -207,7 +211,7 @@ public class Runner {
 				SiriusErrorLog.clearErrorMessage();
 			}
 			if (edu.berkeley.path.beats.db.Service.isInit()) {
-				logger.info("Shutting down the DB service");
+				logger.debug("Shutting down the DB service");
 				edu.berkeley.path.beats.db.Service.shutdown();
 			}
 		}

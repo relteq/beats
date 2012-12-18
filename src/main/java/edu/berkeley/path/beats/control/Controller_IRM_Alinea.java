@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -89,7 +90,10 @@ public class Controller_IRM_Alinea extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -220,11 +224,6 @@ public class Controller_IRM_Alinea extends Controller {
 		if(mainlinelink!=null && gain_normalized<=0f)
 			SiriusErrorLog.addError("Non-positiva gain for Alinea controller id=" + getId()+ ".");
 		
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
 	}
 
 	@Override

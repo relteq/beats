@@ -106,9 +106,11 @@
 		</foreign-key>
 	</table>
 
-	<table name="node_types" idMethod="native">
+	<table name="node_types" idMethod="native"
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this node type."/>
-		<column name="description" domain="NAME_BUF" description="A description of the node type."/>
+		<column name="name" required="true" domain="NAME_BUF" description="Node type name."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="A description of the node type."/>
 		<column name="in_use" domain="BOOL" description="This indicates wether or not this node type should be shown when a user selects a node type. Setting this parameter to false prevents a user from selecting it but allows historical reporting."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -211,9 +213,11 @@
 		</foreign-key>
 	</table>
 
-	<table name="link_types" idMethod="native">
+	<table name="link_types" idMethod="native"
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this link type."/>
-		<column name="description" domain="NAME_BUF" description="A description of the link type."/>
+		<column name="name" required="true" domain="NAME_BUF" description="Link type name."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="A description of the link type."/>
 		<column name="in_use" domain="BOOL" description="This indicates wether or not this link type should be shown when a user selects a link type. Setting this parameter to false prevents a user from selecting it but allows historical reporting."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -448,10 +452,12 @@
 		</foreign-key>
 	</table>
 
-	<table name="veh_types" javaName="VehicleTypes" idMethod="native">
+	<table name="veh_types" javaName="VehicleTypes" idMethod="native"
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this vehicle type"/>
 		<column name="size_factor" javaName="weight" required="true" domain="DECIMAL" description="This value is 1 for usual vehicles, and typically 3 for trucks."/>
-		<column name="description" required="true" domain="NAME_BUF"/>
+		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="description" domain="DESCRIPTION_BUF"/>
 		<column name="is_standard" required="true" domain="BOOL" description="Flag indicating whether this is a standard type (if true) or user-defined."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -630,9 +636,11 @@
 
 	<!-- Fundamental Diagrams -->
 
-	<table name="fund_diag_types" javaName="FundamentalDiagramTypes" idMethod="native">
+	<table name="fund_diag_types" javaName="FundamentalDiagramTypes" idMethod="native"
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique ID for this vehicle type"/>
-		<column name="description" required="true" domain="NAME_BUF"/>
+		<column name="name" required="true" domain="NAME_BUF"/>
+		<column name="description" required="false" domain="DESCRIPTION_BUF"/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
 		<column name="created_by" required="true" domain="NAME_BUF"/>
@@ -831,9 +839,11 @@
 		</foreign-key>
 	</table>
 
-	<table name="sensor_types" idMethod="native" description="Each sensor is of a particular type. This table represents the allowable types.">
+	<table name="sensor_types" idMethod="native" description="Each sensor is of a particular type. This table represents the allowable types."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this sensor type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this sensor type, e.g.: loop, Sensys, TMC, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this sensor type, e.g.: loop, Sensys, TMC, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this sensor type."/>
 		<column name="in_use" domain="BOOL" description="Allow this sensor type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -964,9 +974,11 @@
 		</foreign-key>
 	</table>
 
-	<table name="controller_types" idMethod="native" description="Each controller is of a particular type. This table represents the allowable types.">
+	<table name="controller_types" idMethod="native" description="Each controller is of a particular type. This table represents the allowable types."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this controller type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this controller type, e.g.: ALINEA, HERO, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this controller type, e.g.: ALINEA, HERO, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The  description of this controller type."/>
 		<column name="in_use" domain="BOOL" description="Allow this controller type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1009,9 +1021,11 @@
 		</foreign-key>
 	</table>
 
-	<table name="queue_controller_types" idMethod="native" description="Each queue controller is of a particular type. This table represents the allowable types.">
+	<table name="queue_controller_types" idMethod="native" description="Each queue controller is of a particular type. This table represents the allowable types."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this queue controller type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this queue controller type, e.g.: QueueOverride, PI, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this queue controller type, e.g.: QueueOverride, PI, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this queue controller type."/>
 		<column name="in_use" domain="BOOL" description="Allow this queue controller type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1057,9 +1071,11 @@
 		</foreign-key>
 	</table>
 
-	<table name="event_types" idMethod="native" description="Each event is of a particular type. This table represents the allowable types.">
+	<table name="event_types" idMethod="native" description="Each event is of a particular type. This table represents the allowable types."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this event type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this event type, e.g.: accident, rain, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this event type, e.g.: accident, rain, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this event type."/>
 		<column name="in_use" domain="BOOL" description="Allow this event type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1119,9 +1135,11 @@
 
 	<!-- Shared Structures -->
 
-	<table name="scenario_element_types" idMethod="native" description="Type of a scenario element: link|node|signal|sensor|controller|event.">
+	<table name="scenario_element_types" idMethod="native" description="Type of a scenario element: link|node|signal|sensor|controller|event."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this scenario element type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this event type, e.g.: link, controller, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this event type, e.g.: link, controller, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this event type."/>
 		<column name="in_use" domain="BOOL" description="Allow this scenario element type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1328,9 +1346,11 @@
 
 	<!-- Simulation Data -->
 
-	<table name="application_types" idMethod="native" description="Application type: BeATS simulator, freeway estimator.">
+	<table name="application_types" idMethod="native" description="Application type: BeATS simulator, freeway estimator."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this aggregation type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this aggregation levels, e.g.: 5-minute, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this application types, e.g.: estimator, simulator, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this application type."/>
 		<column name="in_use" domain="BOOL" description="Allow this event type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1441,9 +1461,11 @@
 
 	<!-- **************************************************************************** -->
 
-	<table name="quantity_types" idMethod="native" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min.">
+	<table name="quantity_types" idMethod="native" description="Type of data: standard (mean)|std|1Q|3Q|best case|worst case|max|min."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this quantity type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this quantity type, e.g.: best case, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this quantity type, e.g.: mean, min, best_case, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this quantity type."/>
 		<column name="in_use" domain="BOOL" description="Allow this quantity type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1452,9 +1474,11 @@
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
 	</table>
 
-	<table name="aggregation_types" idMethod="native" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total.">
+	<table name="aggregation_types" idMethod="native" description="Aggregation level: raw|1min|5min|15min|1hour|1day|total."
+			baseClass="edu.berkeley.path.beats.db.BaseTypes">
 		<column name="id" primaryKey="true" domain="ID" description="The unique Id for this aggregation type."/>
-		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this aggregation levels, e.g.: 5-minute, etc."/>
+		<column name="name" required="true" domain="NAME_BUF" description="The name of this aggregation levels, e.g.: raw, total, 5min, etc."/>
+		<column name="description" domain="DESCRIPTION_BUF" description="The displayed description of this aggregation levels."/>
 		<column name="in_use" domain="BOOL" description="Allow this aggregation level type to be used."/>
 		<column name="created" required="true" type="DATE"/>
 		<column name="modified" required="true" type="DATE"/>
@@ -1515,6 +1539,7 @@
 		<column name="out_flow" domain="DECIMAL"/>
 		<column name="density" domain="DECIMAL"/>
 		<column name="speed" domain="DECIMAL"/>
+		<column name="free_flow_speed" domain="DECIMAL" description="Free flow speed in m/s."/>
 		<foreign-key foreignTable="link_families">
 			<reference local="link_id" foreign="id"/>
 		</foreign-key>

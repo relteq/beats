@@ -28,6 +28,11 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.Signal.NEMA;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public class SignalPhase {
 	
 	// references ....................................................

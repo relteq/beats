@@ -26,6 +26,11 @@
 
 package edu.berkeley.path.beats.simulator;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
@@ -137,6 +142,12 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
+	/** Get the initial density for a link identified by network and link id.
+	 * 
+	 * @param network_id String id of the network
+	 * @param linkid String id of the link
+	 * @return array of intitial densities in [veh/link]
+	 */
 	public Double [] getDensityForLinkIdInVeh(String network_id,String linkid){
 		Double [] d = SiriusMath.zeros(myScenario.getNumVehicleTypes());
 		for(int i=0;i<link.length;i++){
@@ -149,18 +160,34 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		return d;
 	}
 
+	/** Get the initial densities in [veh]
+	 * 
+	 * @return 2D array of doubles indexed by link and vehicle type
+	 */
 	public Double[][] getInitial_density() {
 		return initial_density;
 	}
 
+	/** Array of links included in the initial density set. 
+	 * 
+	 * @return array of Links
+	 */
 	public Link[] getLink() {
 		return link;
 	}
 
+	/** List of vehicle type indices used to order the density arrays.
+	 * 
+	 * @return array of integer indices.
+	 */
 	public Integer[] getVehicletypeindex() {
 		return vehicletypeindex;
 	}
 
+	/** Get the time stamp for the initial density set.
+	 * 
+	 * @return double time in seconds after midnight.
+	 */
 	public double getTimestamp() {
 		return timestamp;
 	}

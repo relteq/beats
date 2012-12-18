@@ -1,5 +1,5 @@
-srcdir:=../../data/config
-dstdir:=../../data/config-new
+srcdir:=../../data/config-old
+dstdir:=../../data/config
 srcconfs:=$(wildcard $(srcdir)/*.xml)
 dstconfs:=$(srcconfs:$(srcdir)/%.xml=$(dstdir)/%.xml)
 xslfile:=translator.xsl
