@@ -172,13 +172,17 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 		if(mainlinelink==null)
 			return;	
-		
+
+		table = findTable(jaxbc, "tod");
 		this.extractTable();
-		
-		
 	}
 	
 	private void extractTable(){
+		if (null == table) {
+			istablevalid = false;
+			return;
+		}
+
 		// read parameters from table, and also validate
 		
 		
