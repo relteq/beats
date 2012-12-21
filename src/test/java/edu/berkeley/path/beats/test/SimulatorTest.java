@@ -47,7 +47,7 @@ public class SimulatorTest {
 
     private String fixture_folder = "data/test/fixture/";
     private String output_folder = "data/test/output/";
-    private String config_folder = "data/test/config/";
+    private String config_folder = "data/config/";
     
 	private static String [] config_names = {
 												"Albany-and-Berkeley",
