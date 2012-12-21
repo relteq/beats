@@ -100,14 +100,7 @@ public class XMLOutputWriterTest {
 	 */
 	@Parameters
 	public static Vector<Object[]> conffiles() {
-		File confdir = new File("data" + File.separator + "config");
-		File [] files = confdir.listFiles();
-		Vector<Object[]> res = new Vector<Object[]>(files.length);
-		for (File file : files) {
-			if (file.getName().endsWith(CONF_SUFFIX))
-				res.add(new Object[] {file});
-		}
-		return res;
+		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 
 	private static Logger logger = Logger.getLogger(XMLOutputWriterTest.class);
