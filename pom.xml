@@ -58,18 +58,13 @@
         <configuration>
           <schemaDir>${basedir}/data</schemaDir>
           <targetDatabase>derby</targetDatabase>
+          <useClasspath>true</useClasspath>
         </configuration>
         <executions>
           <execution>
             <id>om</id>
             <phase>generate-sources</phase>
             <configuration>
-              <systemProperties>
-                <systemProperty>
-                  <name>torque.override.dir</name>
-                  <value>${basedir}/torque-override</value>
-                </systemProperty>
-              </systemProperties>
               <targetPackage>edu.berkeley.path.beats.om</targetPackage>
             </configuration>
             <goals>
@@ -80,12 +75,6 @@
             <id>sql-derby</id>
             <phase>generate-resources</phase>
             <configuration>
-              <systemProperties>
-                <systemProperty>
-                  <name>torque.override.dir</name>
-                  <value>${basedir}/torque-override</value>
-                </systemProperty>
-              </systemProperties>
               <targetDatabase>derby</targetDatabase>
               <outputDir>${torque.sql.dir}/derby</outputDir>
             </configuration>
@@ -97,12 +86,6 @@
             <id>sql-postgres</id>
             <phase>generate-resources</phase>
             <configuration>
-              <systemProperties>
-                <systemProperty>
-                  <name>torque.override.dir</name>
-                  <value>${basedir}/torque-override</value>
-                </systemProperty>
-              </systemProperties>
               <targetDatabase>postgresql</targetDatabase>
               <outputDir>${torque.sql.dir}/postgres</outputDir>
             </configuration>
@@ -114,12 +97,6 @@
             <id>sql-oracle</id>
             <phase>generate-resources</phase>
             <configuration>
-              <systemProperties>
-                <systemProperty>
-                  <name>torque.override.dir</name>
-                  <value>${basedir}/torque-override</value>
-                </systemProperty>
-              </systemProperties>
               <targetDatabase>oracle</targetDatabase>
               <outputDir>${torque.sql.dir}/oracle</outputDir>
             </configuration>
