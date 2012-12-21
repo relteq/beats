@@ -48,15 +48,10 @@
     <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
   </DemandProfileSet>
   <ControllerSet>
-<<<<<<< HEAD
-    <controller dt="300" id="0" name="New Controller" type="IRM_alinea" enabled="true">
+    <controller dt="300" id="0" name="New Controller" type="IRM_ALINEA" enabled="true">
       <parameters>
         <parameter name="Transition Delay" value="0"/>
       </parameters>
-=======
-    <controller dt="300" id="0" name="New Controller" type="IRM_ALINEA" enabled="true">
-      <parameters/>
->>>>>>> master
       <display_position>
         <point lat="37.8491120765346" lng="-122.298152446747"/>
       </display_position>

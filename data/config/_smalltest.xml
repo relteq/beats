@@ -49,12 +49,12 @@
   </DemandProfileSet>
   <ControllerSet>
     <controller dt="300" id="0" name="New Controller" type="IRM_ALINEA" enabled="true">
-      <parameters/>
+      <parameters>
+        <parameter name="Transition Delay" value="0"/>
+      </parameters>
       <display_position>
         <point lat="37.8491120765346" lng="-122.298152446747"/>
       </display_position>
-      <PlanSequence transition_delay="0"/>
-      <PlanList/>
       <targetElements>
         <scenarioElement id="-2" type="link"/>
       </targetElements>
