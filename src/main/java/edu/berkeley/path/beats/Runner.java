@@ -40,6 +40,7 @@ import edu.berkeley.path.beats.processor.AggregateData;
 import edu.berkeley.path.beats.processor.PdfReport;
 import edu.berkeley.path.beats.processor.PerformanceData;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.ScenarioValidationError;
 
 /**
  * Implements "Sirius: Concept of Operations"
@@ -203,6 +204,8 @@ public class Runner {
 			System.err.println(exc.getMessage());
 		} catch (InvalidCommandException exc) {
 			System.err.println(exc.getMessage());
+		} catch (ScenarioValidationError exc) {
+			logger.fatal(exc.getMessage());
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		} finally {
