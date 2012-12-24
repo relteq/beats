@@ -102,7 +102,7 @@ public class ImportExportTest {
 	 */
 	@Parameters
 	public static Vector<Object[]> conffiles() {
-		return edu.berkeley.path.beats.test.simulator.output.XMLOutputWriterTest.conffiles();
+		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 
 	/**

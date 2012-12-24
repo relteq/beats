@@ -29,6 +29,8 @@ package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import org.apache.log4j.Logger;
+
 /** Base class for controllers. 
  * Provides a default implementation of <code>InterfaceController</code>.
  *
@@ -202,7 +204,27 @@ public class Controller implements InterfaceComponent,InterfaceController {
 				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
 		return endtime;
 	}
-	
+
+	private static Logger logger = Logger.getLogger(Controller.class);
+
+	/**
+	 * Retrieves a table with the given name
+	 * @param jaxb_controller a controller to get a table from
+	 * @param name the table name
+	 * @return null, if a table with the given name was not found
+	 */
+	protected static Table findTable(edu.berkeley.path.beats.jaxb.Controller jaxb_controller, String name) {
+		Table table = null;
+		for (edu.berkeley.path.beats.jaxb.Table jaxb_table : jaxb_controller.getTable())
+			if (name.equals(jaxb_table.getName())) {
+				if (null == table)
+					table = new Table(jaxb_table);
+				else
+					logger.error("Controller " + jaxb_controller.getId() + ": duplicate table '" + name + "'");
+			}
+		return table;
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////

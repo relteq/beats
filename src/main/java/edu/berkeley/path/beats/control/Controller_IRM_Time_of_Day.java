@@ -95,14 +95,16 @@ public class Controller_IRM_Time_of_Day extends Controller {
 			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onramplink = myScenario.getLinkWithId(s.getId());	
 		}
-				
+
+		table = findTable(jaxbc, "schedule");
 		this.extractTable();
-		
-	    
-		
 	}
 
 	private void extractTable(){
+		if (null == table) {
+			istablevalid = false;
+			return;
+		}
 		
 		// read parameters from table, and also validate
 		

@@ -814,28 +814,95 @@
     <demandProfile dt="900" knob="1" link_id_origin="-6620">396.000000,444.000000,644.000000,752.000000,836.000000,908.000000,860.000000,796.000000,0.000000</demandProfile>
   </DemandProfileSet>
   <ControllerSet>
-    <controller dt="1" id="-1" name="" type="SIG_TOD" enabled="true">
-      <PlanSequence transition_delay="0">
-        <plan_reference plan_id="2" start_time="0"/>
-        <plan_reference plan_id="1" start_time="122"/>
-      </PlanSequence>
-      <PlanList>
-        <plan cyclelength="60" id="1">
-          <intersection node_id="-62" offset="0">
-            <stage greentime="26" movA="2" movB="6"/>
-            <stage greentime="27" movA="4" movB=""/>
-          </intersection>
-        </plan>
-        <plan cyclelength="60" id="2">
-          <intersection node_id="-62" offset="0">
-            <stage greentime="26" movA="2" movB="6"/>
-            <stage greentime="27" movA="4" movB=""/>
-          </intersection>
-        </plan>
-      </PlanList>
+    <controller dt="1" id="-1" name="" type="SIG_Pretimed" enabled="true">
+      <parameters>
+        <parameter name="Transition Delay" value="0"/>
+      </parameters>
       <targetElements>
         <scenarioElement id="-12" type="signal"/>
       </targetElements>
+      <table name="Plan Sequence">
+        <column_names>
+          <column_name name="Plan ID" key="true"/>
+          <column_name name="Start Time" key="false"/>
+        </column_names>
+        <row>
+          <column>2</column>
+          <column>0</column>
+        </row>
+        <row>
+          <column>1</column>
+          <column>122</column>
+        </row>
+      </table>
+      <table name="Cycle Length">
+        <column_names>
+          <column_name name="Plan ID" key="true"/>
+          <column_name name="Cycle Length" key="false"/>
+        </column_names>
+        <row>
+          <column>1</column>
+          <column>60</column>
+        </row>
+        <row>
+          <column>2</column>
+          <column>60</column>
+        </row>
+      </table>
+      <table name="Offsets">
+        <column_names>
+          <column_name name="Plan ID" key="true"/>
+          <column_name name="Intersection" key="true"/>
+          <column_name name="Offset" key="false"/>
+        </column_names>
+        <row>
+          <column>1</column>
+          <column>-62</column>
+          <column>0</column>
+        </row>
+        <row>
+          <column>2</column>
+          <column>-62</column>
+          <column>0</column>
+        </row>
+      </table>
+      <table name="Plan List">
+        <column_names>
+          <column_name name="Plan ID" key="true"/>
+          <column_name name="Intersection" key="true"/>
+          <column_name name="Movement A" key="true"/>
+          <column_name name="Movement B" key="true"/>
+          <column_name name="Green Time" key="false"/>
+        </column_names>
+        <row>
+          <column>1</column>
+          <column>-62</column>
+          <column>2</column>
+          <column>6</column>
+          <column>26</column>
+        </row>
+        <row>
+          <column>1</column>
+          <column>-62</column>
+          <column>4</column>
+          <column/>
+          <column>27</column>
+        </row>
+        <row>
+          <column>2</column>
+          <column>-62</column>
+          <column>2</column>
+          <column>6</column>
+          <column>26</column>
+        </row>
+        <row>
+          <column>2</column>
+          <column>-62</column>
+          <column>4</column>
+          <column/>
+          <column>27</column>
+        </row>
+      </table>
     </controller>
   </ControllerSet>
   <FundamentalDiagramProfileSet>

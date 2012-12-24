@@ -362,7 +362,7 @@ public final class ObjectFactory {
 		if(SiriusErrorLog.hasmessage()) {
 			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();
-			throw new SiriusException("Scenario validation failed");
+			throw new ScenarioValidationError();
 		}
 
 		return S;

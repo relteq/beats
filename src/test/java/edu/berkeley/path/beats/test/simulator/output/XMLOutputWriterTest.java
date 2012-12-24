@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.test.simulator.output;
 
 import static org.junit.Assert.*;
 
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,7 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.xml.XMLConstants;
@@ -50,8 +52,11 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.Runner;
+import edu.berkeley.path.beats.simulator.SiriusException;
 
 @RunWith(Parameterized.class)
 public class XMLOutputWriterTest {
@@ -91,43 +96,40 @@ public class XMLOutputWriterTest {
 
 	/**
 	 * Lists configuration files
-	 * @return a Vector of configuration files <code>data/test/config/*.xml</code>
+	 * @return a Vector of configuration files <code>data/config/*.xml</code>
 	 */
 	@Parameters
 	public static Vector<Object[]> conffiles() {
-		File confdir = new File("data" + File.separator + "test" + File.separator + "config");
-		File [] files = confdir.listFiles();
-		Vector<Object[]> res = new Vector<Object[]>(files.length);
-		for (File file : files) {
-			if (file.getName().endsWith(CONF_SUFFIX))
-				res.add(new Object[] {file});
-		}
-		return res;
+		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 
+	private static Logger logger = Logger.getLogger(XMLOutputWriterTest.class);
+
 	/**
-	 * Validates the configuration file, runs Sirius, validates the output.
+	 * Validates the configuration file, runs a simulation, validates the output.
 	 * @throws IOException
 	 * @throws SAXException
 	 * @throws XMLStreamException
 	 * @throws FactoryConfigurationError
+	 * @throws SiriusException
 	 */
 	@Test
-	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError {
-		System.out.println("CONFIG: " + conffile.getPath());
+	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError, SiriusException {
+		logger.info("CONFIG: " + conffile.getPath());
 		validate(conffile, ischema);
 		String confname = conffile.getName();
-		System.out.println("Config " + confname + " validated");
+		logger.info("Config " + confname + " validated");
 
 		String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
 		File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
 		runSirius(conffile.getPath(), outfile.getAbsolutePath());
+		logger.info("Simulation completed");
 
 		validate(outfile, oschema);
-		System.out.println("Output validated");
+		logger.info("Output validated");
 
 		outfile.delete();
-		System.out.println(outfile.getAbsolutePath() + " removed");
+		logger.debug(outfile.getAbsolutePath() + " removed");
 	}
 
 	/**
@@ -146,18 +148,32 @@ public class XMLOutputWriterTest {
 	}
 
 	/**
-	 * Runs Sirius
+	 * Runs a simulation
 	 * @param confpath String a configuration file path
 	 * @param outpath String an output file path
+	 * @throws SiriusException
 	 */
-	protected void runSirius(String confpath, String outpath) {
+	protected void runSirius(String confpath, String outpath) throws SiriusException {
+		// simulation settings
+		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
+		simsettings.setStartTime(0.0);
+		simsettings.setDuration(3600.0);
+		simsettings.setOutputDt(600.0);
+
+		// output writer properties
 		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
-		String [] args = {confpath, outpath.substring(0, outpath.length() - OUT_SUFFIX.length()), //
-				"xml",String.format("%d", 0), String.format("%d", 3600), String.format("%d", 600)};
-		System.out.print("ARGS:");
-		for (int iii = 0; iii < args.length; ++ iii) System.out.print(" " + args[iii]);
-		System.out.println();
-		Runner.main(args);
+		Properties owr_props = new Properties();
+		owr_props.setProperty("prefix", outpath.substring(0, outpath.length() - OUT_SUFFIX.length()));
+		owr_props.setProperty("type", "xml");
+
+		// load the scenario
+		Scenario scenario = ObjectFactory.createAndLoadScenario(confpath);
+		if (null == scenario) fail("The scenario was not loaded");
+
+		// run the scenario
+		logger.info("Running a simulation");
+		scenario.run(simsettings, owr_props);
+
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();
