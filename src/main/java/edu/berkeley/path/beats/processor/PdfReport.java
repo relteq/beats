@@ -203,21 +203,66 @@ public class PdfReport extends AggregateData {
 	        
 			document.open();
 			addMetaData(document);
-			addTitlePage(document, rr);
+			addTitlePage(document, rr);		
 			
-			if ( rr.getDetailed() ) {
-				rr.setChartId(0);
-				addContourPlots	(document, "link_data_detailed", rr);
-				addContent		(document, "link_data_detailed", rr);
-				addContourPlots	(document, "link_performance_detailed", rr);
-				addContent		(document, "link_performance_detailed", rr);
-			} else {
-				addContourPlots	(document,	"link_data_total", rr);
-				addContent		(document, 	"link_data_total", rr);
-				addContourPlots	(document,	"link_performance_total", rr);
-				addContent		(document, 	"link_performance_total", rr);
+			// Network section
+			if ( rr.getNetworkPerformance() ) {
+				if ( rr.getDetailed() )
+					addNetworkSection(document, "link_performance_detailed", rr);
+				else
+					addNetworkSection(document, "link_performance_total", rr);
 			}
 			
+			// Route section addContourPlots
+			if ( rr.getRouteData() ) {
+				if ( rr.getDetailed() )
+					addContourPlots(document, "link_data_detailed", rr);
+				else
+					addContourPlots(document, "link_data_total", rr);
+			}
+			
+			if ( rr.getRoutePerformance() ) {
+				if ( rr.getDetailed() ) {
+					addContourPlots(document, "link_performance_detailed", rr);
+					addRouteSection(document, "link_performance_detailed", rr);
+				}
+				else {
+					addContourPlots(document, "link_performance_total", rr);
+					addRouteSection(document, "link_performance_total", rr);
+				}
+			}
+			
+			// Link section
+			if ( rr.getLinkData() ) {
+				if ( rr.getDetailed() )
+					addLinkSection(document, "link_data_detailed", rr);
+				else
+					addLinkSection(document, "link_data_total", rr);
+			}
+			
+			if ( rr.getLinkPerformance() ) {
+				if ( rr.getDetailed() )
+					addLinkSection(document, "link_performance_detailed", rr);
+				else
+					addLinkSection(document, "link_performance_total", rr);
+			}
+			
+			// Onramp section addOnrampSection
+			if ( rr.getOnRampData() ) {
+				if ( rr.getDetailed() )
+					addOnrampSection(document, "link_data_detailed", rr);
+				else
+					addOnrampSection(document, "link_data_total", rr);
+			}
+			
+			if ( rr.getOnRampPerformance() ) {
+				if ( rr.getDetailed() )
+					addOnrampSection(document, "link_performance_detailed", rr);
+				else
+					addOnrampSection(document, "link_performance_total", rr);
+			}
+			
+
 			document.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -282,9 +327,10 @@ public class PdfReport extends AggregateData {
 		addEmptyLine(preface, 3);	
 		preface.add(addCenter("This Report Includes:", normalBold));
 		addEmptyLine(preface, 1);
+		preface.add(addCenter(dataIncluded("Network", rr.getDetailed(), false, rr.getNetworkPerformance()), smallBold));
+		preface.add(addCenter(dataIncluded("Route", rr.getDetailed(), rr.getRouteData(), rr.getRoutePerformance()), smallBold));
 		preface.add(addCenter(dataIncluded("Link", rr.getDetailed(), rr.getLinkData(), rr.getLinkPerformance()), smallBold));
 		preface.add(addCenter(dataIncluded("Onramp", rr.getDetailed(), rr.getOnRampData(), rr.getOnRampPerformance()), smallBold));
-		preface.add(addCenter(dataIncluded("Route", rr.getDetailed(), rr.getRouteData(), rr.getRoutePerformance()), smallBold));
 		
 		addEmptyLine(preface, 8);
 
@@ -324,6 +370,104 @@ public class PdfReport extends AggregateData {
 		return s;
 	}
 
+
+/**
+ * Add time series to the document
+ * Networks
+Data
+Nothing
+Performance
+Plots and tables of time series of the following performance measures for each scenario network:
+•	VMT – sum of VMT from network links (total and detailed);
+•	VHT – sum of VHT from network links (total and detailed);
+•	Delay – sum of delays from network links (total and detailed);
+•	Productivity Loss – sum of Productivity Loss from network links (only total).
+
+ * @param document
+ * @param table
+ * @param rr
+ * @throws DocumentException
+ * @throws TorqueException
+ * @throws DataSetException
+ * @throws IOException
+ */
+
+	private void addNetworkSection(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
+		
+		String query;
+		
+		reportToStandard("NETWORK SECTION Contour plots for table: " +table);
+		
+		// Get a list of keys 
+		
+		query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(table, "link_id") + " from "  + table, rr.getAggregation()) ,rr.getContent() );
+		reportToStandard("Key query: " + query);
+		
+		ArrayList<String> listOfColumnNames;
+		
+		@SuppressWarnings("rawtypes")
+		java.util.List listOfKeys = BasePeer.executeQuery(query);
+		
+		reportToStandard("Unique key combinations: " + listOfKeys.size());
+
+		for (int i=0; i < listOfKeys.size(); i++ ) {
+			
+			Paragraph keys = new Paragraph();
+			
+			//keys.add(addLeft("NETWORK SECTION                       TABLE: " + table.toUpperCase(), subFont));
+			
+			// Get starting time stamp			
+			query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i), "link_id" );				
+			long start = rr.getStartTimeInMilliseconds();					
+			start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
+			
+			// Get max time stamp for this report
+			long stop = start +  rr.getDurationInMilliseconds();
+			
+			addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(i), rr, "NETWORK", null);		
+			
+			listOfColumnNames = getAggregationColumns(table);
+			
+			// Form main select
+			String columns = "ts, " + listToString( listOfColumnNames, "SUM");
+			query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i), "link_id" );				
+		    query = setTimeInterval(query, start-1, stop);
+		    query += " GROUP BY ts ORDER BY ts ASC";
+		    
+			reportToStandard("Query: " + query);
+			
+			@SuppressWarnings("rawtypes")
+			java.util.List data = BasePeer.executeQuery(query);
+			//AggregateData.reportToStandard("Size " + data.size() );
+		
+
+			// Add generated chart and table
+			if (table == "link_data_total") {
+				return;
+		
+			}
+			else if (table == "link_data_detailed") {
+				return;
+			}
+			else if (table == "link_performance_total") {
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+			}
+			else if (table == "link_performance_detailed") {
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
+				
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+			}
+			
+			document.newPage();
+			createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);
+		}
+		
+	}
+	
 	/**
 	 * Add contour charts to the document
 	 * @param document
@@ -334,79 +478,315 @@ public class PdfReport extends AggregateData {
 	 * @throws DataSetException
 	 * @throws IOException
 	 */
+		@SuppressWarnings("unchecked")
+		private void addRouteSection(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
+			
+			String query;
+			
+			reportToStandard("ROUTE SECTION Contour plots for table: " +table);
+			
+			// Get a list of keys 
+			
+			query =  getScenarioAndRunSelection(getAggregationSelection("SELECT DISTINCT link_id FROM " + table, rr.getAggregation()) ,rr.getContent() );
+			String routeQuery = "SELECT DISTINCT route_id FROM route_links WHERE link_id IN (" + query + ")";
+						
+			reportToStandard("Key query: " + routeQuery);
+			
+			@SuppressWarnings("rawtypes")
+			java.util.List listOfRoutes = BasePeer.executeQuery(routeQuery);
+			
+			int numberOfRoutes = listOfRoutes.size();			
+			reportToStandard("Number of routes: " + numberOfRoutes);
+			
+			if ( numberOfRoutes < 1 ) numberOfRoutes = 1;
+
+			ArrayList<String> listOfColumnNames;
+
+			java.util.List<Record> linkData;
+			
+			for (int i=0; i < numberOfRoutes; i++ ) {
+				
+				Paragraph keys = new Paragraph();
+				
+				// Get a list of unique link ID in the right order
+				if ( listOfRoutes.size() > 0 ) {
+					
+					String linkQuery = "SELECT link_id FROM route_links WHERE route_id=" + ((Record)listOfRoutes.get(i)).getValue(1).asString() + " ORDER BY link_order ASC";
+					reportToStandard("Link query: " + linkQuery);
+					
+					linkData = BasePeer.executeQuery(linkQuery);
+					
+					reportToStandard("Route="+((Record)listOfRoutes.get(i)).getValue(1).asString() + " Links="+linkData.size());
+					
+				} else {
+					
+					String linkQuery = getScenarioAndRunSelection(getAggregationSelection("SELECT DISTINCT link_id FROM " + table, rr.getAggregation()) ,rr.getContent() );
+					reportToStandard("Link query: " + linkQuery);
+					
+					linkData = BasePeer.executeQuery(linkQuery);
+				}				
+
+				if (linkData.size() == 0 ) continue;
+				
+				LengthToPixels conv = new LengthToPixels(linkData.size());
+				if ( rr.getUnits().equals("US") )
+					conv.setScale(toUS("length"));
+				else
+					conv.setScale(toMetric("length"));
+			 
+				for (int j=0; j<linkData.size(); j++) {
+					conv.addElement( linkData.get(j).getValue(1).asLong() );
+				}
+				
+				conv.setBoundaries();
+				
+				// Get unique keys for the current route
+				query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(table, "link_id") + " from "  + table, rr.getAggregation()) ,rr.getContent() );
+				query += " AND link_id IN (" + getLinks(linkData) + ")";
+				
+				reportToStandard("Key query: " + query);
+				
+				@SuppressWarnings("rawtypes")
+				java.util.List listOfKeys = BasePeer.executeQuery(query);
+				
+				reportToStandard("Unique key combinations: " + listOfKeys.size());
+				
+				for ( int j=0; j<listOfKeys.size(); j++) {
+				
+					// Get starting time stamp	
+					
+					query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(j), "link_id" );				
+					query += " AND link_id IN (" + getLinks(linkData) + ")";
+					
+					reportToStandard("Timwstamp query: " + query);
+					
+					long start = rr.getStartTimeInMilliseconds();					
+					start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
+					
+					// Get max time stamp for this report
+					long stop = start +  rr.getDurationInMilliseconds();
+					
+					// keys.add( addLeft(formatKeys( setKeys("", table, (Record)listOfKeys.get(i), "link_id") ), subFont ) );
+					
+					String val;
+					if ( listOfRoutes.size() > 0 )					
+						val = ((Record)listOfRoutes.get(i)).getValue(1).asString();
+			
+					else
+						val="0";
+					
+					addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(j), rr, "ROUTE", val);
+						
+					listOfColumnNames = getAggregationColumns(table);
+						
+					// Form main select
+					String columns = "ts, " + "link_id, " + listToString( listOfColumnNames, "SUM");
+					query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(j), "link_id" );							
+					query = setTimeInterval(query, start-1, stop);
+					query += " AND link_id IN (" + getLinks(linkData) + ")";
+					query += "  GROUP BY link_id, ts ORDER BY link_id ASC, ts ASC";
+					    
+					reportToStandard("Query: " + query);
+					
+					@SuppressWarnings("unchecked")
+					java.util.List<Record> data = BasePeer.executeQuery(query);
+					//AggregateData.reportToStandard("Size " + data.size() );
+	
+					
+					// Add generated chart and table
+					if (table == "link_data_total") {
+										
+					}
+					else if (table == "link_data_detailed") {
+						
+					}
+					else if (table == "link_performance_total") {
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+					}
+					else if (table == "link_performance_detailed") {
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
+						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+					}
+								
+					document.newPage();
+				
+				}
+			}
+			
+		}
+	
+	/**
+	 * Add contour charts to the document
+	 * @param document
+	 * @param table
+	 * @param rr
+	 * @throws DocumentException
+	 * @throws TorqueException
+	 * @throws DataSetException
+	 * @throws IOException
+	 */
+		@SuppressWarnings("unchecked")
 		private void addContourPlots(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
 			
 			String query;
 			
-			reportToStandard("Contour plots for table: " +table);
+			reportToStandard("ROUTE SECTION Contour plots for table: " +table);
 			
 			// Get a list of keys 
 			
-			query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(table, "link_id") + " from "  + table, rr.getAggregation()) ,rr.getContent() );
-			reportToStandard("Key query: " + query);
-			
-			ArrayList<String> listOfColumnNames;
+			query =  getScenarioAndRunSelection(getAggregationSelection("SELECT DISTINCT link_id FROM " + table, rr.getAggregation()) ,rr.getContent() );
+			String routeQuery = "SELECT DISTINCT route_id FROM route_links WHERE link_id IN (" + query + ")";
+						
+			reportToStandard("Key query: " + routeQuery);
 			
 			@SuppressWarnings("rawtypes")
-			java.util.List listOfKeys = BasePeer.executeQuery(query);
+			java.util.List listOfRoutes = BasePeer.executeQuery(routeQuery);
 			
-			reportToStandard("Unique key combinations: " + listOfKeys.size());
+			int numberOfRoutes = listOfRoutes.size();			
+			reportToStandard("Number of routes: " + numberOfRoutes);
+			
+			if ( numberOfRoutes < 1 ) numberOfRoutes = 1;
 
-			for (int i=0; i < listOfKeys.size(); i++ ) {
+			ArrayList<String> listOfColumnNames;
+
+			java.util.List<Record> linkData;
+			
+			for (int i=0; i < numberOfRoutes; i++ ) {
 				
 				Paragraph keys = new Paragraph();
 				
-				keys.add(addLeft("TABLE: " + table.toUpperCase(), subFont));
-				
-				
-				// Get starting time stamp			
-				query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i), "link_id" );				
-				long start = rr.getStartTimeInMilliseconds();					
-				start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
-				
-				// Get max time stamp for this report
-				long stop = start +  rr.getDurationInMilliseconds();
-				
-				keys.add( addLeft(formatKeys( setKeys("", table, (Record)listOfKeys.get(i), "link_id") ), subFont ) );
-				keys.add( addLeft(" aggregation="+rr.getAggregation(), subFont ) );
+				// Get a list of unique link ID in the right order
+				if ( listOfRoutes.size() > 0 ) {
+					
+					String linkQuery = "SELECT link_id FROM route_links WHERE route_id=" + ((Record)listOfRoutes.get(i)).getValue(1).asString() + " ORDER BY link_order ASC";
+					reportToStandard("Link query: " + linkQuery);
+					
+					linkData = BasePeer.executeQuery(linkQuery);
+					
+					reportToStandard("Route="+((Record)listOfRoutes.get(i)).getValue(1).asString() + " Links="+linkData.size());
+					
+				} else {
+					
+					String linkQuery = getScenarioAndRunSelection(getAggregationSelection("SELECT DISTINCT link_id FROM " + table, rr.getAggregation()) ,rr.getContent() );
+					reportToStandard("Link query: " + linkQuery);
+					
+					linkData = BasePeer.executeQuery(linkQuery);
+				}				
 
-				addEmptyLine(keys, 1);
+				if (linkData.size() == 0 ) continue;
 				
-				listOfColumnNames = getAggregationColumns(table);
+				LengthToPixels conv = new LengthToPixels(linkData.size());
+				if ( rr.getUnits().equals("US") )
+					conv.setScale(toUS("length"));
+				else
+					conv.setScale(toMetric("length"));
+			 
+				for (int j=0; j<linkData.size(); j++) {
+					conv.addElement( linkData.get(j).getValue(1).asLong() );
+				}
 				
-				// Form main select
-				String columns = "ts, " + "link_id, " + listToString( listOfColumnNames);
-				query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i), "link_id" );				
-			    query = setTimeInterval(query, start-1, stop);
-			    query += " ORDER BY link_id ASC, ts ASC";
-			    
-				reportToStandard("Query: " + query);
+				conv.setBoundaries();
+				
+				// Get unique keys for the current route
+				query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(table, "link_id") + " from "  + table, rr.getAggregation()) ,rr.getContent() );
+				query += " AND link_id IN (" + getLinks(linkData) + ")";
+				
+				reportToStandard("Key query: " + query);
 				
 				@SuppressWarnings("rawtypes")
-				java.util.List data = BasePeer.executeQuery(query);
-				//AggregateData.reportToStandard("Size " + data.size() );
+				java.util.List listOfKeys = BasePeer.executeQuery(query);
 				
-				// Add generated chart and table
-				if (table == "link_data_total") {
-					createContourCharts(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "capasity", "speed","density")), listOfColumnNames, data, rr);
+				reportToStandard("Unique key combinations: " + listOfKeys.size());
+				
+				for ( int j=0; j<listOfKeys.size(); j++) {
+				
+					// Get starting time stamp	
+					
+					query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(j), "link_id" );				
+					query += " AND link_id IN (" + getLinks(linkData) + ")";
+					
+					reportToStandard("Timwstamp query: " + query);
+					
+					long start = rr.getStartTimeInMilliseconds();					
+					start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
+					
+					// Get max time stamp for this report
+					long stop = start +  rr.getDurationInMilliseconds();
+					
+					// keys.add( addLeft(formatKeys( setKeys("", table, (Record)listOfKeys.get(i), "link_id") ), subFont ) );
+					
+					String val;
+					if ( listOfRoutes.size() > 0 )					
+						val = ((Record)listOfRoutes.get(i)).getValue(1).asString();
 			
+					else
+						val="0";
+					
+					addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(j), rr, "ROUTE", val);
+						
+					listOfColumnNames = getAggregationColumns(table);
+						
+					// Form main select
+					String columns = "ts, " + "link_id, " + listToString( listOfColumnNames, "SUM");
+					query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(j), "link_id" );							
+					query = setTimeInterval(query, start-1, stop);
+					query += " AND link_id IN (" + getLinks(linkData) + ")";
+					query += "  GROUP BY link_id, ts ORDER BY link_id ASC, ts ASC";
+					    
+					reportToStandard("Query: " + query);
+					
+					@SuppressWarnings("unchecked")
+					java.util.List<Record> data = BasePeer.executeQuery(query);
+					//AggregateData.reportToStandard("Size " + data.size() );
+	
+					
+					// Add generated chart and table
+					if (table == "link_data_total") {
+						createContourCharts(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "speed","density")), listOfColumnNames, data, rr, conv);
+				
+					}
+					else if (table == "link_data_detailed") {
+						createContourCharts(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "density")), listOfColumnNames, data, rr, conv);
+					}
+					else if (table == "link_performance_total") {
+						createContourCharts(keys, new ArrayList<String>(Arrays.asList("vht","vmt","delay", "productivity_loss")), listOfColumnNames, data, rr, conv);
+					}
+					else if (table == "link_performance_detailed") {
+						createContourCharts(keys, new ArrayList<String>(Arrays.asList("vht","vmt","delay")), listOfColumnNames, data, rr, conv);
+					}
+								
+					document.newPage();
+				
 				}
-				else if (table == "link_data_detailed") {
-					createContourCharts(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "speed","density")), listOfColumnNames, data, rr);
-				}
-				else if (table == "link_performance_total") {
-					createContourCharts(keys, new ArrayList<String>(Arrays.asList("vht","vmt","delay", "productivity_loss", "vc_ratio")), listOfColumnNames, data, rr);
-				}
-				else if (table == "link_performance_detailed") {
-					createContourCharts(keys, new ArrayList<String>(Arrays.asList("vht","vmt","delay")), listOfColumnNames, data, rr);
-				}
-							
-				document.newPage();
 			}
 			
 		}
 		
-	
+	public static String getLinks(java.util.List<Record> linkData) {
+		
+		String links = new String();
+		links = "";
+		
+		for ( int i=0; i<linkData.size(); i++ )  {
+			try {
+				
+				if ( i > 0 ) links += ",";
+				links += ( linkData.get(i).getValue(1).asString());
+				
+			} catch (DataSetException e) {
+				
+				e.printStackTrace();
+				return links;
+			}
+		}
+		
+		return links;
+	}
 /**
  * Add tables and time series charts to document
  * @param document
@@ -417,11 +797,11 @@ public class PdfReport extends AggregateData {
  * @throws DataSetException
  * @throws IOException
  */
-	private void addContent(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
+	private void addLinkSection(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
 		
 		String query;
 		
-		reportToStandard("Report for table: " +table);
+		reportToStandard("LINK SECTION for table: " +table);
 		
 		// Get a list of keys 
 		
@@ -438,7 +818,7 @@ public class PdfReport extends AggregateData {
 			
 			Paragraph keys = new Paragraph();
 			
-			keys.add(addLeft("TABLE: " + table.toUpperCase(), subFont));
+			//keys.add(addLeft("LINK SECTION                          TABLE: " + table.toUpperCase(), subFont));
 			
 			
 			// Get starting time stamp			
@@ -449,10 +829,7 @@ public class PdfReport extends AggregateData {
 			// Get max time stamp for this report
 			long stop = start +  rr.getDurationInMilliseconds();
 			
-			keys.add( addLeft(formatKeys( AggregateData.setKeys("", table, (Record)listOfKeys.get(i)) ), subFont ) );
-			keys.add( addLeft(" aggregation="+rr.getAggregation(), subFont ) );
-
-			addEmptyLine(keys, 1);
+			addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(i), rr, "LINK", null);	
 			
 			listOfColumnNames = getAggregationColumns(table);
 			
@@ -464,14 +841,15 @@ public class PdfReport extends AggregateData {
 		    
 			reportToStandard("Query: " + query);
 			
-			@SuppressWarnings("rawtypes")
-			java.util.List data = BasePeer.executeQuery(query);
+			@SuppressWarnings("unchecked")
+			java.util.List<Record> data = BasePeer.executeQuery(query);
 			//AggregateData.reportToStandard("Size " + data.size() );
 			
 			// Add generated chart and table
 			if (table == "link_data_total") {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "capasity")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("speed", "free_flow_speed")), listOfColumnNames, data, rr);
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("density")), listOfColumnNames, data, rr);	
 			}
 			else if (table == "link_data_detailed") {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow")), listOfColumnNames, data, rr);
@@ -482,10 +860,10 @@ public class PdfReport extends AggregateData {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
-				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("travel_time")), listOfColumnNames, data, rr);
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("travel_time", "minimal_time")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
 //				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("los")), listOfColumnNames, data, rr);
-				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vc_ratio")), listOfColumnNames, data, rr);
+//				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vc_ratio")), listOfColumnNames, data, rr);
 			}
 			else if (table == "link_performance_detailed") {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
@@ -499,7 +877,131 @@ public class PdfReport extends AggregateData {
 		
 	}
 	
+	/**
+	 * Add tables and time series charts to document for Onramp Section
+	 * @param document
+	 * @param table
+	 * @param rr
+	 * @throws DocumentException
+	 * @throws TorqueException
+	 * @throws DataSetException
+	 * @throws IOException
+	 */
+		private void addOnrampSection(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
+			
+			String query;
+			
+			reportToStandard("ONRAMP SECTION for table: " + table);
+			
+			// Get a list of keys 
+			
+			@SuppressWarnings("unchecked")
+			java.util.List<Record> linkType = BasePeer.executeQuery("SELECT id FROM link_types WHERE description=\'onramp\'");
+			String onrampType = linkType.get(0).getValue(1).asString();
+			
+			query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " 
+					+ getListOfKeys(table) 
+					+ " from "  
+					+ table, rr.getAggregation()) ,rr.getContent() );
 
+			query += " AND link_id IN (SELECT link_id FROM link_type_det WHERE link_type_id=" + onrampType + ")";
+			ArrayList<String> listOfColumnNames;
+			reportToStandard("Link query: " + query);
+			@SuppressWarnings("rawtypes")
+			
+			java.util.List listOfKeys = BasePeer.executeQuery(query);
+			/*
+			reportToStandard("Unique key combinations: " + listOfKeys.size());
+			
+			String linkQuery="SELECT link_id, network_id, link_type_id FROM link_type_det";
+			reportToStandard("Link query: " + linkQuery);
+			
+			@SuppressWarnings("unchecked")
+			java.util.List<Record> linkData = BasePeer.executeQuery(linkQuery);
+			int n = linkData.size();
+			
+			for (int j=0; j<n; j++)
+				reportToStandard("Link data: " + linkData.get(j).getValue(1).asString() 
+						+ " " + linkData.get(j).getValue(2).asString()
+						+ " " + linkData.get(j).getValue(3).asString()
+						);
+*/
+			for (int i=0; i < listOfKeys.size(); i++ ) {
+				
+				Paragraph keys = new Paragraph();
+							
+				// Get starting time stamp			
+				query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
+				long start = rr.getStartTimeInMilliseconds();					
+				start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
+				
+				// Get max time stamp for this report
+				long stop = start +  rr.getDurationInMilliseconds();
+				
+				addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(i), rr, "ONRAMP", null);	
+				
+				listOfColumnNames = getAggregationColumns(table);
+				
+				// Form main select
+				String columns = "ts, " + listToString( listOfColumnNames);
+				query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
+			    query = setTimeInterval(query, start-1, stop);
+			    query += " ORDER BY ts ASC";
+			    
+				reportToStandard("Query: " + query);
+				
+				@SuppressWarnings("unchecked")
+				java.util.List<Record> data = BasePeer.executeQuery(query);
+				//AggregateData.reportToStandard("Size " + data.size() );
+				
+				// Add generated chart and table
+				if (table == "link_data_total") {
+					listOfColumnNames.set(listOfColumnNames.indexOf("density"), "queue size");
+					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);	
+				}
+				else if (table == "link_data_detailed") {
+					listOfColumnNames.set(listOfColumnNames.indexOf("density"), "queue size");
+					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);				
+				}
+				else if (table == "link_performance_total") {
+					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+				}
+				else if (table == "link_performance_detailed") {
+					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+				}
+				
+				createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);				
+
+			}
+			
+		}
+		
+
+		/**
+		 * Extract parameter value from the given string of parameters
+		 * @param s
+		 * @param key
+		 * @return
+		 */
+		public static String getKeyValue(String s, String key) {
+			
+			int pos = s.indexOf(key);
+			String res = new String();
+			
+			if (pos >=0 ) {
+				res = s.substring(pos+key.length());
+				pos = res.indexOf("=");
+				if (pos >=0) res = res.substring(pos+1);
+				pos = res.indexOf(" ");
+				if ( pos >= 0 )
+					res = res.substring(0, pos);
+				return res;
+				
+			} else 
+				return null;
+		}
+		
+		
 	/**
 	 * remove ANDs from the key string
 	 * @param s
@@ -512,13 +1014,148 @@ public class PdfReport extends AggregateData {
 			
 			s = s.replace("WHERE", "");
 		}
-
-		if ( s.indexOf("AND") >= 0 ) {
+		
+		if ( s.indexOf("AND ") >= 0 ) {
 			
 			return s.replace("AND", "\n");
 		}
 			
 		return s;
+	}
+	
+	/**
+	 * Add values of each key to the document 
+	 * @param keys
+	 * @param table
+	 * @param rec
+	 * @param rr
+	 */
+	public static void addKeyValuesToDocument(Paragraph keys, String table, Record rec, ReportRequest rr, String section, String routeValue) {
+		
+		keys.add(addLeft(section + " SECTION                         TABLE: " + table.toUpperCase(), subFont));
+		
+		if ( section == "NETWORK") {
+			
+			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
+			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Network      = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec, "link_id"), "network_id"))+"\n", subFont) );
+			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Aggregation= "+rr.getAggregation(), subFont ) );
+			addEmptyLine(keys, 1);
+			
+		} else if  ( section == "LINK" || section == "ONRAMP" ) {
+			
+			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
+			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Network      = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec), "network_id"))+"\n", subFont) );
+			keys.add( addLeft(" Link           = "+getKeyName("link_id", getKeyValue(setKeys("", table, rec), "link_id"))+"\n", subFont) );
+			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec), "app_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec), "value_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Aggregation= "+rr.getAggregation(), subFont ) );
+			addEmptyLine(keys, 1);
+			
+		} else if  ( section == "ROUTE" ) {
+			
+			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
+			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Route        = "+getKeyName("route_id", routeValue)+"\n", subFont) );
+			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Aggregation= "+rr.getAggregation(), subFont ) );
+			addEmptyLine(keys, 1);
+		}
+		
+		return;
+		
+	}
+	
+	
+	/**
+	 * Return name of a key id
+	 * @param key - key type
+	 * @param val - key id value
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getKeyName(String key, String val) {
+		
+		String name = new String();
+		String nameQuery;
+		java.util.List<Record> nameData;
+		name = "";
+		
+		nameQuery = "SELECT name FROM networks WHERE id=xxx";
+		
+		if ( key == "value_type_id" ) return val;
+		if ( key == "app_run_id" )    return val;
+		
+		if ( key == "network_id" ) 
+			
+			nameQuery = "SELECT name FROM networks WHERE id=" + val;
+		
+		else if ( key == "app_type_id" ) 
+				
+				nameQuery = "SELECT description FROM application_types WHERE id=" + val;
+		
+		else if ( key == "route_id" ) 
+			
+			nameQuery = "SELECT name FROM routes WHERE id=" + val;
+		
+		else if ( key == "link_id" )
+		
+			nameQuery = "SELECT name FROM link_names WHERE link_id=" + val;
+		
+		else if ( key == "scenario_id" )
+			
+			nameQuery = "SELECT name, description FROM scenarios WHERE id=" + val;
+
+		try {
+			
+			nameData = BasePeer.executeQuery(nameQuery);
+			
+		} catch (TorqueException e) {
+			e.printStackTrace();
+			return val;
+		}
+
+		if ( nameData.size() > 0 ) {
+			
+			try {
+				
+				if ( key == "link_id" ) {
+					
+					for( int i=0; i<nameData.size(); i++)
+						name += ((Record)nameData.get(i)).getValue(1).asString() + " ";		
+					
+				} else
+					
+				name = ((Record)nameData.get(0)).getValue(1).asString();
+				
+				if  ( name == null || name.indexOf("null") >= 0 ) {
+					
+					if (key == "scenario_id") {
+						
+						name = ((Record)nameData.get(0)).getValue(2).asString();
+						if  ( name == null || name.indexOf("null") >= 0 ) name = val;
+						
+					} else
+						name = val;
+				}
+				
+			} catch (DataSetException e) {
+				
+				e.printStackTrace();
+				return val;
+			}
+			
+
+				
+		} else
+			name =" Unspecified";
+		 			
+		
+		return name;
 	}
 
 	/**
@@ -532,7 +1169,12 @@ public class PdfReport extends AggregateData {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	private void createContourCharts(Paragraph keys, ArrayList<String> useTheseColumns, ArrayList<String> listOfColumnNames, java.util.List data, ReportRequest rr)
+	private void createContourCharts(Paragraph keys, 
+									ArrayList<String> useTheseColumns, 
+									ArrayList<String> listOfColumnNames, 
+									java.util.List data, 
+									ReportRequest rr,
+									LengthToPixels conv)
 			throws DataSetException, DocumentException, IOException {
 
 		
@@ -543,7 +1185,7 @@ public class PdfReport extends AggregateData {
 			document.add(keys);
 			
 			// add chart
-			document.add(createContourChart(name,listOfColumnNames, data, rr));
+			document.add(createContourChart(name,listOfColumnNames, data, rr, conv));
 			
 			// Start a new page
 			document.newPage();
@@ -562,10 +1204,16 @@ public class PdfReport extends AggregateData {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	private static Paragraph createContourChart(String name, ArrayList<String> listOfColumnNames, java.util.List data, ReportRequest rr)
+	private static Paragraph createContourChart(String name, 
+												ArrayList<String> listOfColumnNames, 
+												java.util.List data, 
+												ReportRequest rr,
+												LengthToPixels conv)
 			throws DataSetException, DocumentException, IOException {
 
 		Paragraph section = new Paragraph();
+		
+		reportToStandard("Contour Chart: "+ name);
 
 		int colunmNumber =3;
 		double  unitMultiplier = 1.0;
@@ -589,6 +1237,7 @@ public class PdfReport extends AggregateData {
 		ContourChart cc = new ContourChart(name);
 		cc.setItemCount(0);
 		cc.setCurrentItem(0);
+
 		
 		double min = ((Record)data.get(0)).getValue(colunmNumber).asBigDecimal().doubleValue();
 		double max = ((Record)data.get(0)).getValue(colunmNumber).asBigDecimal().doubleValue();
@@ -600,7 +1249,7 @@ public class PdfReport extends AggregateData {
 			BigDecimal d = ((Record)data.get(row)).getValue(colunmNumber).asBigDecimal();
 			
 			
-			long linkId = ((Record)data.get(row)).getValue(2).asLong();
+			Long linkId = ((Record)data.get(row)).getValue(2).asLong();
 			
 			if ( d != null ) {
 				
@@ -609,7 +1258,7 @@ public class PdfReport extends AggregateData {
 				//d = new BigDecimal(row);
 				
 				// Add to the chart 
-				cc.setXYZ((double)linkId, ((double)(t - startOfTheChart ))/1000.0/60.0/60.0, d.doubleValue());
+				conv.setXYZ(cc, linkId, ((double)(t - startOfTheChart ))/1000.0/60.0/60.0, d.doubleValue());
 				
 				if ( min > d.doubleValue() ) min = d.doubleValue();
 				if ( max < d.doubleValue() ) max = d.doubleValue();
@@ -831,6 +1480,15 @@ public class PdfReport extends AggregateData {
 		
 		long startOfTheChart = ((Record)data.get(0)).getValue(1).asTimestamp().getTime();
 		startOfTheChart -= getAggregationInMilliseconds(rr.getAggregation());
+
+
+		// Service minimal time if needed
+		int minimalTime = useTheseColumns.indexOf("minimal_time");
+		int delay = useTheseColumns.indexOf("minimal_time");
+		int vht = useTheseColumns.indexOf("vht");
+		int vmt = useTheseColumns.indexOf("vmt");
+		boolean minimalTimeFlag = false;
+		if ( delay >= 0 && vht >= 0 && vmt >=0 && minimalTime >=0 ) minimalTimeFlag = true;
 		
 		for (int row=0; row< data.size(); row++) {
 			
@@ -838,7 +1496,28 @@ public class PdfReport extends AggregateData {
 			
 			for (int i=0; i<useTheseColumns.size(); i++ ) {
 				
-				BigDecimal d = ((Record)data.get(row)).getValue(colunmNumber[i+1]).asBigDecimal();
+				BigDecimal d;
+				if ( i == minimalTime ) {
+					
+					if ( minimalTimeFlag ) {
+						
+						double del	= 	((Record)data.get(row)).getValue(delay + 2).asDouble();
+						double vh 	= 	((Record)data.get(row)).getValue(vht + 2).asDouble();
+						double vm 	= 	((Record)data.get(row)).getValue(vmt + 2).asDouble();
+						
+						if ( vh - del > 1E-6 )
+							d = BigDecimal.valueOf( vm/(vh-del) );
+						else
+							d = BigDecimal.valueOf(0.0);
+					}
+					else
+						d = BigDecimal.valueOf(0.0);
+				}
+					
+				else {
+					
+					d= ((Record)data.get(row)).getValue(colunmNumber[i+1]).asBigDecimal();					
+				}
 				
 				if ( d != null ) {
 					
@@ -916,7 +1595,7 @@ public class PdfReport extends AggregateData {
 	        // set a few custom plot features
 	        XYPlot plot = (XYPlot) chart.getPlot();
 	        Shape[] cross = DefaultDrawingSupplier.createStandardSeriesShapes();
-	        if ( rr.getColor() ) plot.setBackgroundPaint(new Color(0xf7ebdb));
+	        //if ( rr.getColor() ) plot.setBackgroundPaint(new Color(0xf7ebdb));
 	        plot.setDomainGridlinesVisible(true);
 	        plot.setDomainGridlinePaint(Color.lightGray);
 	        plot.setRangeGridlinePaint(Color.lightGray);
@@ -1014,9 +1693,10 @@ public class PdfReport extends AggregateData {
 		if ( name.equals("vmt") ) 	return 1.0/1000.0; 	// vehicle*km
 		if ( name.equals("delay") ) return 1.0/3600.0; 	// vehicle*hour
 		
-		if ( name.equals("travel_time") ) 		return 1.0/60.0; 			// minutes
+		if ( name.equals("travel_time") ) 		return 1.0; 			// seconds
 		if ( name.equals("productivity_loss") )	return 1.0/3600.0/1000.0; 	// lane*km*hour
 		if ( name.equals("vc_ratio") ) 			return 1.0/1000.0; 			// km/vehicle
+		if ( name == "length" )					return 1.0/1000.0; 			// km
 		
 		return 1.0;
 	}
@@ -1045,9 +1725,10 @@ public class PdfReport extends AggregateData {
 		if ( name == "vmt" ) 	return 1.0/1000.0/1.609344;	// vehicle*mile
 		if ( name == "delay" ) 	return 1.0/3600.0; 			// vehicle*hour
 		
-		if ( name == "travel_time" ) 		return 1.0/60.0; 					// minutes
+		if ( name == "travel_time" ) 		return 1.0; 						// seconds
 		if ( name == "productivity_loss" ) 	return 1.0/3600.0/1000.0/1.609344; 	// lane*mile*hour
 		if ( name == "vc_ratio" ) 			return 1.0/1000.0/1.609344;			// mile/hour; 			// mile/vehicle
+		if ( name == "length" )				return 1.0/1000.0/1.609344; 	// miles	
 		
 		return 1.0;
 	}

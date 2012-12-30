@@ -71,10 +71,11 @@ public class ContourChart extends ApplicationFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-String title;  
-   private double[] x= new double[10000];
-   private double[] y= new double[10000];
-   private double[] z= new double[10000];
+	String title;  
+	
+   private double[] x= new double[1000000];
+   private double[] y= new double[1000000];
+   private double[] z= new double[1000000];
    
    private int itemCount;
    private int currentItem;
@@ -90,7 +91,7 @@ String title;
         currentItem = 0;
         min = 0.0;
         max = 1.0;
-		stepNumber = 50;
+		stepNumber = 100;
 
     } 
 
@@ -100,7 +101,7 @@ String title;
     public void setMax (double m) { max = m; }
     
     public void setXYZ(double xx, double yy, double zz) {
-    	if (currentItem++ >= 10000 ) return;
+    	if (currentItem++ >= 1000000 ) return;
     	
     	if ( currentItem > itemCount ) itemCount = currentItem;
     	x[currentItem]=xx;
@@ -112,7 +113,13 @@ String title;
     public JFreeChart createFreeChart(XYZDataset dataset, String title,
             String yAxisNaming, double dMinZ, double dMaxZ, ReportRequest rr) {
     	
-        NumberAxis xAxis = new NumberAxis("Links");
+    	String xAxisTitle;
+		if ( rr.getUnits().equals("US") )
+			xAxisTitle = "Distance, miles";
+		else
+			xAxisTitle = "Distance, km";
+		
+        NumberAxis xAxis = new NumberAxis(xAxisTitle);
          xAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
          xAxis.setLowerMargin(0.0);
          xAxis.setUpperMargin(0.0);
@@ -225,7 +232,7 @@ String title;
     } 
      
     /** 
-     * Creates a sample dataset. 
+     * Creates a dataset. 
      */ 
     public XYZDataset createDataset() { 
         return new XYZDataset() { 
@@ -233,7 +240,7 @@ String title;
                 return 1; 
             } 
             public int getItemCount(int series) { 
-                return 10000; 
+                return 1000000; 
             } 
             public Number getX(int series, int item) { 
                 return new Double(getXValue(series, item)); 

@@ -95,6 +95,7 @@ public class LinkDataTotal extends edu.berkeley.path.beats.om.LinkDataTotal {
 		
 	}
 
+    
     /**
      * returns list of primary keys with values except exclusion, time stamp and aggregation
      * @return string
