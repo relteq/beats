@@ -88,6 +88,7 @@ public class ReportRequest {
 	public Boolean 	getOnRampData() { return onRampData; }
 	public Boolean 	getRouteData() { return routeData; }
 	public Boolean 	getRoutePerformance() { return routePerformance; }
+	public Boolean	getNetworkPerformance() { return networkPerformance; }
 	
 	public String 	getAggregation() { return aggregation; }
 	public String 	getUnits() { return units; }
@@ -218,7 +219,7 @@ public class ReportRequest {
 			
 			linkPerformance = 	getBolleanAttributeValue(doc, "links", "performance");
 			linkData = 			getBolleanAttributeValue(doc,"links", "data");	
-			
+			networkPerformance= getBolleanAttributeValue(doc, "networks", "performance");
 			contents = 			readContentFromFile(fileName);
 
 		} catch (Exception e) {

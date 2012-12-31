@@ -430,7 +430,7 @@ public static String setTimeInterval(String query, long time1, long time2)	{
  * @param record
  * @return
  */
-public static String setKeys(String query,String table, Record rec, String exclusion) {
+public static String setKeys(String query, String table, Record rec, String exclusion) {
 	
 	if ( query.indexOf("WHERE") < 0 ) return query += " WHERE " + getListOfKeys(table, rec, exclusion);
 		
@@ -658,9 +658,38 @@ public static String setKeys(String query,String table, Record rec, String exclu
 	    * @param colList
 	    * @return String
 	    */
-	   public static String listToString(ArrayList<String> colList ) {
+	   public static String listToString(ArrayList<String> colList, String cmd) {
 		   
 		   if ( colList==null ) return " * ";
+		   
+		   if (colList.indexOf("los") >= 0 ) // los is null is the current version
+			   colList.remove("los");
+		   
+		   String str = new String("");
+		
+		   for (int i=0; i<colList.size(); i++) {
+
+			   if ( i>0 ) str += ", ";
+			   if (cmd == null )
+				   str += colList.get(i);
+			   else
+				   str +=  ( cmd + "(" + colList.get(i) + ")" );			   
+		   }
+	 		   	   
+		   return str;	   
+	   }
+	   
+	   /**
+	    * Convert list to a command usable in a select query for report
+	    * @param colList
+	    * @return String
+	    */
+	   public static String listToString(ArrayList<String> colList) {
+		   
+		   if ( colList==null ) return " * ";
+		   
+		   if (colList.indexOf("los") >= 0 ) // los is null is the current version
+			   colList.remove("los");
 		   
 		   String str = new String("");
 		
@@ -672,8 +701,7 @@ public static String setKeys(String query,String table, Record rec, String exclu
 		   }
 	 		   	   
 		   return str;	   
-	   }
-	   
+	   }	   
 	   /**
 	    * Convert list to a command usable in a select query for aggregation
 	    * @param colList
