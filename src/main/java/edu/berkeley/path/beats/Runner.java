@@ -178,7 +178,10 @@ public class Runner {
 			} else if (cmd.equals("init")) {
 				edu.berkeley.path.beats.db.Admin.init();
 			} else if (cmd.equals("clear_data") || cmd.equals("cld")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					edu.berkeley.path.beats.db.Cleaner.clearData(Long.parseLong(arguments[0], 10));
+				else
+					throw new InvalidUsageException("Usage: clear_data|cld scenario_id");
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
 				if (1 == arguments.length)
 					edu.berkeley.path.beats.db.Cleaner.clearProcessed(Long.parseLong(arguments[0], 10));

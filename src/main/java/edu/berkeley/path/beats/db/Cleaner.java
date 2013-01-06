@@ -220,4 +220,88 @@ public class Cleaner {
 		}
 	}
 
+	/**
+	 * Erases scenario simulation results and processing results
+	 * @param scenario_id the scenario ID
+	 * @throws SiriusException
+	 */
+	public static void clearData(long scenario_id) throws SiriusException {
+		clearData(scenario_id, null);
+	}
+
+	/**
+	 * Erases scenario simulation results and processing results for the given run numbers
+	 * @param scenario_id the scenario ID
+	 * @param run_number_l a list of run numbers; if null, assume all run numbers
+	 * @throws SiriusException
+	 */
+	public static void clearData(long scenario_id, List<Long> run_number_l) throws SiriusException {
+		edu.berkeley.path.beats.db.Service.ensureInit();
+		List<SimulationRuns> db_sr_l = getSimulationRuns(scenario_id, run_number_l);
+
+		Connection conn = null;
+		try {
+			conn = Transaction.begin();
+
+			final Long app_type_id = getApplicationTypes("simulator", conn).getId();
+
+			Criteria crit = new Criteria();
+			for (SimulationRuns db_sr : db_sr_l) {
+				logger.info("Run number: " + db_sr.getRunNumber());
+
+				// link_data_total
+				crit.clear();
+				crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkDataTotalPeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)), conn);
+
+				// link_data_detailed
+				crit.clear();
+				crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkDataDetailedPeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)), conn);
+
+				// signal_data
+				crit.clear();
+				crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
+				crit.add(SignalDataPeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(SignalDataPeer.createQueryString(crit)), conn);
+
+				// link_performance_total
+				crit.clear();
+				crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkPerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)), conn);
+
+				// link_performance_detailed
+				crit.clear();
+				crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
+				crit.add(LinkPerformanceDetailedPeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)), conn);
+
+				// route_performance_total
+				crit.clear();
+				crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+				crit.add(RoutePerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)), conn);
+
+				// signal_phase_performance
+				crit.clear();
+				crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
+				crit.add(SignalPhasePerformancePeer.APP_RUN_ID, db_sr.getId());
+				executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)), conn);
+			}
+
+			Transaction.commit(conn);
+			conn = null;
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
+		} finally {
+			if (null != conn) {
+				Transaction.safeRollback(conn);
+				conn = null;
+			}
+		}
+	}
+
 }
