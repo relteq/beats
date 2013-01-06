@@ -1293,7 +1293,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="networks">
@@ -1309,7 +1309,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="dest_networks">
@@ -1325,7 +1325,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 		<foreign-key foreignTable="routes">
@@ -1376,7 +1376,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 		<unique name="simulation_run">
@@ -1396,7 +1396,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 	</table>
@@ -1423,7 +1423,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 		<unique name="estimation_run">
@@ -1449,7 +1449,7 @@
 		<column name="created_by" required="true" domain="NAME_BUF"/>
 		<column name="modified_by" required="true" domain="NAME_BUF"/>
 		<column name="modstamp" required="true" type="TIMESTAMP"/>
-		<foreign-key foreignTable="scenarios">
+		<foreign-key foreignTable="scenarios" onDelete="cascade">
 			<reference local="scenario_id" foreign="id"/>
 		</foreign-key>
 	</table>
