@@ -304,4 +304,24 @@ public class Cleaner {
 		}
 	}
 
+	/**
+	 * Erases a scenario and all related data
+	 * @param scenario_id the scenario ID
+	 * @throws SiriusException
+	 */
+	public static void clearScenario(long scenario_id) throws SiriusException {
+		edu.berkeley.path.beats.db.Service.ensureInit();
+		logger.info("Deleting scenario simulation results, aggregated data and performance data");
+		clearData(scenario_id);
+
+		Criteria crit = new Criteria();
+		crit.add(ScenariosPeer.ID, scenario_id);
+		try {
+			ScenariosPeer.doDelete(crit);
+			logger.info("Scenario " + scenario_id + " deleted");
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
+		}
+	}
+
 }

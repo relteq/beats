@@ -188,7 +188,9 @@ public class Runner {
 				else
 					throw new InvalidUsageException("Usage: clear_processed|clp scenario_id");
 			} else if (cmd.equals("clear_scenario") || cmd.equals("cls")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					edu.berkeley.path.beats.db.Cleaner.clearScenario(Long.parseLong(arguments[0], 10));
+				else throw new InvalidUsageException("Usage: clear_scenario|cls scenario_id");
 			} else if (cmd.equals("clear_all") || cmd.equals("cla")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("version") || cmd.equals("v")) {
