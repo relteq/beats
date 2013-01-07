@@ -40,7 +40,9 @@ import edu.berkeley.path.beats.db.BaseTypes;
 import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
+import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 
@@ -80,6 +82,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			}
 		}
 		scenario.requestLinkCumulatives();
+		scenario.requestSignalPhases();
 
 		cal = Calendar.getInstance();
 		cal.set(Calendar.MILLISECOND, 0);
@@ -228,6 +231,15 @@ public class DBOutputWriter extends OutputWriterBase {
 					throw new SiriusException(exc);
 				}
 			}
+			List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+			if (null != sigl) {
+				for (edu.berkeley.path.beats.jaxb.Signal signal : sigl)
+					try {
+						fill_signal_data(network, signal);
+					} catch (Exception exc) {
+						throw new SiriusException(exc);
+					}
+			}
 		}
 		success = true;
 	}
@@ -342,6 +354,24 @@ public class DBOutputWriter extends OutputWriterBase {
 			// replace nulls with zeros
 			edu.berkeley.path.beats.processor.LinkDataDetailed.removeNulls(db_ldd);
 			db_ldd.save();
+		}
+	}
+
+	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.Signal signal) throws Exception {
+		List<Signal.PhaseData> phdata = scenario.getCompletedPhases(signal).getPhaseList();
+		for (Signal.PhaseData ph : phdata) {
+			SignalData db_sd = new SignalData();
+			db_sd.setNetworkId(str2id(network.getId()));
+			db_sd.setSignalId(str2id(signal.getId()));
+			db_sd.setAppRunId(db_simulation_run.getId());
+			db_sd.setApplicationTypes(db_application_type);
+			db_sd.setPhase(ph.nema.ordinal());
+			db_sd.setTs(date);
+			db_sd.setAggregationTypes(db_aggregation_type_raw);
+			db_sd.setQuantityTypes(db_quantity_type_mean);
+			db_sd.setBeginGreen(sec2date(ph.starttime));
+			db_sd.setDuration(double2decimal(ph.greentime));
+			db_sd.save();
 		}
 	}
 
