@@ -93,6 +93,18 @@ public class Cleaner {
 		}
 	}
 
+	private static List<AggregationTypes> getAggregationTypes(List<String> aggregation_l, Connection conn) throws SiriusException {
+		Criteria crit = new Criteria();
+		crit.addIn(AggregationTypesPeer.NAME, aggregation_l);
+		try {
+			@SuppressWarnings("unchecked")
+			List<AggregationTypes> db_agg_type_l = AggregationTypesPeer.doSelect(crit, conn);
+			return db_agg_type_l;
+		} catch (TorqueException exc) {
+			throw new SiriusException(exc);
+		}
+	}
+
 	private static List<SimulationRuns> getSimulationRuns(long scenario_id, List<Long> run_number_l) throws SiriusException {
 		Scenarios db_scenario = null;
 		try {
@@ -226,16 +238,17 @@ public class Cleaner {
 	 * @throws SiriusException
 	 */
 	public static void clearData(long scenario_id) throws SiriusException {
-		clearData(scenario_id, null);
+		clearData(scenario_id, null, null);
 	}
 
 	/**
 	 * Erases scenario simulation results and processing results for the given run numbers
 	 * @param scenario_id the scenario ID
 	 * @param run_number_l a list of run numbers; if null, assume all run numbers
+	 * @param aggregation_l a list of aggregation types; if null, assume all types
 	 * @throws SiriusException
 	 */
-	public static void clearData(long scenario_id, List<Long> run_number_l) throws SiriusException {
+	public static void clearData(long scenario_id, List<Long> run_number_l, List<String> aggregation_l) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		List<SimulationRuns> db_sr_l = getSimulationRuns(scenario_id, run_number_l);
 
@@ -245,6 +258,18 @@ public class Cleaner {
 
 			final Long app_type_id = getApplicationTypes("simulator", conn).getId();
 
+			List<Long> agg_type_id_l = null;
+			if (null != aggregation_l) {
+				List<AggregationTypes> db_agg_type_l = getAggregationTypes(aggregation_l, conn);
+				if (0 == db_agg_type_l.size()) {
+					logger.warn("Aggregation type list is empty. Aborting");
+					return;
+				}
+				agg_type_id_l = new java.util.ArrayList<Long>(db_agg_type_l.size());
+				for (AggregationTypes db_agg_type : db_agg_type_l)
+					agg_type_id_l.add(db_agg_type.getId());
+			}
+
 			Criteria crit = new Criteria();
 			for (SimulationRuns db_sr : db_sr_l) {
 				logger.info("Run number: " + db_sr.getRunNumber());
@@ -253,42 +278,49 @@ public class Cleaner {
 				crit.clear();
 				crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
 				crit.add(LinkDataTotalPeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)), conn);
 
 				// link_data_detailed
 				crit.clear();
 				crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
 				crit.add(LinkDataDetailedPeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)), conn);
 
 				// signal_data
 				crit.clear();
 				crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
 				crit.add(SignalDataPeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(SignalDataPeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(SignalDataPeer.createQueryString(crit)), conn);
 
 				// link_performance_total
 				crit.clear();
 				crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
 				crit.add(LinkPerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(LinkPerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)), conn);
 
 				// link_performance_detailed
 				crit.clear();
 				crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
 				crit.add(LinkPerformanceDetailedPeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(LinkPerformanceDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)), conn);
 
 				// route_performance_total
 				crit.clear();
 				crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
 				crit.add(RoutePerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(RoutePerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)), conn);
 
 				// signal_phase_performance
 				crit.clear();
 				crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
 				crit.add(SignalPhasePerformancePeer.APP_RUN_ID, db_sr.getId());
+				if (null != agg_type_id_l) crit.addIn(SignalPhasePerformancePeer.AGG_TYPE_ID, agg_type_id_l);
 				executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)), conn);
 			}
 
