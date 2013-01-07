@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.db;
 
-import java.sql.Connection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -35,7 +34,6 @@ import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
-import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.SiriusException;
@@ -52,17 +50,17 @@ public class Cleaner {
 		}
 	}
 
-	private static void executeStatement(String statement, Connection conn) throws TorqueException {
+	private static void executeStatement(String statement) throws TorqueException {
 		logger.debug(statement);
-		BasePeer.executeStatement(statement, conn);
+		BasePeer.executeStatement(statement);
 	}
 
-	private static ApplicationTypes getApplicationTypes(String application_type, Connection conn) throws SiriusException {
+	private static ApplicationTypes getApplicationTypes(String application_type) throws SiriusException {
 		Criteria crit = new Criteria();
 		crit.add(ApplicationTypesPeer.NAME, application_type);
 		try{
 			@SuppressWarnings("unchecked")
-			List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit, conn);
+			List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit);
 			if (db_at_l.isEmpty()) {
 				throw new SiriusException("Application type '" + application_type + "' does not exist");
 			} else {
@@ -75,12 +73,12 @@ public class Cleaner {
 		}
 	}
 
-	private static AggregationTypes getAggregationTypes(String aggregation_type, Connection conn) throws SiriusException {
+	private static AggregationTypes getAggregationTypes(String aggregation_type) throws SiriusException {
 		Criteria crit = new Criteria();
 		crit.add(AggregationTypesPeer.NAME, aggregation_type);
 		try {
 			@SuppressWarnings("unchecked")
-			List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit, conn);
+			List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit);
 			if (db_at_l.isEmpty()) {
 				throw new SiriusException("Aggregation type '" + aggregation_type + "' does not exist");
 			} else {
@@ -93,16 +91,24 @@ public class Cleaner {
 		}
 	}
 
-	private static List<AggregationTypes> getAggregationTypes(List<String> aggregation_l, Connection conn) throws SiriusException {
+	private static List<AggregationTypes> getAggregationTypes(List<String> aggregation_l) throws SiriusException {
 		Criteria crit = new Criteria();
 		crit.addIn(AggregationTypesPeer.NAME, aggregation_l);
 		try {
 			@SuppressWarnings("unchecked")
-			List<AggregationTypes> db_agg_type_l = AggregationTypesPeer.doSelect(crit, conn);
+			List<AggregationTypes> db_agg_type_l = AggregationTypesPeer.doSelect(crit);
 			return db_agg_type_l;
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
 		}
+	}
+
+	private static List<Long> getAggregationTypeIds(List<String> aggregation_l) throws SiriusException {
+		List<AggregationTypes> db_agg_type_l = getAggregationTypes(aggregation_l);
+		List<Long> agg_type_id_l = new java.util.ArrayList<Long>(db_agg_type_l.size());
+		for (AggregationTypes db_agg_type : db_agg_type_l)
+			agg_type_id_l.add(db_agg_type.getId());
+		return agg_type_id_l;
 	}
 
 	private static List<SimulationRuns> getSimulationRuns(long scenario_id, List<Long> run_number_l) throws SiriusException {
@@ -143,6 +149,19 @@ public class Cleaner {
 		}
 	}
 
+	private static List<Long> getSimulationRunIds(long scenario_id, List<Long> run_number_l) throws SiriusException {
+		List<SimulationRuns> db_sr_l = getSimulationRuns(scenario_id, run_number_l);
+		List<Long> sr_id_l = new java.util.ArrayList<Long>(db_sr_l.size());
+		StringBuilder sb = new StringBuilder();
+		for (SimulationRuns db_sr : db_sr_l) {
+			sr_id_l.add(db_sr.getId());
+			if (0 < sb.length()) sb.append(", ");
+			sb.append(db_sr.getRunNumber());
+		}
+		logger.info("Run numbers: " + sb.toString());
+		return sr_id_l;
+	}
+
 	/**
 	 * Erases processing results for the given scenario
 	 * @param scenario_id the scenario ID
@@ -161,74 +180,62 @@ public class Cleaner {
 	 */
 	public static void clearProcessed(long scenario_id, List<Long> run_number_l) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
-		List<SimulationRuns> db_sr_l = getSimulationRuns(scenario_id, run_number_l);
+		final List<Long> sr_id_l = getSimulationRunIds(scenario_id, run_number_l);
+		if (0 == sr_id_l.size()) {
+			logger.warn("No simulation runs. Aborting");
+			return;
+		}
+		final Long app_type_id = getApplicationTypes("simulator").getId();
+		final Long agg_type_id = getAggregationTypes("raw").getId();
 
-		Connection conn = null;
-		try {
-			conn = Transaction.begin();
+		Criteria crit = new Criteria();
+		try{
+			// link_data_total
+			crit.clear();
+			crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkDataTotalPeer.APP_RUN_ID, sr_id_l);
+			crit.add(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
+			executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)));
 
-			final Long app_type_id = getApplicationTypes("simulator", conn).getId();
-			final Long agg_type_id = getAggregationTypes("raw", conn).getId();
+			// link_data_detailed
+			crit.clear();
+			crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkDataDetailedPeer.APP_RUN_ID, sr_id_l);
+			crit.add(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
+			executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)));
 
-			Criteria crit = new Criteria();
-			for (SimulationRuns db_sr : db_sr_l) {
-				logger.info("Run number: " + db_sr.getRunNumber());
+			// signal_data
+			crit.clear();
+			crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(SignalDataPeer.APP_RUN_ID, sr_id_l);
+			crit.add(SignalDataPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
+			executeStatement(select2delete(SignalDataPeer.createQueryString(crit)));
 
-				// link_data_total
-				crit.clear();
-				crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkDataTotalPeer.APP_RUN_ID, db_sr.getId());
-				crit.add(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
-				executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)), conn);
+			// link_performance_total
+			crit.clear();
+			crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkPerformanceTotalPeer.APP_RUN_ID, sr_id_l);
+			executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)));
 
-				// link_data_detailed
-				crit.clear();
-				crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkDataDetailedPeer.APP_RUN_ID, db_sr.getId());
-				crit.add(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
-				executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)), conn);
+			// link_performance_detailed
+			crit.clear();
+			crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkPerformanceDetailedPeer.APP_RUN_ID, sr_id_l);
+			executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)));
 
-				// signal_data
-				crit.clear();
-				crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
-				crit.add(SignalDataPeer.APP_RUN_ID, db_sr.getId());
-				crit.add(SignalDataPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
-				executeStatement(select2delete(SignalDataPeer.createQueryString(crit)), conn);
+			// route_performance_total
+			crit.clear();
+			crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(RoutePerformanceTotalPeer.APP_RUN_ID, sr_id_l);
+			executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)));
 
-				// link_performance_total
-				crit.clear();
-				crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkPerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
-				executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)), conn);
-
-				// link_performance_detailed
-				crit.clear();
-				crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkPerformanceDetailedPeer.APP_RUN_ID, db_sr.getId());
-				executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)), conn);
-
-				// route_performance_total
-				crit.clear();
-				crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
-				crit.add(RoutePerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
-				executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)), conn);
-
-				// signal_phase_performance
-				crit.clear();
-				crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
-				crit.add(SignalPhasePerformancePeer.APP_RUN_ID, db_sr.getId());
-				executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)), conn);
-			}
-
-			Transaction.commit(conn);
-			conn = null;
+			// signal_phase_performance
+			crit.clear();
+			crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(SignalPhasePerformancePeer.APP_RUN_ID, sr_id_l);
+			executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)));
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
-		} finally {
-			if (null != conn) {
-				Transaction.safeRollback(conn);
-				conn = null;
-			}
 		}
 	}
 
@@ -250,89 +257,74 @@ public class Cleaner {
 	 */
 	public static void clearData(long scenario_id, List<Long> run_number_l, List<String> aggregation_l) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
-		List<SimulationRuns> db_sr_l = getSimulationRuns(scenario_id, run_number_l);
+		final List<Long> sr_id_l = getSimulationRunIds(scenario_id, run_number_l);
+		if (0 == sr_id_l.size()) {
+			logger.warn("No simulation runs. Aborting");
+			return;
+		}
+		final Long app_type_id = getApplicationTypes("simulator").getId();
+		List<Long> agg_type_id_l = null;
+		if (null != aggregation_l) {
+			agg_type_id_l = getAggregationTypeIds(aggregation_l);
+			if (0 == agg_type_id_l.size()) {
+				logger.warn("No aggregation types. Aborting");
+				return;
+			}
+		}
 
-		Connection conn = null;
 		try {
-			conn = Transaction.begin();
-
-			final Long app_type_id = getApplicationTypes("simulator", conn).getId();
-
-			List<Long> agg_type_id_l = null;
-			if (null != aggregation_l) {
-				List<AggregationTypes> db_agg_type_l = getAggregationTypes(aggregation_l, conn);
-				if (0 == db_agg_type_l.size()) {
-					logger.warn("Aggregation type list is empty. Aborting");
-					return;
-				}
-				agg_type_id_l = new java.util.ArrayList<Long>(db_agg_type_l.size());
-				for (AggregationTypes db_agg_type : db_agg_type_l)
-					agg_type_id_l.add(db_agg_type.getId());
-			}
-
 			Criteria crit = new Criteria();
-			for (SimulationRuns db_sr : db_sr_l) {
-				logger.info("Run number: " + db_sr.getRunNumber());
 
-				// link_data_total
-				crit.clear();
-				crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkDataTotalPeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)), conn);
+			// link_data_total
+			crit.clear();
+			crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkDataTotalPeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)));
 
-				// link_data_detailed
-				crit.clear();
-				crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkDataDetailedPeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)), conn);
+			// link_data_detailed
+			crit.clear();
+			crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkDataDetailedPeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)));
 
-				// signal_data
-				crit.clear();
-				crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
-				crit.add(SignalDataPeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(SignalDataPeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(SignalDataPeer.createQueryString(crit)), conn);
+			// signal_data
+			crit.clear();
+			crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(SignalDataPeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(SignalDataPeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(SignalDataPeer.createQueryString(crit)));
 
-				// link_performance_total
-				crit.clear();
-				crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkPerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(LinkPerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)), conn);
+			// link_performance_total
+			crit.clear();
+			crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkPerformanceTotalPeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(LinkPerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)));
 
-				// link_performance_detailed
-				crit.clear();
-				crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
-				crit.add(LinkPerformanceDetailedPeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(LinkPerformanceDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)), conn);
+			// link_performance_detailed
+			crit.clear();
+			crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(LinkPerformanceDetailedPeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(LinkPerformanceDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)));
 
-				// route_performance_total
-				crit.clear();
-				crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
-				crit.add(RoutePerformanceTotalPeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(RoutePerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)), conn);
+			// route_performance_total
+			crit.clear();
+			crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(RoutePerformanceTotalPeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(RoutePerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)));
 
-				// signal_phase_performance
-				crit.clear();
-				crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
-				crit.add(SignalPhasePerformancePeer.APP_RUN_ID, db_sr.getId());
-				if (null != agg_type_id_l) crit.addIn(SignalPhasePerformancePeer.AGG_TYPE_ID, agg_type_id_l);
-				executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)), conn);
-			}
-
-			Transaction.commit(conn);
-			conn = null;
+			// signal_phase_performance
+			crit.clear();
+			crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
+			crit.addIn(SignalPhasePerformancePeer.APP_RUN_ID, sr_id_l);
+			if (null != agg_type_id_l) crit.addIn(SignalPhasePerformancePeer.AGG_TYPE_ID, agg_type_id_l);
+			executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)));
 		} catch (TorqueException exc) {
 			throw new SiriusException(exc);
-		} finally {
-			if (null != conn) {
-				Transaction.safeRollback(conn);
-				conn = null;
-			}
 		}
 	}
 
