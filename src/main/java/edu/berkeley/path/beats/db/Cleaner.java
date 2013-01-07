@@ -190,46 +190,46 @@ public class Cleaner {
 
 		Criteria crit = new Criteria();
 		try{
-			// link_data_total
+			logger.info("Clearing " + LinkDataTotalPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkDataTotalPeer.APP_RUN_ID, sr_id_l);
 			crit.add(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
 			executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)));
 
-			// link_data_detailed
+			logger.info("Clearing " + LinkDataDetailedPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkDataDetailedPeer.APP_RUN_ID, sr_id_l);
 			crit.add(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
 			executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)));
 
-			// signal_data
+			logger.info("Clearing " + SignalDataPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(SignalDataPeer.APP_RUN_ID, sr_id_l);
 			crit.add(SignalDataPeer.AGG_TYPE_ID, agg_type_id, Criteria.NOT_EQUAL);
 			executeStatement(select2delete(SignalDataPeer.createQueryString(crit)));
 
-			// link_performance_total
+			logger.info("Clearing " + LinkPerformanceTotalPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkPerformanceTotalPeer.APP_RUN_ID, sr_id_l);
 			executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)));
 
-			// link_performance_detailed
+			logger.info("Clearing " + LinkPerformanceDetailedPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkPerformanceDetailedPeer.APP_RUN_ID, sr_id_l);
 			executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)));
 
-			// route_performance_total
+			logger.info("Clearing " + RoutePerformanceTotalPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(RoutePerformanceTotalPeer.APP_RUN_ID, sr_id_l);
 			executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)));
 
-			// signal_phase_performance
+			logger.info("Clearing " + SignalPhasePerformancePeer.TABLE_NAME);
 			crit.clear();
 			crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(SignalPhasePerformancePeer.APP_RUN_ID, sr_id_l);
@@ -275,49 +275,49 @@ public class Cleaner {
 		try {
 			Criteria crit = new Criteria();
 
-			// link_data_total
+			logger.info("Clearing " + LinkDataTotalPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkDataTotalPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkDataTotalPeer.APP_RUN_ID, sr_id_l);
 			if (null != agg_type_id_l) crit.addIn(LinkDataTotalPeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(LinkDataTotalPeer.createQueryString(crit)));
 
-			// link_data_detailed
+			logger.info("Clearing " + LinkDataDetailedPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkDataDetailedPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkDataDetailedPeer.APP_RUN_ID, sr_id_l);
 			if (null != agg_type_id_l) crit.addIn(LinkDataDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(LinkDataDetailedPeer.createQueryString(crit)));
 
-			// signal_data
+			logger.info("Clearing " + SignalDataPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(SignalDataPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(SignalDataPeer.APP_RUN_ID, sr_id_l);
 			if (null != agg_type_id_l) crit.addIn(SignalDataPeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(SignalDataPeer.createQueryString(crit)));
 
-			// link_performance_total
+			logger.info("Clearing " + LinkPerformanceTotalPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkPerformanceTotalPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkPerformanceTotalPeer.APP_RUN_ID, sr_id_l);
 			if (null != agg_type_id_l) crit.addIn(LinkPerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(LinkPerformanceTotalPeer.createQueryString(crit)));
 
-			// link_performance_detailed
+			logger.info("Clearing " + LinkPerformanceDetailedPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(LinkPerformanceDetailedPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(LinkPerformanceDetailedPeer.APP_RUN_ID, sr_id_l);
 			if (null != agg_type_id_l) crit.addIn(LinkPerformanceDetailedPeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(LinkPerformanceDetailedPeer.createQueryString(crit)));
 
-			// route_performance_total
+			logger.info("Clearing " + RoutePerformanceTotalPeer.TABLE_NAME);
 			crit.clear();
 			crit.add(RoutePerformanceTotalPeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(RoutePerformanceTotalPeer.APP_RUN_ID, sr_id_l);
 			if (null != agg_type_id_l) crit.addIn(RoutePerformanceTotalPeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(RoutePerformanceTotalPeer.createQueryString(crit)));
 
-			// signal_phase_performance
+			logger.info("Clearing " + SignalPhasePerformancePeer.TABLE_NAME);
 			crit.clear();
 			crit.add(SignalPhasePerformancePeer.APP_TYPE_ID, app_type_id);
 			crit.addIn(SignalPhasePerformancePeer.APP_RUN_ID, sr_id_l);
