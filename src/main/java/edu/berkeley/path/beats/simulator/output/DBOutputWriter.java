@@ -80,6 +80,9 @@ public class DBOutputWriter extends OutputWriterBase {
 			}
 		}
 		scenario.requestLinkCumulatives();
+
+		cal = Calendar.getInstance();
+		cal.set(Calendar.MILLISECOND, 0);
 	}
 
 	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
@@ -97,7 +100,17 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	boolean success = false;
 
-	private Calendar ts = null;
+	private Calendar cal = null;
+
+	private java.util.Date sec2date(double sec) {
+		Calendar cal = (Calendar) this.cal.clone();
+		double min = Math.floor(sec / 60);
+		double hrs = Math.floor(min / 60);
+		cal.set(Calendar.HOUR_OF_DAY, (int) hrs);
+		cal.set(Calendar.MINUTE, (int) (min - hrs * 60));
+		cal.set(Calendar.SECOND, (int) (sec - min * 60));
+		return cal.getTime();
+	}
 
 	private static <T extends BaseTypes> T createType(T obj, String name) throws Exception {
 		obj.setName(name);
@@ -196,18 +209,14 @@ public class DBOutputWriter extends OutputWriterBase {
 		} catch (Exception exc) {
 			throw new SiriusException(exc);
 		}
-		ts = Calendar.getInstance();
-		ts.set(Calendar.MILLISECOND, 0);
 	}
+
+	private java.util.Date date = null;
 
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
 		success = false;
-		double min = Math.floor(time / 60);
-		double hrs = Math.floor(min / 60);
-		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
-		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
-		ts.set(Calendar.SECOND, (int) (time - min * 60));
+		date = sec2date(time);
 
 		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
@@ -236,7 +245,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setNetworkId(str2id(link.getMyNetwork().getId()));
 		db_ldt.setAppRunId(db_simulation_run.getId());
 		db_ldt.setApplicationTypes(db_application_type);
-		db_ldt.setTs(ts.getTime());
+		db_ldt.setTs(date);
 		db_ldt.setAggregationTypes(db_aggregation_type_raw);
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
 
@@ -302,7 +311,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setApplicationTypes(db_application_type);
 			// TODO db_ldd.setDestinationNetworks();
 			db_ldd.setVehicleTypes(db_vehicle_type[vt_ind]);
-			db_ldd.setTs(ts.getTime());
+			db_ldd.setTs(date);
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
@@ -338,7 +347,7 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	@Override
 	public void close() {
-		ts = null;
+		date = null;
 		if (null != db_simulation_run) {
 			db_simulation_run.setExecutionEndTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(success ? 0 : 1);
