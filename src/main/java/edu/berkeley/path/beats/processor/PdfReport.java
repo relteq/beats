@@ -1087,6 +1087,67 @@ Plots and tables of time series of the following performance measures for each s
 	}
 	
 	/**
+	 * Get scenario name from AppRunId
+	 * @param table
+	 * @param rec
+	 * @param section
+	 * @return
+	 */
+	public static String getScenarioName(String table, Record rec, String section) {
+		
+		String scenarioId;
+		String name = new String();
+		
+		String scenarioQuery = "SELECT scenario_id FROM simulation_runs WHERE id=";
+		if ( section == "ROUTE" || section == "NETWORK" )
+			scenarioQuery += getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id");
+		else
+			scenarioQuery += getKeyValue(setKeys("", table, rec), "app_run_id");
+		
+		try {
+			@SuppressWarnings("unchecked")
+			java.util.List<Record>  scenarioData =  BasePeer.executeQuery(scenarioQuery);
+			
+			if ( scenarioData.size()==0 ) return "Undefined Scenario";
+			
+			try {
+				
+				scenarioId = scenarioData.get(0).getValue(1).asString();
+				String nameQuery = "SELECT name, description FROM scenarios WHERE id=" + scenarioId;
+				
+				java.util.List<Record> nameData = BasePeer.executeQuery(nameQuery);
+				
+				if ( nameData.size() > 0 ) {
+					
+					name = ((Record)nameData.get(0)).getValue(1).asString();
+					
+					if  ( name == null || name.indexOf("null") >= 0 ) {						
+						
+							name = ((Record)nameData.get(0)).getValue(2).asString();
+							
+							if  ( name == null || name.indexOf("null") >= 0 ) 	name = scenarioId;
+
+					}
+					
+				} else 
+					name = "Undefined Scenario";
+				
+			} catch (DataSetException e) {
+				
+				e.printStackTrace();
+				return "Undefined Scenario";
+			}
+			
+		} catch (TorqueException e) {
+			
+			e.printStackTrace();
+			return "Undefined Scenario";
+		}
+		
+		return name;
+	}
+	
+	/**
 	 * Add values of each key to the document 
 	 * @param keys
 	 * @param table
@@ -1097,21 +1158,22 @@ Plots and tables of time series of the following performance measures for each s
 		
 		keys.add(addLeft(section + " SECTION                         TABLE: " + table.toUpperCase(), subFont));
 		
+				
 		if ( section == "NETWORK") {
 			
-			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
-			keys.add( addLeft(" Run #        = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
-			keys.add( addLeft(" Network      = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec, "link_id"), "network_id"))+"\n", subFont) );
-			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
-			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
-			keys.add( addLeft(" Aggregation= "+rr.getAggregation(), subFont ) );
+			keys.add( addLeft(" Scenario    = " + getScenarioName(table, rec, section) + "\n", subFont) );
+			keys.add( addLeft(" Run #        = " + getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Network     = " + getKeyName("network_id", getKeyValue(setKeys("", table, rec, "link_id"), "network_id"))+"\n", subFont) );
+			keys.add( addLeft(" Application = " +  getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Value Type = " +   getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
+			keys.add( addLeft(" Aggregation= " +   rr.getAggregation(), subFont ) );
 			addEmptyLine(keys, 1);
 			
 		} else if  ( section == "LINK" || section == "ONRAMP" ) {
 			
-			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
+			keys.add( addLeft(" Scenario    = " + getScenarioName(table, rec, section) + "\n", subFont) );
 			keys.add( addLeft(" Run #        = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec), "app_run_id"))+"\n", subFont) );
-			keys.add( addLeft(" Network      = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec), "network_id"))+"\n", subFont) );
+			keys.add( addLeft(" Network     = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec), "network_id"))+"\n", subFont) );
 			keys.add( addLeft(" Link           = "+getKeyName("link_id", getKeyValue(setKeys("", table, rec), "link_id"))+"\n", subFont) );
 			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec), "app_type_id"))+"\n", subFont) );
 			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec), "value_type_id"))+"\n", subFont) );
@@ -1120,7 +1182,7 @@ Plots and tables of time series of the following performance measures for each s
 			
 		} else if  ( section == "ROUTE" ) {
 			
-			keys.add( addLeft(" Scenario      = "+getKeyName("scenario_id", "1")+"\n", subFont) );
+			keys.add( addLeft(" Scenario     = " + getScenarioName(table, rec, section) + "\n", subFont) );
 			keys.add( addLeft(" Run #        = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
 			keys.add( addLeft(" Route          = "+getKeyName("route_id", routeValue)+"\n", subFont) );
 			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
@@ -1151,53 +1213,54 @@ Plots and tables of time series of the following performance measures for each s
 		nameQuery = "SELECT name FROM networks WHERE id=xxx";
 		
 		if ( key == "value_type_id" ) return val;
-		if ( key == "app_run_id" )   {
+		
+		if ( key == "app_run_id" ) 
 			
 			nameQuery = "SELECT run_number FROM simulation_runs WHERE id=" + val;
 					
-		} else
-		
-		if ( key == "network_id" ) 
+		 else if ( key == "network_id" ) 
 			
 			nameQuery = "SELECT name FROM networks WHERE id=" + val;
 		
-		else if ( key == "app_type_id" ) 
+		 else if ( key == "app_type_id" ) 
 				
 				nameQuery = "SELECT description FROM application_types WHERE id=" + val;
 		
-		else if ( key == "route_id" ) 
+		 else if ( key == "route_id" ) 
 			
 			nameQuery = "SELECT name FROM routes WHERE id=" + val;
 		
-		else if ( key == "link_id" )
+		 else if ( key == "link_id" )
 		
 			nameQuery = "SELECT name FROM link_names WHERE link_id=" + val;
 		
-		else if ( key == "scenario_id" )
+		 else if ( key == "scenario_id" ) {
 			
+			 
 			nameQuery = "SELECT name, description FROM scenarios WHERE id=" + val;
+		 }
 
-		try {
+			try {
 			
 			nameData = BasePeer.executeQuery(nameQuery);
 			
-		} catch (TorqueException e) {
+			} catch (TorqueException e) {
 			e.printStackTrace();
 			return val;
-		}
+			}
 
-		if ( nameData.size() > 0 ) {
+			if ( nameData.size() > 0 ) {
 			
-			try {
+				try {
 				
-				if ( key == "link_id" ) {
+					if ( key == "link_id" ) {
 					
-					for( int i=0; i<nameData.size(); i++)
-						name += ((Record)nameData.get(i)).getValue(1).asString() + " ";		
+						for( int i=0; i<nameData.size(); i++)
+							name += ((Record)nameData.get(i)).getValue(1).asString() + " ";		
 					
-				} else
+					} else
 					
-				name = ((Record)nameData.get(0)).getValue(1).asString();
+							name = ((Record)nameData.get(0)).getValue(1).asString();
 				
 				if  ( name == null || name.indexOf("null") >= 0 ) {
 					
