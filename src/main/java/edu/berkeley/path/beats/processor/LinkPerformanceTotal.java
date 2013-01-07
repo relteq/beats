@@ -374,7 +374,7 @@ public class LinkPerformanceTotal extends edu.berkeley.path.beats.om.LinkPerform
     }
         
         /**
-         * Form list of keys except exclusion, aggregation and timetamp
+         * Form list of keys except exclusion, aggregation and time stamp
          * @param exclusion
          * @return
          * @throws TorqueException

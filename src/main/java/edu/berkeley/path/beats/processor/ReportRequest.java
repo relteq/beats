@@ -75,6 +75,13 @@ public class ReportRequest {
 	private String units;
 
 	int chartID=0;
+	private double travelTimeMultiplier=1.0;
+	private double linkLength=1.0;
+	
+	public void 	setLinkLength(double l) { linkLength=l; }
+	public double 	getLinkLength() { return linkLength; }
+	public double 	getMultiplier() { return travelTimeMultiplier; }
+	public void 	setMultiplier(double m) { travelTimeMultiplier = m; }
 	
 	public Long 	getStartTimeInMilliseconds() { return start_time*1000; }
 	public Long 	getDurationInMilliseconds() { return duration*1000; }

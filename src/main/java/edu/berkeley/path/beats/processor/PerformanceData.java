@@ -33,14 +33,18 @@ package edu.berkeley.path.beats.processor;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 
+import com.itextpdf.text.Paragraph;
 import com.workingdogs.village.DataSetException;
 import com.workingdogs.village.Record;
+
+import edu.berkeley.path.beats.om.Routes;
 
 public class PerformanceData extends AggregateData {
 	
@@ -50,11 +54,132 @@ public class PerformanceData extends AggregateData {
 			
 		doPerformance("link_performance_total", arguments);
 		doPerformance("link_performance_detailed", arguments);
+		doRoutePerformance(arguments);
 		
 	}
 	
 	/**
-	  * execute data aggregation
+	 * Make sure the route ID does exist
+	 * @param routeId
+	 * @return
+	 */
+	public static Long checkRouteId(Long routeId) {
+		
+		try {
+			
+			if ( BasePeer.executeQuery("SELECT id FROM routes WHERE id=" + routeId).size() == 0 ) {
+				
+				Routes obj = new Routes();
+				
+				obj.setId(routeId);
+				obj.setName("Default");
+				obj.setCreatedBy("Alexey");
+				obj.setCreated(new java.util.Date());
+				obj.setProjectId((long)0);
+				
+				
+				try {
+					
+					obj.save();
+					reportToStandard("New Route ID created: " + routeId);
+					return routeId;
+					
+				} catch (Exception e) {
+					
+					e.printStackTrace();
+					return null;
+				}
+			}
+		} catch (TorqueException e) {
+			
+			e.printStackTrace();
+			return null;
+		}
+		
+		return routeId;
+	}
+	
+	
+	/**
+	 * Execute Route Performance
+	 * @param arguments
+	 * @throws IOException
+	 * @throws TorqueException
+	 * @throws DataSetException
+	 */
+	public static void doRoutePerformance(String[] arguments) throws IOException, TorqueException, DataSetException {
+	
+		
+		int numOfProcessedRows = 0;
+		int nProcessed=0;
+		
+		reportToStandard("Performance calculation: route_performance");
+		List listOfRoutes;
+		
+		
+		// get a list of routes for the selection
+		//String query = getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(getSourceTable(table)) + " from "  + getSourceTable(table), "raw") ,arguments );
+		
+		String query =  getScenarioAndRunSelection(getAggregationSelection("SELECT DISTINCT link_id FROM link_performance_total", "raw"), arguments);
+		String routeQuery = "SELECT DISTINCT route_id FROM route_links WHERE link_id IN (" + query + ")";
+					
+		reportToStandard("Key query: " + routeQuery);
+		listOfRoutes = BasePeer.executeQuery(routeQuery);	
+		
+		int numberOfRoutes = listOfRoutes.size();			
+		reportToStandard("Number of routes: " + numberOfRoutes);
+		
+		if ( numberOfRoutes < 1 ) numberOfRoutes = 1; 
+		
+		// Clean previously processed data
+		CleanPreviousAggregation("route_performance_total", arguments, (String)null);
+
+		java.util.List<Record> originalData;
+		
+		for (int i=0; i < numberOfRoutes; i++ ) {
+		
+			Long routeId;		// Just in case the route table is empty
+			routeId = (long) 0;
+			nProcessed=0;
+			
+			if ( listOfRoutes.size() > 0 )
+				routeId = ((Record)listOfRoutes.get(i)).getValue(1).asLong(); 
+			
+			checkRouteId(routeId);
+			
+			// Get data set
+			
+			String linkQuery = "SELECT link_id FROM route_links WHERE route_id=" + routeId;
+			query = "SELECT app_run_id, app_type_id, ts, agg_type_id, value_type_id, SUM(travel_time) FROM link_performance_total ";
+			query = getScenarioAndRunSelection(getAggregationSelection(query, "raw"), arguments);
+			if ( listOfRoutes.size() > 0 ) 
+				query += " AND link_id IN (" + linkQuery + ")";
+			query += "  GROUP BY app_run_id, app_type_id, ts, agg_type_id, value_type_id";
+			
+			reportToStandard("Link query: " + query);
+			
+			originalData = BasePeer.executeQuery(query);
+			
+			reportToStandard("Route #"+routeId + "  Data Size: " + originalData.size());
+			
+			for (int j=0; j<originalData.size(); j++) {
+			
+				RoutePerformanceTotal obj = new RoutePerformanceTotal();
+		
+				nProcessed += obj.savePerformanceData(routeId, originalData.get(j));
+				
+			}	
+			
+			reportToStandard("Key combination " + (i+1) + " of " + numberOfRoutes + ": processed " +nProcessed + " records");
+			numOfProcessedRows += nProcessed;
+		}
+		
+		reportToStandard("Total records processed: " + numOfProcessedRows + "\n");
+	}
+	
+	
+	/**
+	  * compute performance measures
 	  * @param table name, array of arguments
 	  * @return string
 	  * @throws DataSetException 
@@ -73,14 +198,13 @@ public class PerformanceData extends AggregateData {
 		
 		int numOfProcessedRows = 0;
 		int nProcessed=0;
-		
-		// perform aggregation
+
 		
 		reportToStandard("Unique key combinations: " + listOfKeys.size());
 		
 		
 		// Clean previously processed data
-		AggregateData.CleanPreviousAggregation(table, arguments,(String)null);
+		CleanPreviousAggregation(table, arguments,(String)null);
 		
 		// Loop by key combinations 
 			
@@ -101,16 +225,14 @@ public class PerformanceData extends AggregateData {
 						String mainQuery = setKeys(query, getSourceTable(table), (Record)listOfKeys.get(i));
 						
 						originalData = BasePeer.executeQuery( "SELECT * " + mainQuery + " ORDER BY ts ASC" );
-						
 
-						Record r;
-/*						
-						for ( int j =1; j<=((Record)originalData.get(0)).size(); j++) {
+						reportToStandard("Data size: " + originalData.size() + setKeys("", getSourceTable(table), (Record)listOfKeys.get(i)) );
+/*						for ( int j=1; j<=((Record)originalData.get(0)).size(); j++) {
 							AggregateData.reportToStandard("Raw data: j=" + j + " " +   ((Record)originalData.get(0)).getValue(j).asString() );
 						}
 						
 */						
-						if (originalData.size() > 0 ) {
+						if (originalData.size() > 1 ) {
 							
 							long 	timestamp = 0;
 							double 	linkLength = 	getLinkLength(getSourceTable(table), (Record)originalData.get(0));;	
@@ -421,7 +543,6 @@ protected static long calculateAndSave(String table, int recordNumber, List data
 		 * calculates Actual Travel Time and Worst Travel Time.  Equation 3.4
 		 * @param speedData
 		 * @param linkLength
-		 * @param worst = 1 for regular speed and worst = 2 for worst speed
 		 * @return
 		 */			
 		public static BigDecimal actualTravelTime(int recordNumber, List speedData, double linkLength, int speedColumn, int tsColumn ) {

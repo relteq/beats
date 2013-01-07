@@ -103,6 +103,7 @@ public class AggregateData extends OutputToCSV {
 		doAggregateAllIntervals("link_data_detailed", arguments);
 		doAggregateAllIntervals("link_performance_detailed", arguments);
 		doAggregateAllIntervals("link_performance_total", arguments);
+		doAggregateAllIntervals("route_performance_total", arguments);
 		
 	}
 		
@@ -326,7 +327,12 @@ public static long getAggregationInMilliseconds(String aggregation) {
 
 			LinkPerformanceTotal row = new LinkPerformanceTotal();
 			return row.saveAggregated(table, aggregationId, time, originalData, aggregatedData);				
-		} 
+		} else
+		if ( table.equals("route_performance_total") ) {
+
+			RoutePerformanceTotal row = new RoutePerformanceTotal();
+			return row.saveAggregated(table, aggregationId, time, originalData, aggregatedData);				
+		}
 		
 		return 0;
 	}
@@ -359,7 +365,11 @@ public static long getAggregationInMilliseconds(String aggregation) {
 		if ( table.equals("link_performance_total") ) {
 			
 			return (new LinkPerformanceTotal()).getColumnsForAggreagtion();				
-		} 
+		} else
+		if ( table.equals("route_performance_total") ) {
+			
+			return (new RoutePerformanceTotal()).getColumnsForAggreagtion();				
+		}
 		
 		return null;
 	}
@@ -501,7 +511,12 @@ public static String setKeys(String query, String table, Record rec, String excl
 	
 				LinkPerformanceTotal row = new LinkPerformanceTotal();
 				return row.getListOfKeys(exclusion);
-			} 
+			} else
+			if ( table.equals("route_performance_total") ) {
+				
+				RoutePerformanceTotal row = new RoutePerformanceTotal();
+				return row.getListOfKeys(exclusion);
+			}
 		
 		} catch (TorqueException e) {
 
@@ -545,6 +560,11 @@ public static String setKeys(String query, String table, Record rec, String excl
 			if ( table.equals("link_performance_total") ) {
 	
 				LinkPerformanceTotal row = new LinkPerformanceTotal();
+				return row.getListOfKeys();
+			} else
+			if ( table.equals("route_performance_total") ) {
+					
+				RoutePerformanceTotal row = new RoutePerformanceTotal();
 				return row.getListOfKeys();
 			} 
 		
@@ -590,7 +610,13 @@ public static String setKeys(String query, String table, Record rec, String excl
 	
 				LinkPerformanceTotal row = new LinkPerformanceTotal();
 				return row.getListOfKeys(rec,exclusion);
-			} 
+				
+			} else
+				if ( table.equals("route_performance_total") ) {
+					
+					RoutePerformanceTotal row = new RoutePerformanceTotal();
+					return row.getListOfKeys(rec,exclusion);
+				} 
 		
 		} catch (TorqueException e) {
 
@@ -637,7 +663,13 @@ public static String setKeys(String query, String table, Record rec, String excl
 	
 				LinkPerformanceTotal row = new LinkPerformanceTotal();
 				return row.getListOfKeys(rec);
-			} 
+				
+			} else
+				if ( table.equals("route_performance_total") ) {
+					
+					RoutePerformanceTotal row = new RoutePerformanceTotal();
+					return row.getListOfKeys(rec);
+				} 
 		
 		} catch (TorqueException e) {
 

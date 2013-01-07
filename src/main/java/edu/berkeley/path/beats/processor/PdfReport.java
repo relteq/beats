@@ -205,6 +205,8 @@ public class PdfReport extends AggregateData {
 			addMetaData(document);
 			addTitlePage(document, rr);		
 			
+			rr.setMultiplier(1.0);
+			
 			// Network section
 			if ( rr.getNetworkPerformance() ) {
 				if ( rr.getDetailed() )
@@ -229,6 +231,7 @@ public class PdfReport extends AggregateData {
 				else {
 					addContourPlots(document, "link_performance_total", rr);
 					addRouteSection(document, "link_performance_total", rr);
+					addRoutePerfomanceSection(document, "route_performance_total", rr);
 				}
 			}
 			
@@ -414,8 +417,6 @@ Plots and tables of time series of the following performance measures for each s
 			
 			Paragraph keys = new Paragraph();
 			
-			//keys.add(addLeft("NETWORK SECTION                       TABLE: " + table.toUpperCase(), subFont));
-			
 			// Get starting time stamp			
 			query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i), "link_id" );				
 			long start = rr.getStartTimeInMilliseconds();					
@@ -483,9 +484,9 @@ Plots and tables of time series of the following performance measures for each s
 			
 			String query;
 			
-			reportToStandard("ROUTE SECTION Contour plots for table: " +table);
+			reportToStandard("ROUTE SECTION Time series for table: " +table);
 			
-			// Get a list of keys 
+			// Get a list of routes 
 			
 			query =  getScenarioAndRunSelection(getAggregationSelection("SELECT DISTINCT link_id FROM " + table, rr.getAggregation()) ,rr.getContent() );
 			String routeQuery = "SELECT DISTINCT route_id FROM route_links WHERE link_id IN (" + query + ")";
@@ -580,11 +581,11 @@ Plots and tables of time series of the following performance measures for each s
 					listOfColumnNames = getAggregationColumns(table);
 						
 					// Form main select
-					String columns = "ts, " + "link_id, " + listToString( listOfColumnNames, "SUM");
+					String columns = "ts, "  + listToString( listOfColumnNames, "SUM");
 					query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(j), "link_id" );							
 					query = setTimeInterval(query, start-1, stop);
 					query += " AND link_id IN (" + getLinks(linkData) + ")";
-					query += "  GROUP BY link_id, ts ORDER BY link_id ASC, ts ASC";
+					query += "  GROUP BY ts ORDER BY ts ASC";
 					    
 					reportToStandard("Query: " + query);
 					
@@ -619,6 +620,69 @@ Plots and tables of time series of the following performance measures for each s
 			}
 			
 		}
+		
+		private void addRoutePerfomanceSection(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
+			
+			String query;
+			
+			reportToStandard("ROUTE PERFORMANCE SECTION Contour plots for table: " +table);
+			
+			// Get a list of keys 
+			
+			query =  getScenarioAndRunSelection(getAggregationSelection("select distinct " + getListOfKeys(table) + " from "  + table, rr.getAggregation()) ,rr.getContent() );
+			reportToStandard("Key query: " + query);
+			
+			ArrayList<String> listOfColumnNames;
+			
+			@SuppressWarnings("rawtypes")
+			java.util.List listOfKeys = BasePeer.executeQuery(query);
+			
+			reportToStandard("Unique key combinations: " + listOfKeys.size());
+
+			for (int i=0; i < listOfKeys.size(); i++ ) {
+				
+				Paragraph keys = new Paragraph();
+				
+				// Get starting time stamp			
+				query =  setKeys(getAggregationSelection("SELECT MIN(ts) FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i) );				
+				long start = rr.getStartTimeInMilliseconds();					
+				start += ((Record)BasePeer.executeQuery(query).get(0)).getValue(1).asTimestamp().getTime();
+				
+				// Get max time stamp for this report
+				long stop = start +  rr.getDurationInMilliseconds();
+				
+				addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(i), rr, "ROUTE", getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "route_id"));		
+				
+				listOfColumnNames = getAggregationColumns(table);
+				
+				// Form main select
+				String columns = "ts, " + listToString( listOfColumnNames, "SUM");
+				query =  setKeys(getAggregationSelection("SELECT " + columns + " FROM " + table,rr.getAggregation()), table, (Record)listOfKeys.get(i));				
+			    query = setTimeInterval(query, start-1, stop);
+			    query += " GROUP BY ts ORDER BY ts ASC";
+			    
+				reportToStandard("Query: " + query);
+				
+				@SuppressWarnings("rawtypes")
+				java.util.List data = BasePeer.executeQuery(query);
+				//AggregateData.reportToStandard("Size " + data.size() );
+			
+				rr.setMultiplier(1.0/60.0);
+				// Add generated chart and table
+				if (table == "route_performance_total") {
+					
+					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("travel_time")), listOfColumnNames, data, rr);
+					
+				}
+
+				
+				document.newPage();
+				createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);
+				rr.setMultiplier(1.0);
+			}
+			
+		}
+		
 	
 	/**
 	 * Add contour charts to the document
@@ -658,7 +722,6 @@ Plots and tables of time series of the following performance measures for each s
 			
 			for (int i=0; i < numberOfRoutes; i++ ) {
 				
-				Paragraph keys = new Paragraph();
 				
 				// Get a list of unique link ID in the right order
 				if ( listOfRoutes.size() > 0 ) {
@@ -704,6 +767,8 @@ Plots and tables of time series of the following performance measures for each s
 				reportToStandard("Unique key combinations: " + listOfKeys.size());
 				
 				for ( int j=0; j<listOfKeys.size(); j++) {
+					
+					Paragraph keys = new Paragraph();
 				
 					// Get starting time stamp	
 					
@@ -744,6 +809,7 @@ Plots and tables of time series of the following performance measures for each s
 					java.util.List<Record> data = BasePeer.executeQuery(query);
 					//AggregateData.reportToStandard("Size " + data.size() );
 	
+					reportToStandard("Data size: " + data.size() );
 					
 					// Add generated chart and table
 					if (table == "link_data_total") {
@@ -830,6 +896,8 @@ Plots and tables of time series of the following performance measures for each s
 			long stop = start +  rr.getDurationInMilliseconds();
 			
 			addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(i), rr, "LINK", null);	
+		
+			String link = getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "link_id");
 			
 			listOfColumnNames = getAggregationColumns(table);
 			
@@ -857,6 +925,14 @@ Plots and tables of time series of the following performance measures for each s
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("density")), listOfColumnNames, data, rr);				
 			}
 			else if (table == "link_performance_total") {
+				
+				String lengthQuery = "SELECT length FROM links WHERE length>0";
+				lengthQuery += " AND id="+getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "link_id");
+				lengthQuery += " AND network_id="+getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "network_id");
+				reportToStandard("Length query: " + lengthQuery);	
+				double length = ((Record) BasePeer.executeQuery(lengthQuery).get(0)).getValue(1).asDouble();
+				rr.setLinkLength(length);
+				
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
@@ -910,22 +986,7 @@ Plots and tables of time series of the following performance measures for each s
 			@SuppressWarnings("rawtypes")
 			
 			java.util.List listOfKeys = BasePeer.executeQuery(query);
-			/*
-			reportToStandard("Unique key combinations: " + listOfKeys.size());
-			
-			String linkQuery="SELECT link_id, network_id, link_type_id FROM link_type_det";
-			reportToStandard("Link query: " + linkQuery);
-			
-			@SuppressWarnings("unchecked")
-			java.util.List<Record> linkData = BasePeer.executeQuery(linkQuery);
-			int n = linkData.size();
-			
-			for (int j=0; j<n; j++)
-				reportToStandard("Link data: " + linkData.get(j).getValue(1).asString() 
-						+ " " + linkData.get(j).getValue(2).asString()
-						+ " " + linkData.get(j).getValue(3).asString()
-						);
-*/
+
 			for (int i=0; i < listOfKeys.size(); i++ ) {
 				
 				Paragraph keys = new Paragraph();
@@ -1057,9 +1118,9 @@ Plots and tables of time series of the following performance measures for each s
 			
 		} else if  ( section == "ROUTE" ) {
 			
-			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
+			keys.add( addLeft(" Scenario      = "+getKeyName("scenario_id", "1")+"\n", subFont) );
 			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
-			keys.add( addLeft(" Route        = "+getKeyName("route_id", routeValue)+"\n", subFont) );
+			keys.add( addLeft(" Route          = "+getKeyName("route_id", routeValue)+"\n", subFont) );
 			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
 			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
 			keys.add( addLeft(" Aggregation= "+rr.getAggregation(), subFont ) );
@@ -1370,6 +1431,10 @@ Plots and tables of time series of the following performance measures for each s
 			else
 				unitMultiplier[i] = toMetric(useTheseColumns.get(i));
 			
+			if ( useTheseColumns.get(i).equals("travel_time") ) 
+				unitMultiplier[i] *= rr.getMultiplier();
+			
+			
 		}
 		
 		table.setTotalWidth(tableWidth);
@@ -1467,6 +1532,9 @@ Plots and tables of time series of the following performance measures for each s
 			else
 				unitMultiplier[i] = toMetric(useTheseColumns.get(i));
 			
+			if ( useTheseColumns.get(i).equals("travel_time") ) 
+				unitMultiplier[i] *= rr.getMultiplier();
+			
 		}
 
 		for (int i=0; i<useTheseColumns.size(); i++ ) {
@@ -1484,9 +1552,9 @@ Plots and tables of time series of the following performance measures for each s
 
 		// Service minimal time if needed
 		int minimalTime = useTheseColumns.indexOf("minimal_time");
-		int delay = useTheseColumns.indexOf("minimal_time");
-		int vht = useTheseColumns.indexOf("vht");
-		int vmt = useTheseColumns.indexOf("vmt");
+		int delay = listOfColumnNames.indexOf("delay");
+		int vht = listOfColumnNames.indexOf("vht");
+		int vmt = listOfColumnNames.indexOf("vmt");
 		boolean minimalTimeFlag = false;
 		if ( delay >= 0 && vht >= 0 && vmt >=0 && minimalTime >=0 ) minimalTimeFlag = true;
 		
@@ -1504,9 +1572,10 @@ Plots and tables of time series of the following performance measures for each s
 						double del	= 	((Record)data.get(row)).getValue(delay + 2).asDouble();
 						double vh 	= 	((Record)data.get(row)).getValue(vht + 2).asDouble();
 						double vm 	= 	((Record)data.get(row)).getValue(vmt + 2).asDouble();
+						double length = rr.getLinkLength();
 						
-						if ( vh - del > 1E-6 )
-							d = BigDecimal.valueOf( vm/(vh-del) );
+						if ( vm > 1E-6 )
+							d = BigDecimal.valueOf( (vh-del)/vm*length );
 						else
 							d = BigDecimal.valueOf(0.0);
 					}
