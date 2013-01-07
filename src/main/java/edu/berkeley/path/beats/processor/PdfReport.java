@@ -355,6 +355,8 @@ public class PdfReport extends AggregateData {
 		
 		s = "";
 		
+		if ( !data && !per ) return s;
+		
 		if ( det ) 
 
 			s += "Detailed ";
@@ -897,7 +899,7 @@ Plots and tables of time series of the following performance measures for each s
 			
 			addKeyValuesToDocument(keys, table, (Record)listOfKeys.get(i), rr, "LINK", null);	
 		
-			String link = getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "link_id");
+			//String link = getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "link_id");
 			
 			listOfColumnNames = getAggregationColumns(table);
 			
@@ -1098,7 +1100,7 @@ Plots and tables of time series of the following performance measures for each s
 		if ( section == "NETWORK") {
 			
 			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
-			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Run #        = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
 			keys.add( addLeft(" Network      = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec, "link_id"), "network_id"))+"\n", subFont) );
 			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
 			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
@@ -1108,7 +1110,7 @@ Plots and tables of time series of the following performance measures for each s
 		} else if  ( section == "LINK" || section == "ONRAMP" ) {
 			
 			keys.add( addLeft(" Scenario     = "+getKeyName("scenario_id", "1")+"\n", subFont) );
-			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Run #        = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec), "app_run_id"))+"\n", subFont) );
 			keys.add( addLeft(" Network      = "+getKeyName("network_id", getKeyValue(setKeys("", table, rec), "network_id"))+"\n", subFont) );
 			keys.add( addLeft(" Link           = "+getKeyName("link_id", getKeyValue(setKeys("", table, rec), "link_id"))+"\n", subFont) );
 			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec), "app_type_id"))+"\n", subFont) );
@@ -1119,7 +1121,7 @@ Plots and tables of time series of the following performance measures for each s
 		} else if  ( section == "ROUTE" ) {
 			
 			keys.add( addLeft(" Scenario      = "+getKeyName("scenario_id", "1")+"\n", subFont) );
-			keys.add( addLeft(" App Run     = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
+			keys.add( addLeft(" Run #        = "+getKeyName("app_run_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_run_id"))+"\n", subFont) );
 			keys.add( addLeft(" Route          = "+getKeyName("route_id", routeValue)+"\n", subFont) );
 			keys.add( addLeft(" Application = "+getKeyName("app_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "app_type_id"))+"\n", subFont) );
 			keys.add( addLeft(" Value Type = "+getKeyName("value_type_id", getKeyValue(setKeys("", table, rec, "link_id"), "value_type_id"))+"\n", subFont) );
@@ -1149,7 +1151,11 @@ Plots and tables of time series of the following performance measures for each s
 		nameQuery = "SELECT name FROM networks WHERE id=xxx";
 		
 		if ( key == "value_type_id" ) return val;
-		if ( key == "app_run_id" )    return val;
+		if ( key == "app_run_id" )   {
+			
+			nameQuery = "SELECT run_number FROM simulation_runs WHERE id=" + val;
+					
+		} else
 		
 		if ( key == "network_id" ) 
 			
