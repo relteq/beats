@@ -1530,7 +1530,7 @@
 		<column name="link_id" primaryKey="true" domain="ID"/>
 		<column name="app_run_id" primaryKey="true" domain="ID"/>
 		<column name="app_type_id" primaryKey="true" domain="ID"/>
-		<column name="dest_network_id" domain="ID"/>
+		<column name="dest_network_id" primaryKey="true" domain="ID"/>
 		<column name="veh_type_id" primaryKey="true" domain="ID"/>
 		<column name="ts" primaryKey="true" type="TIMESTAMP"/>
 		<column name="agg_type_id" primaryKey="true" domain="ID"/>
@@ -1549,9 +1549,11 @@
 		<foreign-key foreignTable="application_types">
 			<reference local="app_type_id" foreign="id"/>
 		</foreign-key>
+<!--
 		<foreign-key foreignTable="dest_networks">
 			<reference local="dest_network_id" foreign="id"/>
 		</foreign-key>
+-->
 		<foreign-key foreignTable="veh_types">
 			<reference local="veh_type_id" foreign="id"/>
 		</foreign-key>
