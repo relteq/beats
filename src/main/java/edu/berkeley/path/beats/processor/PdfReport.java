@@ -457,16 +457,20 @@ Plots and tables of time series of the following performance measures for each s
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+				
+				createTables(keys, new ArrayList<String>(Arrays.asList("vht", "vmt", "productivity_loss", "delay")), listOfColumnNames, data, rr);
 			}
 			else if (table == "link_performance_detailed") {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
-				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
-				
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);				
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+				
+				createTables(keys, new ArrayList<String>(Arrays.asList("vht", "vmt", "delay")), listOfColumnNames, data, rr);
+
 			}
 			
 			document.newPage();
-			createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);
+
 		}
 		
 	}
@@ -608,12 +612,18 @@ Plots and tables of time series of the following performance measures for each s
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+						
+						createTables(keys, new ArrayList<String>(Arrays.asList("vht", "vmt", "productivity_loss", "delay")), listOfColumnNames, data, rr);
+
 					}
 					else if (table == "link_performance_detailed") {
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("productivity_loss")), listOfColumnNames, data, rr);
 						createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
+						
+						createTables(keys, new ArrayList<String>(Arrays.asList("vht", "vmt", "productivity_loss", "delay")), listOfColumnNames, data, rr);
+
 					}
 								
 					document.newPage();
@@ -623,6 +633,16 @@ Plots and tables of time series of the following performance measures for each s
 			
 		}
 		
+		/**
+		 * Route performance section
+		 * @param document
+		 * @param table
+		 * @param rr
+		 * @throws DocumentException
+		 * @throws TorqueException
+		 * @throws DataSetException
+		 * @throws IOException
+		 */
 		private void addRoutePerfomanceSection(Document document, String table, ReportRequest rr) throws DocumentException, TorqueException, DataSetException, IOException {
 			
 			String query;
@@ -675,11 +695,10 @@ Plots and tables of time series of the following performance measures for each s
 					
 					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("travel_time")), listOfColumnNames, data, rr);
 					
+					createTables(keys, new ArrayList<String>(Arrays.asList("travel_time")), listOfColumnNames, data, rr);	
 				}
 
 				
-				document.newPage();
-				createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);
 				rr.setMultiplier(1.0);
 			}
 			
@@ -835,6 +854,11 @@ Plots and tables of time series of the following performance measures for each s
 			
 		}
 		
+	/**
+	 * Get list of links for the quiry
+	 * @param linkData
+	 * @return
+	 */
 	public static String getLinks(java.util.List<Record> linkData) {
 		
 		String links = new String();
@@ -855,6 +879,7 @@ Plots and tables of time series of the following performance measures for each s
 		
 		return links;
 	}
+	
 /**
  * Add tables and time series charts to document
  * @param document
@@ -920,14 +945,19 @@ Plots and tables of time series of the following performance measures for each s
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "capasity")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("speed", "free_flow_speed")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("density")), listOfColumnNames, data, rr);	
+				
+				createTables(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "capasity", "speed", "free_flow_speed", "density")), listOfColumnNames, data, rr);	
 			}
 			else if (table == "link_data_detailed") {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("speed")), listOfColumnNames, data, rr);
-				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("density")), listOfColumnNames, data, rr);				
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("density")), listOfColumnNames, data, rr);
+				
+				createTables(keys, new ArrayList<String>(Arrays.asList("in_flow", "out_flow", "speed", "density")), listOfColumnNames, data, rr);	
 			}
 			else if (table == "link_performance_total") {
 				
+				// This special piece of code is needed for the minimal travel time only
 				String lengthQuery = "SELECT length FROM links WHERE length>0";
 				lengthQuery += " AND id="+getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "link_id");
 				lengthQuery += " AND network_id="+getKeyValue(setKeys("", table, (Record)listOfKeys.get(i)), "network_id");
@@ -942,14 +972,19 @@ Plots and tables of time series of the following performance measures for each s
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);
 //				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("los")), listOfColumnNames, data, rr);
 //				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vc_ratio")), listOfColumnNames, data, rr);
+				
+				createTables(keys, new ArrayList<String>(Arrays.asList("vht", "vmt", "productivity_loss", "travel_time", "minimal_time", "delay")), listOfColumnNames, data, rr);	
+
+			
 			}
 			else if (table == "link_performance_detailed") {
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
 				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vmt")), listOfColumnNames, data, rr);
-				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);				
+				createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("delay")), listOfColumnNames, data, rr);	
+				
+				createTables(keys, new ArrayList<String>(Arrays.asList("vht", "vmt", "delay")), listOfColumnNames, data, rr);	
 			}
-			
-			createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);				
+					
 
 		}
 		
@@ -1020,20 +1055,27 @@ Plots and tables of time series of the following performance measures for each s
 				// Add generated chart and table
 				if (table == "link_data_total") {
 					listOfColumnNames.set(listOfColumnNames.indexOf("density"), "queue size");
-					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);	
+					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);
+					
+					createTables(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);	
 				}
 				else if (table == "link_data_detailed") {
 					listOfColumnNames.set(listOfColumnNames.indexOf("density"), "queue size");
 					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);				
+				
+					createTables(keys, new ArrayList<String>(Arrays.asList("queue size")), listOfColumnNames, data, rr);
 				}
 				else if (table == "link_performance_total") {
 					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+				
+					createTables(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
 				}
 				else if (table == "link_performance_detailed") {
 					createTimeSeriesChart(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
+					
+					createTables(keys, new ArrayList<String>(Arrays.asList("vht")), listOfColumnNames, data, rr);
 				}
-				
-				createTables(keys, listOfColumnNames, listOfColumnNames, data, rr);				
+							
 
 			}
 			
@@ -1443,12 +1485,13 @@ Plots and tables of time series of the following performance measures for each s
 			throws DataSetException, DocumentException, IOException {		
 	
 
+		document.newPage();
 		
-		for ( int i=0; i<useTheseColumns.size(); i = i + 5 ) {
+		for ( int i=0; i<useTheseColumns.size(); i = i + 6 ) {
 		
 			ArrayList<String>  list = new ArrayList<String> ();
 
-			for( int j=i; j<i+5 && j < useTheseColumns.size() ; j++)
+			for( int j=i; j<i+6 && j < useTheseColumns.size() ; j++)
 				list.add(useTheseColumns.get(j));
 			// Add keys
 			document.add(keys);
@@ -1494,6 +1537,7 @@ Plots and tables of time series of the following performance measures for each s
 		for (int i=0; i<useTheseColumns.size(); i++) {
 			
 			tableWidth[i+1] = 40f;
+			
 			colunmNumber[i+1] = listOfColumnNames.indexOf(useTheseColumns.get(i)) + 2;
 			if ( rr.getUnits().equals("US") )
 				unitMultiplier[i] = toUS(useTheseColumns.get(i));
@@ -1522,8 +1566,13 @@ Plots and tables of time series of the following performance measures for each s
 		// Get first time stamp in milliseconds
 		// ts must be the first in the column list
 		
-		long startOfTheChart = ((Record)data.get(0)).getValue(1).asTimestamp().getTime();
-		startOfTheChart -= getAggregationInMilliseconds(rr.getAggregation());
+		// Service minimal time if needed
+		int minimalTime = useTheseColumns.indexOf("minimal_time");
+		int delay = listOfColumnNames.indexOf("delay");
+		int vht = listOfColumnNames.indexOf("vht");
+		int vmt = listOfColumnNames.indexOf("vmt");
+		boolean minimalTimeFlag = false;
+		if ( delay >= 0 && vht >= 0 && vmt >=0 && minimalTime >=0 ) minimalTimeFlag = true;
 		
 		for (int row=0; row< data.size(); row++) {
 			
@@ -1532,7 +1581,27 @@ Plots and tables of time series of the following performance measures for each s
 			
 			for (int i=0; i<useTheseColumns.size(); i++ ) {
 				
-				BigDecimal d = ((Record)data.get(row)).getValue(colunmNumber[i+1]).asBigDecimal();
+				BigDecimal d;
+				
+				if ( i == minimalTime ) {
+					
+					if ( minimalTimeFlag ) {
+						
+						double del	= 	((Record)data.get(row)).getValue(delay + 2).asDouble();
+						double vh 	= 	((Record)data.get(row)).getValue(vht + 2).asDouble();
+						double vm 	= 	((Record)data.get(row)).getValue(vmt + 2).asDouble();
+						double length = rr.getLinkLength();
+						
+						if ( vm > 1E-6 )
+							d = BigDecimal.valueOf( (vh-del)/vm*length );
+						else
+							d = BigDecimal.valueOf(0.0);
+					}
+					else
+						d = BigDecimal.valueOf(0.0);
+				} else
+				
+					d= ((Record)data.get(row)).getValue(colunmNumber[i+1]).asBigDecimal();
 				
 				if ( d == null ) {
 					
