@@ -34,6 +34,7 @@ import edu.berkeley.path.beats.om.LinkDataDetailed;
 import edu.berkeley.path.beats.om.LinkDataTotal;
 import edu.berkeley.path.beats.om.LinkPerformanceDetailed;
 import edu.berkeley.path.beats.om.LinkPerformanceTotal;
+import edu.berkeley.path.beats.om.RoutePerformanceTotal;
 import edu.berkeley.path.beats.om.SignalData;
 import edu.berkeley.path.beats.om.SignalPhasePerformance;
 import edu.berkeley.path.beats.processor.AggregateData;
@@ -118,6 +119,11 @@ public class Runner {
 			{
 				Service.ensureInit();
 				OutputToCSV.outputToCSV("signal_phase_performance", SignalPhasePerformance.getFieldNames(), arguments);
+				
+			} else if (cmd.equals("route_performance_total") || cmd.equals("rpt")) 
+			{
+				Admin.initTorqueAPI();
+				OutputToCSV.outputToCSV("route_performance_total", RoutePerformanceTotal.getFieldNames(), arguments);
 				
 			} else
 			
