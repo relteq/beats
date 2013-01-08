@@ -300,7 +300,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_ldd.setNetworkId(str2id(link.getMyNetwork().getId()));
 			db_ldd.setAppRunId(db_simulation_run.getId());
 			db_ldd.setApplicationTypes(db_application_type);
-			// TODO db_ldd.setDestinationNetworks();
+			db_ldd.setDestNetworkId(Long.valueOf(0));
 			db_ldd.setVehicleTypes(db_vehicle_type[vt_ind]);
 			db_ldd.setTs(ts.getTime());
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
