@@ -37,7 +37,7 @@ import edu.berkeley.path.beats.simulator.ScenarioElement;
 public class Event_Link_Demand_Knob extends Event {
 
 	protected boolean resetToNominal;
-	protected Double newknob;
+	protected Double newknob;				// default = 1.0
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -69,9 +69,9 @@ public class Event_Link_Demand_Knob extends Event {
 			this.resetToNominal = false;
 		// knob
 		if (null != params && params.has("knob"))
-			Double.valueOf(params.get("knob"));
+			newknob = Double.valueOf(params.get("knob"));
 		else 
-			newknob = Double.NaN;
+			newknob = 1d;
 		
 	}
 

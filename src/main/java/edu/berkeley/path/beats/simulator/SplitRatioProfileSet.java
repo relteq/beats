@@ -50,6 +50,9 @@ final class SplitRatioProfileSet extends edu.berkeley.path.beats.jaxb.SplitRatio
 
 	protected void validate() {
 
+		if(getSplitratioProfile().isEmpty())
+			return;
+
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("Vehicle types list in demand profile id=" +getId()+ " does not match that of settings.");

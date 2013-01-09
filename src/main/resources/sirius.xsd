@@ -236,7 +236,7 @@
 				<xs:element ref="IntersectionCache" minOccurs="0" />
 			  </xs:all>
 			  <xs:attribute name="name" type="xs:string" use="required" />
-			  <xs:attribute name="dt" type="xs:decimal" use="required" />			<!-- in seconds -->
+			  <xs:attribute name="dt" type="xs:decimal" use="required" />			<!-- in time units -->
 			  <xs:attribute name="id" type="xs:string" use="required" />
 			  <xs:attribute name="locked" type="xs:boolean" use="optional" default="false" />
 			</xs:complexType>
@@ -429,9 +429,9 @@
 				  <xs:attribute name="nema" type="xs:integer" use="required" />
 				  <xs:attribute name="protected" type="xs:boolean" use="required" />
 				  <xs:attribute name="permissive" type="xs:boolean" use="required" />
-				  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in seconds -->
-				  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-				  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in seconds -->
+				  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in time units -->
+				  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in time units -->
+				  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in time units -->
 				  <xs:attribute name="lag" type="xs:boolean" use="required" />
 				  <xs:attribute name="recall" type="xs:boolean" use="required" />
 				</xs:complexType>
@@ -445,7 +445,7 @@
   valid sensor tables:
 	name=data_sources
 		 column names = url (String)
-						dt (decimal seconds)
+						dt (decimal time units)
 						format (value in {PeMS&#x20;Data&#x20;Clearinghouse|Caltrans&#x20;DBX|BHL})
   -->
 			  
@@ -457,6 +457,12 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+		  <!-- 
+		    sensor parameters used in beats:
+		      vds - used to assign a VDS station id to a loop sensor
+			sensor tables used in beats:
+			  name="data_sources", columns={"url","dt" key="false","format"} - used to reference PeMS data sources.
+		  -->
 		  <xs:element name="sensor">
 			<xs:complexType>
 			  <xs:all>
@@ -468,7 +474,6 @@
 			  
 			  <xs:attribute name="id" type="xs:string" use="required" />
 			  <xs:attribute name="link_position" type="xs:decimal" use="optional" />
-
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
 				  <xs:restriction base="xs:string">
@@ -478,14 +483,14 @@
 			  </xs:attribute>
 			  <xs:attribute name="sensor_id_original" type="xs:string" use="optional" />
 			  <xs:attribute name="lane_number" type="xs:integer" use="optional" />
-			 	<xs:attribute name="health_status" use="optional">
+			  <xs:attribute name="health_status" use="optional">
 			    <xs:simpleType >
-		        <xs:restriction base="xs:decimal">
+		          <xs:restriction base="xs:decimal">
 			        <xs:minInclusive value="0"/>
 			        <xs:maxInclusive value="1"/>
-		        </xs:restriction>
-	        </xs:simpleType>
-	  		</xs:attribute>
+		          </xs:restriction>
+	            </xs:simpleType>
+	  		  </xs:attribute>
 			</xs:complexType>
 		</xs:element>
 
@@ -500,11 +505,11 @@
 		  </xs:sequence>
 		  <xs:attribute name="id" type="xs:string" use="optional" default="" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
-		  <xs:attribute name="tstamp" type="xs:decimal" use="optional" default="0.0"/>		<!-- time, to which this initial condition corresponds, in seconds -->
+		  <xs:attribute name="tstamp" type="xs:decimal" use="optional" default="0.0"/>		<!-- time, to which this initial condition corresponds, in time units after midnight. default=midnight -->
 		</xs:complexType>
 	  </xs:element>
 	  
-		  <xs:element name="density">													<!-- content in veh/meter -->
+		  <xs:element name="density">													<!-- content in veh/distance unit -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
 			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
@@ -552,8 +557,8 @@
 				<xs:element ref="splitratio" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
 			  <xs:attribute name="node_id" type="xs:string" use="required" />
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
+			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
+			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
 			</xs:complexType>
 		  </xs:element>		  
@@ -581,8 +586,8 @@
 		  <xs:element name="capacityProfile">
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
+			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
+			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			</xs:complexType>
 		  </xs:element>
 
@@ -632,7 +637,7 @@
 				<xs:element ref="splitratioEvent" minOccurs="0" />			<!-- node split ratio -->
 			  </xs:all>
 			  <xs:attribute name="id" type="xs:string" use="required" />
-			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in seconds -->
+			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in time units -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
 			  <xs:attribute name="type" use="required">
 				<xs:simpleType>
@@ -668,14 +673,14 @@
 		</xs:complexType>
 	  </xs:element>
 			  
-		  <xs:element name="demandProfile">									<!-- content in [veh/s/vehicle type] -->
+		  <xs:element name="demandProfile">									<!-- content in [veh/time unit/vehicle type] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
+			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
+			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			  <xs:attribute name="link_id_origin" type="xs:string" use="required" />
 			  <xs:attribute name="destination_network_id" type="xs:string" use="optional" />
-			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/s/vehicle type] -->
+			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/time unit/vehicle type] -->
 			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
 			</xs:complexType>
 		  </xs:element>
@@ -727,8 +732,8 @@
 		</xs:complexType>
 	  </xs:element>
 	  
-		  <xs:element name="controller">
-		<xs:complexType>
+		<xs:element name="controller">
+		  <xs:complexType>
 			<xs:sequence>
 				<xs:element ref="parameters" minOccurs="0" />
 				<xs:element ref="display_position" minOccurs="0" />
@@ -747,7 +752,7 @@
 				</xs:simpleType>
 			  </xs:attribute>
 			  <xs:attribute name="id" type="xs:string" use="required" />
-			  <xs:attribute name="dt" type="xs:decimal" use="required" />							<!-- in seconds -->
+			  <xs:attribute name="dt" type="xs:decimal" use="required" />							<!-- in time units -->
 			  <xs:attribute name="enabled" type="xs:boolean" use="required" />
 			  <xs:attribute name="java_class" type="xs:string" use="optional" />
 			</xs:complexType>
@@ -779,8 +784,8 @@
 
 				<xs:element name="interval">
 					<xs:complexType>
-						<xs:attribute name="start_time" type="xs:decimal" use="required" />		<!-- in seconds -->
-						<xs:attribute name="end_time" type="xs:decimal" use="required" />		<!-- in seconds -->
+						<xs:attribute name="start_time" type="xs:decimal" use="required" />		<!-- in time units -->
+						<xs:attribute name="end_time" type="xs:decimal" use="required" />		<!-- in time units -->
 					</xs:complexType>
 				</xs:element>
 			  
@@ -803,22 +808,22 @@
 				<xs:element ref="fundamentalDiagram" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in seconds -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in seconds -->
+			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
+			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			</xs:complexType>
 		  </xs:element>
 
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
-				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
-				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
-				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
 				  <xs:attribute name="capacity" type="xs:decimal" use="required" />							<!-- [veh/s/lane]   -->
+				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
+				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
+				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
 				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/m/lane] -->
 				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/s/lane]   -->
 				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/s/lane]   -->
-				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>					<!-- [m/s]   -->
-				  <xs:attribute name="std_dev_congestion_speed" type="xs:decimal" use="optional"/>					<!-- [m/s]   -->
+				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>			<!-- [m/s]   -->
+				  <xs:attribute name="std_dev_congestion_speed" type="xs:decimal" use="optional"/>			<!-- [m/s]   -->
 				</xs:complexType>
 			  </xs:element>  
 

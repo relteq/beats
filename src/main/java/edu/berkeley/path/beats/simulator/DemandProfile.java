@@ -150,8 +150,9 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 	protected void update(boolean forcesample) {
 		if(myLinkOrigin==null)
 			return;
-		if(!forcesample)
-			if(isdone || demand_nominal.isEmpty())
+		if(isdone && !forcesample)
+			return;
+		if(demand_nominal.isEmpty())
 				return;
 		if(forcesample || myScenario.clock.istimetosample(samplesteps,stepinitial)){
 			int n = demand_nominal.getnTime()-1;

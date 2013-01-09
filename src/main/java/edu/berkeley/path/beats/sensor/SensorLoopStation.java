@@ -106,7 +106,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	@Override
 	public void validate() {
 		if(myLink==null)
-			SiriusErrorLog.addWarning("Unknown link reference for sensor id=" + getId() +".");
+			SiriusErrorLog.addWarning("Loop sensor with id=" + getId() +" is not attached.");
 	}
 
 	@Override
