@@ -152,17 +152,26 @@ public class ScenarioUtil {
 	}
 
 	/**
+	 * Sets the scenario schema version if it has not been set yet
+	 * @param scenario
+	 * @throws SiriusException
+	 */
+	private static void ensureSchemaVersion(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
+		if (null == scenario.getSchemaVersion()) {
+			String schemaVersion = getSchemaVersion();
+			logger.debug("Schema version was not set. Assuming current version: " + schemaVersion);
+			scenario.setSchemaVersion(schemaVersion);
+		}
+	}
+
+	/**
 	 * Saves a scenario to an XML file
 	 * @param scenario the scenario
 	 * @param filename output file name
 	 * @throws SiriusException
 	 */
 	public static void save(edu.berkeley.path.beats.jaxb.Scenario scenario, String filename) throws SiriusException {
-		if (null == scenario.getSchemaVersion()) {
-			String schemaVersion = getSchemaVersion();
-			logger.debug("Schema version was not set. Assuming current version: " + schemaVersion);
-			scenario.setSchemaVersion(schemaVersion);
-		}
+		ensureSchemaVersion(scenario);
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
 			Marshaller marshaller = jaxbContext.createMarshaller();
