@@ -196,6 +196,24 @@ public class Runner {
 					edu.berkeley.path.beats.util.UnitConverter.convertUnits(arguments[0], arguments[1]);
 				else
 					throw new InvalidUsageException("Usage: convert_units|cu input_file output_file");
+			} else if ("json".equals(cmd)) {
+				if (0 == arguments.length || 2 < arguments.length)
+					throw new InvalidUsageException("Usage: json scenario_id|xml_filename [json_filename]");
+				else {
+					edu.berkeley.path.beats.jaxb.Scenario scenario = null;
+					try {
+						long scenario_id = Long.parseLong(arguments[0], 10);
+						logger.info("Loading scenario from the database, ID=" + scenario_id);
+						scenario = edu.berkeley.path.beats.util.ScenarioUtil.getScenario(scenario_id);
+					} catch (NumberFormatException exc) {
+						logger.info("Loading scenario from file " + arguments[0]);
+						scenario = edu.berkeley.path.beats.util.ScenarioUtil.load(arguments[0]);
+					}
+					if (1 < arguments.length)
+						edu.berkeley.path.beats.util.ScenarioUtil.saveJSON(scenario, arguments[1]);
+					else
+						edu.berkeley.path.beats.util.ScenarioUtil.saveJSON(scenario, System.out);
+				}
 			} else throw new InvalidCommandException(cmd);
 		} catch (InvalidUsageException exc) {
 			String msg = exc.getMessage();

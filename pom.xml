@@ -276,5 +276,10 @@
       <artifactId>jfreechart</artifactId>
       <version>1.0.14</version>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.jettison</groupId>
+      <artifactId>jettison</artifactId>
+      <version>1.3.2</version>
+    </dependency>
   </dependencies>
 </project>

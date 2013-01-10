@@ -15,9 +15,12 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 
 import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusException;
@@ -178,6 +181,48 @@ public class ScenarioUtil {
 			marshaller.setSchema(getSchema());
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			marshaller.marshal(scenario, new File(filename));
+		} catch (JAXBException exc) {
+			throw new SiriusException(exc);
+		}
+	}
+
+	/**
+	 * Saves a scenario as a JSON file
+	 * @param scenario the scenario
+	 * @param filename the output file name
+	 * @throws SiriusException
+	 */
+	public static void saveJSON(edu.berkeley.path.beats.jaxb.Scenario scenario, String filename) throws SiriusException {
+		try {
+			saveJSON(scenario, new java.io.FileWriter(filename));
+		} catch (java.io.IOException exc) {
+			throw new SiriusException("Could not open output file " + filename, exc);
+		}
+	}
+
+	/**
+	 * Serializes a scenario in JSON format to an output stream
+	 * @param scenario
+	 * @param stream the output stream
+	 * @throws SiriusException
+	 */
+	public static void saveJSON(edu.berkeley.path.beats.jaxb.Scenario scenario, java.io.OutputStream stream) throws SiriusException {
+		saveJSON(scenario, new java.io.OutputStreamWriter(stream));
+	}
+
+	/**
+	 * Serializes a scenario in JSON format
+	 * @param scenario
+	 * @param writer
+	 * @throws SiriusException
+	 */
+	public static void saveJSON(edu.berkeley.path.beats.jaxb.Scenario scenario, java.io.Writer writer) throws SiriusException {
+		ensureSchemaVersion(scenario);
+		try {
+			MappedNamespaceConvention nsConvention = new MappedNamespaceConvention(new org.codehaus.jettison.mapped.Configuration());
+			XMLStreamWriter xmlsw = new MappedXMLStreamWriter(nsConvention, writer);
+			JAXBContext jaxbContext = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
+			jaxbContext.createMarshaller().marshal(scenario, xmlsw);
 		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
 		}
