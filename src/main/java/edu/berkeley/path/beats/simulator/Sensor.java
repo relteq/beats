@@ -26,11 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** Base implementation of {@link InterfaceSensor}.
- * 
- * <p> This is the base class for all sensors contained in a scenario. 
- * It provides a full default implementation of <code>InterfaceSensor</code>
- * so that extended classes need only implement a portion of the interface.
+/** Base class for sensors. 
+ * Provides a default implementation of <code>InterfaceSensor</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
@@ -45,11 +42,19 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/** Current link where the sensor is located. */
 	protected Link myLink = null;
 
-	/** Type of sensor. */
+	/** Type of sensor.
+	 *
+	 * TMC = Traffic Message Channel.
+	 * This is a static way of reporting probe measurements
+	 * employed by INRIX, Navteq, etc.
+	 */
 	public static enum Type	{  
-	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	static_point,
-	                                                            static_area,
-	/** see {@link ObjectFactory#createSensor_Floating} 	*/  moving_point };
+	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop,
+		magnetic,
+		radar,
+		camera,
+		TMC
+	};
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -63,57 +68,43 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
 
-	/** Default implementation of {@link InterfaceSensor#getDensityInVPM()} 
-	 * @return <code>null</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getOccupancy()} 
-	 * @return <code>Double.NaN</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public double getOccupancy(int ensemble) {
 		return Double.NaN;
 	}
-	
-	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVPM()} 
-	 * @return <code>Double.NaN</code>
-	 * */
+
+	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVPM(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getFlowInVPS()}
-	 * @return <code>null</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
 		return null;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getTotalFlowInVPS()}
-	 * @return <code>Double.NaN</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** Default implementation of {@link InterfaceSensor#getSpeedInMPS()}
-	 * @return <code>Double.NaN</code>
-	 * */
+	/** @y.exclude */
 	@Override
 	public double getSpeedInMPS(int ensemble) {
 		return Double.NaN;
 	}
-	
-	/** Default implementation of {@link InterfaceSensor#getTotalDensityInVeh()} 
-	 * @return <code>Double.NaN</code>
-	 * */
+
+	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;
@@ -123,30 +114,23 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// API
 	/////////////////////////////////////////////////////////////////////
 
-	/** The scenario that contains this sensor.
-	 * @return id String
-	 * */
+	/** The scenario that contains this sensor. */
 	public Scenario getMyScenario() {
 		return myScenario;
 	}
 
-	/** Sensor type. 
-	 * @return type _Sensor.Type
-	 * */
+	/** Sensor type. */
 	public Sensor.Type getMyType() {
 		return myType;
 	}
 
-	/** Current link where the sensor is located. 
-	 * <p> This value may change in time if the sensor is mobile.
-	 * @return link  _Link
-	 * */
+	/** Link where the sensor is located. */
 	public Link getMyLink() {
 		return myLink;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// populate
+	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
 	
 	/** @y.exclude */
@@ -158,20 +142,24 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 			myLink = myScenario.getLinkWithId(s.getLinkReference().getId());
 	}
 
+	/** @y.exclude */
 	@Override
 	public void populate(Object jaxbobject) {
 		return;
 	}
 
+	/** @y.exclude */
 	@Override
 	public void validate() {
 	}
 
+	/** @y.exclude */
 	@Override
 	public void reset() throws SiriusException {
 		return;
 	}
 
+	/** @y.exclude */
 	@Override
 	public void update() throws SiriusException {
 		return;

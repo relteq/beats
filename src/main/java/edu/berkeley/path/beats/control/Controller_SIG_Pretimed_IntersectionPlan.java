@@ -70,14 +70,14 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void populate(Scenario myScenario,edu.berkeley.path.beats.jaxb.Intersection jaxbi) {
+	public void populate(Scenario myScenario, Controller_SIG_Pretimed.Intersection intersection) {
 								
-		if(jaxbi.getOffset()!=null)
-			this.offset = jaxbi.getOffset().floatValue();
+		if (null != intersection.getOffset())
+			this.offset = intersection.getOffset().floatValue();
 		else
 			this.offset = 0f;
 
-		numstages = jaxbi.getStage().size(); 	// number of stages (length of movA, movB and greentime)
+		numstages = intersection.getStage().size(); 	// number of stages (length of movA, movB and greentime)
 		
 		if(numstages<=1)
 			return;		
@@ -87,9 +87,9 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		movB = new Signal.NEMA[numstages];
 	
 		for(int i=0;i<numstages;i++){
-			edu.berkeley.path.beats.jaxb.Stage stage = jaxbi.getStage().get(i);
-			if(stage.getGreentime()!=null)
-				greentime[i] = stage.getGreentime().floatValue();
+			Controller_SIG_Pretimed.Stage stage = intersection.getStage().get(i);
+			if (null != stage.getGreenTime())
+				greentime[i] = stage.getGreenTime().floatValue();
 			else
 				greentime[i] = null;
 
@@ -97,7 +97,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			movB[i] = Signal.String2NEMA(stage.getMovB());
 		}
 		
-		mySignal = myScenario.getSignalWithCompositeNodeId(null,jaxbi.getNodeId());
+		mySignal = myScenario.getSignalWithCompositeNodeId(null, intersection.getNodeId());
 
 		// Set yellowtimes, redcleartimes, stagelength, totphaselength
 		int k;
@@ -291,6 +291,5 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		}
 
 	}
-	
 	
 }

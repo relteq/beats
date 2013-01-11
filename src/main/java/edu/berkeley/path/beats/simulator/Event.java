@@ -28,16 +28,13 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-/** Base implementation of {@link InterfaceEvent}.
- * 
- * <p> This is the base class for all events contained in a scenario. 
- * It provides a full default implementation of <code>InterfaceEvent</code>
- * so that extended classes need only implement a portion of the interface.
+/** Base class for events. 
+ * Provides a default implementation of <code>InterfaceEvent</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("rawtypes")
-public abstract class Event extends edu.berkeley.path.beats.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
+public class Event extends edu.berkeley.path.beats.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
 
 	/** Scenario that contains this event */
 	protected Scenario myScenario;
@@ -87,7 +84,16 @@ public abstract class Event extends edu.berkeley.path.beats.jaxb.Event implement
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** @y.exclude */
+	@Override
+	/** @y.exclude */
+	public void populate(Object jaxbobject) {
+	}
+
+	/** @y.exclude */
+	@Override
+	/** @y.exclude */
 	public void validate() {
 		
 		if(myType==null)
@@ -105,17 +111,30 @@ public abstract class Event extends edu.berkeley.path.beats.jaxb.Event implement
 				SiriusErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
 
 	}
-	
+
+	/** @y.exclude */
 	@Override
+	/** @y.exclude */
 	public void reset() {
 		return;
 	}
 
+	/** @y.exclude */
 	@Override
+	/** @y.exclude */
 	public void update() {
 		return;
 	}
 	
+	/////////////////////////////////////////////////////////////////////
+	// InterfaceEvent
+	/////////////////////////////////////////////////////////////////////
+	
+	@Override
+	/** @y.exclude */
+	public void activate() throws SiriusException {		
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// Comparable
 	/////////////////////////////////////////////////////////////////////
@@ -224,6 +243,32 @@ public abstract class Event extends edu.berkeley.path.beats.jaxb.Event implement
 		node.hasactivesplitevent = true;
 	}
 
+	protected void revertNodeEventSplitRatio(Node node) {
+		if(node==null)
+			return;
+		if(node.hasactivesplitevent){
+			node.resetSplitRatio();
+			node.hasactivesplitevent = false;
+		}
+	}
+	
+    protected void setDemandProfileEventKnob(edu.berkeley.path.beats.jaxb.DemandProfile profile,Double knob){
+		if(profile==null)
+			return;
+		if(knob.isNaN())
+			return;
+		((DemandProfile) profile).set_knob(knob);
+    }
+    
+    protected void setGlobalDemandEventKnob(Double knob){
+    	myScenario.global_demand_knob = knob;
+    }
+	    
+	/////////////////////////////////////////////////////////////////////
+	// internal class
+	/////////////////////////////////////////////////////////////////////	
+
+	/** @y.exclude */
 	protected static class SplitRatio {
 		private int input_index;
 		private int output_index;
@@ -251,25 +296,4 @@ public abstract class Event extends edu.berkeley.path.beats.jaxb.Event implement
 		}
 	}
 
-	protected void revertNodeEventSplitRatio(Node node) {
-		if(node==null)
-			return;
-		if(node.hasactivesplitevent){
-			node.resetSplitRatio();
-			node.hasactivesplitevent = false;
-		}
-	}
-	
-    protected void setDemandProfileEventKnob(edu.berkeley.path.beats.jaxb.DemandProfile profile,Double knob){
-		if(profile==null)
-			return;
-		if(knob.isNaN())
-			return;
-		((DemandProfile) profile).set_knob(knob);
-    }
-    
-    protected void setGlobalDemandEventKnob(Double knob){
-    	myScenario.global_demand_knob = knob;
-    }
-	
 }

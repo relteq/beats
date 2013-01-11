@@ -28,6 +28,11 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public final class SiriusErrorLog {
 	
 	private static boolean haserror;
@@ -98,6 +103,11 @@ public final class SiriusErrorLog {
 		haswarning = true;
 	}
 	
+	/** XXX. 
+	 * YYY
+	 *
+	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
+	 */
 	public static class SiriusError {
 		String description;
 		SiriusErrorLog.level mylevel;

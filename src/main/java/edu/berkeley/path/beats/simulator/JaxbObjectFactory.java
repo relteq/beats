@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+/** @y.exclude */
 public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 	
 	@Override

@@ -28,22 +28,24 @@ package edu.berkeley.path.beats.simulator.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.stream.*;
 
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
-import edu.berkeley.path.beats.simulator.SiriusMath;
 
+@SuppressWarnings("restriction")
 public final class XMLOutputWriter extends OutputWriterBase {
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
@@ -52,16 +54,31 @@ public final class XMLOutputWriter extends OutputWriterBase {
 
 	private Formatter dens_formatter; // density formatter
 	private Formatter flow_formatter; // flow formatter
+	private Formatter speed_formatter; // speed formatter
 	private Formatter sr_formatter; // split ratio formatter
 
-	public XMLOutputWriter(Scenario scenario, Properties props){
+	private Marshaller marshaller;
+
+	public XMLOutputWriter(Scenario scenario, Properties props) throws SiriusException {
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
 		final String delim = ":";
 		dens_formatter = new Formatter(delim, NUM_FORMAT);
 		flow_formatter = new Formatter(delim, NUM_FORMAT);
+		speed_formatter = new Formatter(delim, NUM_FORMAT);
 		sr_formatter = new Formatter(delim, NUM_FORMAT);
+
+		try {
+			marshaller = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class).createMarshaller();
+			marshaller.setSchema(edu.berkeley.path.beats.util.ScenarioUtil.getOutputSchema());
+			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+		} catch (JAXBException exc) {
+			throw new SiriusException(exc);
+		}
+
+		scenario.requestLinkCumulatives();
+		scenario.requestSignalPhases();
 	}
 
 	@Override
@@ -73,40 +90,10 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			xmlsw.writeStartElement("scenario_output");
 			xmlsw.writeAttribute("schemaVersion", "XXX");
 			// scenario
-			if (null != scenario) {
-				String conffnam = scenario.getConfigFilename();
-				XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(conffnam));
-				while (xmlsr.hasNext()) {
-					switch (xmlsr.getEventType()) {
-					case XMLStreamConstants.START_ELEMENT:
-						QName ename = xmlsr.getName();
-						xmlsw.writeStartElement(ename.getPrefix(), ename.getLocalPart(), ename.getNamespaceURI());
-						for (int iii = 0; iii < xmlsr.getAttributeCount(); ++iii) {
-							QName aname = xmlsr.getAttributeName(iii);
-							xmlsw.writeAttribute(aname.getPrefix(), aname.getNamespaceURI(), aname.getLocalPart(), xmlsr.getAttributeValue(iii));
-						}
-						break;
-					case XMLStreamConstants.END_ELEMENT:
-						xmlsw.writeEndElement();
-						break;
-					case XMLStreamConstants.CHARACTERS:
-						if (!xmlsr.isWhiteSpace()) xmlsw.writeCharacters(xmlsr.getText());
-						break;
-					case XMLStreamConstants.CDATA:
-						if (!xmlsr.isWhiteSpace()) xmlsw.writeCData(xmlsr.getText());
-						break;
-					}
-					xmlsr.next();
-				}
-				xmlsr.close();
-			}
+			marshaller.marshal(scenario, xmlsw);
 			// report
 			xmlsw.writeStartElement("report");
-			xmlsw.writeStartElement("settings");
-			xmlsw.writeStartElement("units");
-			xmlsw.writeCharacters("US");
-			xmlsw.writeEndElement(); // units
-			xmlsw.writeEndElement(); // settings
+			marshaller.marshal(scenario.getSettings(), xmlsw);
 			xmlsw.writeStartElement("link_report");
 			xmlsw.writeAttribute("density_report", "true");
 			xmlsw.writeAttribute("flow_report", "true");
@@ -124,13 +111,14 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			SiriusErrorLog.addError(exc.toString());
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc);
+		} catch (JAXBException exc) {
+			throw new SiriusException(exc);
 		}
 	}
 
 	@Override
-	public void recordstate(double time, boolean exportflows, int outsteps) {
+	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
 		boolean firststep = 0 == scenario.getCurrentTimeStep();
-		double invsteps = firststep ? 1.0d : 1.0d / outsteps;
 		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimDtInSeconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");
@@ -147,11 +135,36 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeStartElement("l");
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
+					LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", dens_formatter.format(SiriusMath.times(_link.getCumulativeDensity(0), invsteps)));
-					// f = flow per dt, vehicles
-					if (exportflows) xmlsw.writeAttribute("f", flow_formatter.format(_link.getCumulativeOutFlow(0)));
-					_link.resetCumulative();
+					xmlsw.writeAttribute("d", dens_formatter.format(exportflows ? link_cum_data.getMeanDensity(0) : _link.getDensityInVeh(0)));
+					if (exportflows) {
+						// f = flow per dt, vehicles
+						xmlsw.writeAttribute("f", flow_formatter.format(link_cum_data.getCumulativeOutputFlow(0)));
+						// computing speed
+						speed_formatter.clear();
+						double ffspeed = _link.getVfInMPS(0);
+						double mean_total_density = link_cum_data.getMeanTotalDensity(0);
+						if (0 >= mean_total_density) {
+							if (!Double.isNaN(ffspeed))
+								for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind)
+									speed_formatter.add(ffspeed);
+						} else {
+							double mean_speed = link_cum_data.getMeanTotalOutputFlow(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimDtInSeconds());
+							if (!Double.isNaN(ffspeed) && ffspeed < mean_speed) mean_speed = ffspeed;
+							for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
+								double density = link_cum_data.getMeanDensity(0, vt_ind);
+								double speed = mean_speed;
+								if (0 < density) {
+									speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimDtInSeconds());
+									if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
+								}
+								speed_formatter.add(speed);
+							}
+						}
+						// v = speed, m/s
+						if (!speed_formatter.isEmpty()) xmlsw.writeAttribute("v", speed_formatter.getResult());
+					}
 					// mf = capacity, vehicles per second
 					double mf = _link.getCapacityInVPS(0);
 					if (!Double.isNaN(mf)) xmlsw.writeAttribute("mf", String.format(NUM_FORMAT, mf));
@@ -188,7 +201,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
-						List<Signal.PhaseData> phdata = ((Signal) signal).getCompletedPhases();
+						List<Signal.PhaseData> phdata = scenario.getCompletedPhases(signal).getPhaseList();
 						for (Signal.PhaseData ph : phdata) {
 							xmlsw.writeStartElement("ph");
 							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));
@@ -196,7 +209,6 @@ public final class XMLOutputWriter extends OutputWriterBase {
 							xmlsw.writeAttribute("g", String.format(SEC_FORMAT, ph.greentime));
 							xmlsw.writeEndElement(); // ph
 						}
-						phdata.clear();
 						xmlsw.writeEndElement(); // sig
 					}
 					xmlsw.writeEndElement(); // sigl
@@ -251,6 +263,10 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			for (Double val : vector)
 				add(val);
 			return getResult();
+		}
+
+		public boolean isEmpty() {
+			return 0 == sb.length();
 		}
 	}
 

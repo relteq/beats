@@ -36,9 +36,13 @@ import org.apache.torque.TooManyRowsException;
 import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
+import edu.berkeley.path.beats.db.BaseTypes;
 import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
+import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 
@@ -71,12 +75,17 @@ public class DBOutputWriter extends OutputWriterBase {
 				List<VehicleTypes> db_vt_l = VehicleTypesPeer.doSelect(crit);
 				for (VehicleTypes db_vt : db_vt_l)
 					for (int i = 0; i < scenario.getNumVehicleTypes(); ++i)
-						if (db_vt.getDescription().equals(scenario.getVehicleTypeNames()[i]))
+						if (db_vt.getName().equals(scenario.getVehicleTypeNames()[i]))
 							db_vehicle_type[i] = db_vt;
 			} catch (TorqueException exc) {
 				logger.error("Failed to load vehicle types for scenario " + db_scenario.getId(), exc);
 			}
 		}
+		scenario.requestLinkCumulatives();
+		scenario.requestSignalPhases();
+
+		cal = Calendar.getInstance();
+		cal.set(Calendar.MILLISECOND, 0);
 	}
 
 	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
@@ -94,19 +103,33 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	boolean success = false;
 
-	private Calendar ts = null;
+	private Calendar cal = null;
+
+	private java.util.Date sec2date(double sec) {
+		Calendar cal = (Calendar) this.cal.clone();
+		double min = Math.floor(sec / 60);
+		double hrs = Math.floor(min / 60);
+		cal.set(Calendar.HOUR_OF_DAY, (int) hrs);
+		cal.set(Calendar.MINUTE, (int) (min - hrs * 60));
+		cal.set(Calendar.SECOND, (int) (sec - min * 60));
+		return cal.getTime();
+	}
+
+	private static <T extends BaseTypes> T createType(T obj, String name) throws Exception {
+		obj.setName(name);
+		obj.setInUse(Boolean.TRUE);
+		obj.save();
+		return obj;
+	}
 
 	public static ApplicationTypes getApplicationTypes(String application_type) throws Exception {
 		Criteria crit = new Criteria();
-		crit.add(ApplicationTypesPeer.DESCRIPTION, application_type);
+		crit.add(ApplicationTypesPeer.NAME, application_type);
 		@SuppressWarnings("unchecked")
 		List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit);
 		if (db_at_l.isEmpty()) {
-			ApplicationTypes db_at = new ApplicationTypes();
-			db_at.setDescription(application_type);
-			db_at.setInUse(Boolean.TRUE);
-			db_at.save();
-			return db_at;
+			logger.warn("Application type '" + application_type + "' does not exist");
+			return createType(new ApplicationTypes(), application_type);
 		} else {
 			if (1 < db_at_l.size())
 				logger.warn("Found " + db_at_l.size() + " application types '" + application_type + "'");
@@ -116,15 +139,12 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	public static AggregationTypes getAggregationTypes(String aggregation_type) throws Exception {
 		Criteria crit = new Criteria();
-		crit.add(AggregationTypesPeer.DESCRIPTION, aggregation_type);
+		crit.add(AggregationTypesPeer.NAME, aggregation_type);
 		@SuppressWarnings("unchecked")
 		List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit);
 		if (db_at_l.isEmpty()) {
-			AggregationTypes db_at = new AggregationTypes();
-			db_at.setDescription(aggregation_type);
-			db_at.setInUse(Boolean.TRUE);
-			db_at.save();
-			return db_at;
+			logger.warn("Aggregation type '" + aggregation_type + "' does not exist");
+			return createType(new AggregationTypes(), aggregation_type);
 		} else {
 			if (1 < db_at_l.size())
 				logger.warn("Found " + db_at_l.size() + " aggregation types '" + aggregation_type + "'");
@@ -134,15 +154,12 @@ public class DBOutputWriter extends OutputWriterBase {
 
 	public static QuantityTypes getQuantityTypes(String quantity_type) throws Exception {
 		Criteria crit = new Criteria();
-		crit.add(QuantityTypesPeer.DESCRIPTION, quantity_type);
+		crit.add(QuantityTypesPeer.NAME, quantity_type);
 		@SuppressWarnings("unchecked")
 		List<QuantityTypes> db_qt_l = QuantityTypesPeer.doSelect(crit);
 		if (db_qt_l.isEmpty()) {
-			QuantityTypes db_qt = new QuantityTypes();
-			db_qt.setDescription(quantity_type);
-			db_qt.setInUse(Boolean.TRUE);
-			db_qt.save();
-			return db_qt;
+			logger.warn("Quantity type '" + quantity_type + "' does not exist");
+			return createType(new QuantityTypes(), quantity_type);
 		} else {
 			if (1 < db_qt_l.size())
 				logger.warn("Found " + db_qt_l.size() + " quantity types '" + quantity_type + "'");
@@ -183,7 +200,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_simulation_run.setStatus(-1);
 			db_simulation_run.save();
 
-			db_application_type = getApplicationTypes("simulation");
+			db_application_type = getApplicationTypes("simulator");
 			db_aggregation_type_raw = getAggregationTypes("raw");
 			db_quantity_type_mean = getQuantityTypes("mean");
 
@@ -195,31 +212,33 @@ public class DBOutputWriter extends OutputWriterBase {
 		} catch (Exception exc) {
 			throw new SiriusException(exc);
 		}
-		ts = Calendar.getInstance();
-		ts.set(Calendar.MILLISECOND, 0);
 	}
+
+	private java.util.Date date = null;
 
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
 		success = false;
-		double min = Math.floor(time / 60);
-		double hrs = Math.floor(min / 60);
-		ts.set(Calendar.HOUR_OF_DAY, (int) hrs);
-		ts.set(Calendar.MINUTE, (int) (min - hrs * 60));
-		ts.set(Calendar.SECOND, (int) (time - min * 60));
-		OutputParameters params = new OutputParameters(exportflows, 0 == scenario.getCurrentTimeStep() ? 1 : outsteps, scenario.getSimDtInSeconds() * outsteps);
+		date = sec2date(time);
 
 		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
 			for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 				Link _link = (Link) link;
 				try {
-					LinkDataTotal db_ldt = fill_total(_link, params);
-					fill_detailed(_link, params, db_ldt.getSpeed());
+					LinkDataTotal db_ldt = fill_total(_link, exportflows);
+					fill_detailed(_link, exportflows, db_ldt.getSpeed());
 				} catch (Exception exc) {
 					throw new SiriusException(exc);
-				} finally {
-					_link.resetCumulative();
 				}
+			}
+			List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
+			if (null != sigl) {
+				for (edu.berkeley.path.beats.jaxb.Signal signal : sigl)
+					try {
+						fill_signal_data(network, signal);
+					} catch (Exception exc) {
+						throw new SiriusException(exc);
+					}
 			}
 		}
 		success = true;
@@ -232,25 +251,26 @@ public class DBOutputWriter extends OutputWriterBase {
 	 * @return the stored row
 	 * @throws Exception
 	 */
-	private LinkDataTotal fill_total(Link link, OutputParameters params) throws Exception {
+	private LinkDataTotal fill_total(Link link, boolean exportflows) throws Exception {
 		LinkDataTotal db_ldt = new LinkDataTotal();
 		db_ldt.setLinkId(str2id(link.getId()));
 		db_ldt.setNetworkId(str2id(link.getMyNetwork().getId()));
 		db_ldt.setAppRunId(db_simulation_run.getId());
 		db_ldt.setApplicationTypes(db_application_type);
-		db_ldt.setTs(ts.getTime());
+		db_ldt.setTs(date);
 		db_ldt.setAggregationTypes(db_aggregation_type_raw);
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
+
+		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
 		// mean density, vehicles
-		double density = SiriusMath.sum(link.getCumulativeDensity(0)) / params.getNsteps();
+		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : SiriusMath.sum(link.getDensityInVeh(0));
 		db_ldt.setDensity(double2decimal(density));
 
-		if (params.doExportFlows()) {
+		if (exportflows) {
 			// input flow, vehicles
-			db_ldt.setInFlow(double2decimal(SiriusMath.sum(link.getCumulativeInFlow(0))));
+			db_ldt.setInFlow(double2decimal(link_cum_data.getCumulativeTotalInputFlow(0)));
 			// output flow, vehicles
-			double outflow = SiriusMath.sum(link.getCumulativeOutFlow(0));
-			db_ldt.setOutFlow(double2decimal(outflow));
+			db_ldt.setOutFlow(double2decimal(link_cum_data.getCumulativeTotalOutputFlow(0)));
 
 			// free flow speed, m/s
 			double ffspeed = link.getVfInMPS(0);
@@ -258,7 +278,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			if (density <= 0)
 				db_ldt.setSpeed(double2decimal(ffspeed));
 			else {
-				double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+				double speed = link_cum_data.getMeanTotalOutputFlow(0) * link.getLengthInMeters() / (scenario.getSimDtInSeconds() * density);
 				if (!Double.isNaN(speed)) {
 					if (!Double.isNaN(ffspeed) && speed > ffspeed)
 						db_ldt.setSpeed(double2decimal(ffspeed));
@@ -293,32 +313,32 @@ public class DBOutputWriter extends OutputWriterBase {
 	 * @param total_speed speed for the cell as a whole, m/s
 	 * @throws Exception
 	 */
-	private void fill_detailed(Link link, OutputParameters params, BigDecimal total_speed) throws Exception {
+	private void fill_detailed(Link link, boolean exportflows, BigDecimal total_speed) throws Exception {
+		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
 			db_ldd.setNetworkId(str2id(link.getMyNetwork().getId()));
 			db_ldd.setAppRunId(db_simulation_run.getId());
 			db_ldd.setApplicationTypes(db_application_type);
-			// TODO db_ldd.setDestinationNetworks();
+			db_ldd.setDestNetworkId(Long.valueOf(0));
 			db_ldd.setVehicleTypes(db_vehicle_type[vt_ind]);
-			db_ldd.setTs(ts.getTime());
+			db_ldd.setTs(date);
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = link.getCumulativeDensity(0)[vt_ind] / params.getNsteps();
+			double density = exportflows ? link_cum_data.getMeanDensity(0, vt_ind) : link.getDensityInVeh(0)[vt_ind];
 			db_ldd.setDensity(double2decimal(density));
-			if (params.doExportFlows()) {
+			if (exportflows) {
 				// input flow, vehicles
-				db_ldd.setInFlow(double2decimal(link.getCumulativeInFlow(0)[vt_ind]));
+				db_ldd.setInFlow(double2decimal(link_cum_data.getCumulativeInputFlow(0, vt_ind)));
 				// output flow, vehicles
-				double outflow = link.getCumulativeOutFlow(0)[vt_ind];
-				db_ldd.setOutFlow(double2decimal(outflow));
+				db_ldd.setOutFlow(double2decimal(link_cum_data.getCumulativeOutputFlow(0, vt_ind)));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = outflow * link.getLengthInMeters() / (params.getOutputPeriod() * density);
+					double speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimDtInSeconds() * density);
 					if (!Double.isNaN(speed)) {
 						// free flow speed, m/s
 						double ffspeed = link.getVfInMPS(0);
@@ -329,37 +349,35 @@ public class DBOutputWriter extends OutputWriterBase {
 					}
 				}
 			}
+			// free flow speed, m/s
+			db_ldd.setFreeFlowSpeed(double2decimal(link.getVfInMPS(0)));
 			// replace nulls with zeros
 			edu.berkeley.path.beats.processor.LinkDataDetailed.removeNulls(db_ldd);
 			db_ldd.save();
 		}
 	}
 
-	private class OutputParameters {
-		boolean export_flows;
-		int nsteps;
-		double output_period; // sec
-
-		public OutputParameters(boolean export_flows, int nsteps, double output_period) {
-			this.export_flows = export_flows;
-			this.nsteps = nsteps;
-			this.output_period = output_period;
-		}
-
-		public boolean doExportFlows() {
-			return export_flows;
-		}
-		public int getNsteps() {
-			return nsteps;
-		}
-		public double getOutputPeriod() {
-			return output_period;
+	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.Signal signal) throws Exception {
+		List<Signal.PhaseData> phdata = scenario.getCompletedPhases(signal).getPhaseList();
+		for (Signal.PhaseData ph : phdata) {
+			SignalData db_sd = new SignalData();
+			db_sd.setNetworkId(str2id(network.getId()));
+			db_sd.setSignalId(str2id(signal.getId()));
+			db_sd.setAppRunId(db_simulation_run.getId());
+			db_sd.setApplicationTypes(db_application_type);
+			db_sd.setPhase(ph.nema.ordinal());
+			db_sd.setTs(date);
+			db_sd.setAggregationTypes(db_aggregation_type_raw);
+			db_sd.setQuantityTypes(db_quantity_type_mean);
+			db_sd.setBeginGreen(sec2date(ph.starttime));
+			db_sd.setDuration(double2decimal(ph.greentime));
+			db_sd.save();
 		}
 	}
 
 	@Override
 	public void close() {
-		ts = null;
+		date = null;
 		if (null != db_simulation_run) {
 			db_simulation_run.setExecutionEndTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(success ? 0 : 1);

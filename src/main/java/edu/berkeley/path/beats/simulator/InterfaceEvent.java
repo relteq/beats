@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-/** Interface implemented by all events.
+/** Event interface.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */

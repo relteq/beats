@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -57,6 +58,8 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	private double[] trMeteringRates_normalized; // normalized metering rates corresponding to the different levels of the traffic responsive controller.
 	
 	private int trlevelindex; // denotes the current level that is requested by the traffic responsive logic.
+
+	private Table table;
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -99,7 +102,10 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -166,13 +172,17 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 		if(mainlinelink==null)
 			return;	
-		
+
+		table = findTable(jaxbc, "tod");
 		this.extractTable();
-		
-		
 	}
 	
 	private void extractTable(){
+		if (null == table) {
+			istablevalid = false;
+			return;
+		}
+
 		// read parameters from table, and also validate
 		
 		
@@ -275,12 +285,6 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 			SiriusErrorLog.addError("Controller has an invalid table.");			
 	}
 	
-	
-	@Override
-	public void reset() {
-		super.reset();
-	}
-
 	@Override
 	public void update() {
 		
@@ -329,8 +333,6 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 
 	}
 	
-	
-
 	@Override
 	public boolean register() {
 		return registerFlowController(onramplink,0);

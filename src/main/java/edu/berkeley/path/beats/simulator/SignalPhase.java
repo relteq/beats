@@ -28,6 +28,11 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.Signal.NEMA;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public class SignalPhase {
 	
 	// references ....................................................
@@ -172,6 +177,10 @@ public class SignalPhase {
 			isthrough = true;
 			myRingGroup = 1;
 			break;
+		case NULL:
+			break;
+		default:
+			break;
 		}		
 	}
 	
@@ -236,6 +245,10 @@ public class SignalPhase {
 			// iff near end of red clear time and not starting again.
 			permitopposinghold =  SiriusMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.dt) && !hold_requested;
 			break;
+		case DARK:
+			break;
+		default:
+			break;
 		}	
 
 		
@@ -243,6 +256,8 @@ public class SignalPhase {
 
 	protected void update(boolean hold_approved,boolean forceoff_approved)
 	{
+		mySignal.completedPhases.clear();
+
 		double bulbt = bulbtimer.getT();
 
 		if(!protectd){
@@ -328,6 +343,10 @@ public class SignalPhase {
 				else
 					done = true;
 	
+				break;
+			case DARK:
+				break;
+			default:
 				break;
 			}
 			

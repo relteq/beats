@@ -30,12 +30,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
+import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
@@ -59,14 +62,10 @@ import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
  * <li> events, </li>
  * <li> controllers, </li>
  * <li> fundamental diagram profiles, </li>
- * <li> path segments, </li>
- * <li> decision points, </li>
- * <li> routes, </li>
- * <li> background demand profiles, and </li>
- * <li> OD demand profiles. </li>
+ * <li> destination networks, and </li>
+ * <li> demand profiles. </li>
 *  </ul>
-* @author Gabriel Gomes
-* @version VERSION NUMBER
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
@@ -88,14 +87,16 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
-	double outdt;
+	/** @y.exclude */	protected double outdt;
 
 	// Model uncertainty
-	protected double std_dev_flow = 0.0d;	// [veh]
-	protected boolean has_flow_unceratinty;
+	/** @y.exclude */	protected double std_dev_flow = 0.0d;	// [veh]
+	/** @y.exclude */	protected boolean has_flow_unceratinty;
 	
 	// data
 	private boolean sensor_data_loaded = false;
+
+	private Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -108,12 +109,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** populate methods copy data from the jaxb state to extended objects. 
-	 * They do not throw exceptions or report mistakes. Data errors should be 
-	 * circumvented and left for the validation to report.
-	 * @throws SiriusException 
-	 * @y.exclude
-	 */
+	/** @y.exclude */
 	protected void populate() throws SiriusException {
 		
 		// network list
@@ -155,7 +151,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// populate events 
 		eventset.populate(this);
-		
+
+		cumulatives = new Cumulatives(this);
 	}
 
 	/** @y.exclude */
@@ -242,15 +239,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// reset events
 		eventset.reset();
-		
+
+		cumulatives.reset();
+
 		return true;
 		
 	}	
 	
-	/** 
-	 * @throws SiriusException 
-	 * @y.exclude
-	 */
+	/** @y.exclude */
 	protected void update() throws SiriusException {	
 
         // sample profiles .............................	
@@ -288,7 +284,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update the network state......................
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
 			((Network) network).update();
-        
+
+		cumulatives.update();
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -318,7 +315,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// excluded from API
+	// public but excluded from API
 	/////////////////////////////////////////////////////////////////////
 
 	/** @y.exclude */
@@ -378,7 +375,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * created with a common prefix with the index of the simulation appended to 
 	 * the file name.
 	 * 
-	 * @param simsettings the simulation settings
+	 * @param simsettings Contains start time, duration, output dt, and number of runs.
 	 * @param owr_props the output writer properties
 	 * @throws SiriusException 
 	 */
@@ -448,6 +445,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void saveToXML(String filename) throws SiriusException{
         try {
+		//Reset the classloader for main thread; need this if I want to run properly
+                //with JAXB within MATLAB. (luis)
+		Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
+	
         	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
         	Marshaller m = context.createMarshaller();
         	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -520,18 +521,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return vehtypenames;
 	}
 	
-	/** Vehicle type weights.
-	 * @return	Array of doubles with the weights of the vehicles types.
-	 */
-	public Double [] getVehicleTypeWeights(){
-		Double [] vehtypeweights = new Double [numVehicleTypes];
-		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-			vehtypeweights[0] = 1d;
-		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
-		return vehtypeweights;
-	}
+//	/** Vehicle type weights.
+//	 * @return	Array of doubles with the weights of the vehicles types.
+//	 */
+//	public Double [] getVehicleTypeWeights(){
+//		Double [] vehtypeweights = new Double [numVehicleTypes];
+//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+//			vehtypeweights[0] = 1d;
+//		else
+//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
+//		return vehtypeweights;
+//	}
 	
 	/** Vehicle type index from name
 	 * @return integer index of the vehicle type.
@@ -903,7 +904,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// construct list of stations to extract from datafile 
 		for(Sensor sensor : sensorlist.sensors){
-			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			int myVDS = S.getVDS();				
@@ -930,7 +931,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// distribute data to sensors
 		for(Sensor sensor : sensorlist.sensors){
 			
-			if(sensor.getMyType().compareTo(Sensor.Type.static_point)!=0)
+			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -1037,8 +1038,47 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
 		if(returnstate)
 			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
+		cumulatives.reset();
 	}
-	
+
+	/**
+	 * Initializes a link cumulative data storage,
+	 * if that has not yet been done.
+	 * Calling this method multiple times is safe
+	 */
+	public void requestLinkCumulatives() {
+		cumulatives.storeLinks();
+	}
+
+	/**
+	 * Initializes a signal phase storage,
+	 * if that has not yet been done.
+	 * Calling this method multiple times is safe
+	 */
+	public void requestSignalPhases() {
+		cumulatives.storeSignalPhases();
+	}
+
+	/**
+	 * Retrieves link cumulative data for the given link
+	 * @param link
+	 * @return link cumulative data
+	 * @throws SiriusException if the link cumulative data storage has not been initialized
+	 */
+	public LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+		return cumulatives.get(link);
+	}
+
+	/**
+	 * Retrieves completed phases for the given signal
+	 * @param signal
+	 * @return completed signal phases
+	 * @throws SiriusException if the signal phase storage has not been initialized
+	 */
+	public SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+		return cumulatives.get(signal);
+	}
+
 	private class RunParameters{
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
@@ -1098,6 +1138,105 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Get configuration file name */
 	public String getConfigFilename() {
 		return configfilename;
+	}
+
+	private static class Cumulatives {
+		private Scenario scenario;
+
+		/** link id -> cumulative data */
+		java.util.Map<String, LinkCumulativeData> links = null;
+
+		/** signal id -> completed phases */
+		java.util.Map<String, SignalPhases> phases = null;
+
+		private static Logger logger = Logger.getLogger(Cumulatives.class);
+
+		public Cumulatives(Scenario scenario) {
+			this.scenario = scenario;
+		}
+
+		public void storeLinks() {
+			if (null == links) {
+				links = new java.util.HashMap<String, LinkCumulativeData>();
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
+						if (links.containsKey(link.getId()))
+							logger.warn("Duplicate link: id=" + link.getId());
+						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
+					}
+				logger.info("Link cumulative data have been requested");
+			}
+		}
+
+		public void storeSignalPhases() {
+			if (null == phases) {
+				phases = new HashMap<String, SignalPhases>();
+				if (null != scenario.getSignalList())
+					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalList().getSignal()) {
+						if (phases.containsKey(signal.getId()))
+							logger.warn("Duplicate signal: id=" + signal.getId());
+						phases.put(signal.getId(), new SignalPhases(signal));
+					}
+				logger.info("Signal phases have been requested");
+			}
+		}
+
+		public void reset() {
+			if (null != links) {
+				Iterator<LinkCumulativeData> iter = links.values().iterator();
+				while (iter.hasNext()) iter.next().reset();
+			}
+			if (null != phases) {
+				Iterator<SignalPhases> iter = phases.values().iterator();
+				while (iter.hasNext()) iter.next().reset();
+			}
+		}
+
+		public void update() throws SiriusException {
+			if (null != links) {
+				java.util.Iterator<LinkCumulativeData> iter = links.values().iterator();
+				while (iter.hasNext()) iter.next().update();
+			}
+			if (null != phases) {
+				Iterator<SignalPhases> iter = phases.values().iterator();
+				while (iter.hasNext()) iter.next().update();
+			}
+		}
+
+		public LinkCumulativeData get(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+			if (null == links) throw new SiriusException("Link cumulative data were not requested");
+			return links.get(link.getId());
+		}
+
+		public SignalPhases get(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+			if (null == phases) throw new SiriusException("Signal phases were not requested");
+			return phases.get(signal.getId());
+		}
+	}
+
+	/**
+	 * Signal phase storage
+	 */
+	public static class SignalPhases {
+		private edu.berkeley.path.beats.jaxb.Signal signal;
+		private List<Signal.PhaseData> phases;
+
+		SignalPhases(edu.berkeley.path.beats.jaxb.Signal signal) {
+			this.signal = signal;
+			phases = new java.util.ArrayList<Signal.PhaseData>();
+		}
+
+		public List<Signal.PhaseData> getPhaseList() {
+			return phases;
+		}
+
+		void update() {
+			phases.addAll(((Signal) signal).getCompletedPhases());
+		}
+
+		void reset() {
+			phases.clear();
+		}
 	}
 
 }

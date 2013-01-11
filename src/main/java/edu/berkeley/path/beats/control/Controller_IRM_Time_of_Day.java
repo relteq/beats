@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -43,9 +44,9 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	private double[] todActivationTimes;
 	private int todActivationIndx;	
 	
-	
 	private boolean istablevalid;
-	
+
+	private Table table;
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -72,7 +73,10 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
@@ -91,14 +95,16 @@ public class Controller_IRM_Time_of_Day extends Controller {
 			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
 			onramplink = myScenario.getLinkWithId(s.getId());	
 		}
-				
+
+		table = findTable(jaxbc, "schedule");
 		this.extractTable();
-		
-	    
-		
 	}
 
 	private void extractTable(){
+		if (null == table) {
+			istablevalid = false;
+			return;
+		}
 		
 		// read parameters from table, and also validate
 		
@@ -126,7 +132,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 				istablevalid=false;					
 		}			
 		
-		if (todActivationTimes[0]>this.myStartTime())
+		if (todActivationTimes[0]>this.getFirstStartTime())
 			istablevalid=false;
 		}
 	

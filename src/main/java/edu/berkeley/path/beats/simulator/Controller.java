@@ -29,15 +29,14 @@ package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
 import java.util.Collections;
 
-/** Base implementation of {@link InterfaceController}.
- * 
- * <p> This is the base class for all controllers contained in a scenario. 
- * It provides a full default implementation of <code>InterfaceController</code>
- * so that extended classes need only implement a portion of the interface.
+import org.apache.log4j.Logger;
+
+/** Base class for controllers. 
+ * Provides a default implementation of <code>InterfaceController</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public abstract class Controller implements InterfaceComponent,InterfaceController {
+public class Controller implements InterfaceComponent,InterfaceController {
 	
 	/** Scenario that contains this controller */
 	protected Scenario myScenario;										       								       
@@ -72,9 +71,8 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	/** Activation times for this controller */
 	protected ArrayList<ActivationTimes> activationTimes;
 	
-	/** Table of parameters. */
-	protected Table table;
-	
+	/** Tables of parameters. */
+	protected java.util.Map<String, Table> tables;
 	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
@@ -86,18 +84,14 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	 * </ul>
 	 */
 	protected static enum Type {  
-	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_alinea,
-	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_time_of_day,
-	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_traffic_responsive,
-	  /** see {@link ObjectFactory#createController_CRM_SWARM}				*/ 	CRM_swarm,
-      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_hero,
-      /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_time_of_day,
-      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_pretimed,
-      /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_actuated };
-								      
-//	protected static enum QueueControlType	{NULL, queue_override,
-//											       proportional,
-//											       proportional_integral  };
+	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_ALINEA,
+	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
+	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
+	  /** see {@link ObjectFactory#createController_CRM_SWARM}				*/ 	CRM_SWARM,
+      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
+      /** see {@link ObjectFactory#createController_VSL_Time_of_Day}		*/ 	VSL_TOD,
+      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed,
+      /** see {@link ObjectFactory#createController_SIG_Actuated}			*/ 	SIG_Actuated };
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -105,8 +99,8 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 
 	/** @y.exclude */
 	 protected Controller(){}
-	
-	/** @y.exclude */
+
+	 /** @y.exclude */
 	 protected Controller(ArrayList<ScenarioElement> targets){
 		 this.targets = targets;
 		 this.control_maxflow  = new Double [targets.size()];
@@ -183,32 +177,58 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	
 	// Returns the start and end times of the controller.
 	
-	protected double myStartTime(){
+   	/** Returns the first start time of the controller. This is the minimum of the start
+   	 * times of all activation periods of the controller. 
+   	 * @return A double with the start time for the controller. 
+   	 */
+	protected double getFirstStartTime(){
 		double starttime=myScenario.getTimeStart();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
 				starttime=activationTimes.get(ActTimesIndex).getBegintime();
 			else
 				starttime=Math.min(starttime,activationTimes.get(ActTimesIndex).getBegintime());
-		
 		return starttime;
 	}
 	
-	protected double myEndTime(){
+   	/** Returns the last end time of the controller. This is the maximum of the end
+   	 * times of all activation periods of the controller. 
+   	 * @return A double with the end time for the controller. 
+   	 */
+	protected double getlastEndTime(){
 		double endtime=myScenario.getTimeEnd();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
 				endtime=activationTimes.get(ActTimesIndex).getEndtime();
 			else
 				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
-		
 		return endtime;
 	}
-	
+
+	private static Logger logger = Logger.getLogger(Controller.class);
+
+	/**
+	 * Retrieves a table with the given name
+	 * @param jaxb_controller a controller to get a table from
+	 * @param name the table name
+	 * @return null, if a table with the given name was not found
+	 */
+	protected static Table findTable(edu.berkeley.path.beats.jaxb.Controller jaxb_controller, String name) {
+		Table table = null;
+		for (edu.berkeley.path.beats.jaxb.Table jaxb_table : jaxb_controller.getTable())
+			if (name.equals(jaxb_table.getName())) {
+				if (null == table)
+					table = new Table(jaxb_table);
+				else
+					logger.error("Controller " + jaxb_controller.getId() + ": duplicate table '" + name + "'");
+			}
+		return table;
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceComponent
 	/////////////////////////////////////////////////////////////////////
-
+		
 	/** @y.exclude */
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType){
 		this.myScenario = myScenario;
@@ -219,9 +239,13 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
 		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
 		
-		// Copy table
-		if (c.getTable()!=null)
-			this.table = new Table(c.getTable());
+		// Copy tables
+		tables = new java.util.HashMap<String, Table>();
+		for (edu.berkeley.path.beats.jaxb.Table table : c.getTable()) {
+			if (tables.containsKey(table.getName()))
+				SiriusErrorLog.addError("Table '" + table.getName() + "' already exists");
+			tables.put(table.getName(), new Table(table));
+		}
 		
 		// Get activation times and sort	
 		if (c.getActivationIntervals()!=null)
@@ -253,6 +277,18 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	}
 
 	/** @y.exclude */
+	@Override
+	public void populate(Object jaxbobject) {
+	}
+
+	/** @y.exclude */
+	@Override
+	public void update() throws SiriusException {
+	}
+
+	/** @y.exclude */
+	@Override
+	/** @y.exclude */
 	public void validate() {
 		
 		// check that type was read correctly
@@ -277,36 +313,58 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 	}
 
 	/** @y.exclude */
+	@Override
 	public void reset() {
 		//switch on conroller if it is always on by default.
 		if (activationTimes==null)
 			ison = true;
 	}
+
+	/** @y.exclude */
+	@Override
+	public boolean register() {
+		return false;
+	}
+
+	/** @y.exclude */
+	@Override
+	public boolean deregister() {
+		return false;
+	}
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+   	/** Get the ID of the controller  */
 	public String getId() {
 		return id;
 	}	
 
+   	/** Get the type of the controller.  */
 	public Controller.Type getMyType() {
 		return myType;
 	}
 
+   	/** Get list of controller targets  */
 	public ArrayList<ScenarioElement> getTargets() {
 		return targets;
 	}
 
+   	/** Get list of controller feedback elements  */
 	public ArrayList<ScenarioElement> getFeedbacks() {
 		return feedbacks;
 	}
-	
+
+   	/** Get the controller update period in [seconds]  */
 	public double getDtinseconds() {
 		return dtinseconds;
 	}
 
+   	/** Get the on/off value of the controller 
+   	 * @return <code>true</code> if the controller is currently on, <code>off</code> otherwise. 
+   	 */
 	public boolean isIson() {
 		return ison;
 	}
@@ -380,6 +438,5 @@ public abstract class Controller implements InterfaceComponent,InterfaceControll
 		}
 		
 	}
-	
-	
+
 }

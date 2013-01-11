@@ -180,7 +180,7 @@ public class AggregateData extends OutputToCSV {
 			List aggList;
 			try {
 				
-				aggList = BasePeer.executeQuery("SELECT id FROM aggregation_types WHERE description=\'" + aggregation + "\'");
+				aggList = BasePeer.executeQuery("SELECT id FROM aggregation_types WHERE name=\'" + aggregation + "\'");
 				
 				
 				try {
@@ -195,7 +195,7 @@ public class AggregateData extends OutputToCSV {
 						newId = ((Record)BasePeer.executeQuery("SELECT MAX(id) FROM aggregation_types ").get(0)).getValue(1).asLong() + 1;
 						
 						obj.setId(newId);
-						obj.setDescription(aggregation);
+						obj.setName(aggregation);
 						obj.setCreatedBy("Alexey");
 						obj.setCreated(new java.util.Date());
 						try {

@@ -370,7 +370,8 @@ public class UnitConverter {
 		for (Controller controller : cset.getController()) {
 			process(controller.getParameters());
 			process(controller.getQueueController());
-			process(controller.getTable());
+			for (Table table : controller.getTable())
+				process(table);
 		}
 	}
 

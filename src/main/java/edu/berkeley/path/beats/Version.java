@@ -30,16 +30,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.xml.XMLConstants;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import org.apache.log4j.Logger;
+
+import edu.berkeley.path.beats.simulator.SiriusException;
 
 /**
  * Retrieves and stores application schema and engine versions
  */
+@SuppressWarnings("restriction")
 public class Version {
 	String schemaVersion;
 	String engineVersion;
@@ -81,27 +79,16 @@ public class Version {
 		return System.getProperty("java.version");
 	}
 
+	private static Logger logger = Logger.getLogger(Version.class);
+
 	public static Version get() {
 		Version version = new Version();
-		ClassLoader classLoader = Version.class.getClassLoader();
+
 		// schema version
 		try {
-			XMLStreamReader xmlsr = XMLInputFactory.newInstance().createXMLStreamReader(classLoader.getResourceAsStream("sirius.xsd"));
-			while (xmlsr.hasNext()) {
-				if (XMLStreamConstants.START_ELEMENT == xmlsr.getEventType()) {
-					javax.xml.namespace.QName qname = xmlsr.getName();
-					if ("schema".equals(qname.getLocalPart()) && XMLConstants.W3C_XML_SCHEMA_NS_URI == qname.getNamespaceURI()) {
-						version.setSchemaVersion(xmlsr.getAttributeValue(null, "version"));
-						break;
-					}
-				}
-				xmlsr.next();
-			}
-			xmlsr.close();
-		} catch (XMLStreamException exc) {
-			exc.printStackTrace();
-		} catch (FactoryConfigurationError exc) {
-			exc.printStackTrace();
+			version.setSchemaVersion(edu.berkeley.path.beats.util.ScenarioUtil.getSchemaVersion());
+		} catch (SiriusException exc) {
+			logger.error("Failed to retrieve schema version", exc);
 		}
 
 		// engine version
@@ -112,7 +99,7 @@ public class Version {
 				version.setEngineVersion(br.readLine());
 				br.close();
 			} catch (IOException exc) {
-				exc.printStackTrace();
+				logger.error("Failed to retrieve engine version", exc);
 			}
 		}
 

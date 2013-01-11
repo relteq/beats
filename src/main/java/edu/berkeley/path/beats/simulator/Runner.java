@@ -36,11 +36,16 @@ import org.apache.torque.TorqueException;
 import edu.berkeley.path.beats.om.DefSimSettings;
 import edu.berkeley.path.beats.om.DefSimSettingsPeer;
 
+/** XXX. 
+ * YYY
+ *
+ * @author Gabriel Gomes (gomes@path.berkeley.edu)
+ */
 public final class Runner {
 
-	private static String outputtype = "text";
 	private static String configfilename;
 	private static String outputfileprefix;
+	private static String output_format;
 
 	private static Logger logger = Logger.getLogger(Runner.class);
 
@@ -51,18 +56,25 @@ public final class Runner {
 		try {
 			// process input parameters
 			SimulationSettings simsettings = parseInput(args);
-			if (null == simsettings) return;
+			if (null == simsettings) 
+				return;
 
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 			if (null == scenario)
 				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
 
+			// set output format properties
 			Properties owr_props = new Properties();
-			if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
-			owr_props.setProperty("type", outputtype);
+			if (null != outputfileprefix) 
+				owr_props.setProperty("prefix", outputfileprefix);
+			owr_props.setProperty("type", output_format);
+			
+			// run the scenario
 			scenario.run(simsettings, owr_props);
+			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
+			
 		} catch (SiriusException exc) {
 			exc.printStackTrace();
 		} finally {
@@ -74,16 +86,6 @@ public final class Runner {
 		
 	}
 
-	public static void simulate_output(String[] args) {
-		outputtype = "xml";
-		main(args);
-	}
-
-	public static void debug(String[] args) {
-		outputtype = "text";
-		main(args);
-	}
-
 	private static SimulationSettings parseInput(String[] args){
 
 		if(args.length<1){
@@ -92,13 +94,14 @@ public final class Runner {
 			str += "-----\n" + "\n";
 			str += "args[0]: Configuration file name. (required)\n";
 			str += "args[1]: Output file name.\n";
-			str += "args[2]: Start time [seconds after midnight]." + "\n";
+			str += "args[2]: Output file format.\n";
+			str += "args[3]: Start time [seconds after midnight]." + "\n";
 			str += "         Defailt: Minimum start time of all demand profiles." + "\n";
-			str += "args[3]: Duration [seconds]." + "\n";
+			str += "args[4]: Duration [seconds]." + "\n";
 			str += "         Defailt: 86,400 seconds." + "\n";
-			str += "args[4]: Output sampling time [seconds]." + "\n";
+			str += "args[5]: Output sampling time [seconds]." + "\n";
 			str += "         Default: 300 seconds." + "\n";
-			str += "args[5]: Number of simulations." + "\n";
+			str += "args[6]: Number of simulations." + "\n";
 			str += "         Default: 1." + "\n";
 			str += "\nSimulation modes:" + "\n";
 			str += "----------------\n" + "\n";
@@ -124,8 +127,14 @@ public final class Runner {
 		else
 			outputfileprefix = "output";
 
+		// Output format
+		if(args.length>2)
+			output_format = args[2];	
+		else
+			output_format = "xml";
+		
 		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
-		simsettings.parseArgs(args, 2);
+		simsettings.parseArgs(args, 3);
 		return simsettings;
 	}
 
@@ -150,7 +159,7 @@ public final class Runner {
 		edu.berkeley.path.beats.db.Service.init();
 
 		logger.info("Loading scenario");
-		Scenario scenario = edu.berkeley.path.beats.db.exporter.ScenarioRestorer.getScenario(scenario_id);
+		Scenario scenario = edu.berkeley.path.beats.db.ScenarioExporter.getScenario(scenario_id);
 
 		if (args.length < 4) {
 			logger.info("Loading default simulation settings");

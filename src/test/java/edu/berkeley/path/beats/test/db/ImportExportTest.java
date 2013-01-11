@@ -102,7 +102,7 @@ public class ImportExportTest {
 	 */
 	@Parameters
 	public static Vector<Object[]> conffiles() {
-		return edu.berkeley.path.beats.test.simulator.XMLOutputWriterTest.conffiles();
+		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 
 	/**
@@ -115,11 +115,11 @@ public class ImportExportTest {
 	@Test
 	public void test() throws SiriusException, IOException, JAXBException, SAXException {
 		System.out.println("Importing " + conffile.getPath());
-		edu.berkeley.path.beats.om.Scenarios db_scenario = edu.berkeley.path.beats.db.importer.ScenarioLoader.load(conffile.getPath());
+		edu.berkeley.path.beats.om.Scenarios db_scenario = edu.berkeley.path.beats.db.ScenarioImporter.load(conffile.getPath());
 
 		File outfile = File.createTempFile("scenario_", ".xml");
 		System.out.println("Exporting scenario " + db_scenario.getId() + " to " + outfile.getPath());
-		edu.berkeley.path.beats.db.exporter.ScenarioRestorer.export(db_scenario.getId(), outfile.getPath());
+		edu.berkeley.path.beats.db.ScenarioExporter.export(db_scenario.getId(), outfile.getPath());
 		outfile.delete();
 
 		clearErrors();

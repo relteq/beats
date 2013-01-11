@@ -35,8 +35,8 @@ public interface InterfaceComponent {
 	/** Populate the component with configuration data. 
 	 * 
 	 * <p> Called once by {@link ObjectFactory#createAndLoadScenario}.
-	 * It is passed a JAXB object with data loaded from the configuration file. 
-	 * Use this function to populate and initialize all fields in the
+	 * It is passed a JAXB object with data. 
+	 * Use this method to populate and initialize all fields of the
 	 * component. 
 	 * 
 	 * @param jaxbobject Object
@@ -50,7 +50,6 @@ public interface InterfaceComponent {
 	 * Events are validated at their activation time. All other components
 	 * are validated when the scenario is loaded. 
 	 * 
-	 * @return <code>true</code> if the data is valid, <code>false</code> otherwise. 
 	 */
 	public void validate();
 

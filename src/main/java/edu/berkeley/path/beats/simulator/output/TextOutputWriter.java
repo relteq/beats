@@ -35,33 +35,42 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusFormatter;
-import edu.berkeley.path.beats.simulator.SiriusMath;
 
 public final class TextOutputWriter extends OutputWriterBase {
 	protected Writer out_time = null;
-	protected Writer out_density = null;
-	protected Writer out_outflow = null;
-	protected Writer out_inflow = null;
+	protected Writer [] out_density = null;
+	protected Writer [] out_outflow = null;
+	protected Writer [] out_inflow = null;
 	protected static String delim = "\t";
 	private String prefix;
+	private int numVT;
 
 	public TextOutputWriter(Scenario scenario, Properties props){
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
+		scenario.requestLinkCumulatives();
 	}
 
 	@Override
 	public void open(int run_id) throws SiriusException {
 		String suffix = String.format("_%d.txt", run_id);
+		String [] VTnames = scenario.getVehicleTypeNames();
+		numVT = scenario.getNumVehicleTypes();
 		try {
 			out_time = new OutputStreamWriter(new FileOutputStream(prefix+"_time"+suffix));
-			out_density = new OutputStreamWriter(new FileOutputStream(prefix+"_density"+suffix));
-			out_outflow = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow"+suffix));
-			out_inflow = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow"+suffix));
+			out_density = new Writer[numVT];
+			out_outflow = new Writer[numVT];
+			out_inflow = new Writer[numVT];
+			for(int j=0;j<numVT;j++){	
+				out_density[j] = new OutputStreamWriter(new FileOutputStream(prefix+"_density_"+VTnames[j]+suffix));
+				out_outflow[j] = new OutputStreamWriter(new FileOutputStream(prefix+"_outflow_"+VTnames[j]+suffix));
+				out_inflow[j] = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow_"+VTnames[j]+suffix));	
+			}
 		} catch (FileNotFoundException exc) {
 			throw new SiriusException(exc);
 		}
@@ -72,45 +81,36 @@ public final class TextOutputWriter extends OutputWriterBase {
 		
 		if(scenario==null)
 			return;
-		
-		Double [] numbers;
-		double invsteps;
-		
-		if(scenario.getCurrentTimeStep()==1)
-			invsteps = 1f;
-		else
-			invsteps = 1f/((double)outsteps);
-			
-		try {
-			out_time.write(String.format("%f\n",time));
-			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-				List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 
-				int n = links.size();
-				Link link;
-				for(int i=0;i<n-1;i++){
-					link = (Link) links.get(i);
-					numbers = SiriusMath.times(link.getCumulativeDensity(0),invsteps);
-					out_density.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
-					if(exportflows){
-						numbers = SiriusMath.times(link.getCumulativeOutFlow(0),invsteps);
-						out_outflow.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
-						numbers = SiriusMath.times(link.getCumulativeInFlow(0),invsteps);
-						out_inflow.write(SiriusFormatter.csv(numbers,":")+TextOutputWriter.delim);
+		try {
+			int i,j;
+			out_time.write(String.format("%f\n",time));
+
+			for(j=0;j<numVT;j++){	
+				for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+					List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
+					for (i = 0; i < links.size(); ++i){
+						Link link = (Link) links.get(i);
+						LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+						if (0 < i) 
+							out_density[j].write(TextOutputWriter.delim);
+						out_density[j].write(String.format("%f", exportflows ? link_cum_data.getMeanDensity(0,j) : link.getDensityInVeh(0,j)));
+						if(exportflows){
+							if (0 < i) {
+								out_outflow[j].write(TextOutputWriter.delim);
+								out_inflow[j].write(TextOutputWriter.delim);
+							}							
+							out_outflow[j].write(String.format("%f",link_cum_data.getMeanOutputFlow(0,j)));
+							out_inflow[j].write(String.format("%f",link_cum_data.getMeanInputFlow(0,j)));
+						}
 					}
-					link.resetCumulative();
+
+					out_density[j].write("\n");
+					if (exportflows) {
+						out_outflow[j].write("\n");
+						out_inflow[j].write("\n");
+					}
 				}
-				
-				link = (Link) links.get(n-1);
-				numbers = SiriusMath.times(link.getCumulativeDensity(0),invsteps);
-				out_density.write(SiriusFormatter.csv(numbers,":")+"\n");
-				if(exportflows){
-					numbers = SiriusMath.times(link.getCumulativeOutFlow(0),invsteps);
-					out_outflow.write(SiriusFormatter.csv(numbers,":")+"\n");
-					numbers = SiriusMath.times(link.getCumulativeInFlow(0),invsteps);
-					out_inflow.write(SiriusFormatter.csv(numbers,":")+"\n");
-				}
-				link.resetCumulative();	
 			}
 			
 		} catch (IOException e) {
@@ -120,14 +120,18 @@ public final class TextOutputWriter extends OutputWriterBase {
 
 	public void close(){
 		try {
+			int j;
 			if(out_time!=null)
 				out_time.close();
 			if(out_density!=null)
-				out_density.close();
+				for(j=0;j<numVT;j++)
+					out_density[j].close();
 			if(out_outflow!=null)
-				out_outflow.close();
+				for(j=0;j<numVT;j++)
+					out_outflow[j].close();
 			if(out_inflow!=null)
-				out_inflow.close();
+				for(j=0;j<numVT;j++)
+					out_inflow[j].close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

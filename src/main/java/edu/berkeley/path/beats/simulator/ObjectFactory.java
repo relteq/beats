@@ -52,9 +52,9 @@ import edu.berkeley.path.beats.sensor.*;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
  * <p>
- * Use the static methods in this class to load a scenario from XML, and to programmatically generate events, controllers, sensors, and scenario elements.
+ * Use the static methods in this class to load a scenario and to programmatically generate events, controllers, sensors, and scenario elements.
  * 
-* @author Gabriel Gomes
+* @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 public final class ObjectFactory {
 
@@ -74,35 +74,35 @@ public final class ObjectFactory {
 			return null;
 		Controller C;
 		switch(myType){
-			case IRM_alinea:
+			case IRM_ALINEA:
 				C = new Controller_IRM_Alinea();
 				break;
 				
-			case IRM_time_of_day:
+			case IRM_TOD:
 				C = new Controller_IRM_Time_of_Day();
 				break;
 				
-			case IRM_traffic_responsive:
+			case IRM_TOS:
 				C = new Controller_IRM_Traffic_Responsive();
 				break;
 	
-			case CRM_swarm:
+			case CRM_SWARM:
 				C = new Controller_CRM_SWARM();
 				break;
 				
-			case CRM_hero:
+			case CRM_HERO:
 				C = new Controller_CRM_HERO();
 				break;
 				
-			case VSL_time_of_day:
+			case VSL_TOD:
 				C = new Controller_VSL_Time_of_Day();
 				break;
 				
-			case SIG_pretimed:
+			case SIG_Pretimed:
 				C = new Controller_SIG_Pretimed();
 				break;
 				
-			case SIG_actuated:
+			case SIG_Actuated:
 				C = new Controller_SIG_Actuated();
 				break;
 				
@@ -165,18 +165,14 @@ public final class ObjectFactory {
 			return null;
 		Sensor S;
 		switch(myType){
-			case static_point:
+			case loop:
 				S = new SensorLoopStation();
 				break;
 
-			case static_area:
+			case camera:
 				S = null; 
 				break;
 
-			case moving_point:
-				S = new SensorFloating();
-				break;
-				
 			default:
 				S = null;
 				break;
@@ -258,8 +254,11 @@ public final class ObjectFactory {
     	
     	// create unmarshaller .......................................................
         try {
+		//Reset the classloader for main thread; need this if I want to run properly
+  		//with JAXB within MATLAB. (luis)
+		Thread.currentThread().setContextClassLoader(ObjectFactory.class.getClassLoader());
         	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-            u = context.createUnmarshaller();
+	        u = context.createUnmarshaller();
         } catch( JAXBException je ) {
         	throw new SiriusException("Failed to create context for JAXB unmarshaller", je);
         }
@@ -292,6 +291,9 @@ public final class ObjectFactory {
         if(S==null){
         	throw new SiriusException("Unknown load error");
 		}
+
+		// check the scenario schema version
+		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
 
         // copy in input parameters ..................................................
         S.configfilename = configfilename;
@@ -349,6 +351,7 @@ public final class ObjectFactory {
 	    		throw new SiriusException("Controller registration failure");
 		    }
 
+	    // print messages and clear before validation
 		if (SiriusErrorLog.hasmessage()) {
 			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();
@@ -357,10 +360,12 @@ public final class ObjectFactory {
 		// validate scenario ......................................
 	    S.validate();
 
-		if(SiriusErrorLog.hasmessage()) {
+		if(SiriusErrorLog.haserror())
+			throw new ScenarioValidationError();
+		
+		if(SiriusErrorLog.haswarning()) {
 			SiriusErrorLog.print();
 			SiriusErrorLog.clearErrorMessage();
-			throw new SiriusException("Scenario validation failed");
 		}
 
 		return S;
@@ -607,20 +612,6 @@ public final class ObjectFactory {
 		return new edu.berkeley.path.beats.sensor.SensorLoopStation(myScenario,linkId);
 	}
 
-	/** Create a floating detector.
-	 * 
-	 * <p> This sensor models a sensor that moves with the traffic stream. This sensor type can be used
-	 * to model probe vehicles. The network and link ids in the parameter list correspond to the initial
-	 * position of the sensor.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return			Sensor The sensor object
-	 */
-	public static Sensor createSensor_Floating(Scenario myScenario,String linkId){
-		Sensor S = new edu.berkeley.path.beats.sensor.SensorFloating(myScenario,linkId);
-		return S;
-	}
 
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario element

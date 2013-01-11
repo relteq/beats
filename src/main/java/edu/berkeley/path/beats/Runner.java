@@ -28,8 +28,8 @@ package edu.berkeley.path.beats;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.db.Admin;
 import edu.berkeley.path.beats.db.OutputToCSV;
+import edu.berkeley.path.beats.db.Service;
 import edu.berkeley.path.beats.om.LinkDataDetailed;
 import edu.berkeley.path.beats.om.LinkDataTotal;
 import edu.berkeley.path.beats.om.LinkPerformanceDetailed;
@@ -41,6 +41,7 @@ import edu.berkeley.path.beats.processor.AggregateData;
 import edu.berkeley.path.beats.processor.PdfReport;
 import edu.berkeley.path.beats.processor.PerformanceData;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.ScenarioValidationError;
 
 /**
  * Implements "Sirius: Concept of Operations"
@@ -67,7 +68,7 @@ public class Runner {
 			// Run report
 			if (cmd.equals("report") || cmd.equals("r")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				
 				// Calculate performance measures
 				PdfReport pdf = new PdfReport();
@@ -78,7 +79,7 @@ public class Runner {
 			// Aggregate data
 			if (cmd.equals("process") || cmd.equals("p")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				
 				// Calculate performance measures
 				 PerformanceData.doPerformance(arguments);
@@ -91,32 +92,32 @@ public class Runner {
 			// CSV output
 			if (cmd.equals("link_data_total") || cmd.equals("ldt")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_data_total",LinkDataTotal.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("link_data_detailed") || cmd.equals("ldd")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_data_detailed",LinkDataDetailed.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("link_performance_total") || cmd.equals("lpt")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_performance_total", LinkPerformanceTotal.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("link_performance_detailed") || cmd.equals("lpd")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("link_performance_detailed", LinkPerformanceDetailed.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("signal_data") || cmd.equals("sd")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("signal_data", SignalData.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("signal_phase_performance") || cmd.equals("spp")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("signal_phase_performance", SignalPhasePerformance.getFieldNames(), arguments);
 				
 			} else if (cmd.equals("route_performance_total") || cmd.equals("rpt")) 
@@ -128,11 +129,10 @@ public class Runner {
 			
 			// End of CSV output
 			
-			
-			
+
 			if (cmd.equals("import") || cmd.equals("i")) {
 				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
-				edu.berkeley.path.beats.db.importer.ScenarioLoader.load(arguments[0]);
+				edu.berkeley.path.beats.db.ScenarioImporter.load(arguments[0]);
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
@@ -140,16 +140,14 @@ public class Runner {
 					throw new InvalidUsageException("Usage: export|e scenario_id [output_file_name]");
 				else {
 					String filename = 1 == arguments.length ? arguments[0] + ".xml" : arguments[1];
-					edu.berkeley.path.beats.db.exporter.ScenarioRestorer.export(Integer.parseInt(arguments[0]), filename);
+					edu.berkeley.path.beats.db.ScenarioExporter.export(Integer.parseInt(arguments[0]), filename);
 				}
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
 				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
 			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
-				edu.berkeley.path.beats.simulator.Runner.simulate_output(arguments);
-			} else if (cmd.equals("debug")) {
-				edu.berkeley.path.beats.simulator.Runner.debug(arguments);
+				edu.berkeley.path.beats.simulator.Runner.main(arguments);
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("list_scenarios") || cmd.equals("ls")) {
@@ -186,14 +184,19 @@ public class Runner {
 			} else if (cmd.equals("init")) {
 				edu.berkeley.path.beats.db.Admin.init();
 			} else if (cmd.equals("clear_data") || cmd.equals("cld")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					edu.berkeley.path.beats.db.Cleaner.clearData(Long.parseLong(arguments[0], 10));
+				else
+					throw new InvalidUsageException("Usage: clear_data|cld scenario_id");
 			} else if (cmd.equals("clear_processed") || cmd.equals("clp")) {
 				if (1 == arguments.length)
 					edu.berkeley.path.beats.db.Cleaner.clearProcessed(Long.parseLong(arguments[0], 10));
 				else
 					throw new InvalidUsageException("Usage: clear_processed|clp scenario_id");
 			} else if (cmd.equals("clear_scenario") || cmd.equals("cls")) {
-				throw new NotImplementedException(cmd);
+				if (1 == arguments.length)
+					edu.berkeley.path.beats.db.Cleaner.clearScenario(Long.parseLong(arguments[0], 10));
+				else throw new InvalidUsageException("Usage: clear_scenario|cls scenario_id");
 			} else if (cmd.equals("clear_all") || cmd.equals("cla")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("version") || cmd.equals("v")) {
@@ -212,6 +215,8 @@ public class Runner {
 			System.err.println(exc.getMessage());
 		} catch (InvalidCommandException exc) {
 			System.err.println(exc.getMessage());
+		} catch (ScenarioValidationError exc) {
+			logger.fatal(exc.getMessage());
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		} finally {
@@ -220,7 +225,7 @@ public class Runner {
 				SiriusErrorLog.clearErrorMessage();
 			}
 			if (edu.berkeley.path.beats.db.Service.isInit()) {
-				logger.info("Shutting down the DB service");
+				logger.debug("Shutting down the DB service");
 				edu.berkeley.path.beats.db.Service.shutdown();
 			}
 		}

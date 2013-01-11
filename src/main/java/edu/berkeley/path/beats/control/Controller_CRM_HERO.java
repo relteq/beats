@@ -26,11 +26,6 @@
 
 package edu.berkeley.path.beats.control;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.text.DecimalFormat;
 import java.util.ArrayList; 
 import java.util.HashSet;
@@ -38,11 +33,11 @@ import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.control.Controller_CRM_HERO;
+import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 
@@ -130,7 +125,10 @@ public class Controller_CRM_HERO extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceController
 	/////////////////////////////////////////////////////////////////////
-	
+
+	/** Implementation of {@link InterfaceComponent#populate}.
+	 * @param jaxbobject Object
+	 */
 	@Override
 	public void populate(Object jaxbobject) {
 
@@ -303,8 +301,6 @@ public class Controller_CRM_HERO extends Controller {
 		}
 	}
 	
-	
-	
 	@Override
 	public void validate() {
 		
@@ -371,11 +367,6 @@ public class Controller_CRM_HERO extends Controller {
 		}
 		
 		
-	}
-
-	@Override
-	public void reset() {
-		super.reset();
 	}
 
 	@Override
@@ -504,7 +495,6 @@ public class Controller_CRM_HERO extends Controller {
 		}
 	return controllersOrdered;
 	}	
-	
 	
 	/////////////////////////////////////////////////////////////////////
 	// Methods related to HERO Algorithm 
