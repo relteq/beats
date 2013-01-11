@@ -244,7 +244,7 @@ public class ReportRequest {
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 	 
 				Element eElement = (Element) nNode;
-				AggregateData.reportToStandard("String " + name + " " + eElement.getAttribute(name));
+				AggregateData.reportToStandard("String " + name + "=" + eElement.getAttribute(name));
 				return (String)eElement.getAttribute(name);
 		
 			}	else
@@ -270,7 +270,7 @@ public class ReportRequest {
 				
 				try {
 					l = Long.parseLong(temp);
-					AggregateData.reportToStandard(name + " " + l);
+					AggregateData.reportToStandard(name + "=" + l);
 				}
 				catch (NumberFormatException nfe)
 			    {
@@ -296,7 +296,7 @@ public class ReportRequest {
 				Element eElement = (Element) nNode;
 				String s = eElement.getAttribute(name);
 				// AggregateData.reportToStandard(tagName + " " + name + " " + ( eElement.getAttribute(name).indexOf("true") > 0 ) );
-				AggregateData.reportToStandard(tagName + " " + name + " " + s );
+				AggregateData.reportToStandard(tagName + " " + name + "=" + s );
 				if ( s.indexOf("true") >= 0 )   return true;
 				else return false;
 		
@@ -319,7 +319,7 @@ public class ReportRequest {
 	 
 				Element eElement = (Element) nNode;
 				
-				AggregateData.reportToStandard(name + " " + eElement.getAttribute(name));
+				AggregateData.reportToStandard(name + "=" + eElement.getAttribute(name));
 				
 				return (String)getTagValue(name, eElement);
 		
