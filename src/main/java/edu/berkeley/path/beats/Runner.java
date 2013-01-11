@@ -122,7 +122,7 @@ public class Runner {
 				
 			} else if (cmd.equals("route_performance_total") || cmd.equals("rpt")) 
 			{
-				Admin.initTorqueAPI();
+				Service.ensureInit();
 				OutputToCSV.outputToCSV("route_performance_total", RoutePerformanceTotal.getFieldNames(), arguments);
 				
 			} else
