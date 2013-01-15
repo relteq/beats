@@ -41,7 +41,9 @@ final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileS
 
 		if(getDemandProfile().isEmpty())
 			return;
-		
+
+		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
+
 		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile) dp).populate(myScenario);
 	}
