@@ -1,4 +1,4 @@
-function []=plot_text(configfile,outname,export_to_ppt)
+function []=plot_output_text(configfile,outname,export_to_ppt)
 
 if(nargin<2)
     error('too few input arguments')
@@ -15,9 +15,7 @@ addpath([fileparts(fileparts(mfilename('fullpath'))) filesep 'xml_io_tools_2007_
 fprintf('Reading %s\n', configfile);
 
 % load the scenario and keep only what we need
-%scenario = xml_read(configfile);
-
-load aaa
+scenario = xml_read(configfile);
 
 if(length(length(scenario.NetworkList.network))~=1)
     error('plot_text does not work for scenarios with multiple networks')
