@@ -88,6 +88,8 @@ public final class TextOutputWriter extends OutputWriterBase {
 
 			for(j=0;j<numVT;j++){	
 				for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+					if(((edu.berkeley.path.beats.simulator.Network) network).isEmpty())
+						continue;
 					List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 					for (i = 0; i < links.size(); ++i){
 						Link link = (Link) links.get(i);

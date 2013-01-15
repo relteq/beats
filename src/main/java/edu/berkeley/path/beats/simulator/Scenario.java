@@ -1158,12 +1158,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public void storeLinks() {
 			if (null == links) {
 				links = new java.util.HashMap<String, LinkCumulativeData>();
-				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+					if(((edu.berkeley.path.beats.simulator.Network) network).isempty)
+						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 						if (links.containsKey(link.getId()))
 							logger.warn("Duplicate link: id=" + link.getId());
 						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
 					}
+				}
 				logger.info("Link cumulative data have been requested");
 			}
 		}

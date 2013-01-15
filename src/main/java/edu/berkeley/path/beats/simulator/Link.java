@@ -79,6 +79,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
+	// Controller registration ..........................................
+	
 	/** @y.exclude */
 	protected boolean registerFlowController(Controller c,int index){
 		if(myFlowController!=null)
@@ -121,7 +123,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
+	// Fundamental diagram profiles and events .............................
+	
 	/** @y.exclude */
+	// getter for the currently active fundamental diagram
 	protected FundamentalDiagram currentFD(int ensemble){
 		if(activeFDevent)
 			return FDfromEvent;
@@ -130,6 +135,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 	
 	/** @y.exclude */
+	// called by FundamentalDiagramProfile.populate,
     protected void setFundamentalDiagramProfile(FundamentalDiagramProfile fdp){
     	if(fdp==null)
     		return;
@@ -138,6 +144,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** @throws SiriusException 
 	 * @y.exclude */
+    // used by FundamentalDiagramProfile to set the FD
     protected void setFundamentalDiagramFromProfile(FundamentalDiagram fd) throws SiriusException{
     	if(fd==null)
     		return;
@@ -145,16 +152,14 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     	// sample the fundamental digram
     	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
     		FDfromProfile[e] = fd.perturb();
-    	
-//    	if(!activeFDevent)				
-//    		FD = FDfromProfile;				// point to the profile
     }
 
 	/** @throws SiriusException 
 	 * @y.exclude */
+    // used by Event.setLinkFundamentalDiagram to activate an FD event
     protected void activateFundamentalDiagramEvent(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd) throws SiriusException {
     	if(fd==null)
-    		throw new SiriusException("Null parameter.");
+    		return;
     	
     	FDfromEvent = new FundamentalDiagram(this,currentFD(0));		// copy current FD 
     	// note: we are copying from the zeroth FD for simplicity. The alternative is to 
@@ -171,29 +176,30 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** @throws SiriusException 
 	 * @y.exclude */
+    // used by Event.revertLinkFundamentalDiagram
     protected void revertFundamentalDiagramEvent() throws SiriusException{
     	if(!activeFDevent)
     		return;
     	activeFDevent = false;
-//		FD = FDfromProfile;				// point the fd back at the profile    	
     }
 
 	/** @throws SiriusException 
 	 * @y.exclude */
+    // used by Event.setLinkLanes
 	protected void set_Lanes(double newlanes) throws SiriusException{
 		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
 				throw new SiriusException("ERROR: Lanes could not be set.");
 
-		myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
+		if(myFDprofile!=null)
+			myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
 		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
 			FDfromProfile[e].setLanes(newlanes);
-//		FD.setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
-	
-	// this is used by CapacityProfile only.
-	// no FDs in this link may have capacities that exceed c.
+		
+	/** @y.exclude */
+	// used by CapacityProfile.update. 
 	protected void setCapacityFromVeh(double c) {
 		for(FundamentalDiagram fd : FDfromProfile)
 			fd._capacity = fd._capacity<c ? fd._capacity : c;
@@ -401,9 +407,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** @y.exclude */
 	protected void resetFD(){
-//    	FD = new FundamentalDiagram(this);
- //       FD.settoDefault();		// set to default
 		FDfromProfile = new FundamentalDiagram [myNetwork.myScenario.numEnsemble];
+		for(int i=0;i<FDfromProfile.length;i++){
+			FDfromProfile[i] = new FundamentalDiagram(this);
+			FDfromProfile[i].settoDefault();
+		}
     	activeFDevent = false;
 	}
 

@@ -44,6 +44,18 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 
 	public FundamentalDiagram(){};
 	
+	public FundamentalDiagram(Link myLink){
+		this.myLink       = myLink;
+		this.lanes 		  = myLink==null ? Double.NaN : myLink._lanes;
+		_densityJam 	  = Double.NaN;  
+	    _capacity  		  = Double.NaN;
+		_capacityDrop 	  = Double.NaN; 
+	    _vf 			  = Double.NaN; 
+	    _w 				  = Double.NaN; 
+	    std_dev_capacity  = Double.NaN;
+	    density_critical  = Double.NaN;
+	}
+	
 	// fundamental diagram created from jaxb objects must have all values filled in. 
 	public FundamentalDiagram(Link myLink,edu.berkeley.path.beats.jaxb.FundamentalDiagram jaxbfd){
 		this.myLink       = myLink;
