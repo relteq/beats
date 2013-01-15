@@ -159,27 +159,17 @@ public class Runner {
 					throw new InvalidUsageException("Usage: list_runs|lr scenario_id");
 			} else if (cmd.equals("load") || cmd.equals("l")) {
 				throw new NotImplementedException(cmd);
-			} else if (cmd.equals("process") || cmd.equals("p")) {
-				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("output") || cmd.equals("o")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("list_aggregations") || cmd.equals("la")) {
 				throw new NotImplementedException(cmd);
-			} else if (cmd.equals("link_data") || cmd.equals("ld")) {
-				throw new NotImplementedException(cmd);
-			} else if (cmd.equals("route_data") || cmd.equals("rd")) {
-				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("node_data") || cmd.equals("nd")) {
-				throw new NotImplementedException(cmd);
-			} else if (cmd.equals("signal_data") || cmd.equals("sd")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("detection_data") || cmd.equals("dd")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("probe_data") || cmd.equals("pd")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("controller_data") || cmd.equals("cd")) {
-				throw new NotImplementedException(cmd);
-			} else if (cmd.equals("report") || cmd.equals("r")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("init")) {
 				edu.berkeley.path.beats.db.Admin.init();
