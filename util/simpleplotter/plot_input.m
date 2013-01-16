@@ -95,14 +95,20 @@ for i=1:size(d,2)
 end
 ddn = max(ddn,0);
 
+if(length(time)==1)
+    time = [time time+1];
+    d = [d;d];
+    dup = [dup;dup];
+    ddn = [ddn;ddn];
+end
+
 figure
-jbfill(gcf,time,dup',ddn','c','c')
+jbfill(gcf,time,dup',ddn','c','c');
 hold on
 plot(time,d,'k','LineWidth',1)
 grid
-if(length(time)>1)
-    set(gca,'XLim',[time(1) time(end)])
-end
+set(gca,'XLim',[time(1) time(end)])
+
 
 
 

@@ -95,7 +95,6 @@
 			</xs:simpleType>
 		</xs:element>
 
-  
   <xs:element name="targetElements">										<!-- used by event, controller -->
     <xs:complexType>
       <xs:sequence>
@@ -202,7 +201,7 @@
 				</xs:complexType>
 			  </xs:element>
 		  
-		  <!-- [SI] ... 		length in meters, 	time in seconds
+		  <!-- [SI] ... 	length in meters, 	time in seconds
 			   US ... 		length in miles,	time in hours
 			   Metric ... 	length in km,		time in hours
 		  -->
@@ -336,7 +335,7 @@
 				  </xs:all>
 				  <xs:attribute name="lanes" type="xs:decimal" use="required" />
 				  <xs:attribute name="lane_offset" type="xs:decimal" use="optional" default="0" />
-				  <xs:attribute name="length" type="xs:decimal" use="required" />
+				  <xs:attribute name="length" type="xs:decimal" use="required" /> 							<!-- in length units -->
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
@@ -583,7 +582,7 @@
 		</xs:complexType>
 	  </xs:element>
 
-		  <xs:element name="capacityProfile">
+		  <xs:element name="capacityProfile">									       <!-- content in [veh/time unit/lane] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
@@ -720,7 +719,6 @@
 
   -->
 		  
-  
 	  <xs:element name="ControllerSet">
 		<xs:complexType>
 		  <xs:sequence>

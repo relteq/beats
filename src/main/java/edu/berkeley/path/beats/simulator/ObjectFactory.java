@@ -313,6 +313,7 @@ public final class ObjectFactory {
 	 * @throws SiriusException
 	 */
 	public static Scenario process(Scenario S) throws SiriusException {
+		
 		if (null == S.getSettings() || null == S.getSettings().getUnits())
 			logger.warn("Scenario units not specified. Assuming SI");
 		else if (!"SI".equalsIgnoreCase(S.getSettings().getUnits())) {
@@ -336,7 +337,6 @@ public final class ObjectFactory {
 	    // populate the scenario ....................................................
 	    S.populate();
 
-	    
 	    // register signals with their targets ..................................
 	    boolean registersuccess = true;
 		if(S.getSignalList()!=null)

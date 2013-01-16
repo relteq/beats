@@ -817,20 +817,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				global_control_on = false;
 			}
 		}
-	
-        double time_ic;
-        if(getInitialDensitySet()!=null)
-        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
-        else
-        	time_ic = 0.0;
         
-        double timestart = time_ic;			// start at the initial condition time
         Scenario.ModeType simulationMode = Scenario.ModeType.normal;
 
 		if(numEnsemble<=0)
 			throw new SiriusException("Number of ensemble runs must be at least 1.");
 		
 		// create the clock
+        double timestart = getInitialDensitySet().getTstamp().doubleValue();	  // [sec] start at the initial condition time
 		clock = new Clock(timestart,Double.POSITIVE_INFINITY,simdtinseconds);
 		
 		// reset the simulation
@@ -1103,11 +1097,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			// Simulation mode is normal <=> start time == initial profile time stamp
 			simulationMode = null;
 			
-	        double time_ic;
-	        if(getInitialDensitySet()!=null)
-	        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
-	        else
-	        	time_ic = 0.0;
+			double time_ic = getInitialDensitySet().getTstamp().doubleValue();	  // [sec] start at the initial condition time
 	       
 			if(SiriusMath.equals(timestart,time_ic)){
 				simulationMode = Scenario.ModeType.normal;
