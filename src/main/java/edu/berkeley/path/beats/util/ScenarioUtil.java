@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.xml.XMLConstants;
@@ -19,7 +20,10 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.mapped.MappedNamespaceConvention;
+import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 
 import edu.berkeley.path.beats.simulator.SimulationSettings;
@@ -226,6 +230,48 @@ public class ScenarioUtil {
 		} catch (JAXBException exc) {
 			throw new SiriusException(exc);
 		}
+	}
+
+	/**
+	 * Loads a scenario from a JSON file.
+	 * The loaded scenario is not ready for a simulation:
+	 * it still needs unit conversion, validation, etc
+	 * @param filename
+	 * @return the loaded scenario
+	 * @throws SiriusException
+	 */
+	public static edu.berkeley.path.beats.jaxb.Scenario loadJSON_raw(String filename) throws SiriusException {
+		try {
+			MappedNamespaceConvention nsConvention = new MappedNamespaceConvention(new org.codehaus.jettison.mapped.Configuration());
+			XMLStreamReader xmlsr = new MappedXMLStreamReader(new JSONObject(org.apache.commons.io.FileUtils.readFileToString(new File(filename))), nsConvention);
+
+			JAXBContext jaxbContext = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
+			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+			unmarshaller.setSchema(getSchema());
+			edu.berkeley.path.beats.simulator.ObjectFactory.setObjectFactory(unmarshaller, new edu.berkeley.path.beats.simulator.JaxbObjectFactory());
+			edu.berkeley.path.beats.simulator.Scenario scenario = (edu.berkeley.path.beats.simulator.Scenario) unmarshaller.unmarshal(xmlsr);
+			checkSchemaVersion(scenario);
+
+			return scenario;
+		} catch (JAXBException exc) {
+			throw new SiriusException(exc);
+		} catch (JSONException exc) {
+			throw new SiriusException(exc);
+		} catch (XMLStreamException exc) {
+			throw new SiriusException(exc);
+		} catch (IOException exc) {
+			throw new SiriusException(exc);
+		}
+	}
+
+	/**
+	 * Loads a scenario from a JSON file
+	 * @param filename
+	 * @return the loaded scenario
+	 * @throws SiriusException
+	 */
+	public static edu.berkeley.path.beats.simulator.Scenario loadJSON(String filename) throws SiriusException {
+		return edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) loadJSON_raw(filename));
 	}
 
 	/**
