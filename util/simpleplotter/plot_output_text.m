@@ -90,6 +90,7 @@ else
 end
 
 plot(t,y)
+grid
 
 if(export_to_ppt)
     addslide(op,tit)

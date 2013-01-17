@@ -167,11 +167,20 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		if(isdone)
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
-			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
+			
+			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+
+			// zeroth sample extends to the left
 			step = Math.max(0,step);
+			
+			// sample
 			currentSplitRatio = sampleAtTimeStep( Math.min( step , laststep-1) );
+			
+			// assign
 			myNode.normalizeSplitRatioMatrix(currentSplitRatio);
 			myNode.setSampledSRProfile(currentSplitRatio);
+			
+			// stop sampling after laststep
 			isdone = step>=laststep-1;
 		}		
 	}

@@ -22,8 +22,8 @@
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
     </VehicleTypeOrder>
-    <demandProfile dt="300" knob="1" link_id_origin="-6">400</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-1">100</demandProfile>
+    <demandProfile dt="300" start_time="100" knob="1" link_id_origin="-6">400</demandProfile>
+    <demandProfile dt="300" start_time="100" knob="1" link_id_origin="-1">100</demandProfile>
   </DemandProfileSet>
   
   <FundamentalDiagramProfileSet>
@@ -50,7 +50,7 @@
     </fundamentalDiagramProfile>
   </FundamentalDiagramProfileSet>  
   
-  <InitialDensitySet > 
+  <InitialDensitySet tstamp="300"> 
     <density link_id="-1">20</density>
     <density link_id="-2">20</density>
     <density link_id="-3">20</density>

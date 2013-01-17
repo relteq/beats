@@ -210,8 +210,6 @@ public final class SiriusMath {
 		return true;
 	}
 	
-	
-	
 	public static boolean greaterthan(double a,double b){
 		return a > b + SiriusMath.EPSILON;
 	}

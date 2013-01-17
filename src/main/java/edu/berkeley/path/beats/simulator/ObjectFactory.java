@@ -58,6 +58,8 @@ import edu.berkeley.path.beats.sensor.*;
 */
 public final class ObjectFactory {
 
+	private static Logger logger = Logger.getLogger(ObjectFactory.class);
+	
 	/////////////////////////////////////////////////////////////////////
 	// private default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -301,8 +303,6 @@ public final class ObjectFactory {
 		return process(S);
 	}
 
-	private static Logger logger = Logger.getLogger(ObjectFactory.class);
-
 	/**
 	 * Updates a scenario loaded by JAXB.
 	 * Converts units to SI, populates the scenario,
@@ -325,7 +325,6 @@ public final class ObjectFactory {
 	    S.global_control_on = true;
 	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
 	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
-	    S.global_demand_knob = 1d;
 	    S.numVehicleTypes = 1;
 	    S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
 	    
