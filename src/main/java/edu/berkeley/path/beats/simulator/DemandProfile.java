@@ -30,8 +30,8 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	protected Scenario myScenario;
 	protected Link myLinkOrigin;
-	protected double dtinseconds;			// not really necessary
-	protected int samplesteps;
+	protected double dtinseconds;				// not really necessary
+	protected int samplesteps;					// [sim steps] profile sample period
 	protected Double2DMatrix demand_nominal;	// [veh]
 	protected boolean isdone; 
 	protected int stepinitial;
@@ -155,15 +155,33 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 		if(demand_nominal.isEmpty())
 				return;
 		if(forcesample || myScenario.clock.istimetosample(samplesteps,stepinitial)){
+			
 			int n = demand_nominal.getnTime()-1;
-			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
-			step = Math.max(0,step);
-			if(step<n)
+			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			
+			// forced sample due to knob change
+			if(forcesample){
+				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(n) );
+				return;
+			}
+			
+			// demand is zero before stepinitial
+			if(step<0)
+				return;
+			
+			// sample the profile
+			if(step<n){
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(step) );
-			if( forcesample || (step>=n && !isdone) ){
+				return;
+			}
+			
+			// last sample
+			if(step>=n && !isdone){
 				myLinkOrigin.setSourcedemandFromVeh( sampleAtTimeStep(n) );
 				isdone = true;
+				return;
 			}
+			
 		}
 	}
 	

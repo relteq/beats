@@ -43,7 +43,7 @@ final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileS
 			return;
 
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
-		
+
 		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile) dp).populate(myScenario);
 	}
@@ -55,6 +55,9 @@ final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileS
 	
 	protected void validate() {
 
+		if(getDemandProfile().isEmpty())
+			return;
+		
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			SiriusErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");

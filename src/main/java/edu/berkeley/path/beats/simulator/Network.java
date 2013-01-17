@@ -33,6 +33,7 @@ import java.util.List;
 */
 public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
+	protected boolean isempty;
 	protected Scenario myScenario;
 	
 	/////////////////////////////////////////////////////////////////////
@@ -42,51 +43,62 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	protected void populate(Scenario myScenario) {
 		
 		this.myScenario = myScenario;
+		this.isempty = getNodeList()==null || getLinkList()==null;
 		
-		if(getNodeList()!=null)
-			for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-				((Node) node).populate(this);
-		
-		if(getLinkList()!=null)
-			for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-				((Link) link).populate(this);
+		if(isempty)
+			return;
+	
+		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
+			((Node) node).populate(this);
+	
+		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
+			((Link) link).populate(this);
 		
 	}
 	
+	public boolean isEmpty() {
+		return isempty;
+	}
+
 	protected void validate() {
 
+		if(isempty)
+			return;
+		
 		if(myScenario.getSimDtInSeconds()<=0)
 			SiriusErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
 		
 		// node list
-		if(getNodeList()!=null)
-			for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-				((Node)node).validate();
+		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
+			((Node)node).validate();
 
 		// link list
-		if(getLinkList()!=null)
-			for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-				((Link)link).validate();
+		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
+			((Link)link).validate();
 	}
 
 	protected void reset(Scenario.ModeType simulationMode) throws SiriusException {
 
+		if(isempty)
+			return;
+		
 		// node list
-		if(getNodeList()!=null)
-			for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-				((Node) node).reset();
+		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
+			((Node) node).reset();
 
 		// link list
-		if(getLinkList()!=null)
-			for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-				Link _link = (Link) link;
-				_link.resetLanes();		
-				_link.resetState(simulationMode);
-				_link.resetFD();
-			}
+		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
+			Link _link = (Link) link;
+			_link.resetLanes();		
+			_link.resetState(simulationMode);
+			_link.resetFD();
+		}
 	}
 
 	protected void update() throws SiriusException {
+
+		if(isempty)
+			return;
 		
         // compute link demand and supply ...............
         for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
@@ -112,6 +124,8 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * @return Link object.
 	 */
 	public Link getLinkWithId(String id){
+		if(isempty)
+			return null;
 		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
 			if(link.getId().equals(id))
@@ -125,6 +139,8 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * @return Node object.
 	 */
 	public Node getNodeWithId(String id){
+		if(isempty)
+			return null;
 		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode()){
 			if(node.getId().equals(id))
@@ -138,7 +154,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * Each of these may be cast to a {@link Node}.
 	 */
 	public List<edu.berkeley.path.beats.jaxb.Node> getListOfNodes() {
-		if(getNodeList()==null)
+		if(isempty)
 			return null;
 		if(getNodeList().getNode()==null)
 			return null;
@@ -150,7 +166,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * Each of these may be cast to a {@link Link}.
 	 */
 	public List<edu.berkeley.path.beats.jaxb.Link> getListOfLinks() {
-		if(getLinkList()==null)
+		if(isempty)
 			return null;
 		if(getLinkList().getLink()==null)
 			return null;

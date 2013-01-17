@@ -79,6 +79,13 @@ final class Clock {
 		return (currentstep-stepinitial) % samplesteps == 0;
 	}
 	
+	protected int sampleindex(int stepinitial,int samplesteps){
+		if(samplesteps>0){
+			return SiriusMath.floor((currentstep-stepinitial)/((float)samplesteps));
+		}
+		else
+			return 0;
+	}
 	
 	public double getStartTime(){
 		return to;
@@ -88,4 +95,7 @@ final class Clock {
 		return maxt;
 	}
 	
+	public void print(){
+		System.out.println("t=" + t + "\t\tstep=" + currentstep);
+	}
 }
