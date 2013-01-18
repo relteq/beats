@@ -70,8 +70,8 @@ public class OutputToCSV {
 			query += " AND ";
 		}
 	
-		
-		query += "agg_type_id IN (SELECT id FROM aggregation_types WHERE name=" + "\'" + aggregation + "\') ";
+		// query += "agg_type_id IN (SELECT id FROM aggregation_types WHERE description=" + "\'" + aggregation + "\') "; 
+		query += "agg_type_id IN (SELECT id FROM aggregation_types WHERE name=" + "\'" + aggregation + "\') "; 
 		
 		return query;
 	}

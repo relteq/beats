@@ -106,13 +106,24 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		if(isdone || capacity.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+			
 			int n = capacity.getLength()-1;
-			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
-			if(step<n)
+			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+
+			// zeroth sample extends to the left
+			step = Math.max(0,step);
+
+			// sample the profile
+			if(step<n){
 				myLink.setCapacityFromVeh(capacity.get(step));
+				return;
+			}
+
+			// last sample
 			if(step>=n && !isdone){
 				myLink.setCapacityFromVeh(capacity.get(n));
 				isdone = true;
+				return;
 			}
 		}
 	}

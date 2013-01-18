@@ -37,7 +37,6 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	private Double [][] initial_density; 	// [veh/meter] indexed by link and type
 	private Link [] link;					// ordered array of references
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
-	protected double timestamp;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -76,8 +75,6 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 				c++;
 			}
 		}
-		
-		timestamp = 0.0;
 		
 	}
 
@@ -182,14 +179,6 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 */
 	public Integer[] getVehicletypeindex() {
 		return vehicletypeindex;
-	}
-
-	/** Get the time stamp for the initial density set.
-	 * 
-	 * @return double time in seconds after midnight.
-	 */
-	public double getTimestamp() {
-		return timestamp;
 	}
 
 }

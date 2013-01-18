@@ -75,6 +75,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
 		  gaussian }
 
+	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
+
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
 	/** @y.exclude */	protected Scenario.UncertaintyType uncertaintyModel;
@@ -88,6 +90,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
 	/** @y.exclude */	protected double outdt;
+	/** @y.exclude */	protected boolean started_writing;
 
 	// Model uncertainty
 	/** @y.exclude */	protected double std_dev_flow = 0.0d;	// [veh]
@@ -209,6 +212,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	protected boolean reset(Scenario.ModeType simulationMode) throws SiriusException {
 		
+		started_writing = false;
+		global_control_on = true;
+	    global_demand_knob = 1d;
+		
 		// reset the clock
 		clock.reset();
 		
@@ -234,7 +241,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((FundamentalDiagramProfile)fd).reset();
 		
 		// reset controllers
-		global_control_on = true;
 		controllerset.reset();
 
 		// reset events
@@ -382,7 +388,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public void run(SimulationSettings simsettings, Properties owr_props) throws SiriusException{
 		this.outdt = simsettings.getOutputDt();
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		numEnsemble = 1;
+		numEnsemble = 1;		
 		run_internal(param, simsettings.getNumRuns(), true, false, owr_props);
 	}
 	
@@ -435,7 +441,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 		int nsteps = SiriusMath.round(nsec/simdtinseconds);		
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1);
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1,-1d);
 	}
 
 	/** Save the scenario to XML.
@@ -802,44 +808,38 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * rolling back all profiles and clocks. 
 	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-	public void initialize_run(int numEnsemble) throws SiriusException{
-
-		scenariolocked = false;
-			
-		this.numEnsemble = numEnsemble;
-		
-		// check that no controllers are used 
-		if(global_control_on && numEnsemble>1 && getControllerSet()!=null){
-			if(!getControllerSet().getController().isEmpty()){
-				System.out.println("Warning! This scenario has controllers. " +
-						"Currently ensemble runs work only with control turned off. " +
-						"Deactivting control and continuing");
-				global_control_on = false;
-			}
-		}
-	
-        double time_ic;
-        if(getInitialDensitySet()!=null)
-        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
-        else
-        	time_ic = 0.0;
-        
-        double timestart = time_ic;			// start at the initial condition time
-        Scenario.ModeType simulationMode = Scenario.ModeType.normal;
-
-		if(numEnsemble<=0)
-			throw new SiriusException("Number of ensemble runs must be at least 1.");
-		
-		// create the clock
-		clock = new Clock(timestart,Double.POSITIVE_INFINITY,simdtinseconds);
-		
-		// reset the simulation
-		if(!reset(simulationMode))
-			throw new SiriusException("Reset failed.");
-		
-		// lock the scenario
-        scenariolocked = true;	
-	}
+//	public void initialize_run(int numEnsemble) throws SiriusException{
+//
+//		scenariolocked = false;
+//			
+//		this.numEnsemble = numEnsemble;
+//		
+//		// check that no controllers are used 
+//		if(global_control_on && numEnsemble>1 && getControllerSet()!=null){
+//			if(!getControllerSet().getController().isEmpty()){
+//				System.out.println("Warning! This scenario has controllers. " +
+//						"Currently ensemble runs work only with control turned off. " +
+//						"Deactivting control and continuing");
+//				global_control_on = false;
+//			}
+//		}
+//        
+//        Scenario.ModeType simulationMode = Scenario.ModeType.normal;
+//
+//		if(numEnsemble<=0)
+//			throw new SiriusException("Number of ensemble runs must be at least 1.");
+//		
+//		// create the clock
+//        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : 0d;  // [sec]
+//		clock = new Clock(time_ic,Double.POSITIVE_INFINITY,simdtinseconds);
+//		
+//		// reset the simulation
+//		if(!reset(simulationMode))
+//			throw new SiriusException("Reset failed.");
+//		
+//		// lock the scenario
+//        scenariolocked = true;	
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// override profiles
@@ -954,11 +954,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate,Properties owr_props) throws SiriusException{
 			
+		logger.info("Simulation mode: " + param.simulationMode);
+		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
+		logger.info("Output period: [" + param.timestartOutput + ":" + outdt + ":" + param.timeend + "]");
+		
 		if(returnstate && numRepetitions>1)
 			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
 		
 		SiriusStateTrajectory state = null;
-
+		
 		// create the clock
 		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
 		
@@ -968,7 +972,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
 			OutputWriterIF outputwriter = null;
-			if (writefiles && param.simulationMode.compareTo(Scenario.ModeType.normal)==0) {
+			if (writefiles){ // && param.simulationMode.compareTo(Scenario.ModeType.normal)==0) {
 				outputwriter = OutputWriterFactory.getWriter(this, owr_props);
 				outputwriter.open(i);
 			}
@@ -982,7 +986,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 					throw new SiriusException("Reset failed.");
 
 				// advance to end of simulation
-				while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps) ){					
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps,param.timestartOutput) ){					
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();
@@ -1006,26 +1010,26 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws 
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,int outsteps) throws SiriusException{
-
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,int outsteps,double outStart) throws SiriusException{
+		
 		// advance n steps
 		for(int k=0;k<n;k++){
 
 			// export initial condition
-	        if(simulationMode.compareTo(ModeType.normal)==0 && outsteps>0 )
-	        	if( clock.getCurrentstep()==0 )
-	        		recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
+	        if(!started_writing && outsteps>0 && SiriusMath.equals(clock.getT(),outStart) ){
+	        	recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
+	        	started_writing = true;
+	        }
         	
         	// update scenario
         	update();
 
             // update time (before write to output)
         	clock.advance();
-        	
-            if(simulationMode.compareTo(ModeType.normal)==0 && outsteps>0 )
-	        	if( clock.getCurrentstep()%outsteps == 0 )
-	        		recordstate(writefiles,returnstate,outputwriter,state,true,outsteps);
-        	
+
+            if(started_writing && clock.getCurrentstep()%outsteps == 0 )
+	        	recordstate(writefiles,returnstate,outputwriter,state,true,outsteps);
+            
         	if(clock.expired())
         		return false;
 		}
@@ -1082,6 +1086,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private class RunParameters{
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
+		public double timestartOutput;		// [sec] start outputing data
 		public int outsteps;				// [-] number of simulation steps per output step
 		public Scenario.ModeType simulationMode;
 		
@@ -1089,7 +1094,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws SiriusException{
 			
 			// check timestart < timeend
-			if(tstart>=tend)
+			if(SiriusMath.greaterorequalthan(tstart,tend))
 				throw new SiriusException("Empty simulation period.");
 
 			// check that outdt is a multiple of simdt
@@ -1097,24 +1102,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				throw new SiriusException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
 			this.timestart = tstart;
+			this.timestartOutput = tstart;
 			this.timeend = tend;
 	        this.outsteps = SiriusMath.round(outdt/simdtinseconds);
 
+	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : 0d;  // [sec]
+	        
 			// Simulation mode is normal <=> start time == initial profile time stamp
 			simulationMode = null;
-			
-	        double time_ic;
-	        if(getInitialDensitySet()!=null)
-	        	time_ic = ((InitialDensitySet)getInitialDensitySet()).timestamp;
-	        else
-	        	time_ic = 0.0;
-	       
 			if(SiriusMath.equals(timestart,time_ic)){
 				simulationMode = Scenario.ModeType.normal;
 			}
 			else{
 				// it is a warmup. we need to decide on start and end times
-				timeend = timestart;
 				if(time_ic<timestart){	// go from ic to timestart
 					timestart = time_ic;
 					simulationMode = Scenario.ModeType.warmupFromIC;
@@ -1123,14 +1123,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 					timestart = Double.POSITIVE_INFINITY;
 					if(demandProfileSet!=null)
 						for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandProfileSet.getDemandProfile())
-							timestart = Math.min(timestart,D.getStartTime().doubleValue());
-					else
-						timestart = 0.0;
+							timestart = Math.min(timestart,D.getStartTime().doubleValue());					
+					if(Double.isInfinite(timestart))
+						timestart = 0d;
+					timestart = Math.min(timestart, timestartOutput);
 					simulationMode = Scenario.ModeType.warmupFromZero;
+					
+					if(SiriusMath.greaterthan(timeend,time_ic))
+						throw new SiriusException("Simulation period stradles the initial condition time stamp.");
 				}		
 			}
-			if( timeend < timestart )
-				timeend = timestart;
+						
 		}
 
 	}
@@ -1158,12 +1161,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public void storeLinks() {
 			if (null == links) {
 				links = new java.util.HashMap<String, LinkCumulativeData>();
-				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+					if(((edu.berkeley.path.beats.simulator.Network) network).isempty)
+						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 						if (links.containsKey(link.getId()))
 							logger.warn("Duplicate link: id=" + link.getId());
 						links.put(link.getId(), new LinkCumulativeData((edu.berkeley.path.beats.simulator.Link) link));
 					}
+				}
 				logger.info("Link cumulative data have been requested");
 			}
 		}

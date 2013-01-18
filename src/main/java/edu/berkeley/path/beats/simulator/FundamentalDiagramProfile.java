@@ -46,7 +46,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 	protected void set_Lanes(double newlanes){
 		if(newlanes<=0 || FD.isEmpty())
 			return;
-		int step = SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps);
+		int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
 		step = Math.max(0,step);
 		for(int i=step;i<FD.size();i++){
 			FD.get(i).setLanes(newlanes);
@@ -142,14 +142,24 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		if(isdone || FD.isEmpty())
 			return;
 		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+			
 			int n = FD.size()-1;
-			int step = samplesteps>0 ? SiriusMath.floor((myScenario.clock.getCurrentstep()-stepinitial)/samplesteps) : 0;
+			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+
+			// zeroth sample extends to the left
 			step = Math.max(0,step);
-			if(step<n)
+
+			// sample the profile
+			if(step<n){
 				myLink.setFundamentalDiagramFromProfile( FD.get(step) );
+				return;
+			}
+			
+			// last sample
 			if(step>=n && !isdone){
 				myLink.setFundamentalDiagramFromProfile( FD.get(n) );
 				isdone = true;
+				return;
 			}
 		}
 	}

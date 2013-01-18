@@ -33,6 +33,9 @@ package edu.berkeley.path.beats.processor;
 
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -57,10 +60,67 @@ public class AggregateData extends OutputToCSV {
 	
 	public static void reportToStandard(String s) {
 		
+		File logFile = new File("log.txt");
+		
 		java.util.Date today = new java.util.Date();
+		
+		String message = new java.sql.Timestamp(today.getTime()) + " " + getMethodName(1) + " " + Thread.currentThread().getStackTrace()[2].getLineNumber() + " " + s;
+		
+		
+		if(!logFile.exists()){
+			try {
+				logFile.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}	
+		
+	     try {		
+	    	 
+	    	 FileWriter fileWritter = new FileWriter(logFile.getName(),true);
+	    	 BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+
+	    	 bufferWritter.write(message);
+	    	 bufferWritter.newLine();
+	    	 if (message.length() > 100 ) bufferWritter.newLine();
+	    	 bufferWritter.close();
+	    	 
+	    	 
+	    	 if (logFile.length() > 1024*1024 ) {
+	    		 
+	    		 
+	    		 String temp = "log" + "-" + new java.sql.Timestamp(today.getTime()) + ".txt";
+	    		 temp = temp.replaceAll(":", "-");
+	    		 temp = temp.replaceAll(" ", "-");
+	    		 
+	    		 File file2 = new File(temp);
+	    		 logFile.renameTo(file2);
+	    	 }
+	    	 
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
 			
-		System.out.println(new java.sql.Timestamp(today.getTime()) + " " + s);
+		System.out.println(message);
 	}
+	
+	/**
+	 * Get the method name for a depth in call stack. <br />
+	 * Utility function
+	 * @param depth depth in the call stack (0 means current method, 1 means call method, ...)
+	 * @return method name
+	 */
+	public static String getMethodName(final int depth)
+	{
+	  final StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+
+	  //System. out.println(ste[ste.length-depth].getClassName()+"#"+ste[ste.length-depth].getMethodName());
+
+	  return ste[2 + depth].getMethodName(); 
+	}
+	
 
 	/**
 	 * aggregate a single table for all intervals
@@ -120,8 +180,9 @@ public class AggregateData extends OutputToCSV {
 			List aggList;
 			try {
 				
+				//aggList = BasePeer.executeQuery("SELECT id FROM aggregation_types WHERE description=\'" + aggregation + "\'");
 				aggList = BasePeer.executeQuery("SELECT id FROM aggregation_types WHERE name=\'" + aggregation + "\'");
-				
+
 				
 				try {
 					if (aggList.size() > 0 ) {
@@ -135,6 +196,7 @@ public class AggregateData extends OutputToCSV {
 						newId = ((Record)BasePeer.executeQuery("SELECT MAX(id) FROM aggregation_types ").get(0)).getValue(1).asLong() + 1;
 						
 						obj.setId(newId);
+						//obj.setDescription(aggregation);
 						obj.setName(aggregation);
 						obj.setCreatedBy("Alexey");
 						obj.setCreated(new java.util.Date());
