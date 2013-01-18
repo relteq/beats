@@ -3,6 +3,7 @@
 sirius.jar
 output_*
 *.asv
+*.mat
 /src/main/generated-java/
 velocity.log
 /derby.log
