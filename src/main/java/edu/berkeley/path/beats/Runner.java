@@ -42,17 +42,15 @@ import edu.berkeley.path.beats.om.LinkDataTotal;
 import edu.berkeley.path.beats.om.LinkPerformanceDetailed;
 import edu.berkeley.path.beats.om.LinkPerformanceTotal;
 import edu.berkeley.path.beats.om.RoutePerformanceTotal;
-import edu.berkeley.path.beats.om.Scenarios;
 import edu.berkeley.path.beats.om.SignalData;
 import edu.berkeley.path.beats.om.SignalPhasePerformance;
 import edu.berkeley.path.beats.processor.AggregateData;
 import edu.berkeley.path.beats.processor.PdfReport;
 import edu.berkeley.path.beats.processor.PerformanceData;
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.ScenarioValidationError;
-import edu.berkeley.path.beats.simulator.SiriusException;
-import edu.berkeley.path.beats.util.ScenarioUtil;
+import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
+import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
 /**
  * Implements "Sirius: Concept of Operations"
@@ -151,22 +149,13 @@ public class Runner {
 
 				final String filename = cline.getArgs()[0];
 
-				String format = null;
-				if (cline.hasOption("f")) format = cline.getOptionValue("f");
-				else if (filename.toLowerCase().endsWith(".json")) format = "json";
-				else format = "xml";
-
-				edu.berkeley.path.beats.simulator.Scenario scenario = null;
-				if ("xml".equals(format))
-					scenario = ObjectFactory.createAndLoadScenario(filename);
-				else if ("json".equals(format))
-					scenario = ScenarioUtil.loadJSON(filename);
-				else
-					throw new InvalidUsageException("Invalid format " + format);
+				edu.berkeley.path.beats.simulator.Scenario scenario = cline.hasOption("f") ?
+						ScenarioLoader.load(filename, cline.getOptionValue("f")) :
+						ScenarioLoader.load(filename);
 				logger.info("Loaded configuration file '" + filename + "'");
 
-				Scenarios db_scenario = new edu.berkeley.path.beats.db.ScenarioImporter().load(scenario);
-				logger.info("Scenario imported, ID=" + db_scenario.getId());
+				Long id = ScenarioSaver.save(scenario);
+				logger.info("Scenario imported, ID=" + id);
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
@@ -178,17 +167,14 @@ public class Runner {
 				if (0 == arguments.length || 2 < arguments.length)
 					throw new InvalidUsageException("Usage: export|e [-f output_format] scenario_id [output_file_name]");
 
-				String format = null;
-				if (cline.hasOption("f")) format = cline.getOptionValue("f");
-				else if (1 < arguments.length && arguments[1].toLowerCase().endsWith(".json")) format = "json";
-				else format = "xml";
-				if (!"xml".equals(format) && !"json".equals(format))
-					throw new SiriusException("Invalid format " + format);
+				edu.berkeley.path.beats.jaxb.Scenario scenario = ScenarioLoader.loadRaw(Long.parseLong(cline.getArgs()[0]));
 
-				edu.berkeley.path.beats.jaxb.Scenario scenario = edu.berkeley.path.beats.db.ScenarioExporter.getScenario(Long.parseLong(cline.getArgs()[0]));
-				final String filename = 1 < arguments.length ? arguments[1] : scenario.getId() + "." + format;
-				save(scenario, filename, format);
-
+				final String filename = 1 < arguments.length ? arguments[1] : scenario.getId() + "." + (cline.hasOption("f") ? cline.getOptionValue("f") : "xml");
+				if (1 >= arguments.length) logger.info("Output file: " + filename);
+				if (cline.hasOption("f"))
+					ScenarioSaver.save(scenario, filename, cline.getOptionValue("f"));
+				else
+					ScenarioSaver.save(scenario, filename);
 				logger.debug("Scenario " + scenario.getId() + " saved to file " + filename);
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);
@@ -270,11 +256,7 @@ public class Runner {
 				if (!"xml".equals(oformat) && !"json".equals(oformat))
 					throw new InvalidUsageException("Invalid output format " + oformat);
 
-				edu.berkeley.path.beats.jaxb.Scenario scenario = null;
-				if ("xml".equals(iformat))
-					scenario = ScenarioUtil.load(arguments[0]);
-				else if ("json".equals(iformat))
-					scenario = ScenarioUtil.loadJSON_raw(arguments[0]);
+				edu.berkeley.path.beats.jaxb.Scenario scenario = ScenarioLoader.loadRaw(arguments[0], iformat);
 
 				String ofilename = null;
 				if (1 < arguments.length) ofilename = arguments[1];
@@ -286,7 +268,7 @@ public class Runner {
 					ofilename += "." + oformat;
 					logger.info("Output file: " + ofilename);
 				}
-				save(scenario, ofilename, oformat);
+				ScenarioSaver.save(scenario, ofilename, oformat);
 			} else throw new InvalidCommandException(cmd);
 		} catch (InvalidUsageException exc) {
 			String msg = exc.getMessage();
@@ -310,22 +292,6 @@ public class Runner {
 				edu.berkeley.path.beats.db.Service.shutdown();
 			}
 		}
-	}
-
-	/**
-	 * Saves a scenario to a file
-	 * @param scenario
-	 * @param filename
-	 * @param format an output format: "xml" or "json"
-	 * @throws SiriusException
-	 */
-	private static void save(edu.berkeley.path.beats.jaxb.Scenario scenario, String filename, String format) throws SiriusException {
-		if ("xml".equals(format))
-			ScenarioUtil.save(scenario, filename);
-		else if ("json".equals(format))
-			ScenarioUtil.saveJSON(scenario, filename);
-		else
-			throw new SiriusException("Invalid output format " + format);
 	}
 
 	@SuppressWarnings("serial")

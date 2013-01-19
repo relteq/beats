@@ -41,25 +41,21 @@ import edu.berkeley.path.beats.simulator.SiriusException;
  * Loads a scenario from the database
  */
 public class ScenarioExporter {
-	public static void export(long id, String filename) throws SiriusException {
-		edu.berkeley.path.beats.util.ScenarioUtil.save(new ScenarioExporter().restore(id), filename);
-	}
 
 	/**
-	 * Load a scenario from the database
-	 * @param id a scenario id
-	 * @return the scenario
+	 * Loads a scenario from the database.
+	 * The loaded scenario is not ready for simulation:
+	 * it needs unit conversion, validation, etc
+	 * @param id
+	 * @return the raw restored scenario
 	 * @throws SiriusException
 	 */
-	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = edu.berkeley.path.beats.simulator.ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) new ScenarioExporter().restore(id));
-		if (null == scenario)
-			throw new SiriusException("Could not load scenario " + id + " from the database. See error log for details.");
-		return scenario;
+	public static edu.berkeley.path.beats.jaxb.Scenario doExport(Long id) throws SiriusException {
+		return new ScenarioExporter().restore(id);
 	}
 
-	edu.berkeley.path.beats.simulator.JaxbObjectFactory factory = null;
-	edu.berkeley.path.beats.util.polyline.DecoderIF polyline_decoder;
+	private edu.berkeley.path.beats.simulator.JaxbObjectFactory factory = null;
+	private edu.berkeley.path.beats.util.polyline.DecoderIF polyline_decoder;
 
 	private ScenarioExporter() {
 		factory = new edu.berkeley.path.beats.simulator.JaxbObjectFactory();
@@ -69,7 +65,7 @@ public class ScenarioExporter {
 
 	private static Logger logger = Logger.getLogger(ScenarioExporter.class);
 
-	private edu.berkeley.path.beats.jaxb.Scenario restore(long id) throws SiriusException {
+	private edu.berkeley.path.beats.jaxb.Scenario restore(Long id) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		Scenarios db_scenario = null;
 		try {

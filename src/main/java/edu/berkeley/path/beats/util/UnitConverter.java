@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
+import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
 /**
  * Converts scenario units
@@ -54,9 +56,9 @@ public class UnitConverter {
 	 * @throws SiriusException
 	 */
 	public static void convertUnits(String iconfig, String oconfig) throws SiriusException {
-		Scenario scenario = ScenarioUtil.load(iconfig);
+		Scenario scenario = ScenarioLoader.loadRaw(iconfig);
 		process(scenario);
-		ScenarioUtil.save(scenario, oconfig);
+		ScenarioSaver.save(scenario, oconfig);
 	}
 
 	private static Logger logger = Logger.getLogger(UnitConverter.class);

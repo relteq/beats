@@ -46,7 +46,7 @@ import edu.berkeley.path.beats.util.Data2D;
  * Imports a scenario
  */
 public class ScenarioImporter {
-	Connection conn = null;
+	private Connection conn = null;
 
 	private Long project_id;
 	/**
@@ -75,7 +75,7 @@ public class ScenarioImporter {
 
 	private edu.berkeley.path.beats.util.polyline.EncoderBase polyline_encoder;
 
-	public ScenarioImporter() {
+	private ScenarioImporter() {
 		project_id = Long.valueOf(0);
 		polyline_encoder = new edu.berkeley.path.beats.util.polyline.GoogleEncoder();
 	}
@@ -83,21 +83,16 @@ public class ScenarioImporter {
 	private static Logger logger = Logger.getLogger(ScenarioImporter.class);
 
 	/**
-	 * Loads a scenario from a file
-	 * @param filename the configuration (scenario) file name
-	 * @return the imported scenario
+	 * Imports a scenario
+	 * @param scenario
+	 * @return the scenario ID in the database
 	 * @throws SiriusException
 	 */
-	public static Scenarios load(String filename) throws SiriusException {
-		edu.berkeley.path.beats.jaxb.Scenario scenario =
-				edu.berkeley.path.beats.simulator.ObjectFactory.createAndLoadScenario(filename);
-		logger.info("Loaded configuration file '" + filename + "'");
-		Scenarios db_scenario = new ScenarioImporter().load(scenario);
-		logger.info("Scenario imported, ID=" + db_scenario.getId());
-		return db_scenario;
+	public static Long doImport(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
+		return new ScenarioImporter().store(scenario).getId();
 	}
 
-	public Scenarios load(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
+	private Scenarios store(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		
 		try {
