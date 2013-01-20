@@ -353,6 +353,8 @@ public class UnitConverter {
 	}
 
 	private void process(DemandProfile dp) {
+		dp.setStdDevAdd(convertFlow(dp.getStdDevAdd()));
+
 		Data2D data2d = new Data2D(dp.getContent(), new String[] {",", ":"});
 		if (!data2d.isEmpty()) {
 			BigDecimal[][] data = data2d.getData();
