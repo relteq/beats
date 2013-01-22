@@ -387,8 +387,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void run(SimulationSettings simsettings, Properties owr_props) throws SiriusException{
 		this.outdt = simsettings.getOutputDt();
+		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		numEnsemble = 1;		
 		run_internal(param, simsettings.getNumRuns(), true, false, owr_props);
 	}
 	
@@ -404,9 +404,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param outputfileprefix
 	 * @throws SiriusException 
 	 */
-	public void run(Double timestart,Double timeend,double outdt, String outputfileprefix) throws SiriusException{
+	public void run(double timestart,double timeend,double outdt, String outputfileprefix) throws SiriusException{
+		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		numEnsemble = 1;
 		Properties owr_props = new Properties();
 		if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 		owr_props.setProperty("type","text");
@@ -418,10 +418,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return An object with the history of densities and flows for all links in the scenario.
 	 * @throws SiriusException 
 	 */
-	public SiriusStateTrajectory run(Double timestart,Double timeend,double outdt) throws SiriusException{
+	public SiriusStateTrajectory run(double timestart,double timeend,double outdt) throws SiriusException{
 		this.outdt = outdt;
+		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(timestart,timeend,outdt,simdtinseconds);
-		numEnsemble = 1;
 		return run_internal(param,1,false,true,null);
 	}
 	
@@ -808,38 +808,27 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * rolling back all profiles and clocks. 
 	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-//	public void initialize_run(int numEnsemble) throws SiriusException{
-//
-//		scenariolocked = false;
-//			
-//		this.numEnsemble = numEnsemble;
-//		
-//		// check that no controllers are used 
-//		if(global_control_on && numEnsemble>1 && getControllerSet()!=null){
-//			if(!getControllerSet().getController().isEmpty()){
-//				System.out.println("Warning! This scenario has controllers. " +
-//						"Currently ensemble runs work only with control turned off. " +
-//						"Deactivting control and continuing");
-//				global_control_on = false;
-//			}
-//		}
-//        
-//        Scenario.ModeType simulationMode = Scenario.ModeType.normal;
-//
-//		if(numEnsemble<=0)
-//			throw new SiriusException("Number of ensemble runs must be at least 1.");
-//		
-//		// create the clock
-//        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : 0d;  // [sec]
-//		clock = new Clock(time_ic,Double.POSITIVE_INFINITY,simdtinseconds);
-//		
-//		// reset the simulation
-//		if(!reset(simulationMode))
-//			throw new SiriusException("Reset failed.");
-//		
-//		// lock the scenario
-//        scenariolocked = true;	
-//	}
+	public void initialize_run(int numEnsemble,double timestart,double outdt) throws SiriusException{
+
+		if(numEnsemble<=0)
+			throw new SiriusException("Number of ensemble runs must be at least 1.");
+		
+		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,outdt,simdtinseconds);
+
+		this.outdt = outdt;
+		this.scenariolocked = false;
+		this.numEnsemble = numEnsemble;
+        
+		// create the clock
+		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
+
+		// reset the simulation
+		if(!reset(param.simulationMode))
+			throw new SiriusException("Reset failed.");
+		
+		// lock the scenario
+        scenariolocked = true;	
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// override profiles
@@ -978,8 +967,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 			try{
 				// allocate state
-				if(returnstate)
-					state = new SiriusStateTrajectory(this,param.outsteps);
+				if(returnstate){
+					int numTime = (int) Math.ceil(getTotalTimeStepsToSimulate()/((float)param.outsteps));
+					state = new SiriusStateTrajectory(this,numTime);
+				}
 
 				// reset the simulation
 				if(!reset(param.simulationMode))

@@ -323,6 +323,7 @@ public final class ObjectFactory {
 
 	    // copy data to static variables ..............................................
 	    S.global_control_on = true;
+	    S.global_demand_knob = 1d;
 	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
 	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
 	    S.numVehicleTypes = 1;

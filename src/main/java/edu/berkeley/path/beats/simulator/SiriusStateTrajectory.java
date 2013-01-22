@@ -44,7 +44,7 @@ public final class SiriusStateTrajectory {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SiriusStateTrajectory(Scenario myScenario,double outsteps) {
+	public SiriusStateTrajectory(Scenario myScenario,int numTime) {
 		if(myScenario==null)
 			return;
 		if(myScenario.getNetworkList()==null)
@@ -55,7 +55,7 @@ public final class SiriusStateTrajectory {
 		
 		this.numNetworks = myScenario.getNetworkList().getNetwork().size();
 		this.numVehicleTypes = myScenario.getNumVehicleTypes();
-		this.numTime = (int) Math.ceil(myScenario.getTotalTimeStepsToSimulate()/outsteps);
+		this.numTime = numTime;
 
 		this.networkState = new NewtorkStateTrajectory[numNetworks];
 		for(int i=0;i<numNetworks;i++){
@@ -67,28 +67,8 @@ public final class SiriusStateTrajectory {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// API
+	// protected interface
 	/////////////////////////////////////////////////////////////////////
-	
-	public Double getDensity(int netindex,int i,int j,int k) {
-		if(netindex<0 || netindex>=numNetworks)
-			return Double.NaN;
-		NewtorkStateTrajectory  N = networkState[netindex];
-		if(i<0 || i>=N.getNumLinks() || j<0 || j>=numVehicleTypes || k<0 || k>=numTime)
-			return Double.NaN;
-		else
-			return N.density[i][j][k];
-	}
-
-	public Double getFlow(int netindex,int i,int j,int k) {
-		if(netindex<0 || netindex>=numNetworks)
-			return Double.NaN;
-		NewtorkStateTrajectory  N = networkState[netindex];
-		if(i<0 || i>=N.getNumLinks() || j<0 || j>=numVehicleTypes || k<0 || k>=numTime)
-			return Double.NaN;
-		else
-			return N.flow[i][j][k];
-	}
 
 	protected void recordstate(int timestep,double time,boolean exportflows,int outsteps) throws SiriusException {
 		
@@ -112,6 +92,30 @@ public final class SiriusStateTrajectory {
 		}
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Double getDensity(int netindex,int i,int j,int k) {
+		if(netindex<0 || netindex>=numNetworks)
+			return Double.NaN;
+		NewtorkStateTrajectory  N = networkState[netindex];
+		if(i<0 || i>=N.getNumLinks() || j<0 || j>=numVehicleTypes || k<0 || k>=numTime)
+			return Double.NaN;
+		else
+			return N.density[i][j][k];
+	}
+
+	public Double getFlow(int netindex,int i,int j,int k) {
+		if(netindex<0 || netindex>=numNetworks)
+			return Double.NaN;
+		NewtorkStateTrajectory  N = networkState[netindex];
+		if(i<0 || i>=N.getNumLinks() || j<0 || j>=numVehicleTypes || k<0 || k>=numTime)
+			return Double.NaN;
+		else
+			return N.flow[i][j][k];
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// internal class
 	/////////////////////////////////////////////////////////////////////
