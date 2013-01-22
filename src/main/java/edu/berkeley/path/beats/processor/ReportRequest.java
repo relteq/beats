@@ -56,6 +56,10 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.apache.poi.hslf.usermodel.SlideShow;
+import org.apache.poi.hslf.usermodel.RichTextRun;
+import org.apache.poi.hslf.model.*;
+
 public class ReportRequest {
 	
 	private List<Content> contents;
@@ -77,7 +81,26 @@ public class ReportRequest {
 	int chartID=0;
 	private double travelTimeMultiplier=1.0;
 	private double linkLength=1.0;
+	private SlideShow ppt;
+	private String title;
+	private String keys;
 	
+	public String	getKeys() { return keys; }
+	public void 	setKeys(String k) { keys = k; }
+	public void 	addKeys(String k) { 		
+		 if ( keys == null ) {			
+			keys = k;
+			return;
+		} else {			
+			keys += (";   " + k); 
+			return;
+		}
+	}
+	
+	public String 	getTitle() { return title ; }
+	public void 	setTitle(String t) { title = t; }
+	public SlideShow getPpt() { return ppt; }
+	public void 	setPpt(SlideShow p) { ppt = p; }
 	public void 	setLinkLength(double l) { linkLength=l; }
 	public double 	getLinkLength() { return linkLength; }
 	public double 	getMultiplier() { return travelTimeMultiplier; }
