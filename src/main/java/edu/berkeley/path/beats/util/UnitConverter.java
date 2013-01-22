@@ -350,20 +350,25 @@ public class UnitConverter {
 
 	private void process(DemandProfileSet dpset) {
 		if (null == dpset) return;
-		for (DemandProfile dp : dpset.getDemandProfile()) {
-			Data2D data2d = new Data2D(dp.getContent(), new String[] {",", ":"});
-			if (!data2d.isEmpty()) {
-				BigDecimal[][] data = data2d.getData();
-				StringBuilder sb = new StringBuilder();
-				for (int t = 0; t < data.length; ++t) {
-					if (0 < t) sb.append(',');
-					for (int vtn = 0; vtn < data[t].length; ++vtn) {
-						if (0 < vtn) sb.append(':');
-						sb.append(convertFlow(data[t][vtn]).toPlainString());
-					}
+		for (DemandProfile dp : dpset.getDemandProfile())
+			process(dp);
+	}
+
+	private void process(DemandProfile dp) {
+		dp.setStdDevAdd(convertFlow(dp.getStdDevAdd()));
+
+		Data2D data2d = new Data2D(dp.getContent(), new String[] {",", ":"});
+		if (!data2d.isEmpty()) {
+			BigDecimal[][] data = data2d.getData();
+			StringBuilder sb = new StringBuilder();
+			for (int t = 0; t < data.length; ++t) {
+				if (0 < t) sb.append(',');
+				for (int vtn = 0; vtn < data[t].length; ++vtn) {
+					if (0 < vtn) sb.append(':');
+					sb.append(convertFlow(data[t][vtn]).toPlainString());
 				}
-				dp.setContent(sb.toString());
 			}
+			dp.setContent(sb.toString());
 		}
 	}
 
