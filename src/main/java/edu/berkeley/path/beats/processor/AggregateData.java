@@ -504,9 +504,15 @@ public static String setTimeInterval(String query, long time1, long time2)	{
  */
 public static String setKeys(String query, String table, Record rec, String exclusion) {
 	
-	if ( query.indexOf("WHERE") < 0 ) return query += " WHERE " + getListOfKeys(table, rec, exclusion);
+	String temp = new String();
+	
+	if ( query.indexOf("WHERE") < 0 ) temp = query += " WHERE " + getListOfKeys(table, rec, exclusion);
 		
-		return query + getListOfKeys(table, rec, exclusion);
+		temp = query + getListOfKeys(table, rec, exclusion);
+		
+		temp = temp.replaceAll("=null", " IS NULL ");
+		
+		return temp;
 	
 }
 	/**
@@ -518,10 +524,15 @@ public static String setKeys(String query, String table, Record rec, String excl
 	 */
 	public static String setKeys(String query,String table, Record rec) {
 		
-		if ( query.indexOf("WHERE") < 0 ) return query += " WHERE " + getListOfKeys(table, rec);
-			
-			return query + getListOfKeys(table, rec);
+		String temp = new String();
 		
+		if ( query.indexOf("WHERE") < 0 ) temp = query += " WHERE " + getListOfKeys(table, rec);
+			
+			temp = query + getListOfKeys(table, rec);
+		
+		temp = temp.replaceAll("=null", " IS NULL ");
+		
+		return temp;
 	}
 	
 	/**

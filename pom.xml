@@ -276,5 +276,10 @@
       <artifactId>jfreechart</artifactId>
       <version>1.0.14</version>
     </dependency>
+    <dependency>
+    	<groupId>org.apache.poi</groupId>
+    	<artifactId>poi-scratchpad</artifactId>
+    	<version>3.9</version>
+    </dependency>
   </dependencies>
 </project>
