@@ -26,6 +26,13 @@
 
 package edu.berkeley.path.beats;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.db.OutputToCSV;
@@ -42,6 +49,8 @@ import edu.berkeley.path.beats.processor.PdfReport;
 import edu.berkeley.path.beats.processor.PerformanceData;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.ScenarioValidationError;
+import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
+import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
 /**
  * Implements "Sirius: Concept of Operations"
@@ -131,17 +140,42 @@ public class Runner {
 			
 
 			if (cmd.equals("import") || cmd.equals("i")) {
-				if (arguments.length != 1) throw new InvalidUsageException("Usage: import|i scenario_file_name");
-				edu.berkeley.path.beats.db.ScenarioImporter.load(arguments[0]);
+				Options clOptions = new Options();
+				clOptions.addOption("f", true, "input file format: xml or json");
+				org.apache.commons.cli.Parser clParser = new org.apache.commons.cli.BasicParser();
+				CommandLine cline = clParser.parse(clOptions, arguments);
+				if (1 != cline.getArgs().length)
+					throw new InvalidUsageException("Usage: import|i [-f file_format] scenario_file_name");
+
+				final String filename = cline.getArgs()[0];
+
+				edu.berkeley.path.beats.simulator.Scenario scenario = cline.hasOption("f") ?
+						ScenarioLoader.load(filename, cline.getOptionValue("f")) :
+						ScenarioLoader.load(filename);
+				logger.info("Loaded configuration file '" + filename + "'");
+
+				Long id = ScenarioSaver.save(scenario);
+				logger.info("Scenario imported, ID=" + id);
 			} else if (cmd.equals("update") || cmd.equals("u")) {
 				throw new NotImplementedException(cmd);
 			} else if (cmd.equals("export") || cmd.equals("e")) {
+				Options clOptions = new Options();
+				clOptions.addOption("f", true, "input file format: xml or json");
+				org.apache.commons.cli.Parser clParser = new org.apache.commons.cli.BasicParser();
+				CommandLine cline = clParser.parse(clOptions, arguments);
+				arguments = cline.getArgs();
 				if (0 == arguments.length || 2 < arguments.length)
-					throw new InvalidUsageException("Usage: export|e scenario_id [output_file_name]");
-				else {
-					String filename = 1 == arguments.length ? arguments[0] + ".xml" : arguments[1];
-					edu.berkeley.path.beats.db.ScenarioExporter.export(Integer.parseInt(arguments[0]), filename);
-				}
+					throw new InvalidUsageException("Usage: export|e [-f output_format] scenario_id [output_file_name]");
+
+				edu.berkeley.path.beats.jaxb.Scenario scenario = ScenarioLoader.loadRaw(Long.parseLong(cline.getArgs()[0]));
+
+				final String filename = 1 < arguments.length ? arguments[1] : scenario.getId() + "." + (cline.hasOption("f") ? cline.getOptionValue("f") : "xml");
+				if (1 >= arguments.length) logger.info("Output file: " + filename);
+				if (cline.hasOption("f"))
+					ScenarioSaver.save(scenario, filename, cline.getOptionValue("f"));
+				else
+					ScenarioSaver.save(scenario, filename);
+				logger.debug("Scenario " + scenario.getId() + " saved to file " + filename);
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);
 			} else if (cmd.equals("simulate") || cmd.equals("s")) {
@@ -196,6 +230,45 @@ public class Runner {
 					edu.berkeley.path.beats.util.UnitConverter.convertUnits(arguments[0], arguments[1]);
 				else
 					throw new InvalidUsageException("Usage: convert_units|cu input_file output_file");
+			} else if ("convert".equals(cmd)) {
+				Options clOptions = new Options();
+				clOptions.addOption("if", true, "input file format: xml or json");
+				clOptions.addOption("of", true, "output file format: xml or json");
+				org.apache.commons.cli.Parser clParser = new org.apache.commons.cli.BasicParser();
+				CommandLine cline = clParser.parse(clOptions, arguments);
+				arguments = cline.getArgs();
+				if (0 == arguments.length || 2 < arguments.length)
+					throw new InvalidUsageException("convert [OPTIONS] input_file_name [output_file_name]", clOptions);
+
+				String iformat = null;
+				if (cline.hasOption("if")) iformat = cline.getOptionValue("if");
+				else if (arguments[0].toLowerCase().endsWith(".json")) iformat = "json";
+				else iformat = "xml";
+				if (!"xml".equals(iformat) && !"json".equals(iformat))
+					throw new InvalidUsageException("Invalid input format " + iformat);
+
+				String oformat = null;
+				if (cline.hasOption("of")) oformat = cline.getOptionValue("of");
+				else if (1 < arguments.length && arguments[1].toLowerCase().endsWith(".json")) oformat = "json";
+				else if (1 < arguments.length && arguments[1].toLowerCase().endsWith(".xml")) oformat = "xml";
+				else if ("json".equals(iformat)) oformat = "xml";
+				else if ("xml".equals(iformat)) oformat = "json";
+				if (!"xml".equals(oformat) && !"json".equals(oformat))
+					throw new InvalidUsageException("Invalid output format " + oformat);
+
+				edu.berkeley.path.beats.jaxb.Scenario scenario = ScenarioLoader.loadRaw(arguments[0], iformat);
+
+				String ofilename = null;
+				if (1 < arguments.length) ofilename = arguments[1];
+				else {
+					ofilename = new File(arguments[0]).getName();
+					final String iext = "." + iformat;
+					if (ofilename.toLowerCase().endsWith(iext))
+						ofilename = ofilename.substring(0, ofilename.length() - iext.length());
+					ofilename += "." + oformat;
+					logger.info("Output file: " + ofilename);
+				}
+				ScenarioSaver.save(scenario, ofilename, oformat);
 			} else throw new InvalidCommandException(cmd);
 		} catch (InvalidUsageException exc) {
 			String msg = exc.getMessage();
@@ -250,6 +323,24 @@ public class Runner {
 		}
 		public InvalidUsageException(String message) {
 			super(message);
+		}
+		/**
+		 * Constructs an <code>InvalidUsageException</code> for the given command line syntax and options
+		 * @param clSyntax the command line syntax string
+		 * @param clOptions the command line options
+		 */
+		public InvalidUsageException(String clSyntax, Options clOptions) {
+			super(format(clSyntax, clOptions));
+		}
+		private static String format(String clSyntax, Options clOptions) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printUsage(pw, Integer.MAX_VALUE, clSyntax);
+			pw.println("options:");
+			formatter.printOptions(pw, Integer.MAX_VALUE, clOptions, formatter.getLeftPadding(), formatter.getDescPadding());
+			pw.close();
+			return sw.toString();
 		}
 	}
 
