@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -108,6 +109,8 @@ public class ImportExportTest {
 		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 
+	private static Logger logger = Logger.getLogger(ImportExportTest.class);
+
 	/**
 	 * Imports and exports a scenario
 	 * @throws SiriusException
@@ -117,12 +120,12 @@ public class ImportExportTest {
 	 */
 	@Test
 	public void test() throws SiriusException, IOException, JAXBException, SAXException {
-		System.out.println("Importing " + conffile.getPath());
+		logger.info("Importing " + conffile.getPath());
 		Scenario scenario = ScenarioLoader.load(conffile.getPath());
 		final Long id = ScenarioSaver.save(scenario);
 
 		File outfile = File.createTempFile("scenario_", ".xml");
-		System.out.println("Exporting scenario " + id + " to " + outfile.getPath());
+		logger.info("Exporting scenario " + id + " to " + outfile.getPath());
 		scenario = ScenarioLoader.loadRaw(id);
 		ScenarioSaver.save(scenario, outfile.getPath());
 		outfile.delete();
