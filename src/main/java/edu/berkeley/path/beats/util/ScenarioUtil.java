@@ -1,15 +1,8 @@
 package edu.berkeley.path.beats.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.Properties;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -21,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 
 
 @SuppressWarnings("restriction")
@@ -108,29 +102,6 @@ public class ScenarioUtil {
 	}
 
 	/**
-	 * Loads a scenario from an XML file
-	 * @param filename input file name
-	 * @return the scenario
-	 * @throws SiriusException
-	 */
-	public static edu.berkeley.path.beats.jaxb.Scenario load(String filename) throws SiriusException {
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
-			Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-			javax.xml.validation.Schema schema = getSchema();
-			unmarshaller.setSchema(schema);
-			edu.berkeley.path.beats.simulator.ObjectFactory.setObjectFactory(unmarshaller, new edu.berkeley.path.beats.jaxb.ObjectFactory());
-			edu.berkeley.path.beats.jaxb.Scenario scenario = (edu.berkeley.path.beats.jaxb.Scenario) unmarshaller.unmarshal(new FileInputStream(filename));
-			checkSchemaVersion(scenario);
-			return scenario;
-		} catch (JAXBException exc) {
-			throw new SiriusException(exc);
-		} catch (FileNotFoundException exc) {
-			throw new SiriusException(exc);
-		}
-	}
-
-	/**
 	 * Reports an error if the scenario schemaVersion attribute value
 	 * differs from the input schema version
 	 * @param scenario the scenario to check
@@ -152,36 +123,13 @@ public class ScenarioUtil {
 	}
 
 	/**
-	 * Saves a scenario to an XML file
-	 * @param scenario the scenario
-	 * @param filename output file name
-	 * @throws SiriusException
-	 */
-	public static void save(edu.berkeley.path.beats.jaxb.Scenario scenario, String filename) throws SiriusException {
-		if (null == scenario.getSchemaVersion()) {
-			String schemaVersion = getSchemaVersion();
-			logger.debug("Schema version was not set. Assuming current version: " + schemaVersion);
-			scenario.setSchemaVersion(schemaVersion);
-		}
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(edu.berkeley.path.beats.jaxb.ObjectFactory.class);
-			Marshaller marshaller = jaxbContext.createMarshaller();
-			marshaller.setSchema(getSchema());
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			marshaller.marshal(scenario, new File(filename));
-		} catch (JAXBException exc) {
-			throw new SiriusException(exc);
-		}
-	}
-
-	/**
 	 * Restores a scenario from the database
 	 * @param id the scenario id
 	 * @return the restored scenario
 	 * @throws SiriusException
 	 */
 	public static edu.berkeley.path.beats.simulator.Scenario getScenario(long id) throws SiriusException {
-		return edu.berkeley.path.beats.db.ScenarioExporter.getScenario(id);
+		return ScenarioLoader.load(id);
 	}
 
 	/**
