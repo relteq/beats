@@ -46,8 +46,6 @@ import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
-import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
-import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
 
 /** Load, manipulate, and run scenarios. 
  * <p>
@@ -325,7 +323,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * if that has not yet been done.
 	 * Calling this method multiple times is safe
 	 */
-	public void requestLinkCumulatives() {
+	protected void requestLinkCumulatives() {
 		cumulatives.storeLinks();
 	}
 	
@@ -334,7 +332,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * if that has not yet been done.
 	 * Calling this method multiple times is safe
 	 */
-	public void requestSignalPhases() {
+	protected void requestSignalPhases() {
 		cumulatives.storeSignalPhases();
 	}
 	
@@ -344,7 +342,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return completed signal phases
 	 * @throws SiriusException if the signal phase storage has not been initialized
 	 */
-	public SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
 		return cumulatives.get(signal);
 	}
 	
@@ -354,7 +352,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return link cumulative data
 	 * @throws SiriusException if the link cumulative data storage has not been initialized
 	 */
-	public LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
 		return cumulatives.get(link);
 	}
 

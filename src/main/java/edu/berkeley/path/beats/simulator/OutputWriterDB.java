@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator.output;
+package edu.berkeley.path.beats.simulator;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -38,22 +38,15 @@ import org.apache.torque.util.Criteria;
 
 import edu.berkeley.path.beats.db.BaseTypes;
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.LinkCumulativeData;
-import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.SiriusException;
-import edu.berkeley.path.beats.simulator.SiriusMath;
 
 import com.workingdogs.village.DataSetException;
 
 /**
  * Database output writer
  */
-public class DBOutputWriter extends OutputWriterBase {
+public class OutputWriterDB extends OutputWriterBase {
 
-	public DBOutputWriter(Scenario scenario) {
+	public OutputWriterDB(Scenario scenario) {
 		super(scenario);
 		try {
 			db_scenario = ScenariosPeer.retrieveByPK(str2id(scenario.getId()));
@@ -88,7 +81,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		cal.set(Calendar.MILLISECOND, 0);
 	}
 
-	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
+	private static Logger logger = Logger.getLogger(OutputWriterDB.class);
 
 	private Scenarios db_scenario = null;
 	VehicleTypes[] db_vehicle_type;

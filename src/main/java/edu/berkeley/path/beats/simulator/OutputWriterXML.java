@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator.output;
+package edu.berkeley.path.beats.simulator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -36,17 +36,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.*;
 
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.LinkCumulativeData;
-import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
 
 @SuppressWarnings("restriction")
-public final class XMLOutputWriter extends OutputWriterBase {
+public final class OutputWriterXML extends OutputWriterBase {
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
 	protected static final String NUM_FORMAT = "%.4f";
@@ -59,7 +51,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 
 	private Marshaller marshaller;
 
-	public XMLOutputWriter(Scenario scenario, Properties props) throws SiriusException {
+	public OutputWriterXML(Scenario scenario, Properties props) throws SiriusException {
 		super(scenario);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
