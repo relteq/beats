@@ -300,7 +300,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.numEnsemble = 1;
 		this.outdt = simsettings.getOutputDt();
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param,1,true,outtype,outprefix);
+		run_internal(param,simsettings.getNumReps(),true,outtype,outprefix);
 	}
 	
 	/** Retrieve a network with a given id.
@@ -398,10 +398,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = true;	
 	}
 	
-	public void run(double timestart,double timeend,double outdt, String outputfileprefix,String outputtype) throws SiriusException{
+	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws SiriusException{
 		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		run_internal(param,1,true,outputtype,outputfileprefix);
+		run_internal(param,numReps,true,outputtype,outputfileprefix);
 	}
 		
 	/** Advance the simulation <i>nsec</i> seconds.
@@ -1027,6 +1027,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws SiriusException{
 			
+			// round to the nearest decisecond
+			tstart = round(tstart);
+			tend = round(tend);
+			outdt = round(outdt);
+			simdtinseconds = round(simdtinseconds);
+
 			// check timestart < timeend
 			if(SiriusMath.greaterorequalthan(tstart,tend))
 				throw new SiriusException("Empty simulation period.");
@@ -1070,6 +1076,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 						
 		}
 
+		/**
+		 * Rounds the double value, precision: .1
+		 * @param val
+		 * @return the "rounded" value
+		 */
+		private double round(double val) {
+			return SiriusMath.round(val * 10.0) / 10.0;
+		}
 	}
 
 	private static class Cumulatives {

@@ -12,7 +12,6 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 
@@ -142,7 +141,7 @@ public class ScenarioUtil {
 	 */
 	public static void runScenario(edu.berkeley.path.beats.simulator.Scenario scenario, double startTime, double endTime, double outDt) throws SiriusException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
-		scenario.run(startTime,endTime,outDt,"db",null);
+		scenario.run(startTime,endTime,outDt,"db",null,1);
 	}
 
 	/**

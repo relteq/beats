@@ -38,7 +38,6 @@ import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusFormatter;
 import edu.berkeley.path.beats.simulator.SiriusMath;
@@ -100,6 +99,7 @@ public class SimulatorTest {
 				double startTime = 0d;
 				double duration = 3600d;
 				double outDt = 30d;
+				int numReps = 1;
 	
 				// load configuration file
 				System.out.println("\tLoading");
@@ -110,7 +110,7 @@ public class SimulatorTest {
 				
 				// run the scenario
 				System.out.println("\tRunning");
-				scenario.run(startTime,startTime+duration,outDt,outputprefix,"text");
+				scenario.run(startTime,startTime+duration,outDt,"text",outputprefix,numReps);
 				
 				String [] vehicleTypes = scenario.getVehicleTypeNames();
 								

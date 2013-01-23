@@ -26,8 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
@@ -183,4 +181,5 @@ public final class Runner {
 		logger.info("Done");
 	}
 
+	
 }
