@@ -33,6 +33,7 @@ import java.util.Vector;
 
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,8 +42,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
+import edu.berkeley.path.beats.jaxb.Scenario;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
+import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
 @RunWith(Parameterized.class)
 public class ImportExportTest {
@@ -105,6 +109,8 @@ public class ImportExportTest {
 		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 
+	private static Logger logger = Logger.getLogger(ImportExportTest.class);
+
 	/**
 	 * Imports and exports a scenario
 	 * @throws SiriusException
@@ -114,12 +120,14 @@ public class ImportExportTest {
 	 */
 	@Test
 	public void test() throws SiriusException, IOException, JAXBException, SAXException {
-		System.out.println("Importing " + conffile.getPath());
-		edu.berkeley.path.beats.om.Scenarios db_scenario = edu.berkeley.path.beats.db.ScenarioImporter.load(conffile.getPath());
+		logger.info("Importing " + conffile.getPath());
+		Scenario scenario = ScenarioLoader.load(conffile.getPath());
+		final Long id = ScenarioSaver.save(scenario);
 
 		File outfile = File.createTempFile("scenario_", ".xml");
-		System.out.println("Exporting scenario " + db_scenario.getId() + " to " + outfile.getPath());
-		edu.berkeley.path.beats.db.ScenarioExporter.export(db_scenario.getId(), outfile.getPath());
+		logger.info("Exporting scenario " + id + " to " + outfile.getPath());
+		scenario = ScenarioLoader.loadRaw(id);
+		ScenarioSaver.save(scenario, outfile.getPath());
 		outfile.delete();
 
 		clearErrors();
