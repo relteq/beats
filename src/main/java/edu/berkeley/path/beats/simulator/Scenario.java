@@ -296,6 +296,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
+	protected void run(SimulationSettings simsettings,String outtype,String outprefix) throws SiriusException{
+		this.numEnsemble = 1;
+		this.outdt = simsettings.getOutputDt();
+		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
+		run_internal(param,1,true,outtype,outprefix);
+	}
+	
 	/** Retrieve a network with a given id.
 	 * @param id The string id of the network
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
@@ -391,45 +398,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = true;	
 	}
 	
-	/** Run the scenario <code>numRepetitions</code> times, save output to text files.
-	 * 
-	 * <p> The scenario is reset and run multiple times in sequence. All
-	 * probabilistic quantities are re-sampled between runs. Output files are
-	 * created with a common prefix with the index of the simulation appended to 
-	 * the file name.
-	 * 
-	 * @param simsettings Contains start time, duration, output dt, and number of runs.
-	 * @param owr_props the output writer properties
-	 * @throws SiriusException 
-	 */
-	public void run(SimulationSettings simsettings, Properties owr_props) throws SiriusException{
-		this.outdt = simsettings.getOutputDt();
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param,simsettings.getNumRuns(),true,owr_props);
-	}
-	
-	/** Run the scenario once, save output to text files.
-	 * 
-	 * <p> The scenario is reset and run once. Output files are
-	 * created with a common prefix with the index of the simulation appended to 
-	 * the file name.
-	 * 
-	 * @param timestart
-	 * @param timeend
-	 * @param outdt
-	 * @param outputfileprefix
-	 * @throws SiriusException 
-	 */
-	public void run(double timestart,double timeend,double outdt, String outputfileprefix) throws SiriusException{
+	public void run(double timestart,double timeend,double outdt, String outputfileprefix,String outputtype) throws SiriusException{
 		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		Properties owr_props = new Properties();
-		if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
-		owr_props.setProperty("type","text");
-		run_internal(param,1,true,owr_props);
+		run_internal(param,1,true,outputtype,outputfileprefix);
 	}
-	
+		
 	/** Advance the simulation <i>nsec</i> seconds.
 	 * 
 	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
@@ -965,11 +939,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// private methods
 	/////////////////////////////////////////////////////////////////////	
 
-	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,Properties owr_props) throws SiriusException{
+	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,String outtype,String outprefix) throws SiriusException{
 			
 		logger.info("Simulation mode: " + param.simulationMode);
 		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
 		logger.info("Output period: [" + param.timestartOutput + ":" + outdt + ":" + param.timeend + "]");
+		
+		// output writer properties
+		Properties owr_props = new Properties();
+		if (null != outprefix) 
+			owr_props.setProperty("prefix", outprefix);
+		if (null != outtype) 
+			owr_props.setProperty("type",outtype);
 		
 		// create the clock
 		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
@@ -999,19 +980,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = false;
 	}
 	
-	// advance the simulation by n steps.
-	// parameters....
-	// n: number of steps to advance.
-	// doreset: call scenario reset if true
-	// writefiles: write result to text files if true
-	// returnstate: recored and return the state trajectory if true
-	// outputwriter: output writing class 
-	// state: state trajectory container
-	// returns....
-	// true if scenario advanced n steps without error
-	// false if scenario reached t_end without error before completing n steps
-	// throws 
-	// SiriusException for all errors
 	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterIF outputwriter,int outsteps,double outStart) throws SiriusException{
 		
 		// advance n steps
