@@ -389,7 +389,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.outdt = simsettings.getOutputDt();
 		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param, simsettings.getNumRuns(), true, false, owr_props);
+		run_internal(param,simsettings.getNumRuns(),true,owr_props);
 	}
 	
 	/** Run the scenario once, save output to text files.
@@ -410,19 +410,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		Properties owr_props = new Properties();
 		if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
 		owr_props.setProperty("type","text");
-		run_internal(param,1,true,false,owr_props);
-	}
-
-	/** Run the scenario once, return the state trajectory.
-	 * <p> The scenario is reset and run once. 
-	 * @return An object with the history of densities and flows for all links in the scenario.
-	 * @throws SiriusException 
-	 */
-	public SiriusStateTrajectory run(double timestart,double timeend,double outdt) throws SiriusException{
-		this.outdt = outdt;
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(timestart,timeend,outdt,simdtinseconds);
-		return run_internal(param,1,false,true,null);
+		run_internal(param,1,true,owr_props);
 	}
 	
 	/** Advance the simulation <i>nsec</i> seconds.
@@ -440,8 +428,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-		int nsteps = SiriusMath.round(nsec/simdtinseconds);		
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1,-1d);
+		int nsteps = SiriusMath.round(nsec/simdtinseconds);				
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1,-1d);
 	}
 
 	/** Save the scenario to XML.
@@ -941,16 +929,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// private
 	/////////////////////////////////////////////////////////////////////	
 
-	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate,Properties owr_props) throws SiriusException{
+	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,Properties owr_props) throws SiriusException{
 			
 		logger.info("Simulation mode: " + param.simulationMode);
 		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
 		logger.info("Output period: [" + param.timestartOutput + ":" + outdt + ":" + param.timeend + "]");
-		
-		if(returnstate && numRepetitions>1)
-			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
-		
-		SiriusStateTrajectory state = null;
 		
 		// create the clock
 		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
@@ -966,26 +949,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				outputwriter.open(i);
 			}
 			try{
-				// allocate state
-				if(returnstate){
-					int numTime = (int) Math.ceil(getTotalTimeStepsToSimulate()/((float)param.outsteps));
-					state = new SiriusStateTrajectory(this,numTime);
-				}
-
 				// reset the simulation
 				if(!reset(param.simulationMode))
 					throw new SiriusException("Reset failed.");
 
 				// advance to end of simulation
-				while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps,param.timestartOutput) ){					
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.outsteps,param.timestartOutput) ){					
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();
 			}
 		}
         scenariolocked = false;
-
-		return state;
 	}
 	
 	// advance the simulation by n steps.
@@ -1001,14 +976,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// false if scenario reached t_end without error before completing n steps
 	// throws 
 	// SiriusException for all errors
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,int outsteps,double outStart) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterIF outputwriter,int outsteps,double outStart) throws SiriusException{
 		
 		// advance n steps
 		for(int k=0;k<n;k++){
 
 			// export initial condition
 	        if(!started_writing && outsteps>0 && SiriusMath.equals(clock.getT(),outStart) ){
-	        	recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
+	        	recordstate(writefiles,outputwriter,false,outsteps);
 	        	started_writing = true;
 	        }
         	
@@ -1019,7 +994,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         	clock.advance();
 
             if(started_writing && clock.getCurrentstep()%outsteps == 0 )
-	        	recordstate(writefiles,returnstate,outputwriter,state,true,outsteps);
+	        	recordstate(writefiles,outputwriter,true,outsteps);
             
         	if(clock.expired())
         		return false;
@@ -1028,11 +1003,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
+	private void recordstate(boolean writefiles,OutputWriterIF outputwriter,boolean exportflows,int outsteps) throws SiriusException {
 		if(writefiles)
 			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
-		if(returnstate)
-			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
 		cumulatives.reset();
 	}
 

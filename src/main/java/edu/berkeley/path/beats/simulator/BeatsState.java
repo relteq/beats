@@ -28,15 +28,15 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.List;
 
-/** Storage for a scenario state trajectory. 
+/** Storage for a scenario state. 
  * <p>
 * @author Gabriel Gomes
 */
-public final class SiriusStateTrajectory {
+public class BeatsState {
 
 	protected Scenario myScenario;
 	protected int numNetworks;								// number of networks in the scenario
-	protected NewtorkStateTrajectory [] networkState;		// array of states trajectories for networks
+	protected NetworkStateTrajectory [] networkState;		// array of states trajectories for networks
 	protected int numVehicleTypes; 							// size of 2nd dimension of networkState
 	protected int numTime; 									// size of 3rd dimension of networkState
 
@@ -44,7 +44,7 @@ public final class SiriusStateTrajectory {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public SiriusStateTrajectory(Scenario myScenario,int numTime) {
+	public BeatsState(Scenario myScenario,int numTime) {
 		if(myScenario==null)
 			return;
 		if(myScenario.getNetworkList()==null)
@@ -57,10 +57,10 @@ public final class SiriusStateTrajectory {
 		this.numVehicleTypes = myScenario.getNumVehicleTypes();
 		this.numTime = numTime;
 
-		this.networkState = new NewtorkStateTrajectory[numNetworks];
+		this.networkState = new NetworkStateTrajectory[numNetworks];
 		for(int i=0;i<numNetworks;i++){
 			int numLinks = myScenario.getNetworkList().getNetwork().get(i).getLinkList().getLink().size();
-			this.networkState[i] = new NewtorkStateTrajectory(numLinks);
+			this.networkState[i] = new NetworkStateTrajectory(numLinks);
 		}
 
 		this.myScenario.requestLinkCumulatives();
@@ -99,7 +99,7 @@ public final class SiriusStateTrajectory {
 	public Double getDensity(int netindex,int i,int j,int k) {
 		if(netindex<0 || netindex>=numNetworks)
 			return Double.NaN;
-		NewtorkStateTrajectory  N = networkState[netindex];
+		NetworkStateTrajectory  N = networkState[netindex];
 		if(i<0 || i>=N.getNumLinks() || j<0 || j>=numVehicleTypes || k<0 || k>=numTime)
 			return Double.NaN;
 		else
@@ -109,7 +109,7 @@ public final class SiriusStateTrajectory {
 	public Double getFlow(int netindex,int i,int j,int k) {
 		if(netindex<0 || netindex>=numNetworks)
 			return Double.NaN;
-		NewtorkStateTrajectory  N = networkState[netindex];
+		NetworkStateTrajectory  N = networkState[netindex];
 		if(i<0 || i>=N.getNumLinks() || j<0 || j>=numVehicleTypes || k<0 || k>=numTime)
 			return Double.NaN;
 		else
@@ -120,13 +120,13 @@ public final class SiriusStateTrajectory {
 	// internal class
 	/////////////////////////////////////////////////////////////////////
 	
-	public class NewtorkStateTrajectory{
+	public class NetworkStateTrajectory{
 
 		protected int numLinks; 		// size of 1st dimension
 		protected Double[][][] density; // [veh]
 		protected Double[][][] flow; 	// [veh]
 
-		public NewtorkStateTrajectory(int numLinks) {
+		public NetworkStateTrajectory(int numLinks) {
 			this.numLinks = numLinks;
 			this.density = new Double[numLinks][numVehicleTypes][numTime+1];
 			this.flow = new Double[numLinks][numVehicleTypes][numTime];
