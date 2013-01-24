@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.event;
 
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.Event;
@@ -52,14 +51,11 @@ public class Event_Link_Demand_Knob extends Event {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceEvent
+	// populate / validate / activate
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
 		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
 		// reset_to_nominal
@@ -76,7 +72,7 @@ public class Event_Link_Demand_Knob extends Event {
 	}
 
 	@Override
-	public void validate() {
+	protected void validate() {
 
 		super.validate();
 		
@@ -90,7 +86,7 @@ public class Event_Link_Demand_Knob extends Event {
 	}
 
 	@Override
-	public void activate() throws SiriusException {
+	protected void activate() throws SiriusException {
 		for(ScenarioElement s : targets){
 	    	if(myScenario.getDemandProfileSet()!=null){
 	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){

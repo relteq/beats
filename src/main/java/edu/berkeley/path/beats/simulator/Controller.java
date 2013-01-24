@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class Controller implements InterfaceComponent {
+public class Controller {
 	
 	/** Scenario that contains this controller */
 	protected Scenario myScenario;										       								       
@@ -107,6 +107,76 @@ public class Controller implements InterfaceComponent {
 		 this.control_maxspeed = new Double [targets.size()];
 	 }
 
+	/////////////////////////////////////////////////////////////////////
+	// populate / validate / reset  / update
+	/////////////////////////////////////////////////////////////////////
+	 
+	/** Populate the component with configuration data. 
+	 * 
+	 * <p> Called once by {@link ObjectFactory#createAndLoadScenario}.
+	 * It is passed a JAXB object with data. 
+	 * Use this method to populate and initialize all fields of the
+	 * component. 
+	 * 
+	 * @param jaxbobject Object
+	 */
+	protected void populate(Object jaxbobject) {
+	}
+
+	/** Update the state of the component.
+	 * 
+	 * <p> Called by {@link Scenario#run} at each simulation time step.
+	 * This function updates the internal state of the component.
+	 * <p> Because events are state-less, the {@link Event} class provides a default 
+	 * implementation of this method, so it need not be implemented by other event classes.
+	 */
+	protected void update() throws SiriusException {
+	}
+
+	/** Validate the component.
+	 * 
+	 * <p> Called once by {@link ObjectFactory#createAndLoadScenario}.
+	 * It checks the validity of the configuration parameters.
+	 * Events are validated at their activation time. All other components
+	 * are validated when the scenario is loaded. 
+	 * 
+	 */
+	protected void validate() {
+		
+		// check that type was read correctly
+		if(myType==null)
+			SiriusErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
+		
+		// check that the target is valid
+		if(targets==null)
+			SiriusErrorLog.addError("Invalid target for controller id=" + getId());
+		
+		// check that sample dt is an integer multiple of network dt
+		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
+
+		// check that activation times are valid.
+		for (int i=0; i<activationTimes.size(); i++ ){
+			activationTimes.get(i).validate();
+			if (i<activationTimes.size()-1)
+				activationTimes.get(i).validateWith(activationTimes.get(i+1));
+		}
+
+	}
+
+	/** Prepare the component for simulation.
+	 * 
+	 * <p> Called by {@link Scenario#run} each time a new simulation run is started.
+	 * It is used to initialize the internal state of the component.
+	 * <p> Because events are state-less, the {@link Event} class provides a default 
+	 * implementation of this method, so it need not be implemented by other event classes.
+	 */
+	protected void reset() {
+		//switch on conroller if it is always on by default.
+		if (activationTimes==null)
+			ison = true;
+	}
+		
 	/////////////////////////////////////////////////////////////////////
 	// registration / deregistration
 	/////////////////////////////////////////////////////////////////////
@@ -305,52 +375,6 @@ public class Controller implements InterfaceComponent {
 			}
 	}
 
-	/** @y.exclude */
-	@Override
-	public void populate(Object jaxbobject) {
-	}
-
-	/** @y.exclude */
-	@Override
-	public void update() throws SiriusException {
-	}
-
-	/** @y.exclude */
-	@Override
-	/** @y.exclude */
-	public void validate() {
-		
-		// check that type was read correctly
-		if(myType==null)
-			SiriusErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
-		
-		// check that the target is valid
-		if(targets==null)
-			SiriusErrorLog.addError("Invalid target for controller id=" + getId());
-		
-		// check that sample dt is an integer multiple of network dt
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
-
-		// check that activation times are valid.
-		for (int i=0; i<activationTimes.size(); i++ ){
-			activationTimes.get(i).validate();
-			if (i<activationTimes.size()-1)
-				activationTimes.get(i).validateWith(activationTimes.get(i+1));
-		}
-
-	}
-
-	/** @y.exclude */
-	@Override
-	public void reset() {
-		//switch on conroller if it is always on by default.
-		if (activationTimes==null)
-			ison = true;
-	}
-
-
-	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////

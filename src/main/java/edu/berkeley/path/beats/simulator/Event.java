@@ -40,7 +40,7 @@ import edu.berkeley.path.beats.jaxb.TargetElements;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("rawtypes")
-public class Event extends edu.berkeley.path.beats.jaxb.Event implements Comparable,InterfaceComponent,InterfaceEvent {
+public class Event extends edu.berkeley.path.beats.jaxb.Event implements Comparable {
 
 	/** Scenario that contains this event */
 	protected Scenario myScenario;
@@ -142,19 +142,13 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceComponent
+	// populate / validate / activate
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
-	@Override
-	/** @y.exclude */
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 	}
 
-	/** @y.exclude */
-	@Override
-	/** @y.exclude */
-	public void validate() {
+	protected void validate() {
 		
 		if(myType==null)
 			SiriusErrorLog.addError("Event with id=" + getId() + " has bad type.");
@@ -171,28 +165,8 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 				SiriusErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
 
 	}
-
-	/** @y.exclude */
-	@Override
-	/** @y.exclude */
-	public void reset() {
-		return;
-	}
-
-	/** @y.exclude */
-	@Override
-	/** @y.exclude */
-	public void update() {
-		return;
-	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// InterfaceEvent
-	/////////////////////////////////////////////////////////////////////
-	
-	@Override
-	/** @y.exclude */
-	public void activate() throws SiriusException {		
+	protected void activate() throws SiriusException {		
 	}
 
 	/////////////////////////////////////////////////////////////////////

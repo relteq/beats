@@ -27,7 +27,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -60,6 +59,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	private int trlevelindex; // denotes the current level that is requested by the traffic responsive logic.
 
 	private Table table;
+	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -100,14 +100,11 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
+	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
@@ -177,6 +174,113 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		this.extractTable();
 	}
 	
+	@Override
+	protected void validate() {
+		
+		super.validate();
+		
+		// must have exactly one target
+		if(targets.size()!=1)
+			SiriusErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
+
+		// bad mainline sensor id
+		if(hasmainlinesensor && mainlinesensor==null)
+			SiriusErrorLog.addError("Bad mainline sensor id in traffic responsive controller id=" + getId()+".");
+		
+		// bad queue sensor id
+		if(hasqueuesensor && queuesensor==null)
+			SiriusErrorLog.addError("Bad queue sensor id in traffic responsive controller id=" + getId()+".");
+		
+		// Target link id not found, or number of targets not 1.
+		if(onramplink==null)
+			SiriusErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
+
+		// both link and sensor feedback
+		if(hasmainlinelink && hasmainlinesensor)
+			SiriusErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
+
+		// sensor is disconnected
+		if(usesensor && mainlinesensor.getMyLink()==null)
+			SiriusErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller id=" + getId()+ " ");
+
+		// no feedback
+		if(mainlinelink==null)
+			SiriusErrorLog.addError("Invalid mainline link for traffic responsive controller id=" + getId()+ ".");
+
+		// Target link id not found, or number of targets not 1.
+		if(onramplink==null)
+			SiriusErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
+			
+		// invalid table
+		if(!istablevalid)
+			SiriusErrorLog.addError("Controller has an invalid table.");			
+	}
+	
+	@Override
+	protected void update() {
+		
+		double mainlineocc=Double.POSITIVE_INFINITY;
+		double mainlinespeed=Double.POSITIVE_INFINITY;
+		double mainlineflow=Double.POSITIVE_INFINITY;
+		// get mainline occ/spd/flow either from sensor or from link	
+		if (hasoccthres)
+			if(usesensor){
+				mainlineocc = mainlinesensor.getOccupancy(0);			
+			}
+			else {
+				mainlineocc = mainlinelink.getTotalDensityInVeh(0)/mainlinelink.getDensityJamInVeh(0);
+			}
+		
+		if (hasspeedthres)
+			if(usesensor){
+				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
+			}
+			else {
+				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPM(0) / myScenario.getSimDtInSeconds();
+			}
+		
+		if (hasflowthres)
+			if(usesensor){
+				mainlineflow = mainlinesensor.getTotalFlowInVPS(0);
+			}
+			else {
+				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / myScenario.getSimDtInSeconds();
+			}		
+		
+		// metering rate adjustments
+		while (trlevelindex >0 && (hasoccthres && mainlineocc<=trOccThresh[trlevelindex]) 
+				&& (hasspeedthres && mainlinespeed<=trSpeedThresh[trlevelindex])
+				&& (hasflowthres && mainlineflow<=trFlowThresh[trlevelindex]))
+			trlevelindex--;
+		
+		while (trlevelindex <trMeteringRates_normalized.length-1 &&
+				((hasoccthres && mainlineocc>trOccThresh[trlevelindex+1]) || 
+				(hasspeedthres && mainlinespeed>trSpeedThresh[trlevelindex])
+				|| (hasflowthres && mainlineflow>trFlowThresh[trlevelindex])))
+			trlevelindex++;
+		
+		
+		control_maxflow[0]=trMeteringRates_normalized[trlevelindex];		
+
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// register / deregister
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	protected boolean register() {
+		return registerFlowController(onramplink,0);
+	}
+	
+	protected boolean deregister() {
+		return deregisterFlowController(onramplink);
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// private methods
+	/////////////////////////////////////////////////////////////////////
+
 	private void extractTable(){
 		if (null == table) {
 			istablevalid = false;
@@ -242,104 +346,5 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		if (hasoccthres && trOccThresh[0]<=0 && trOccThresh[trOccThresh.length-1]>100)
 			istablevalid=false;
 	}
-
-	@Override
-	public void validate() {
-		
-		super.validate();
-		
-		// must have exactly one target
-		if(targets.size()!=1)
-			SiriusErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
-
-		// bad mainline sensor id
-		if(hasmainlinesensor && mainlinesensor==null)
-			SiriusErrorLog.addError("Bad mainline sensor id in traffic responsive controller id=" + getId()+".");
-		
-		// bad queue sensor id
-		if(hasqueuesensor && queuesensor==null)
-			SiriusErrorLog.addError("Bad queue sensor id in traffic responsive controller id=" + getId()+".");
-		
-		// Target link id not found, or number of targets not 1.
-		if(onramplink==null)
-			SiriusErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
-
-		// both link and sensor feedback
-		if(hasmainlinelink && hasmainlinesensor)
-			SiriusErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
-
-		// sensor is disconnected
-		if(usesensor && mainlinesensor.getMyLink()==null)
-			SiriusErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller id=" + getId()+ " ");
-
-		// no feedback
-		if(mainlinelink==null)
-			SiriusErrorLog.addError("Invalid mainline link for traffic responsive controller id=" + getId()+ ".");
-
-		// Target link id not found, or number of targets not 1.
-		if(onramplink==null)
-			SiriusErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
-			
-		// invalid table
-		if(!istablevalid)
-			SiriusErrorLog.addError("Controller has an invalid table.");			
-	}
 	
-	@Override
-	public void update() {
-		
-		double mainlineocc=Double.POSITIVE_INFINITY;
-		double mainlinespeed=Double.POSITIVE_INFINITY;
-		double mainlineflow=Double.POSITIVE_INFINITY;
-		// get mainline occ/spd/flow either from sensor or from link	
-		if (hasoccthres)
-			if(usesensor){
-				mainlineocc = mainlinesensor.getOccupancy(0);			
-			}
-			else {
-				mainlineocc = mainlinelink.getTotalDensityInVeh(0)/mainlinelink.getDensityJamInVeh(0);
-			}
-		
-		if (hasspeedthres)
-			if(usesensor){
-				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
-			}
-			else {
-				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPM(0) / myScenario.getSimDtInSeconds();
-			}
-		
-		if (hasflowthres)
-			if(usesensor){
-				mainlineflow = mainlinesensor.getTotalFlowInVPS(0);
-			}
-			else {
-				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / myScenario.getSimDtInSeconds();
-			}		
-		
-		// metering rate adjustments
-		while (trlevelindex >0 && (hasoccthres && mainlineocc<=trOccThresh[trlevelindex]) 
-				&& (hasspeedthres && mainlinespeed<=trSpeedThresh[trlevelindex])
-				&& (hasflowthres && mainlineflow<=trFlowThresh[trlevelindex]))
-			trlevelindex--;
-		
-		while (trlevelindex <trMeteringRates_normalized.length-1 &&
-				((hasoccthres && mainlineocc>trOccThresh[trlevelindex+1]) || 
-				(hasspeedthres && mainlinespeed>trSpeedThresh[trlevelindex])
-				|| (hasflowthres && mainlineflow>trFlowThresh[trlevelindex])))
-			trlevelindex++;
-		
-		
-		control_maxflow[0]=trMeteringRates_normalized[trlevelindex];		
-
-	}
-	
-	@Override
-	public boolean register() {
-		return registerFlowController(onramplink,0);
-	}
-	
-	public boolean deregister() {
-		return deregisterFlowController(onramplink);
-	}
-
 }

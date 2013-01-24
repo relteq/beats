@@ -45,7 +45,11 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 
 	ArrayList<Signal.Command> commandlist = new ArrayList<Signal.Command>();
 
-	public void populate(Controller_SIG_Pretimed myController, Scenario myScenario, Controller_SIG_Pretimed.Plan plan) {
+	/////////////////////////////////////////////////////////////////////
+	// populate / validate / reset  / update
+	/////////////////////////////////////////////////////////////////////
+	
+	protected void populate(Controller_SIG_Pretimed myController, Scenario myScenario, Controller_SIG_Pretimed.Plan plan) {
 		
 		this.myController = myController;
 		
@@ -82,7 +86,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 		
 	}
 	
-	public void validate(){
+	protected void validate(){
 		
 		if(myController==null)
 			SiriusErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
@@ -117,10 +121,14 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 		
 	}
 
-	public void reset() {
+	protected void reset() {
 		for(int i=0;i<intersplan.length;i++)
 			intersplan[i].reset();		
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// protected methods
+	/////////////////////////////////////////////////////////////////////
 	
 	protected void implementPlan(double simtime,boolean coordmode){
 

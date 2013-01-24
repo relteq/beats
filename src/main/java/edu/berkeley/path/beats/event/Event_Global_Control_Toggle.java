@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.event;
 
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -48,14 +47,11 @@ public class Event_Global_Control_Toggle extends Event {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceEvent
+	// populate / validate / activate
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
 		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
 		if (null != params && params.has("on_off_switch"))
@@ -65,7 +61,7 @@ public class Event_Global_Control_Toggle extends Event {
 	}
 
 	@Override
-	public void activate() throws SiriusException{
+	protected void activate() throws SiriusException{
 		setGlobalControlIsOn(ison);
 	}
 }
