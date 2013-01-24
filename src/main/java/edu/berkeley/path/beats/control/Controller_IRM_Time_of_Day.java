@@ -169,7 +169,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 
 	@Override
 	public void update() {
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getTimeInSeconds())
+		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getCurrentTimeInSeconds())
 			control_maxflow[0]=todMeteringRates_normalized[++todActivationIndx];		
 	}
 	

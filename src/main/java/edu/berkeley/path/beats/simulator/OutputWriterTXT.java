@@ -44,8 +44,8 @@ public final class OutputWriterTXT extends OutputWriterBase {
 	private String prefix;
 	private int numVT;
 
-	public OutputWriterTXT(Scenario scenario, Properties props){
-		super(scenario);
+	public OutputWriterTXT(Scenario scenario, Properties props,double outDt,int outsteps){
+		super(scenario,outDt,outsteps);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
 		scenario.requestLinkCumulatives();

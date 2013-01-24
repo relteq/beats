@@ -28,11 +28,25 @@ package edu.berkeley.path.beats.simulator;
 
 
 abstract class OutputWriterBase implements OutputWriterIF{
-	protected Scenario scenario;
-
-	OutputWriterBase(Scenario scenario) {
-		this.scenario = scenario;
+	
+	public int getOutSteps() {
+		return outSteps;
 	}
+
+	protected Scenario scenario;
+	protected double outDt;			// output frequency in seconds
+	protected int outSteps;			// output frequency in simulation steps
+
+	OutputWriterBase(Scenario scenario,double outDt,int outsteps) {
+		this.scenario = scenario;
+		this.outDt = outDt;
+		this.outSteps = outsteps;
+	}
+	
+	public double getOutDtInSeconds() {
+		return outDt;
+	}
+
 	/**
 	 * @return the scenario
 	 */

@@ -62,7 +62,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 
 				// check whether the signal is in the target list
 				Controller_SIG_Pretimed.Intersection intersection = plan.getIntersection().get(i);
-				Signal mySignal = myScenario.getSignalWithCompositeNodeId(null, intersection.getNodeId());
+				Signal mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;

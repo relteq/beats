@@ -87,7 +87,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
-	/** @y.exclude */	protected double outdt;
+//	/** @y.exclude */	protected double outdt;
 	/** @y.exclude */	protected boolean started_writing;
 
 	// Model uncertainty
@@ -298,7 +298,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	protected void run(SimulationSettings simsettings,String outtype,String outprefix) throws SiriusException{
 		this.numEnsemble = 1;
-		this.outdt = simsettings.getOutputDt();
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
 		run_internal(param,simsettings.getNumReps(),true,outtype,outprefix);
 	}
@@ -363,6 +362,96 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return cumulatives.get(link);
 	}
 
+	/** Get a reference to a node by its id.
+	 * 
+	 * @param id String id of the node. 
+	 * @return Reference to the node if it exists, <code>null</code> otherwise
+	 */
+	public Node getNodeWithId(String id){
+		if(networkList==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+			Node node = ((edu.berkeley.path.beats.simulator.Network) network).getNodeWithId(id);
+			if(node!=null)
+				return node;
+		}
+		return null;
+	}
+
+	/** Get a reference to a controller by its id.
+	 * @param id Id of the controller.
+	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
+	 */
+	public Controller getControllerWithId(String id){
+		if(controllerset==null)
+			return null;
+		for(Controller c : controllerset.get_Controllers()){
+			if(c.id.equals(id))
+				return c;
+		}
+		return null;
+	}
+	
+	/** Get a reference to an event by its id.
+	 * @param id Id of the event.
+	 * @return A reference to the event if it exists, <code>null</code> otherwise.
+	 */
+	public Event getEventWithId(String id){
+		if(eventset==null)
+			return null;
+		for(Event e : eventset.sortedevents){
+			if(e.getId().equals(id))
+				return e;
+		}
+		return null;
+	}		
+
+	/** Get a reference to a link by its composite id.
+	 * 
+	 * @param id String id of the link. 
+	 * @return Reference to the link if it exists, <code>null</code> otherwise
+	 */
+	public Link getLinkWithId(String id){
+		if(networkList==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
+			if(link!=null)
+				return link;
+		}
+		return null;
+	}
+
+	/** Get sensor with given id.
+	 * @param id String id of the sensor.
+	 * @return Sensor object.
+	 */
+	public Sensor getSensorWithId(String id){
+		if(sensorList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
+			if(sensor.getId().equals(id))
+				return (Sensor) sensor;
+		}
+		return null;
+	}
+	
+	/** Get signal with given id.
+	 * @param id String id of the signal.
+	 * @return Signal object.
+	 */
+	public Signal getSignalWithId(String id){
+		if(signalList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
+			if(signal.getId().equals(id))
+				return (Signal) signal;
+		}
+		return null;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
@@ -376,14 +465,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * rolling back all profiles and clocks. 
 	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-	public void initialize_run(int numEnsemble,double timestart,double outdt) throws SiriusException{
+	public void initialize_run(int numEnsemble,double timestart) throws SiriusException{
 
 		if(numEnsemble<=0)
 			throw new SiriusException("Number of ensemble runs must be at least 1.");
 		
-		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,outdt,simdtinseconds);
+		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
 
-		this.outdt = outdt;
 		this.scenariolocked = false;
 		this.numEnsemble = numEnsemble;
         
@@ -420,7 +508,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 		int nsteps = SiriusMath.round(nsec/simdtinseconds);				
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1,-1d);
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
 	}
 
 	/** Save the scenario to XML.
@@ -430,9 +518,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void saveToXML(String filename) throws SiriusException{
         try {
-		//Reset the classloader for main thread; need this if I want to run properly
-                //with JAXB within MATLAB. (luis)
-		Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
+        	
+        	//Reset the classloader for main thread; need this if I want to run properly
+            //with JAXB within MATLAB. (luis)
+        	Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
 	
         	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
         	Marshaller m = context.createMarshaller();
@@ -496,7 +585,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Current simulation time in seconds.
 	 * @return Simulation time in seconds after midnight.
 	 */
-	public double getTimeInSeconds() {
+	public double getCurrentTimeInSeconds() {
 		if(clock==null)
 			return Double.NaN;
 		return clock.getT();
@@ -613,116 +702,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Output frequency
 	 * @return output time step, sec
 	 */
-	public double getOutputDt() {
-		return outdt;
-	}
-
-	/** Get a reference to a controller by its id.
-	 * @param id Id of the controller.
-	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
-	 */
-	public Controller getControllerWithId(String id){
-		if(controllerset==null)
-			return null;
-		for(Controller c : controllerset.get_Controllers()){
-			if(c.id.equals(id))
-				return c;
-		}
-		return null;
-	}
-	
-	/** Get a reference to an event by its id.
-	 * @param id Id of the event.
-	 * @return A reference to the event if it exists, <code>null</code> otherwise.
-	 */
-	public Event getEventWithId(String id){
-		if(eventset==null)
-			return null;
-		for(Event e : eventset.sortedevents){
-			if(e.getId().equals(id))
-				return e;
-		}
-		return null;
-	}		
-
-	/** Get a reference to a node by its composite id.
-	 * 
-	 * @param id String id of the node. 
-	 * @return Reference to the node if it exists, <code>null</code> otherwise
-	 */
-	public Node getNodeWithId(String id){
-		if(networkList==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
-			Node node = ((edu.berkeley.path.beats.simulator.Network) network).getNodeWithId(id);
-			if(node!=null)
-				return node;
-		}
-		return null;
-	}
-
-	/** Get a reference to a link by its composite id.
-	 * 
-	 * @param id String id of the link. 
-	 * @return Reference to the link if it exists, <code>null</code> otherwise
-	 */
-	public Link getLinkWithId(String id){
-		if(networkList==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
-			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
-			if(link!=null)
-				return link;
-		}
-		return null;
-	}
-
-	/** Get sensor with given id.
-	 * @param id String id of the sensor.
-	 * @return Sensor object.
-	 */
-	public Sensor getSensorWithId(String id){
-		if(sensorList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
-			if(sensor.getId().equals(id))
-				return (Sensor) sensor;
-		}
-		return null;
-	}
-	
-	/** Get signal with given id.
-	 * @param id String id of the signal.
-	 * @return Signal object.
-	 */
-	public Signal getSignalWithId(String id){
-		if(signalList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getId().equals(id))
-				return (Signal) signal;
-		}
-		return null;
-	}
-
-	/** Get a reference to a signal by the composite id of its node.
-	 * 
-	 * @param network_id String id of the network containing the node. 
-	 * @param node_id String id of the node. 
-	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-	 */
-	public Signal getSignalWithCompositeNodeId(String network_id,String node_id){
-		if(signalList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getNodeId().equals(node_id))
-				return (Signal)signal;
-		}
-		return null;
-	}
+//	public double getOutputDt() {
+//		return outdt;
+//	}
 
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network
@@ -785,6 +767,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return configfilename;
 	}
 
+	/** Get a reference to a signal by the id of its node.
+	 * 
+	 * @param node_id String id of the node. 
+	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+	 */
+	public Signal getSignalWithNodeId(String node_id){
+		if(signalList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
+			if(signal.getNodeId().equals(node_id))
+				return (Signal)signal;
+		}
+		return null;
+	}
+	
 	// add stuff ........................................................
 
 	/** Add a controller to the scenario.
@@ -943,7 +941,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			
 		logger.info("Simulation mode: " + param.simulationMode);
 		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
-		logger.info("Output period: [" + param.timestartOutput + ":" + outdt + ":" + param.timeend + "]");
+		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.timeend + "]");
 		
 		// output writer properties
 		Properties owr_props = new Properties();
@@ -960,18 +958,20 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
-			OutputWriterIF outputwriter = null;
-			if (writefiles){ // && param.simulationMode.compareTo(Scenario.ModeType.normal)==0) {
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props);
+			
+			OutputWriterBase outputwriter = null;
+			if (writefiles){
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, param.outDt,param.outsteps);
 				outputwriter.open(i);
 			}
+			
 			try{
 				// reset the simulation
 				if(!reset(param.simulationMode))
 					throw new SiriusException("Reset failed.");
 
 				// advance to end of simulation
-				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.outsteps,param.timestartOutput) ){					
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.timestartOutput) ){					
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();
@@ -980,14 +980,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = false;
 	}
 	
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterIF outputwriter,int outsteps,double outStart) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws SiriusException{
 		
 		// advance n steps
 		for(int k=0;k<n;k++){
 
 			// export initial condition
-	        if(!started_writing && outsteps>0 && SiriusMath.equals(clock.getT(),outStart) ){
-	        	recordstate(writefiles,outputwriter,false,outsteps);
+	        if(!started_writing && SiriusMath.equals(clock.getT(),outStart) ){
+	        	recordstate(writefiles,outputwriter,false);
 	        	started_writing = true;
 	        }
         	
@@ -997,8 +997,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             // update time (before write to output)
         	clock.advance();
 
-            if(started_writing && clock.getCurrentstep()%outsteps == 0 )
-	        	recordstate(writefiles,outputwriter,true,outsteps);
+            if(started_writing && clock.getCurrentstep()%outputwriter.outSteps == 0 )
+	        	recordstate(writefiles,outputwriter,true);
             
         	if(clock.expired())
         		return false;
@@ -1007,9 +1007,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,OutputWriterIF outputwriter,boolean exportflows,int outsteps) throws SiriusException {
+	private void recordstate(boolean writefiles,OutputWriterBase outputwriter,boolean exportflows) throws SiriusException {
 		if(writefiles)
-			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
+			outputwriter.recordstate(clock.getT(),exportflows,outputwriter.outSteps);
 		cumulatives.reset();
 	}
 
@@ -1021,6 +1021,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
 		public double timestartOutput;		// [sec] start outputing data
+		public double outDt;				// [sec] output sampling time
 		public int outsteps;				// [-] number of simulation steps per output step
 		public Scenario.ModeType simulationMode;
 		
@@ -1029,22 +1030,23 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			
 			// round to the nearest decisecond
 			tstart = round(tstart);
+			simdtinseconds = round(simdtinseconds);
 			tend = round(tend);
 			outdt = round(outdt);
-			simdtinseconds = round(simdtinseconds);
 
 			// check timestart < timeend
-			if(SiriusMath.greaterorequalthan(tstart,tend))
+			if( SiriusMath.greaterorequalthan(tstart,tend))
 				throw new SiriusException("Empty simulation period.");
 
 			// check that outdt is a multiple of simdt
-			if(!SiriusMath.isintegermultipleof(outdt,simdtinseconds))
+			if(!Double.isNaN(outdt) && !SiriusMath.isintegermultipleof(outdt,simdtinseconds))
 				throw new SiriusException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
 			this.timestart = tstart;
 			this.timestartOutput = tstart;
 			this.timeend = tend;
 	        this.outsteps = SiriusMath.round(outdt/simdtinseconds);
+			this.outDt = outsteps*simdtinseconds;
 
 	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : 0d;  // [sec]
 	        
@@ -1082,6 +1084,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		 * @return the "rounded" value
 		 */
 		private double round(double val) {
+			if(Double.isInfinite(val))
+				return val;
+			if(Double.isNaN(val))
+				return val;
 			return SiriusMath.round(val * 10.0) / 10.0;
 		}
 	}

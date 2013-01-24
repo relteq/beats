@@ -51,8 +51,8 @@ public final class OutputWriterXML extends OutputWriterBase {
 
 	private Marshaller marshaller;
 
-	public OutputWriterXML(Scenario scenario, Properties props) throws SiriusException {
-		super(scenario);
+	public OutputWriterXML(Scenario scenario, Properties props,double outDt,int outsteps) throws SiriusException {
+		super(scenario,outDt,outsteps);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
 		final String delim = ":";

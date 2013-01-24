@@ -46,8 +46,8 @@ import com.workingdogs.village.DataSetException;
  */
 public class OutputWriterDB extends OutputWriterBase {
 
-	public OutputWriterDB(Scenario scenario) {
-		super(scenario);
+	public OutputWriterDB(Scenario scenario,double outDt,int outsteps) {
+		super(scenario,outDt,outsteps);
 		try {
 			db_scenario = ScenariosPeer.retrieveByPK(str2id(scenario.getId()));
 		} catch (NoRowsException exc) {
@@ -188,7 +188,7 @@ public class OutputWriterDB extends OutputWriterBase {
 			db_simulation_run.setSimStartTime(double2decimal(scenario.getTimeStart()));
 			db_simulation_run.setSimDuration(double2decimal(scenario.getTimeEnd() - scenario.getTimeStart()));
 			db_simulation_run.setSimDt(double2decimal(scenario.getSimDtInSeconds()));
-			db_simulation_run.setOutputDt(double2decimal(scenario.getOutputDt()));
+			db_simulation_run.setOutputDt(double2decimal(getOutDtInSeconds()));
 			db_simulation_run.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(-1);
 			db_simulation_run.save();

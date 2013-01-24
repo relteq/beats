@@ -33,6 +33,7 @@ import java.util.Properties;
  *
  */
 public class OutputWriterFactory {
+	
 	/**
 	 * Constructs an output writer of a given type
 	 * @param scenario
@@ -40,11 +41,16 @@ public class OutputWriterFactory {
 	 * @return an output writer
 	 * @throws SiriusException
 	 */
-	public static OutputWriterIF getWriter(Scenario scenario, Properties props) throws SiriusException {
+	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) throws SiriusException {
 		final String type = props.getProperty("type");
-		if (type.equals("xml")) return new OutputWriterXML(scenario, props);
-		else if (type.equals("db")) return new OutputWriterDB(scenario);
-		else if (type.equals("text") || type.equals("plaintext")) return new OutputWriterTXT(scenario, props);
-		else throw new SiriusException("Unknown output writer type '" + type + "'");
+		if (type.equals("xml")) 
+			return new OutputWriterXML(scenario, props,outDt,outsteps);
+		else if (type.equals("db")) 
+			return new OutputWriterDB(scenario,outDt,outsteps);
+		else if (type.equals("text") || type.equals("plaintext")) 
+			return new OutputWriterTXT(scenario, props,outDt,outsteps);
+		else 
+			throw new SiriusException("Unknown output writer type '" + type + "'");
 	}
+	
 }
