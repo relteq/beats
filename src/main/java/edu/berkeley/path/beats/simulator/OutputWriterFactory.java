@@ -28,6 +28,10 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.Properties;
 
+import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
+import edu.berkeley.path.beats.simulator.output.OutputWriterTXT;
+import edu.berkeley.path.beats.simulator.output.OutputWriterXML;
+
 
 /**
  *

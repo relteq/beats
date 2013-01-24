@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator;
+package edu.berkeley.path.beats.simulator.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,6 +34,11 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Properties;
 
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.LinkCumulativeData;
+import edu.berkeley.path.beats.simulator.OutputWriterBase;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SiriusException;
 
 public final class OutputWriterTXT extends OutputWriterBase {
 	protected Writer out_time = null;
@@ -48,7 +53,7 @@ public final class OutputWriterTXT extends OutputWriterBase {
 		super(scenario,outDt,outsteps);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
-		scenario.requestLinkCumulatives();
+		requestLinkCumulatives();
 	}
 
 	@Override
@@ -88,7 +93,7 @@ public final class OutputWriterTXT extends OutputWriterBase {
 					List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 					for (i = 0; i < links.size(); ++i){
 						Link link = (Link) links.get(i);
-						LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+						LinkCumulativeData link_cum_data = getCumulatives(link);
 						if (0 < i) 
 							out_density[j].write(OutputWriterTXT.delim);
 						out_density[j].write(String.format("%f", exportflows ? link_cum_data.getMeanDensity(0,j) : link.getDensityInVeh(0,j)));

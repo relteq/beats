@@ -60,8 +60,6 @@ public class BeatsState {
 			int numLinks = myScenario.getNetworkList().getNetwork().get(i).getLinkList().getLink().size();
 			this.networkState[i] = new NetworkState(numLinks);
 		}
-
-		this.myScenario.requestLinkCumulatives();
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -75,11 +73,11 @@ public class BeatsState {
 			List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 			for(i=0;i<networkState[netindex].getNumLinks();i++){
 				Link link = (Link) links.get(i);				
-				LinkCumulativeData link_cum_data = myScenario.getCumulatives(link);
-				for(j=0;j<numVehicleTypes;j++){
-					networkState[netindex].density[i][j] = link_cum_data.getMeanDensity(0, j);
-					networkState[netindex].flow[i][j] = link_cum_data.getMeanOutputFlow(0, j);
-				}
+				//LinkCumulativeData link_cum_data = myScenario.getCumulatives(link);
+//				for(j=0;j<numVehicleTypes;j++){
+//					networkState[netindex].density[i][j] = link_cum_data.getMeanDensity(0, j);
+//					networkState[netindex].flow[i][j] = link_cum_data.getMeanOutputFlow(0, j);
+//				}
 			}
 		}
 	}

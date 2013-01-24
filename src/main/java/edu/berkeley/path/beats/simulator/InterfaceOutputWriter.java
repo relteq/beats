@@ -30,13 +30,15 @@ package edu.berkeley.path.beats.simulator;
 /**
  * Output writer interface
  */
-public interface OutputWriterIF {
+public interface InterfaceOutputWriter {
+	
 	/**
 	 * Opens the output writer
 	 * @param run_id the run number
 	 * @throws SiriusException
 	 */
 	void open(int run_id) throws SiriusException;
+	
 	/**
 	 * Records the simulator state
 	 * @param time
@@ -45,6 +47,7 @@ public interface OutputWriterIF {
 	 * @throws SiriusException
 	 */
 	void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException;
+	
 	/**
 	 * Closes the output writer
 	 */

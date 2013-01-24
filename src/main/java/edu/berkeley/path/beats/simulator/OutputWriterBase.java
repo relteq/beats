@@ -26,8 +26,9 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
 
-abstract class OutputWriterBase implements OutputWriterIF{
+public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	
 	public int getOutSteps() {
 		return outSteps;
@@ -37,7 +38,7 @@ abstract class OutputWriterBase implements OutputWriterIF{
 	protected double outDt;			// output frequency in seconds
 	protected int outSteps;			// output frequency in simulation steps
 
-	OutputWriterBase(Scenario scenario,double outDt,int outsteps) {
+	public OutputWriterBase(Scenario scenario,double outDt,int outsteps) {
 		this.scenario = scenario;
 		this.outDt = outDt;
 		this.outSteps = outsteps;
@@ -54,4 +55,41 @@ abstract class OutputWriterBase implements OutputWriterIF{
 		return scenario;
 	}
 
+	/**
+	 * Initializes a link cumulative data storage,
+	 * if that has not yet been done.
+	 * Calling this method multiple times is safe
+	 */
+	protected void requestLinkCumulatives() {
+		scenario.cumulatives.storeLinks();
+	}
+	
+	/**
+	 * Initializes a signal phase storage,
+	 * if that has not yet been done.
+	 * Calling this method multiple times is safe
+	 */
+	protected void requestSignalPhases() {
+		scenario.cumulatives.storeSignalPhases();
+	}
+	
+	/**
+	 * Retrieves completed phases for the given signal
+	 * @param signal
+	 * @return completed signal phases
+	 * @throws SiriusException if the signal phase storage has not been initialized
+	 */
+	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+		return scenario.cumulatives.get(signal);
+	}
+	
+	/**
+	 * Retrieves link cumulative data for the given link
+	 * @param link
+	 * @return link cumulative data
+	 * @throws SiriusException if the link cumulative data storage has not been initialized
+	 */
+	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+		return scenario.cumulatives.get(link);
+	}
 }

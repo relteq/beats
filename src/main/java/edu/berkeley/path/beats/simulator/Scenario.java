@@ -97,7 +97,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// data
 	private boolean sensor_data_loaded = false;
 
-	private Cumulatives cumulatives;
+	protected Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -322,44 +322,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				return (Network) network;
 		}
 		return null;
-	}
-
-	/**
-	 * Initializes a link cumulative data storage,
-	 * if that has not yet been done.
-	 * Calling this method multiple times is safe
-	 */
-	protected void requestLinkCumulatives() {
-		cumulatives.storeLinks();
-	}
-	
-	/**
-	 * Initializes a signal phase storage,
-	 * if that has not yet been done.
-	 * Calling this method multiple times is safe
-	 */
-	protected void requestSignalPhases() {
-		cumulatives.storeSignalPhases();
-	}
-	
-	/**
-	 * Retrieves completed phases for the given signal
-	 * @param signal
-	 * @return completed signal phases
-	 * @throws SiriusException if the signal phase storage has not been initialized
-	 */
-	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
-		return cumulatives.get(signal);
-	}
-	
-	/**
-	 * Retrieves link cumulative data for the given link
-	 * @param link
-	 * @return link cumulative data
-	 * @throws SiriusException if the link cumulative data storage has not been initialized
-	 */
-	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
-		return cumulatives.get(link);
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -1104,7 +1066,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 	}
 
-	private static class Cumulatives {
+	protected static class Cumulatives {
 		private Scenario scenario;
 
 		/** link id -> cumulative data */
