@@ -106,7 +106,7 @@ public class Controller implements InterfaceComponent,InterfaceController {
 		 this.control_maxflow  = new Double [targets.size()];
 		 this.control_maxspeed = new Double [targets.size()];
 	 }
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// registration
 	/////////////////////////////////////////////////////////////////////

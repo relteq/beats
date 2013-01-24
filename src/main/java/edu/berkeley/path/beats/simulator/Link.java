@@ -26,6 +26,13 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
+
+import edu.berkeley.path.beats.jaxb.Begin;
+import edu.berkeley.path.beats.jaxb.Dynamics;
+import edu.berkeley.path.beats.jaxb.End;
+import edu.berkeley.path.beats.jaxb.Roads;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -74,6 +81,61 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** @y.exclude */
 	protected Link(){}
+
+	/////////////////////////////////////////////////////////////////////
+	// hide base class setters
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void setBegin(Begin value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setEnd(End value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setRoads(Roads value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setDynamics(Dynamics value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setShape(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setLaneOffset(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setLength(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setType(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setId(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setInSync(Boolean value) {
+		System.out.println("This setter is hidden.");
+	}
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -796,5 +858,15 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	public Double getOutputFlow(int ensemble, int vt_ind) {
 		return outflow[ensemble][vt_ind];
 	}
+
+	
+	
+	@Override
+	public void setLanes(BigDecimal value) {
+		System.out.println("This method has been hidden");
+	}
+	
+
+	
 
 }

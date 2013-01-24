@@ -26,7 +26,13 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+
+import edu.berkeley.path.beats.jaxb.DisplayPosition;
+import edu.berkeley.path.beats.jaxb.Parameters;
+import edu.berkeley.path.beats.jaxb.SplitratioEvent;
+import edu.berkeley.path.beats.jaxb.TargetElements;
 
 /** Base class for events. 
  * Provides a default implementation of <code>InterfaceEvent</code>.
@@ -64,7 +70,61 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 
 	/** @y.exclude */
 	protected Event(){}
-							  
+
+	/////////////////////////////////////////////////////////////////////
+	// hide base class setters
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void setDescription(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setDisplayPosition(DisplayPosition value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setTargetElements(TargetElements value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setParameters(Parameters value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSplitratioEvent(SplitratioEvent value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setId(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setTstamp(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setEnabled(boolean value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setType(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setJavaClass(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
