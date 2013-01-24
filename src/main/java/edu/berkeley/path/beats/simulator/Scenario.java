@@ -87,7 +87,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
-//	/** @y.exclude */	protected double outdt;
 	/** @y.exclude */	protected boolean started_writing;
 
 	// Model uncertainty
