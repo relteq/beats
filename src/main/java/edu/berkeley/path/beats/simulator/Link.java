@@ -116,10 +116,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		System.out.println("This setter is hidden.");
 	}
 
-	@Override
-	public void setLength(BigDecimal value) {
-		System.out.println("This setter is hidden.");
-	}
+//	@Override
+//	public void setLength(BigDecimal value) {
+//		System.out.println("This setter is hidden.");
+//	}
 
 	@Override
 	public void setType(String value) {
@@ -193,7 +193,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(activeFDevent)
 			return FDfromEvent;
 		else
-			return FDfromProfile[ensemble];
+			return FDfromProfile==null ? null : FDfromProfile[ensemble];
 	}
 	
 	/** @y.exclude */
@@ -669,6 +669,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 */
 	public double computeSpeedInMPS(int ensemble){
 		try{
+			
+			if(myNetwork.myScenario.clock.getCurrentstep()==0)
+				return Double.NaN;
+			
 			double totaldensity = SiriusMath.sum(density[ensemble]);
 			double speed;
 			if( SiriusMath.greaterthan(totaldensity,0d) )
@@ -838,6 +842,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return density for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getDensity(int ensemble, int vt_ind) {
+		if(density==null)
+			return Double.NaN;
 		return density[ensemble][vt_ind];
 	}
 
@@ -847,7 +853,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return input flow for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getInputFlow(int ensemble, int vt_ind) {
-		return inflow[ensemble][vt_ind];
+		if(inflow==null)
+			return Double.NaN;
+		else
+			return inflow[ensemble][vt_ind];
 	}
 
 	/**
@@ -856,10 +865,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return output flow for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getOutputFlow(int ensemble, int vt_ind) {
-		return outflow[ensemble][vt_ind];
+		if(outflow==null)
+			return Double.NaN;
+		else
+			return outflow[ensemble][vt_ind];
 	}
-
-	
 	
 	@Override
 	public void setLanes(BigDecimal value) {

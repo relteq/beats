@@ -362,8 +362,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return cumulatives.get(link);
 	}
 
-
-	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
@@ -479,7 +477,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return	Integer number of time steps to simulate.
 	 */
 	public int getTotalTimeStepsToSimulate(){
-		 return clock.getTotalSteps();
+		if(clock==null)
+			return -1;
+		else
+			return clock.getTotalSteps();
 	}
 	
 	/** Number of vehicle types included in the scenario.
@@ -684,6 +685,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	// object getters ........................................................
 
+	/** Get a reference to a link by its composite id.
+	 * 
+	 * @param id String id of the link. 
+	 * @return Reference to the link if it exists, <code>null</code> otherwise
+	 */
+	public Link getLinkWithId(String id){
+		if(networkList==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
+			if(link!=null)
+				return link;
+		}
+		return null;
+	}
+	
 	/** Get a reference to a node by its id.
 	 * 
 	 * @param id String id of the node. 
@@ -727,22 +744,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}		
-
-	/** Get a reference to a link by its composite id.
-	 * 
-	 * @param id String id of the link. 
-	 * @return Reference to the link if it exists, <code>null</code> otherwise
-	 */
-	public Link getLinkWithId(String id){
-		if(networkList==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
-			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
-			if(link!=null)
-				return link;
-		}
-		return null;
-	}
 
 	/** Get sensor with given id.
 	 * @param id String id of the sensor.

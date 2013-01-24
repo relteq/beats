@@ -775,7 +775,10 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @return the split ratio
 	 */
 	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
+		if(splitratio==null)
+			return Double.NaN;
+		else
+			return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
 
 }
