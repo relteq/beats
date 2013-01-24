@@ -54,7 +54,6 @@ import javax.xml.validation.Validator;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
 
@@ -155,16 +154,15 @@ public class XMLOutputWriterTest {
 	 */
 	protected void runSirius(String confpath, String outpath) throws SiriusException {
 		// simulation settings
-		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
-		simsettings.setStartTime(0.0);
-		simsettings.setDuration(3600.0);
-		simsettings.setOutputDt(600.0);
+		double timestart = 0d;
+		double duration = 3600d;
+		double outDt = 600d;
+		int numReps = 1;
 
 		// output writer properties
 		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
-		Properties owr_props = new Properties();
-		owr_props.setProperty("prefix", outpath.substring(0, outpath.length() - OUT_SUFFIX.length()));
-		owr_props.setProperty("type", "xml");
+		String outprefix = outpath.substring(0, outpath.length() - OUT_SUFFIX.length());
+		String outtype = "xml";
 
 		// load the scenario
 		Scenario scenario = ObjectFactory.createAndLoadScenario(confpath);
@@ -172,7 +170,7 @@ public class XMLOutputWriterTest {
 
 		// run the scenario
 		logger.info("Running a simulation");
-		scenario.run(simsettings, owr_props);
+		scenario.run(timestart,timestart+duration,outDt,outtype,outprefix,numReps);
 
 		if (SiriusErrorLog.haserror()) {
 			SiriusErrorLog.print();

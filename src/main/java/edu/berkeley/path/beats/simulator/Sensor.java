@@ -26,6 +26,14 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+import edu.berkeley.path.beats.jaxb.DisplayPosition;
+import edu.berkeley.path.beats.jaxb.LinkReference;
+import edu.berkeley.path.beats.jaxb.Parameters;
+import edu.berkeley.path.beats.jaxb.Table;
+
 /** Base class for sensors. 
  * Provides a default implementation of <code>InterfaceSensor</code>.
  *
@@ -64,6 +72,60 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	protected Sensor(){
 	}		  
 
+	/////////////////////////////////////////////////////////////////////
+	// hide base class setters
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void setDisplayPosition(DisplayPosition value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setLinkReference(LinkReference value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setParameters(Parameters value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setTable(Table value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setId(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setLinkPosition(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setType(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSensorIdOriginal(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setLaneNumber(BigInteger value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setHealthStatus(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}	
+	
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////

@@ -9,7 +9,7 @@ public class SimulationSettings {
 	private Double startTime = null; // sec
 	private Double duration = null; // sec
 	private Double outputDt = null; // sec
-	private Integer numRuns = null;
+	private Integer numReps = null;
 
 	private SimulationSettings parent = null;
 
@@ -26,13 +26,13 @@ public class SimulationSettings {
 	 * @param startTime simulation start time, sec
 	 * @param duration simulation duration, sec
 	 * @param outputDt output sample rate, sec
-	 * @param numRuns number of runs, sec
+	 * @param numReps number of runs, sec
 	 */
-	public SimulationSettings(Double startTime, Double duration, Double outputDt, Integer numRuns) {
+	public SimulationSettings(Double startTime, Double duration, Double outputDt, Integer numReps) {
 		this.startTime = startTime;
 		this.duration = duration;
 		this.outputDt = outputDt;
-		this.numRuns = numRuns;
+		this.numReps = numReps;
 	}
 
 	/**
@@ -78,10 +78,10 @@ public class SimulationSettings {
 	}
 	
 	/**
-	 * @param numRuns the number of repetitions to set
+	 * @param numReps the number of repetitions to set
 	 */
-	public void setNumRuns(Integer numRuns) {
-		this.numRuns = numRuns;
+	public void setNumReps(Integer numReps) {
+		this.numReps = numReps;
 	}
 	
 	/**
@@ -121,9 +121,9 @@ public class SimulationSettings {
 	/**
 	 * @return the number of runs
 	 */
-	public Integer getNumRuns() {
-		if (null != numRuns) return numRuns;
-		else if (null != parent) return parent.getNumRuns();
+	public Integer getNumReps() {
+		if (null != numReps) return numReps;
+		else if (null != parent) return parent.getNumReps();
 		else return null;
 	}
 
@@ -159,14 +159,14 @@ public class SimulationSettings {
 		if (index < args.length) startTime = round(Double.parseDouble(args[index]));
 		if (++index < args.length) duration = Double.parseDouble(args[index]);
 		if (++index < args.length) outputDt = round(Double.parseDouble(args[index]));
-		if (++index < args.length) numRuns = Integer.parseInt(args[index]);
+		if (++index < args.length) numReps = Integer.parseInt(args[index]);
 	}
 
 	public String toString() {
 		return "start time: " + getStartTime() + " sec, " + //
 			"duration: " + getDuration() + " sec, " + //
 			"output sample rate: " + getOutputDt() + " sec, " + //
-			"number of runs: " + getNumRuns();
+			"number of runs: " + getNumReps();
 	}
 
 	/**

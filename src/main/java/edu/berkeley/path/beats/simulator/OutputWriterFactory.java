@@ -24,30 +24,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  **/
 
-package edu.berkeley.path.beats.simulator.output;
+package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.SiriusException;
+import java.util.Properties;
+
+import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
+import edu.berkeley.path.beats.simulator.output.OutputWriterTXT;
+import edu.berkeley.path.beats.simulator.output.OutputWriterXML;
+
 
 /**
- * Output writer interface
+ *
  */
-public interface OutputWriterIF {
+public class OutputWriterFactory {
+	
 	/**
-	 * Opens the output writer
-	 * @param run_id the run number
+	 * Constructs an output writer of a given type
+	 * @param scenario
+	 * @param props output writer properties (type, prefix)
+	 * @return an output writer
 	 * @throws SiriusException
 	 */
-	void open(int run_id) throws SiriusException;
-	/**
-	 * Records the simulator state
-	 * @param time
-	 * @param exportflows
-	 * @param outsteps
-	 * @throws SiriusException
-	 */
-	void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException;
-	/**
-	 * Closes the output writer
-	 */
-	void close();
+	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) throws SiriusException {
+		final String type = props.getProperty("type");
+		if (type.equals("xml")) 
+			return new OutputWriterXML(scenario, props,outDt,outsteps);
+		else if (type.equals("db")) 
+			return new OutputWriterDB(scenario,outDt,outsteps);
+		else if (type.equals("text") || type.equals("plaintext")) 
+			return new OutputWriterTXT(scenario, props,outDt,outsteps);
+		else 
+			throw new SiriusException("Unknown output writer type '" + type + "'");
+	}
+	
 }

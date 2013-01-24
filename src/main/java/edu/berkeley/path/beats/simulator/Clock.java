@@ -59,7 +59,10 @@ final class Clock {
 	}
 
 	protected int getTotalSteps(){
-		return (int) Math.ceil((maxt-to)/dt);
+		if(Double.isInfinite(maxt))
+			return -1;
+		else
+			return (int) Math.ceil((maxt-to)/dt);
 	}
 	
 	protected void advance(){

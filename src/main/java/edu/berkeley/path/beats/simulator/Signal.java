@@ -72,7 +72,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		/** EB through **/	_6,
 		/** NB left **/		_7,
 		/** SB through **/	_8};
-	
+		
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////

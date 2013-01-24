@@ -132,7 +132,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	@Override
 	public void update() {
 
-		double simtime = myScenario.getTimeInSeconds();
+		double simtime = myScenario.getCurrentTimeInSeconds();
 
 		// time to switch plans .....................................
 		if( cperiod < planstarttime.length-1 ){

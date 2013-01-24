@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class Controller implements InterfaceComponent,InterfaceController {
+public class Controller implements InterfaceComponent {
 	
 	/** Scenario that contains this controller */
 	protected Scenario myScenario;										       								       
@@ -106,11 +106,40 @@ public class Controller implements InterfaceComponent,InterfaceController {
 		 this.control_maxflow  = new Double [targets.size()];
 		 this.control_maxspeed = new Double [targets.size()];
 	 }
-	
+
 	/////////////////////////////////////////////////////////////////////
-	// registration
+	// registration / deregistration
 	/////////////////////////////////////////////////////////////////////
 
+	/** Register the controller with its targets. 
+	 * 
+	 * <p> All controllers must register with their targets in order to be allowed to
+	 * manipulate them. This is to prevent clashes, in which two or 
+	 * more controllers access the same variable. Use 
+	 * {@link Controller#registerFlowController} {@link Controller#registerSpeedController} to register. 
+	 * The return value of these methods indicates whether the registration was successful.
+	 * 
+	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
+	 * <code>false</code> otherwise.
+	 */
+	protected boolean register() {
+		return false;
+	}
+
+	/** Deregister the controller with its targets. 
+	 * 
+	 * <p> All controllers must deregister with their targets when they are no longer active
+	 *  This is to prevent clashes, in which two or more controllers access the same variable at different simulation periods 
+	 * . Use {@link Controller#deregisterFlowController} {@link Controller#deregisterSpeedController} to register. 
+	 * The return value of these methods indicates whether the deregistration was successful.
+	 * 
+	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
+	 * <code>false</code> otherwise.
+	 */
+	protected boolean deregister() {
+		return false;
+	}
+		
    	/** Use this method within {@link InterfaceController#register} to register
    	 * flow control with a target link. The return value is <code>true</code> if
    	 * the registration is successful, and <code>false</code> otherwise. 
@@ -320,17 +349,6 @@ public class Controller implements InterfaceComponent,InterfaceController {
 			ison = true;
 	}
 
-	/** @y.exclude */
-	@Override
-	public boolean register() {
-		return false;
-	}
-
-	/** @y.exclude */
-	@Override
-	public boolean deregister() {
-		return false;
-	}
 
 	
 	/////////////////////////////////////////////////////////////////////

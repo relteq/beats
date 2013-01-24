@@ -36,11 +36,11 @@ import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
+import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.SiriusException;
-import edu.berkeley.path.beats.simulator.SiriusFormatter;
 
-public final class TextOutputWriter extends OutputWriterBase {
+public final class OutputWriterTXT extends OutputWriterBase {
 	protected Writer out_time = null;
 	protected Writer [] out_density = null;
 	protected Writer [] out_outflow = null;
@@ -49,11 +49,11 @@ public final class TextOutputWriter extends OutputWriterBase {
 	private String prefix;
 	private int numVT;
 
-	public TextOutputWriter(Scenario scenario, Properties props){
-		super(scenario);
+	public OutputWriterTXT(Scenario scenario, Properties props,double outDt,int outsteps){
+		super(scenario,outDt,outsteps);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
-		scenario.requestLinkCumulatives();
+		requestLinkCumulatives();
 	}
 
 	@Override
@@ -93,14 +93,14 @@ public final class TextOutputWriter extends OutputWriterBase {
 					List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();
 					for (i = 0; i < links.size(); ++i){
 						Link link = (Link) links.get(i);
-						LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+						LinkCumulativeData link_cum_data = getCumulatives(link);
 						if (0 < i) 
-							out_density[j].write(TextOutputWriter.delim);
+							out_density[j].write(OutputWriterTXT.delim);
 						out_density[j].write(String.format("%f", exportflows ? link_cum_data.getMeanDensity(0,j) : link.getDensityInVeh(0,j)));
 						if(exportflows){
 							if (0 < i) {
-								out_outflow[j].write(TextOutputWriter.delim);
-								out_inflow[j].write(TextOutputWriter.delim);
+								out_outflow[j].write(OutputWriterTXT.delim);
+								out_inflow[j].write(OutputWriterTXT.delim);
 							}							
 							out_outflow[j].write(String.format("%f",link_cum_data.getMeanOutputFlow(0,j)));
 							out_inflow[j].write(String.format("%f",link_cum_data.getMeanInputFlow(0,j)));

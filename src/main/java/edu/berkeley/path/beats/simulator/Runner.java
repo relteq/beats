@@ -26,8 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.apache.torque.NoRowsException;
 import org.apache.torque.TooManyRowsException;
@@ -64,15 +62,9 @@ public final class Runner {
 			Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 			if (null == scenario)
 				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
-
-			// set output format properties
-			Properties owr_props = new Properties();
-			if (null != outputfileprefix) 
-				owr_props.setProperty("prefix", outputfileprefix);
-			owr_props.setProperty("type", output_format);
 			
 			// run the scenario
-			scenario.run(simsettings, owr_props);
+			scenario.run(simsettings,output_format,outputfileprefix);
 			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
 			
@@ -183,12 +175,11 @@ public final class Runner {
 		logger.info("Simulation parameters: " + simsettings);
 
 		logger.info("Simulation");
-		Properties owr_props = new Properties();
-		owr_props.setProperty("type", "db");
-		scenario.run(simsettings, owr_props);
+		scenario.run(simsettings, "db",null);
 
 		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");
 	}
 
+	
 }

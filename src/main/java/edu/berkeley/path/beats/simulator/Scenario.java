@@ -46,8 +46,6 @@ import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
-import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
-import edu.berkeley.path.beats.simulator.output.OutputWriterIF;
 
 /** Load, manipulate, and run scenarios. 
  * <p>
@@ -89,7 +87,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
-	/** @y.exclude */	protected double outdt;
 	/** @y.exclude */	protected boolean started_writing;
 
 	// Model uncertainty
@@ -99,7 +96,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// data
 	private boolean sensor_data_loaded = false;
 
-	private Cumulatives cumulatives;
+	protected Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -298,6 +295,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
+	protected void run(SimulationSettings simsettings,String outtype,String outprefix) throws SiriusException{
+		this.numEnsemble = 1;
+		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
+		run_internal(param,simsettings.getNumReps(),true,outtype,outprefix);
+	}
+	
 	/** Retrieve a network with a given id.
 	 * @param id The string id of the network
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
@@ -321,110 +324,45 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// public but excluded from API
-	/////////////////////////////////////////////////////////////////////
-
-	/** @y.exclude */
-	public Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
-		
-		Integer [] vehicletypeindex;
-		
-		// single vehicle types in setting and no vtypeorder, return 0
-		if(vtypeorder==null && numVehicleTypes==1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			vehicletypeindex[0]=0;
-			return vehicletypeindex;
-		}
-		
-		// multiple vehicle types in setting and no vtypeorder, return 0...n
-		if(vtypeorder==null && numVehicleTypes>1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			for(int i=0;i<numVehicleTypes;i++)
-				vehicletypeindex[i] = i;	
-			return vehicletypeindex;	
-		}
-		
-		// vtypeorder is not null
-		int numTypesInOrder = vtypeorder.getVehicleType().size();
-		int i,j;
-		vehicletypeindex = new Integer[numTypesInOrder];
-		for(i=0;i<numTypesInOrder;i++)
-			vehicletypeindex[i] = -1;			
-
-		if(getSettings()==null)
-			return vehicletypeindex;
-
-		if(getSettings().getVehicleTypes()==null)
-			return vehicletypeindex;
-		
-		for(i=0;i<numTypesInOrder;i++){
-			String vtordername = vtypeorder.getVehicleType().get(i).getName();
-			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
-			for(j=0;j<settingsname.size();j++){
-				if(settingsname.get(j).getName().equals(vtordername)){
-					vehicletypeindex[i] =  j;
-					break;
-				}
-			}			
-		}
-		return vehicletypeindex;
-	}
-
-	/////////////////////////////////////////////////////////////////////
-	// API
+	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	/** Run the scenario <code>numRepetitions</code> times, save output to text files.
+	// intialization and running ........................................
+	
+	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
 	 * 
-	 * <p> The scenario is reset and run multiple times in sequence. All
-	 * probabilistic quantities are re-sampled between runs. Output files are
-	 * created with a common prefix with the index of the simulation appended to 
-	 * the file name.
-	 * 
-	 * @param simsettings Contains start time, duration, output dt, and number of runs.
-	 * @param owr_props the output writer properties
-	 * @throws SiriusException 
+	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
+	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
+	 * rolling back all profiles and clocks. 
+	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-	public void run(SimulationSettings simsettings, Properties owr_props) throws SiriusException{
-		this.outdt = simsettings.getOutputDt();
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param, simsettings.getNumRuns(), true, false, owr_props);
+	public void initialize_run(int numEnsemble,double timestart) throws SiriusException{
+
+		if(numEnsemble<=0)
+			throw new SiriusException("Number of ensemble runs must be at least 1.");
+		
+		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
+
+		this.scenariolocked = false;
+		this.numEnsemble = numEnsemble;
+        
+		// create the clock
+		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
+
+		// reset the simulation
+		if(!reset(param.simulationMode))
+			throw new SiriusException("Reset failed.");
+		
+		// lock the scenario
+        scenariolocked = true;	
 	}
 	
-	/** Run the scenario once, save output to text files.
-	 * 
-	 * <p> The scenario is reset and run once. Output files are
-	 * created with a common prefix with the index of the simulation appended to 
-	 * the file name.
-	 * 
-	 * @param timestart
-	 * @param timeend
-	 * @param outdt
-	 * @param outputfileprefix
-	 * @throws SiriusException 
-	 */
-	public void run(double timestart,double timeend,double outdt, String outputfileprefix) throws SiriusException{
+	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws SiriusException{
 		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		Properties owr_props = new Properties();
-		if (null != outputfileprefix) owr_props.setProperty("prefix", outputfileprefix);
-		owr_props.setProperty("type","text");
-		run_internal(param,1,true,false,owr_props);
+		run_internal(param,numReps,true,outputtype,outputfileprefix);
 	}
-
-	/** Run the scenario once, return the state trajectory.
-	 * <p> The scenario is reset and run once. 
-	 * @return An object with the history of densities and flows for all links in the scenario.
-	 * @throws SiriusException 
-	 */
-	public SiriusStateTrajectory run(double timestart,double timeend,double outdt) throws SiriusException{
-		this.outdt = outdt;
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(timestart,timeend,outdt,simdtinseconds);
-		return run_internal(param,1,false,true,null);
-	}
-	
+		
 	/** Advance the simulation <i>nsec</i> seconds.
 	 * 
 	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
@@ -440,8 +378,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-		int nsteps = SiriusMath.round(nsec/simdtinseconds);		
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,false,null,null,-1,-1d);
+		int nsteps = SiriusMath.round(nsec/simdtinseconds);				
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
 	}
 
 	/** Save the scenario to XML.
@@ -451,9 +389,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public void saveToXML(String filename) throws SiriusException{
         try {
-		//Reset the classloader for main thread; need this if I want to run properly
-                //with JAXB within MATLAB. (luis)
-		Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
+        	
+        	//Reset the classloader for main thread; need this if I want to run properly
+            //with JAXB within MATLAB. (luis)
+        	Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
 	
         	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
         	Marshaller m = context.createMarshaller();
@@ -466,10 +405,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
 	}
 	
+	// scalar getters ........................................................
+	
 	/** Current simulation time in seconds.
 	 * @return Simulation time in seconds after midnight.
 	 */
-	public double getTimeInSeconds() {
+	public double getCurrentTimeInSeconds() {
 		if(clock==null)
 			return Double.NaN;
 		return clock.getT();
@@ -497,7 +438,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return	Integer number of time steps to simulate.
 	 */
 	public int getTotalTimeStepsToSimulate(){
-		 return clock.getTotalSteps();
+		if(clock==null)
+			return -1;
+		else
+			return clock.getTotalSteps();
 	}
 	
 	/** Number of vehicle types included in the scenario.
@@ -514,32 +458,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return numEnsemble;
 	}
 
-	/** Vehicle type names.
-	 * @return	Array of strings with the names of the vehicles types.
-	 */
-	public String [] getVehicleTypeNames(){
-		String [] vehtypenames = new String [numVehicleTypes];
-		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-			vehtypenames[0] = Defaults.vehicleType;
-		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
-		return vehtypenames;
-	}
-	
-//	/** Vehicle type weights.
-//	 * @return	Array of doubles with the weights of the vehicles types.
-//	 */
-//	public Double [] getVehicleTypeWeights(){
-//		Double [] vehtypeweights = new Double [numVehicleTypes];
-//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-//			vehtypeweights[0] = 1d;
-//		else
-//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
-//		return vehtypeweights;
-//	}
-	
 	/** Vehicle type index from name
 	 * @return integer index of the vehicle type.
 	 */
@@ -586,164 +504,89 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Output frequency
 	 * @return output time step, sec
 	 */
-	public double getOutputDt() {
-		return outdt;
+//	public double getOutputDt() {
+//		return outdt;
+//	}
+	
+	/** Get configuration file name */
+	public String getConfigFilename() {
+		return configfilename;
 	}
 
-	/** Get a reference to a controller by its id.
-	 * @param id Id of the controller.
-	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
-	 */
-	public Controller getControllerWithId(String id){
-		if(controllerset==null)
-			return null;
-		for(Controller c : controllerset.get_Controllers()){
-			if(c.id.equals(id))
-				return c;
+	// array getters ........................................................
+
+	/** @y.exclude */
+	public Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
+		
+		Integer [] vehicletypeindex;
+		
+		// single vehicle types in setting and no vtypeorder, return 0
+		if(vtypeorder==null && numVehicleTypes==1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			vehicletypeindex[0]=0;
+			return vehicletypeindex;
 		}
-		return null;
+		
+		// multiple vehicle types in setting and no vtypeorder, return 0...n
+		if(vtypeorder==null && numVehicleTypes>1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			for(int i=0;i<numVehicleTypes;i++)
+				vehicletypeindex[i] = i;	
+			return vehicletypeindex;	
+		}
+		
+		// vtypeorder is not null
+		int numTypesInOrder = vtypeorder.getVehicleType().size();
+		int i,j;
+		vehicletypeindex = new Integer[numTypesInOrder];
+		for(i=0;i<numTypesInOrder;i++)
+			vehicletypeindex[i] = -1;			
+
+		if(getSettings()==null)
+			return vehicletypeindex;
+
+		if(getSettings().getVehicleTypes()==null)
+			return vehicletypeindex;
+		
+		for(i=0;i<numTypesInOrder;i++){
+			String vtordername = vtypeorder.getVehicleType().get(i).getName();
+			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
+			for(j=0;j<settingsname.size();j++){
+				if(settingsname.get(j).getName().equals(vtordername)){
+					vehicletypeindex[i] =  j;
+					break;
+				}
+			}			
+		}
+		return vehicletypeindex;
 	}
 	
-	/** Get a reference to an event by its id.
-	 * @param id Id of the event.
-	 * @return A reference to the event if it exists, <code>null</code> otherwise.
+	/** Vehicle type names.
+	 * @return	Array of strings with the names of the vehicles types.
 	 */
-	public Event getEventWithId(String id){
-		if(eventset==null)
-			return null;
-		for(Event e : eventset.sortedevents){
-			if(e.getId().equals(id))
-				return e;
-		}
-		return null;
-	}		
-
-	/** Get a reference to a node by its composite id.
-	 * 
-	 * @param id String id of the node. 
-	 * @return Reference to the node if it exists, <code>null</code> otherwise
-	 */
-	public Node getNodeWithId(String id){
-		if(networkList==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
-			Node node = ((edu.berkeley.path.beats.simulator.Network) network).getNodeWithId(id);
-			if(node!=null)
-				return node;
-		}
-		return null;
-	}
-
-	/** Get a reference to a link by its composite id.
-	 * 
-	 * @param id String id of the link. 
-	 * @return Reference to the link if it exists, <code>null</code> otherwise
-	 */
-	public Link getLinkWithId(String id){
-		if(networkList==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
-			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
-			if(link!=null)
-				return link;
-		}
-		return null;
-	}
-
-	/** Get sensor with given id.
-	 * @param id String id of the sensor.
-	 * @return Sensor object.
-	 */
-	public Sensor getSensorWithId(String id){
-		if(sensorList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
-			if(sensor.getId().equals(id))
-				return (Sensor) sensor;
-		}
-		return null;
+	public String [] getVehicleTypeNames(){
+		String [] vehtypenames = new String [numVehicleTypes];
+		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+			vehtypenames[0] = Defaults.vehicleType;
+		else
+			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
+		return vehtypenames;
 	}
 	
-	/** Get signal with given id.
-	 * @param id String id of the signal.
-	 * @return Signal object.
-	 */
-	public Signal getSignalWithId(String id){
-		if(signalList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getId().equals(id))
-				return (Signal) signal;
-		}
-		return null;
-	}
-
-	/** Get a reference to a signal by the composite id of its node.
-	 * 
-	 * @param network_id String id of the network containing the node. 
-	 * @param node_id String id of the node. 
-	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-	 */
-	public Signal getSignalWithCompositeNodeId(String network_id,String node_id){
-		if(signalList==null)
-			return null;
-		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getNodeId().equals(node_id))
-				return (Signal)signal;
-		}
-		return null;
-	}
-
-	/** Add a controller to the scenario.
-	 * 
-	 * <p>Controllers can only be added if a) the scenario is not currently running, and
-	 * b) the controller is valid. 
-	 * @param C The controller
-	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
-	 */
-	public boolean addController(Controller C){
-		if(scenariolocked)
-			return false;
-		if(C==null)
-			return false;
-		if(C.myType==null)
-			return false;
-		
-		// validate
-		SiriusErrorLog.clearErrorMessage();
-		C.validate();
-		SiriusErrorLog.print();
-		if(SiriusErrorLog.haserror())
-			return false;
-		
-		// add
-		controllerset.controllers.add(C);
-		
-		return true;
-	}
-
-	/** Add an event to the scenario.
-	 * 
-	 * <p>Events are not added if the scenario is running. This method does not validate the event.
-	 * @param E The event
-	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
-	 */
-	public boolean addEvent(Event E){
-		if(scenariolocked)
-			return false;
-		if(E==null)
-			return false;
-		if(E.myType==null)
-			return false;
-		
-		// add event to list
-		eventset.addEvent(E);
-		
-		return true;
-	}
+//	/** Vehicle type weights.
+//	 * @return	Array of doubles with the weights of the vehicles types.
+//	 */
+//	public Double [] getVehicleTypeWeights(){
+//		Double [] vehtypeweights = new Double [numVehicleTypes];
+//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+//			vehtypeweights[0] = 1d;
+//		else
+//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
+//		return vehtypeweights;
+//	}
+	
 
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network
@@ -794,45 +637,176 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		for(i=0;i<network.getLinkList().getLink().size();i++){
 			Link link = (Link) network.getLinkList().getLink().get(i);
 			Double [] linkdensity = link.getDensityInVeh(ensemble);
-			for(j=0;j<numVehicleTypes;j++)
-				density[i][j] = linkdensity[j];
+			if(linkdensity==null)
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = 0d;
+			else
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = linkdensity[j];
 		}
 		return density;           
 		
 	}
-		
-	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
+
+	// object getters ........................................................
+
+	/** Get a reference to a link by its composite id.
 	 * 
-	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
-	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
-	 * rolling back all profiles and clocks. 
-	 * @param numEnsemble Number of simulations to run in parallel
+	 * @param id String id of the link. 
+	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
-	public void initialize_run(int numEnsemble,double timestart,double outdt) throws SiriusException{
-
-		if(numEnsemble<=0)
-			throw new SiriusException("Number of ensemble runs must be at least 1.");
-		
-		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,outdt,simdtinseconds);
-
-		this.outdt = outdt;
-		this.scenariolocked = false;
-		this.numEnsemble = numEnsemble;
-        
-		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-
-		// reset the simulation
-		if(!reset(param.simulationMode))
-			throw new SiriusException("Reset failed.");
-		
-		// lock the scenario
-        scenariolocked = true;	
+	public Link getLinkWithId(String id){
+		if(networkList==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
+			if(link!=null)
+				return link;
+		}
+		return null;
 	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// override profiles
-	/////////////////////////////////////////////////////////////////////	
+	/** Get a reference to a node by its id.
+	 * 
+	 * @param id String id of the node. 
+	 * @return Reference to the node if it exists, <code>null</code> otherwise
+	 */
+	public Node getNodeWithId(String id){
+		if(networkList==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+			Node node = ((edu.berkeley.path.beats.simulator.Network) network).getNodeWithId(id);
+			if(node!=null)
+				return node;
+		}
+		return null;
+	}
+
+	/** Get a reference to a controller by its id.
+	 * @param id Id of the controller.
+	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
+	 */
+	public Controller getControllerWithId(String id){
+		if(controllerset==null)
+			return null;
+		for(Controller c : controllerset.get_Controllers()){
+			if(c.id.equals(id))
+				return c;
+		}
+		return null;
+	}
+	
+	/** Get a reference to an event by its id.
+	 * @param id Id of the event.
+	 * @return A reference to the event if it exists, <code>null</code> otherwise.
+	 */
+	public Event getEventWithId(String id){
+		if(eventset==null)
+			return null;
+		for(Event e : eventset.sortedevents){
+			if(e.getId().equals(id))
+				return e;
+		}
+		return null;
+	}		
+
+	/** Get sensor with given id.
+	 * @param id String id of the sensor.
+	 * @return Sensor object.
+	 */
+	public Sensor getSensorWithId(String id){
+		if(sensorList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
+			if(sensor.getId().equals(id))
+				return (Sensor) sensor;
+		}
+		return null;
+	}
+	
+	/** Get signal with given id.
+	 * @param id String id of the signal.
+	 * @return Signal object.
+	 */
+	public Signal getSignalWithId(String id){
+		if(signalList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
+			if(signal.getId().equals(id))
+				return (Signal) signal;
+		}
+		return null;
+	}
+	
+	/** Get a reference to a signal by the id of its node.
+	 * 
+	 * @param node_id String id of the node. 
+	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+	 */
+	public Signal getSignalWithNodeId(String node_id){
+		if(signalList==null)
+			return null;
+		id.replaceAll("\\s","");
+		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
+			if(signal.getNodeId().equals(node_id))
+				return (Signal)signal;
+		}
+		return null;
+	}
+	
+	// add stuff ........................................................
+
+	/** Add a controller to the scenario.
+	 * 
+	 * <p>Controllers can only be added if a) the scenario is not currently running, and
+	 * b) the controller is valid. 
+	 * @param C The controller
+	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
+	 */
+	public boolean addController(Controller C){
+		if(scenariolocked)
+			return false;
+		if(C==null)
+			return false;
+		if(C.myType==null)
+			return false;
+		
+		// validate
+		SiriusErrorLog.clearErrorMessage();
+		C.validate();
+		SiriusErrorLog.print();
+		if(SiriusErrorLog.haserror())
+			return false;
+		
+		// add
+		controllerset.controllers.add(C);
+		
+		return true;
+	}
+
+	/** Add an event to the scenario.
+	 * 
+	 * <p>Events are not added if the scenario is running. This method does not validate the event.
+	 * @param E The event
+	 * @return <code>true</code> if the event was successfully added, <code>false</code> otherwise. 
+	 */
+	public boolean addEvent(Event E){
+		if(scenariolocked)
+			return false;
+		if(E==null)
+			return false;
+		if(E.myType==null)
+			return false;
+		
+		// add event to list
+		eventset.addEvent(E);
+		
+		return true;
+	}
+	
+	// override a profile ...............................................	
 	
 	/** Add a demand profile to the scenario. If a profile already exists for the 
 	 * origin link, then replace it.
@@ -872,13 +846,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// data and calibration
-	/////////////////////////////////////////////////////////////////////	
+	// data and calibration .............................................
 	
-	/** DOC THIS 
-	 * @throws SiriusException 
-	 */
 	public void loadSensorData() throws SiriusException {
 
 		if(sensorlist.sensors.isEmpty())
@@ -938,19 +907,21 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// private
+	// private methods
 	/////////////////////////////////////////////////////////////////////	
 
-	private SiriusStateTrajectory run_internal(RunParameters param,int numRepetitions,boolean writefiles,boolean returnstate,Properties owr_props) throws SiriusException{
+	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,String outtype,String outprefix) throws SiriusException{
 			
 		logger.info("Simulation mode: " + param.simulationMode);
 		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
-		logger.info("Output period: [" + param.timestartOutput + ":" + outdt + ":" + param.timeend + "]");
+		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.timeend + "]");
 		
-		if(returnstate && numRepetitions>1)
-			throw new SiriusException("run with multiple repetitions and returning state not allowed.");
-		
-		SiriusStateTrajectory state = null;
+		// output writer properties
+		Properties owr_props = new Properties();
+		if (null != outprefix) 
+			owr_props.setProperty("prefix", outprefix);
+		if (null != outtype) 
+			owr_props.setProperty("type",outtype);
 		
 		// create the clock
 		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
@@ -960,55 +931,36 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
-			OutputWriterIF outputwriter = null;
-			if (writefiles){ // && param.simulationMode.compareTo(Scenario.ModeType.normal)==0) {
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props);
+			
+			OutputWriterBase outputwriter = null;
+			if (writefiles){
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, param.outDt,param.outsteps);
 				outputwriter.open(i);
 			}
+			
 			try{
-				// allocate state
-				if(returnstate){
-					int numTime = (int) Math.ceil(getTotalTimeStepsToSimulate()/((float)param.outsteps));
-					state = new SiriusStateTrajectory(this,numTime);
-				}
-
 				// reset the simulation
 				if(!reset(param.simulationMode))
 					throw new SiriusException("Reset failed.");
 
 				// advance to end of simulation
-				while( advanceNSteps_internal(param.simulationMode,1,writefiles,returnstate,outputwriter,state,param.outsteps,param.timestartOutput) ){					
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.timestartOutput) ){					
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();
 			}
 		}
         scenariolocked = false;
-
-		return state;
 	}
 	
-	// advance the simulation by n steps.
-	// parameters....
-	// n: number of steps to advance.
-	// doreset: call scenario reset if true
-	// writefiles: write result to text files if true
-	// returnstate: recored and return the state trajectory if true
-	// outputwriter: output writing class 
-	// state: state trajectory container
-	// returns....
-	// true if scenario advanced n steps without error
-	// false if scenario reached t_end without error before completing n steps
-	// throws 
-	// SiriusException for all errors
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,int outsteps,double outStart) throws SiriusException{
+	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws SiriusException{
 		
 		// advance n steps
 		for(int k=0;k<n;k++){
 
 			// export initial condition
-	        if(!started_writing && outsteps>0 && SiriusMath.equals(clock.getT(),outStart) ){
-	        	recordstate(writefiles,returnstate,outputwriter,state,false,outsteps);
+	        if(!started_writing && SiriusMath.equals(clock.getT(),outStart) ){
+	        	recordstate(writefiles,outputwriter,false);
 	        	started_writing = true;
 	        }
         	
@@ -1018,8 +970,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
             // update time (before write to output)
         	clock.advance();
 
-            if(started_writing && clock.getCurrentstep()%outsteps == 0 )
-	        	recordstate(writefiles,returnstate,outputwriter,state,true,outsteps);
+            if(started_writing && clock.getCurrentstep()%outputwriter.outSteps == 0 )
+	        	recordstate(writefiles,outputwriter,true);
             
         	if(clock.expired())
         		return false;
@@ -1028,74 +980,46 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return true;
 	}
 	
-	private void recordstate(boolean writefiles,boolean returnstate,OutputWriterIF outputwriter,SiriusStateTrajectory state,boolean exportflows,int outsteps) throws SiriusException {
+	private void recordstate(boolean writefiles,OutputWriterBase outputwriter,boolean exportflows) throws SiriusException {
 		if(writefiles)
-			outputwriter.recordstate(clock.getT(),exportflows,outsteps);
-		if(returnstate)
-			state.recordstate(clock.getCurrentstep(),clock.getT(),exportflows,outsteps);
+			outputwriter.recordstate(clock.getT(),exportflows,outputwriter.outSteps);
 		cumulatives.reset();
 	}
 
-	/**
-	 * Initializes a link cumulative data storage,
-	 * if that has not yet been done.
-	 * Calling this method multiple times is safe
-	 */
-	public void requestLinkCumulatives() {
-		cumulatives.storeLinks();
-	}
-
-	/**
-	 * Initializes a signal phase storage,
-	 * if that has not yet been done.
-	 * Calling this method multiple times is safe
-	 */
-	public void requestSignalPhases() {
-		cumulatives.storeSignalPhases();
-	}
-
-	/**
-	 * Retrieves link cumulative data for the given link
-	 * @param link
-	 * @return link cumulative data
-	 * @throws SiriusException if the link cumulative data storage has not been initialized
-	 */
-	public LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
-		return cumulatives.get(link);
-	}
-
-	/**
-	 * Retrieves completed phases for the given signal
-	 * @param signal
-	 * @return completed signal phases
-	 * @throws SiriusException if the signal phase storage has not been initialized
-	 */
-	public SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
-		return cumulatives.get(signal);
-	}
-
+	/////////////////////////////////////////////////////////////////////
+	// private classes
+	/////////////////////////////////////////////////////////////////////	
+	
 	private class RunParameters{
 		public double timestart;			// [sec] start of the simulation
 		public double timeend;				// [sec] end of the simulation
 		public double timestartOutput;		// [sec] start outputing data
+		public double outDt;				// [sec] output sampling time
 		public int outsteps;				// [-] number of simulation steps per output step
 		public Scenario.ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws SiriusException{
 			
+			// round to the nearest decisecond
+			tstart = round(tstart);
+			simdtinseconds = round(simdtinseconds);
+			tend = round(tend);
+			outdt = round(outdt);
+
 			// check timestart < timeend
-			if(SiriusMath.greaterorequalthan(tstart,tend))
+			if( SiriusMath.greaterorequalthan(tstart,tend))
 				throw new SiriusException("Empty simulation period.");
 
 			// check that outdt is a multiple of simdt
-			if(!SiriusMath.isintegermultipleof(outdt,simdtinseconds))
+			if(!Double.isNaN(outdt) && !SiriusMath.isintegermultipleof(outdt,simdtinseconds))
 				throw new SiriusException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
 			this.timestart = tstart;
 			this.timestartOutput = tstart;
 			this.timeend = tend;
 	        this.outsteps = SiriusMath.round(outdt/simdtinseconds);
+			this.outDt = outsteps*simdtinseconds;
 
 	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : 0d;  // [sec]
 	        
@@ -1127,14 +1051,21 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 						
 		}
 
+		/**
+		 * Rounds the double value, precision: .1
+		 * @param val
+		 * @return the "rounded" value
+		 */
+		private double round(double val) {
+			if(Double.isInfinite(val))
+				return val;
+			if(Double.isNaN(val))
+				return val;
+			return SiriusMath.round(val * 10.0) / 10.0;
+		}
 	}
 
-	/** Get configuration file name */
-	public String getConfigFilename() {
-		return configfilename;
-	}
-
-	private static class Cumulatives {
+	protected static class Cumulatives {
 		private Scenario scenario;
 
 		/** link id -> cumulative data */
@@ -1235,5 +1166,5 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			phases.clear();
 		}
 	}
-
+	
 }

@@ -40,13 +40,14 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusException;
 
 @SuppressWarnings("restriction")
-public final class XMLOutputWriter extends OutputWriterBase {
+public final class OutputWriterXML extends OutputWriterBase {
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
 	protected static final String NUM_FORMAT = "%.4f";
@@ -59,8 +60,8 @@ public final class XMLOutputWriter extends OutputWriterBase {
 
 	private Marshaller marshaller;
 
-	public XMLOutputWriter(Scenario scenario, Properties props) throws SiriusException {
-		super(scenario);
+	public OutputWriterXML(Scenario scenario, Properties props,double outDt,int outsteps) throws SiriusException {
+		super(scenario,outDt,outsteps);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
 		final String delim = ":";
@@ -77,8 +78,8 @@ public final class XMLOutputWriter extends OutputWriterBase {
 			throw new SiriusException(exc);
 		}
 
-		scenario.requestLinkCumulatives();
-		scenario.requestSignalPhases();
+		requestLinkCumulatives();
+		requestSignalPhases();
 	}
 
 	@Override
@@ -135,7 +136,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					xmlsw.writeStartElement("l");
 					xmlsw.writeAttribute("id", link.getId());
 					Link _link = (Link) link;
-					LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+					LinkCumulativeData link_cum_data = getCumulatives(link);
 					// d = average number of vehicles during the interval of reporting dt
 					xmlsw.writeAttribute("d", dens_formatter.format(exportflows ? link_cum_data.getMeanDensity(0) : _link.getDensityInVeh(0)));
 					if (exportflows) {
@@ -201,7 +202,7 @@ public final class XMLOutputWriter extends OutputWriterBase {
 					for (edu.berkeley.path.beats.jaxb.Signal signal : sigl) {
 						xmlsw.writeStartElement("sig");
 						xmlsw.writeAttribute("id", signal.getId());
-						List<Signal.PhaseData> phdata = scenario.getCompletedPhases(signal).getPhaseList();
+						List<Signal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
 						for (Signal.PhaseData ph : phdata) {
 							xmlsw.writeStartElement("ph");
 							xmlsw.writeAttribute("i", String.format("%d", ph.nema.ordinal()));

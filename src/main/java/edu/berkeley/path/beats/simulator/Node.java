@@ -28,6 +28,11 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
+import edu.berkeley.path.beats.jaxb.Inputs;
+import edu.berkeley.path.beats.jaxb.Outputs;
+import edu.berkeley.path.beats.jaxb.Position;
+import edu.berkeley.path.beats.jaxb.RoadwayMarkers;
+
 /** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -76,7 +81,46 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 	/** @y.exclude */
 	protected Node(){}
-							  
+
+	/////////////////////////////////////////////////////////////////////
+	// hide base class setters
+	/////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public void setRoadwayMarkers(RoadwayMarkers value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setOutputs(Outputs value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setInputs(Inputs value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setPosition(Position value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setType(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setId(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setInSync(Boolean value) {
+		System.out.println("This setter is hidden.");
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -731,7 +775,10 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @return the split ratio
 	 */
 	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
+		if(splitratio==null)
+			return Double.NaN;
+		else
+			return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
 
 }

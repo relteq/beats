@@ -38,7 +38,6 @@ import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SimulationSettings;
 import edu.berkeley.path.beats.simulator.SiriusException;
 import edu.berkeley.path.beats.simulator.SiriusFormatter;
 import edu.berkeley.path.beats.simulator.SiriusMath;
@@ -96,8 +95,11 @@ public class SimulatorTest {
 				String configfile = config_folder+config_name+CONF_SUFFIX;
 				String outputprefix = output_folder+config_name;
 	
-				// process input parameters
-				SimulationSettings simsettings = new SimulationSettings(0d,3600d,30d,1);
+				// input parameters
+				double startTime = 0d;
+				double duration = 3600d;
+				double outDt = 30d;
+				int numReps = 1;
 	
 				// load configuration file
 				System.out.println("\tLoading");
@@ -105,15 +107,10 @@ public class SimulatorTest {
 	
 				if (null == scenario)
 					throw new SiriusException("UNEXPECTED! Scenario was not loaded");
-	
-				// set output format properties
-				Properties owr_props = new Properties();
-				owr_props.setProperty("prefix", outputprefix);
-				owr_props.setProperty("type", "text");
 				
 				// run the scenario
 				System.out.println("\tRunning");
-				scenario.run(simsettings, owr_props);
+				scenario.run(startTime,startTime+duration,outDt,"text",outputprefix,numReps);
 				
 				String [] vehicleTypes = scenario.getVehicleTypeNames();
 								

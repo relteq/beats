@@ -41,6 +41,7 @@ import edu.berkeley.path.beats.om.*;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.SiriusException;
@@ -51,10 +52,10 @@ import com.workingdogs.village.DataSetException;
 /**
  * Database output writer
  */
-public class DBOutputWriter extends OutputWriterBase {
+public class OutputWriterDB extends OutputWriterBase {
 
-	public DBOutputWriter(Scenario scenario) {
-		super(scenario);
+	public OutputWriterDB(Scenario scenario,double outDt,int outsteps) {
+		super(scenario,outDt,outsteps);
 		try {
 			db_scenario = ScenariosPeer.retrieveByPK(str2id(scenario.getId()));
 		} catch (NoRowsException exc) {
@@ -81,14 +82,14 @@ public class DBOutputWriter extends OutputWriterBase {
 				logger.error("Failed to load vehicle types for scenario " + db_scenario.getId(), exc);
 			}
 		}
-		scenario.requestLinkCumulatives();
-		scenario.requestSignalPhases();
+		requestLinkCumulatives();
+		requestSignalPhases();
 
 		cal = Calendar.getInstance();
 		cal.set(Calendar.MILLISECOND, 0);
 	}
 
-	private static Logger logger = Logger.getLogger(DBOutputWriter.class);
+	private static Logger logger = Logger.getLogger(OutputWriterDB.class);
 
 	private Scenarios db_scenario = null;
 	VehicleTypes[] db_vehicle_type;
@@ -195,7 +196,7 @@ public class DBOutputWriter extends OutputWriterBase {
 			db_simulation_run.setSimStartTime(double2decimal(scenario.getTimeStart()));
 			db_simulation_run.setSimDuration(double2decimal(scenario.getTimeEnd() - scenario.getTimeStart()));
 			db_simulation_run.setSimDt(double2decimal(scenario.getSimDtInSeconds()));
-			db_simulation_run.setOutputDt(double2decimal(scenario.getOutputDt()));
+			db_simulation_run.setOutputDt(double2decimal(getOutDtInSeconds()));
 			db_simulation_run.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(-1);
 			db_simulation_run.save();
@@ -261,7 +262,7 @@ public class DBOutputWriter extends OutputWriterBase {
 		db_ldt.setAggregationTypes(db_aggregation_type_raw);
 		db_ldt.setQuantityTypes(db_quantity_type_mean);
 
-		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+		LinkCumulativeData link_cum_data = getCumulatives(link);
 		// mean density, vehicles
 		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : SiriusMath.sum(link.getDensityInVeh(0));
 		db_ldt.setDensity(double2decimal(density));
@@ -314,7 +315,7 @@ public class DBOutputWriter extends OutputWriterBase {
 	 * @throws Exception
 	 */
 	private void fill_detailed(Link link, boolean exportflows, BigDecimal total_speed) throws Exception {
-		LinkCumulativeData link_cum_data = scenario.getCumulatives(link);
+		LinkCumulativeData link_cum_data = getCumulatives(link);
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
 			db_ldd.setLinkId(str2id(link.getId()));
@@ -358,7 +359,7 @@ public class DBOutputWriter extends OutputWriterBase {
 	}
 
 	private void fill_signal_data(edu.berkeley.path.beats.jaxb.Network network, edu.berkeley.path.beats.jaxb.Signal signal) throws Exception {
-		List<Signal.PhaseData> phdata = scenario.getCompletedPhases(signal).getPhaseList();
+		List<Signal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
 		for (Signal.PhaseData ph : phdata) {
 			SignalData db_sd = new SignalData();
 			db_sd.setNetworkId(str2id(network.getId()));

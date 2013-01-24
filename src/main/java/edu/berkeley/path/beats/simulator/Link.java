@@ -26,6 +26,13 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
+
+import edu.berkeley.path.beats.jaxb.Begin;
+import edu.berkeley.path.beats.jaxb.Dynamics;
+import edu.berkeley.path.beats.jaxb.End;
+import edu.berkeley.path.beats.jaxb.Roads;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -74,6 +81,61 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** @y.exclude */
 	protected Link(){}
+
+	/////////////////////////////////////////////////////////////////////
+	// hide base class setters
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	public void setBegin(Begin value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setEnd(End value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setRoads(Roads value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setDynamics(Dynamics value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setShape(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setLaneOffset(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}
+
+//	@Override
+//	public void setLength(BigDecimal value) {
+//		System.out.println("This setter is hidden.");
+//	}
+
+	@Override
+	public void setType(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setId(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setInSync(Boolean value) {
+		System.out.println("This setter is hidden.");
+	}
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -131,7 +193,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(activeFDevent)
 			return FDfromEvent;
 		else
-			return FDfromProfile[ensemble];
+			return FDfromProfile==null ? null : FDfromProfile[ensemble];
 	}
 	
 	/** @y.exclude */
@@ -607,6 +669,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 */
 	public double computeSpeedInMPS(int ensemble){
 		try{
+			
+			if(myNetwork.myScenario.clock.getCurrentstep()==0)
+				return Double.NaN;
+			
 			double totaldensity = SiriusMath.sum(density[ensemble]);
 			double speed;
 			if( SiriusMath.greaterthan(totaldensity,0d) )
@@ -776,6 +842,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return density for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getDensity(int ensemble, int vt_ind) {
+		if(density==null)
+			return Double.NaN;
 		return density[ensemble][vt_ind];
 	}
 
@@ -785,7 +853,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return input flow for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getInputFlow(int ensemble, int vt_ind) {
-		return inflow[ensemble][vt_ind];
+		if(inflow==null)
+			return Double.NaN;
+		else
+			return inflow[ensemble][vt_ind];
 	}
 
 	/**
@@ -794,7 +865,18 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return output flow for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getOutputFlow(int ensemble, int vt_ind) {
-		return outflow[ensemble][vt_ind];
+		if(outflow==null)
+			return Double.NaN;
+		else
+			return outflow[ensemble][vt_ind];
 	}
+	
+	@Override
+	public void setLanes(BigDecimal value) {
+		System.out.println("This method has been hidden");
+	}
+	
+
+	
 
 }
