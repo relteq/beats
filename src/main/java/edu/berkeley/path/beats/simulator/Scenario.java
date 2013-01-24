@@ -362,6 +362,328 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return cumulatives.get(link);
 	}
 
+
+	
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
+	
+	// intialization and running ........................................
+	
+	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
+	 * 
+	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
+	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
+	 * rolling back all profiles and clocks. 
+	 * @param numEnsemble Number of simulations to run in parallel
+	 */
+	public void initialize_run(int numEnsemble,double timestart) throws SiriusException{
+
+		if(numEnsemble<=0)
+			throw new SiriusException("Number of ensemble runs must be at least 1.");
+		
+		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
+
+		this.scenariolocked = false;
+		this.numEnsemble = numEnsemble;
+        
+		// create the clock
+		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
+
+		// reset the simulation
+		if(!reset(param.simulationMode))
+			throw new SiriusException("Reset failed.");
+		
+		// lock the scenario
+        scenariolocked = true;	
+	}
+	
+	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws SiriusException{
+		this.numEnsemble = 1;
+		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+		run_internal(param,numReps,true,outputtype,outputfileprefix);
+	}
+		
+	/** Advance the simulation <i>nsec</i> seconds.
+	 * 
+	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
+	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
+	 * if the end of the simulation is reached.
+	 * @param nsec Number of seconds to advance.
+	 * @throws SiriusException 
+	 */
+	public boolean advanceNSeconds(double nsec) throws SiriusException{	
+		
+		if(!scenariolocked)
+			throw new SiriusException("Run not initialized. Use initialize_run() first.");
+		
+		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
+			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
+		int nsteps = SiriusMath.round(nsec/simdtinseconds);				
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
+	}
+
+	/** Save the scenario to XML.
+	 * 
+	 * @param filename The name of the configuration file.
+	 * @throws SiriusException 
+	 */
+	public void saveToXML(String filename) throws SiriusException{
+        try {
+        	
+        	//Reset the classloader for main thread; need this if I want to run properly
+            //with JAXB within MATLAB. (luis)
+        	Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
+	
+        	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
+        	Marshaller m = context.createMarshaller();
+        	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        	m.marshal(this,new FileOutputStream(filename));
+        } catch( JAXBException je ) {
+        	throw new SiriusException(je.getMessage());
+        } catch (FileNotFoundException e) {
+        	throw new SiriusException(e.getMessage());
+        }
+	}
+	
+	// scalar getters ........................................................
+	
+	/** Current simulation time in seconds.
+	 * @return Simulation time in seconds after midnight.
+	 */
+	public double getCurrentTimeInSeconds() {
+		if(clock==null)
+			return Double.NaN;
+		return clock.getT();
+	}
+	
+	/** Time elapsed since the beginning of the simulation in seconds.
+	 * @return Simulation time in seconds after start time.
+	 */
+	public double getTimeElapsedInSeconds() {
+		if(clock==null)
+			return Double.NaN;
+		return clock.getTElapsed();
+	}
+	
+	/** Current simulation time step.
+	 * @return	Integer number of time steps since the start of the simulation. 
+	 */
+	public int getCurrentTimeStep() {
+		if(clock==null)
+			return 0;
+		return clock.getCurrentstep();
+	}
+
+	/** Total number of time steps that will be simulated, regardless of the simulation mode.
+	 * @return	Integer number of time steps to simulate.
+	 */
+	public int getTotalTimeStepsToSimulate(){
+		 return clock.getTotalSteps();
+	}
+	
+	/** Number of vehicle types included in the scenario.
+	 * @return Integer number of vehicle types
+	 */
+	public int getNumVehicleTypes() {
+		return numVehicleTypes;
+	}
+	
+	/** Number of ensembles in the run.
+	 * @return Integer number of elements in the ensemble.
+	 */
+	public int getNumEnsemble() {
+		return numEnsemble;
+	}
+
+	/** Vehicle type index from name
+	 * @return integer index of the vehicle type.
+	 */
+	public int getVehicleTypeIndex(String name){
+		String [] vehicleTypeNames = getVehicleTypeNames();
+		if(vehicleTypeNames==null)
+			return 0;
+		if(vehicleTypeNames.length<=1)
+			return 0;
+		for(int i=0;i<vehicleTypeNames.length;i++)
+			if(vehicleTypeNames[i].equals(name))
+				return i;
+		return -1;
+	}
+	
+	/** Size of the simulation time step in seconds.
+	 * @return Simulation time step in seconds. 
+	 */
+	public double getSimDtInSeconds() {
+		return simdtinseconds;
+	}
+
+	/** Start time of the simulation.
+	 * @return Start time in seconds. 
+	 */
+	public double getTimeStart() {
+		if(clock==null)
+			return Double.NaN;
+		else
+			return this.clock.getStartTime();
+	}
+
+	/** End time of the simulation.
+	 * @return End time in seconds. 
+	 * @return			XXX
+	 */
+	public double getTimeEnd() {
+		if(clock==null)
+			return Double.NaN;
+		else
+			return this.clock.getEndTime();
+	}
+
+	/** Output frequency
+	 * @return output time step, sec
+	 */
+//	public double getOutputDt() {
+//		return outdt;
+//	}
+	
+	/** Get configuration file name */
+	public String getConfigFilename() {
+		return configfilename;
+	}
+
+	// array getters ........................................................
+
+	/** @y.exclude */
+	public Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
+		
+		Integer [] vehicletypeindex;
+		
+		// single vehicle types in setting and no vtypeorder, return 0
+		if(vtypeorder==null && numVehicleTypes==1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			vehicletypeindex[0]=0;
+			return vehicletypeindex;
+		}
+		
+		// multiple vehicle types in setting and no vtypeorder, return 0...n
+		if(vtypeorder==null && numVehicleTypes>1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			for(int i=0;i<numVehicleTypes;i++)
+				vehicletypeindex[i] = i;	
+			return vehicletypeindex;	
+		}
+		
+		// vtypeorder is not null
+		int numTypesInOrder = vtypeorder.getVehicleType().size();
+		int i,j;
+		vehicletypeindex = new Integer[numTypesInOrder];
+		for(i=0;i<numTypesInOrder;i++)
+			vehicletypeindex[i] = -1;			
+
+		if(getSettings()==null)
+			return vehicletypeindex;
+
+		if(getSettings().getVehicleTypes()==null)
+			return vehicletypeindex;
+		
+		for(i=0;i<numTypesInOrder;i++){
+			String vtordername = vtypeorder.getVehicleType().get(i).getName();
+			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
+			for(j=0;j<settingsname.size();j++){
+				if(settingsname.get(j).getName().equals(vtordername)){
+					vehicletypeindex[i] =  j;
+					break;
+				}
+			}			
+		}
+		return vehicletypeindex;
+	}
+	
+	/** Vehicle type names.
+	 * @return	Array of strings with the names of the vehicles types.
+	 */
+	public String [] getVehicleTypeNames(){
+		String [] vehtypenames = new String [numVehicleTypes];
+		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+			vehtypenames[0] = Defaults.vehicleType;
+		else
+			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
+		return vehtypenames;
+	}
+	
+//	/** Vehicle type weights.
+//	 * @return	Array of doubles with the weights of the vehicles types.
+//	 */
+//	public Double [] getVehicleTypeWeights(){
+//		Double [] vehtypeweights = new Double [numVehicleTypes];
+//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+//			vehtypeweights[0] = 1d;
+//		else
+//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
+//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
+//		return vehtypeweights;
+//	}
+	
+
+	/** Get the initial density state for the network with given id.
+	 * @param network_id String id of the network
+	 * @return A two-dimensional array of doubles where the first dimension is the
+	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+	 */
+	public double [][] getInitialDensityForNetwork(String network_id){
+				
+		Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
+
+		int i,j;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			if(initprofile==null){
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = 0d;
+			}
+			else{
+				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
+				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
+				for(j=0;j<numVehicleTypes;j++)
+					density[i][j] = init_density[j];
+			}
+		}
+		return density;                         
+	}
+
+	/** Get the current density state for the network with given id.
+	 * @param network_id String id of the network
+	 * @return A two-dimensional array of doubles where the first dimension is the
+	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+	 */
+	public double [][] getDensityForNetwork(String network_id,int ensemble){
+		
+		Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+
+		int i,j;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			Link link = (Link) network.getLinkList().getLink().get(i);
+			Double [] linkdensity = link.getDensityInVeh(ensemble);
+			for(j=0;j<numVehicleTypes;j++)
+				density[i][j] = linkdensity[j];
+		}
+		return density;           
+		
+	}
+
+	// object getters ........................................................
+
 	/** Get a reference to a node by its id.
 	 * 
 	 * @param id String id of the node. 
@@ -452,321 +774,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 	
-	/////////////////////////////////////////////////////////////////////
-	// public API
-	/////////////////////////////////////////////////////////////////////
-	
-	// intialization and running ........................................
-	
-	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
-	 * 
-	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
-	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
-	 * rolling back all profiles and clocks. 
-	 * @param numEnsemble Number of simulations to run in parallel
-	 */
-	public void initialize_run(int numEnsemble,double timestart) throws SiriusException{
-
-		if(numEnsemble<=0)
-			throw new SiriusException("Number of ensemble runs must be at least 1.");
-		
-		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
-
-		this.scenariolocked = false;
-		this.numEnsemble = numEnsemble;
-        
-		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-
-		// reset the simulation
-		if(!reset(param.simulationMode))
-			throw new SiriusException("Reset failed.");
-		
-		// lock the scenario
-        scenariolocked = true;	
-	}
-	
-	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws SiriusException{
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		run_internal(param,numReps,true,outputtype,outputfileprefix);
-	}
-		
-	/** Advance the simulation <i>nsec</i> seconds.
-	 * 
-	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
-	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
-	 * if the end of the simulation is reached.
-	 * @param nsec Number of seconds to advance.
-	 * @throws SiriusException 
-	 */
-	public boolean advanceNSeconds(double nsec) throws SiriusException{	
-		
-		if(!scenariolocked)
-			throw new SiriusException("Run not initialized. Use initialize_run() first.");
-		
-		if(!SiriusMath.isintegermultipleof(nsec,simdtinseconds))
-			throw new SiriusException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-		int nsteps = SiriusMath.round(nsec/simdtinseconds);				
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
-	}
-
-	/** Save the scenario to XML.
-	 * 
-	 * @param filename The name of the configuration file.
-	 * @throws SiriusException 
-	 */
-	public void saveToXML(String filename) throws SiriusException{
-        try {
-        	
-        	//Reset the classloader for main thread; need this if I want to run properly
-            //with JAXB within MATLAB. (luis)
-        	Thread.currentThread().setContextClassLoader(Scenario.class.getClassLoader());
-	
-        	JAXBContext context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
-        	Marshaller m = context.createMarshaller();
-        	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        	m.marshal(this,new FileOutputStream(filename));
-        } catch( JAXBException je ) {
-        	throw new SiriusException(je.getMessage());
-        } catch (FileNotFoundException e) {
-        	throw new SiriusException(e.getMessage());
-        }
-	}
-	
-	// getters ........................................................
-	
-	/** @y.exclude */
-	public Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
-		
-		Integer [] vehicletypeindex;
-		
-		// single vehicle types in setting and no vtypeorder, return 0
-		if(vtypeorder==null && numVehicleTypes==1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			vehicletypeindex[0]=0;
-			return vehicletypeindex;
-		}
-		
-		// multiple vehicle types in setting and no vtypeorder, return 0...n
-		if(vtypeorder==null && numVehicleTypes>1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			for(int i=0;i<numVehicleTypes;i++)
-				vehicletypeindex[i] = i;	
-			return vehicletypeindex;	
-		}
-		
-		// vtypeorder is not null
-		int numTypesInOrder = vtypeorder.getVehicleType().size();
-		int i,j;
-		vehicletypeindex = new Integer[numTypesInOrder];
-		for(i=0;i<numTypesInOrder;i++)
-			vehicletypeindex[i] = -1;			
-
-		if(getSettings()==null)
-			return vehicletypeindex;
-
-		if(getSettings().getVehicleTypes()==null)
-			return vehicletypeindex;
-		
-		for(i=0;i<numTypesInOrder;i++){
-			String vtordername = vtypeorder.getVehicleType().get(i).getName();
-			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
-			for(j=0;j<settingsname.size();j++){
-				if(settingsname.get(j).getName().equals(vtordername)){
-					vehicletypeindex[i] =  j;
-					break;
-				}
-			}			
-		}
-		return vehicletypeindex;
-	}
-	
-	/** Current simulation time in seconds.
-	 * @return Simulation time in seconds after midnight.
-	 */
-	public double getCurrentTimeInSeconds() {
-		if(clock==null)
-			return Double.NaN;
-		return clock.getT();
-	}
-	
-	/** Time elapsed since the beginning of the simulation in seconds.
-	 * @return Simulation time in seconds after start time.
-	 */
-	public double getTimeElapsedInSeconds() {
-		if(clock==null)
-			return Double.NaN;
-		return clock.getTElapsed();
-	}
-	
-	/** Current simulation time step.
-	 * @return	Integer number of time steps since the start of the simulation. 
-	 */
-	public int getCurrentTimeStep() {
-		if(clock==null)
-			return 0;
-		return clock.getCurrentstep();
-	}
-
-	/** Total number of time steps that will be simulated, regardless of the simulation mode.
-	 * @return	Integer number of time steps to simulate.
-	 */
-	public int getTotalTimeStepsToSimulate(){
-		 return clock.getTotalSteps();
-	}
-	
-	/** Number of vehicle types included in the scenario.
-	 * @return Integer number of vehicle types
-	 */
-	public int getNumVehicleTypes() {
-		return numVehicleTypes;
-	}
-	
-	/** Number of ensembles in the run.
-	 * @return Integer number of elements in the ensemble.
-	 */
-	public int getNumEnsemble() {
-		return numEnsemble;
-	}
-
-	/** Vehicle type names.
-	 * @return	Array of strings with the names of the vehicles types.
-	 */
-	public String [] getVehicleTypeNames(){
-		String [] vehtypenames = new String [numVehicleTypes];
-		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-			vehtypenames[0] = Defaults.vehicleType;
-		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
-		return vehtypenames;
-	}
-	
-//	/** Vehicle type weights.
-//	 * @return	Array of doubles with the weights of the vehicles types.
-//	 */
-//	public Double [] getVehicleTypeWeights(){
-//		Double [] vehtypeweights = new Double [numVehicleTypes];
-//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-//			vehtypeweights[0] = 1d;
-//		else
-//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
-//		return vehtypeweights;
-//	}
-	
-	/** Vehicle type index from name
-	 * @return integer index of the vehicle type.
-	 */
-	public int getVehicleTypeIndex(String name){
-		String [] vehicleTypeNames = getVehicleTypeNames();
-		if(vehicleTypeNames==null)
-			return 0;
-		if(vehicleTypeNames.length<=1)
-			return 0;
-		for(int i=0;i<vehicleTypeNames.length;i++)
-			if(vehicleTypeNames[i].equals(name))
-				return i;
-		return -1;
-	}
-	
-	/** Size of the simulation time step in seconds.
-	 * @return Simulation time step in seconds. 
-	 */
-	public double getSimDtInSeconds() {
-		return simdtinseconds;
-	}
-
-	/** Start time of the simulation.
-	 * @return Start time in seconds. 
-	 */
-	public double getTimeStart() {
-		if(clock==null)
-			return Double.NaN;
-		else
-			return this.clock.getStartTime();
-	}
-
-	/** End time of the simulation.
-	 * @return End time in seconds. 
-	 * @return			XXX
-	 */
-	public double getTimeEnd() {
-		if(clock==null)
-			return Double.NaN;
-		else
-			return this.clock.getEndTime();
-	}
-
-	/** Output frequency
-	 * @return output time step, sec
-	 */
-//	public double getOutputDt() {
-//		return outdt;
-//	}
-
-	/** Get the initial density state for the network with given id.
-	 * @param network_id String id of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getInitialDensityForNetwork(String network_id){
-				
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
-
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			if(initprofile==null){
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = 0d;
-			}
-			else{
-				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
-				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = init_density[j];
-			}
-		}
-		return density;                         
-	}
-
-	/** Get the current density state for the network with given id.
-	 * @param network_id String id of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getDensityForNetwork(String network_id,int ensemble){
-		
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			Link link = (Link) network.getLinkList().getLink().get(i);
-			Double [] linkdensity = link.getDensityInVeh(ensemble);
-			for(j=0;j<numVehicleTypes;j++)
-				density[i][j] = linkdensity[j];
-		}
-		return density;           
-		
-	}
-
-	/** Get configuration file name */
-	public String getConfigFilename() {
-		return configfilename;
-	}
-
 	/** Get a reference to a signal by the id of its node.
 	 * 
 	 * @param node_id String id of the node. 
