@@ -27,7 +27,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -47,6 +46,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	private boolean istablevalid;
 
 	private Table table;
+	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -71,14 +71,11 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
+	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
 		if(jaxbc.getTargetElements()==null)
@@ -100,6 +97,61 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		this.extractTable();
 	}
 
+	@Override
+	protected void validate() {
+
+		super.validate();
+		
+		// must have exactly one target
+		if(targets.size()!=1)
+			SiriusErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
+		
+		// bad queue sensor id
+		if(hasqueuesensor && queuesensor==null)
+			SiriusErrorLog.addError("Bad queue sensor id in TOD controller id=" + getId()+".");
+		
+		// Target link id not found, or number of targets not 1.
+		if(onramplink==null)
+			SiriusErrorLog.addError("Invalid onramp link for TOD controller id=" + getId()+ ".");
+			
+		// has valid tables	
+		if(!istablevalid)
+			SiriusErrorLog.addError("Controller has an invalid TOD table.");
+	}
+	
+	@Override
+	protected void reset() {
+		super.reset();
+		todActivationIndx=0;
+		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getTimeStart())
+			todActivationIndx++;
+		control_maxflow[0]=todMeteringRates_normalized[todActivationIndx];
+	}
+
+	@Override
+	protected void update() {
+		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getCurrentTimeInSeconds())
+			control_maxflow[0]=todMeteringRates_normalized[++todActivationIndx];		
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// register / deregister
+	/////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public boolean register() {
+		return registerFlowController(onramplink,0);
+	}
+
+	@Override
+	public boolean deregister() {
+		return deregisterFlowController(onramplink);
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// private
+	/////////////////////////////////////////////////////////////////////
+	
 	private void extractTable(){
 		if (null == table) {
 			istablevalid = false;
@@ -136,51 +188,5 @@ public class Controller_IRM_Time_of_Day extends Controller {
 			istablevalid=false;
 		}
 	
-	@Override
-	public void validate() {
-
-		super.validate();
-		
-		// must have exactly one target
-		if(targets.size()!=1)
-			SiriusErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
-		
-		// bad queue sensor id
-		if(hasqueuesensor && queuesensor==null)
-			SiriusErrorLog.addError("Bad queue sensor id in TOD controller id=" + getId()+".");
-		
-		// Target link id not found, or number of targets not 1.
-		if(onramplink==null)
-			SiriusErrorLog.addError("Invalid onramp link for TOD controller id=" + getId()+ ".");
-			
-		// has valid tables	
-		if(!istablevalid)
-			SiriusErrorLog.addError("Controller has an invalid TOD table.");
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
-		todActivationIndx=0;
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getTimeStart())
-			todActivationIndx++;
-		control_maxflow[0]=todMeteringRates_normalized[todActivationIndx];
-	}
-
-	@Override
-	public void update() {
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getCurrentTimeInSeconds())
-			control_maxflow[0]=todMeteringRates_normalized[++todActivationIndx];		
-	}
-	
-	@Override
-	public boolean register() {
-		return registerFlowController(onramplink,0);
-	}
-
-	@Override
-	public boolean deregister() {
-		return deregisterFlowController(onramplink);
-	}
 	
 }

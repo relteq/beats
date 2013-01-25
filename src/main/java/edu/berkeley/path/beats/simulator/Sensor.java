@@ -39,7 +39,7 @@ import edu.berkeley.path.beats.jaxb.Table;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceComponent,InterfaceSensor {
+public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceSensor {
    			
 	/** The scenario that contains this sensor. */
 	protected Scenario myScenario;	
@@ -71,6 +71,14 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/** @y.exclude */
 	protected Sensor(){
 	}		  
+
+	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor s,Sensor.Type myType){
+		this.myScenario = myScenario;
+		this.myType = myType;
+		this.id = s.getId();
+		if(s.getLinkReference()!=null)
+			myLink = myScenario.getLinkWithId(s.getLinkReference().getId());
+	}
 
 	/////////////////////////////////////////////////////////////////////
 	// hide base class setters
@@ -192,39 +200,22 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	}
 	
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceComponent
+	// populate / validate / reset / update
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */
-	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor s,Sensor.Type myType){
-		this.myScenario = myScenario;
-		this.myType = myType;
-		this.id = s.getId();
-		if(s.getLinkReference()!=null)
-			myLink = myScenario.getLinkWithId(s.getLinkReference().getId());
-	}
-
-	/** @y.exclude */
-	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 		return;
 	}
 
-	/** @y.exclude */
-	@Override
-	public void validate() {
+	protected void validate() {
 	}
 
-	/** @y.exclude */
-	@Override
-	public void reset() throws SiriusException {
+	protected void reset() throws SiriusException {
 		return;
 	}
 
-	/** @y.exclude */
-	@Override
-	public void update() throws SiriusException {
+	protected void update() throws SiriusException {
 		return;
 	}
-	
+
 }

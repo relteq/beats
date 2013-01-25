@@ -33,7 +33,6 @@ import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.control.Controller_CRM_HERO;
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -123,14 +122,11 @@ public class Controller_CRM_HERO extends Controller {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
+	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
@@ -302,7 +298,7 @@ public class Controller_CRM_HERO extends Controller {
 	}
 	
 	@Override
-	public void validate() {
+	protected void validate() {
 		
 		super.validate();
 
@@ -370,7 +366,7 @@ public class Controller_CRM_HERO extends Controller {
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		
 		//HERO Controllers targetDensity, mainlineVehicles and queueCurrent Update (Only Executes once for the first Updated HERO Controller)
 		if(timeStep!= myScenario.getCurrentTimeStep() ){ 
@@ -429,18 +425,27 @@ public class Controller_CRM_HERO extends Controller {
 		//printFlows(this);
 		//System.out.println(mainlineLink.getDensityJamInVPMPL(0));
 	}	
+
+	/////////////////////////////////////////////////////////////////////
+	// register / deregister
+	/////////////////////////////////////////////////////////////////////
 	
 	@Override
-	public boolean register() {
+	protected boolean register() {
 		return registerFlowController(onrampLink,0);
 	}
  
+	@Override
+	protected boolean deregister() {
+		return false;
+	}
+		
 	/////////////////////////////////////////////////////////////////////
 	// Methods related to Controller Ordering from Downstream to Upstream
 	/////////////////////////////////////////////////////////////////////	
 	
 	//Added by RS
-	public ArrayList<String> orderHeroControllers() {
+	protected ArrayList<String> orderHeroControllers() {
 		
 		ArrayList<Link> linksOrdered = new ArrayList<Link>();
 		ArrayList<Node> nodesOrdered = new ArrayList<Node>();
@@ -500,7 +505,7 @@ public class Controller_CRM_HERO extends Controller {
 	// Methods related to HERO Algorithm 
 	/////////////////////////////////////////////////////////////////////	
 	
-	public void updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax(){
+	protected void updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax(){
 		//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
 		for(Integer i=0; i< controllerList.size(); i++){
 			// If target density is not given, it uses the mainline critical density
@@ -529,7 +534,7 @@ public class Controller_CRM_HERO extends Controller {
 		}
 	}
 	
-	public void defineMasterController(Integer controllerIndex){
+	protected void defineMasterController(Integer controllerIndex){
 		Integer i=controllerIndex;
 		//DEFINITION OF MASTER CONTROLLER
 		if( controllerList.get(i).type.equals(status.NOT_USED) &&
@@ -542,7 +547,7 @@ public class Controller_CRM_HERO extends Controller {
 					}
 	}
 	
-	public void dissolveMasterController(Integer masterControllerIndex){
+	protected void dissolveMasterController(Integer masterControllerIndex){
 		Integer i = masterControllerIndex;
 		//DISSOLUTION OF COORDINATION STRING
 		if( controllerList.get(i).type.equals(status.MASTER) &&
@@ -557,7 +562,7 @@ public class Controller_CRM_HERO extends Controller {
 		}	
 	}
 	
-	public void calculateQueueSummationAndQueueSummationMax(Integer masterControllerIndex){
+	protected void calculateQueueSummationAndQueueSummationMax(Integer masterControllerIndex){
 		Integer i =masterControllerIndex;
 		//Calculates the sum of the current queues and max queues for the members of a coordination string
 		double queueSummation=controllerList.get(i).queueCurrent;
@@ -570,7 +575,7 @@ public class Controller_CRM_HERO extends Controller {
 		controllerList.get(i).queueMaxSum=queueSummationMax;
 	}
 	
-	public void defineCoordinationString(Integer masterControllerIndex){
+	protected void defineCoordinationString(Integer masterControllerIndex){
 		Integer i =masterControllerIndex;
 		//DEFINITION OF COORDINATION STRING
 		if( controllerList.get(i).type.equals(status.MASTER) &&
@@ -611,7 +616,7 @@ public class Controller_CRM_HERO extends Controller {
 		}
 	}
 	
-	public void defineSlaveControllersMinimumQueue(Integer masterControllerIndex){
+	protected void defineSlaveControllersMinimumQueue(Integer masterControllerIndex){
 		Integer i =masterControllerIndex;
 		//DEFINITION OF MINIMUM QUEUE
 		if( controllerList.get(i).type.equals(status.MASTER)) {
@@ -623,7 +628,7 @@ public class Controller_CRM_HERO extends Controller {
 		}	
 	}
 
-    public void updateTypeAndPreviousType(Integer controllerIndex, status newStatus){
+    protected void updateTypeAndPreviousType(Integer controllerIndex, status newStatus){
     	Integer i =controllerIndex;
     	controllerList.get(i).typePrevious=controllerList.get(i).type;	//Update typePrevious
     	controllerList.get(i).type = newStatus;	//Update type	
@@ -633,14 +638,14 @@ public class Controller_CRM_HERO extends Controller {
 				" (id=" + controllerList.get(i).getId() +") was set to " +controllerList.get(i).type);
 	}
     
-    public void printSensorCumulativeInflowAndOutflow(Integer controllerIndex){
+    protected void printSensorCumulativeInflowAndOutflow(Integer controllerIndex){
     	Integer i =controllerIndex;
 		if (printMessages)
 			System.out.println("time "+timeStep+": Controller " +controllerList.get(i).id + " Sensor cumInflow: " + controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0)+
 							   " Sensor cumOutflow: " + controllerList.get(i).queueSensor.getCumulativeOutflowInVeh(0));
     }
     
-    public void printFlows(Controller_CRM_HERO C){
+    protected void printFlows(Controller_CRM_HERO C){
 		if (printMessages){
 			DecimalFormat df = new DecimalFormat("#.##");
 			System.out.println("time "+timeStep+": Controller " +C.id+ " --- control_maxflow[0]:"+ df.format(C.flowControl_MaxFlow) +
@@ -648,14 +653,7 @@ public class Controller_CRM_HERO extends Controller {
 				+ ", QueueMin:"+ df.format(C.flowQueueMin) +", Hero:"+df.format(C.flowHero )+", Max:"+ df.format(C.maxFlow));
 		}
     }
-        
-	@Override
-	public boolean deregister() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	
+       
 }
 
 	

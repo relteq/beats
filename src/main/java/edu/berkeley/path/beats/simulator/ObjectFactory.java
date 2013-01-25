@@ -358,7 +358,7 @@ public final class ObjectFactory {
 		}
 
 		// validate scenario ......................................
-	    S.validate();
+	    Scenario.validate(S);
 
 		if(SiriusErrorLog.haserror())
 			throw new ScenarioValidationError();

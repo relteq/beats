@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -55,6 +54,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	//private ControllerCoordinated coordcont;
 	private boolean coordmode = false;					  // true if this is used for coordination (softforceoff only)
 
+	private static Logger logger = Logger.getLogger(Controller_SIG_Pretimed_Plan.class);
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -69,14 +69,14 @@ public class Controller_SIG_Pretimed extends Controller {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
+	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 
 	/** Implementation of {@link InterfaceComponent#populate}.
 	 * @param jaxbobject Object
 	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 
@@ -127,10 +127,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
 	}
 
-	private static Logger logger = Logger.getLogger(Controller_SIG_Pretimed_Plan.class);
-
 	@Override
-	public void update() {
+	protected void update() {
 
 		double simtime = myScenario.getCurrentTimeInSeconds();
 
@@ -155,7 +153,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	}
 
 	@Override
-	public void validate() {
+	protected void validate() {
 		
 		super.validate();
 		
@@ -190,7 +188,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	}
 
 	@Override
-	public void reset() {
+	protected void reset() {
 		super.reset();
 		cperiod = 0;
 

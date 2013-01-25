@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.data.FiveMinuteData;
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.SiriusErrorLog;
 import edu.berkeley.path.beats.simulator.SiriusMath;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -64,14 +63,11 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	private static Logger logger = Logger.getLogger(SensorLoopStation.class);
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceSensor
+	// populate / validate / reset / update
 	/////////////////////////////////////////////////////////////////////	
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 		
 		edu.berkeley.path.beats.jaxb.Sensor jaxbs = (edu.berkeley.path.beats.jaxb.Sensor) jaxbobject;
 
@@ -100,17 +96,14 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		}
 	}
 
-	/** Implementation of {@link InterfaceComponent#validate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
-	public void validate() {
+	protected void validate() {
 		if(myLink==null)
 			SiriusErrorLog.addWarning("Loop sensor with id=" + getId() +" is not attached.");
 	}
 
 	@Override
-	public void reset() {
+	protected void reset() {
 		cumulative_inflow = new Double [myScenario.getNumEnsemble()];
 		cumulative_outflow = new Double [myScenario.getNumEnsemble()];
 		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
@@ -121,7 +114,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	@Override
-	public void update() {		
+	protected void update() {		
 		if(myLink==null)
 			return;
 		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
@@ -131,6 +124,10 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		return;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// InterfaceSensor
+	/////////////////////////////////////////////////////////////////////
+	
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
 		return SiriusMath.times(myLink.getDensityInVeh(ensemble), 1 / myLink.getLengthInMeters());

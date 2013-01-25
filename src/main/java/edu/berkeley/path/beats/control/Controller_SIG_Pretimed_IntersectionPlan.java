@@ -39,7 +39,6 @@ import edu.berkeley.path.beats.simulator.Signal.NEMA;
 
 public class Controller_SIG_Pretimed_IntersectionPlan {
 
-	
 	// references 
 	//private _Node myNode;
 	private Controller_SIG_Pretimed_Plan myPlan;
@@ -64,13 +63,21 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	private Float[] stagelength;
 	private Signal.NEMA [] movA;
 	private Signal.NEMA [] movB;
+
+	/////////////////////////////////////////////////////////////////////
+	// Construction
+	/////////////////////////////////////////////////////////////////////
 	
  	public Controller_SIG_Pretimed_IntersectionPlan(Controller_SIG_Pretimed_Plan myPlan){
 		this.myPlan = myPlan;
 	}
-	
+
+	/////////////////////////////////////////////////////////////////////
+	// populate / validate / reset  / update
+	/////////////////////////////////////////////////////////////////////
+ 	
 	@SuppressWarnings("unchecked")
-	public void populate(Scenario myScenario, Controller_SIG_Pretimed.Intersection intersection) {
+	protected void populate(Scenario myScenario, Controller_SIG_Pretimed.Intersection intersection) {
 								
 		if (null != intersection.getOffset())
 			this.offset = intersection.getOffset().floatValue();
@@ -204,7 +211,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 
 	}
 	
-	public void validate(double controldt){
+	protected void validate(double controldt){
 		
 		// at least two stages
 		if(numstages<=1)
@@ -243,11 +250,15 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			SiriusErrorLog.addError("Initial stages for pretimed plan of signal id=" + mySignal.getId() + " must have time stamp equal zero.");
 	}
 		
-	public void reset(){
+	protected void reset(){
 		nextcommand = 0;
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// protected methods
+	/////////////////////////////////////////////////////////////////////
 	
-	public boolean InNextStage(SignalPhase thisphase,int stageindex)
+	protected boolean InNextStage(SignalPhase thisphase,int stageindex)
 	{
 		int nextstage;
 		
@@ -262,10 +273,6 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		return thisphase.getMyNEMA().compareTo(movA[nextstage])==0 || thisphase.getMyNEMA().compareTo(movB[nextstage])==0;
 		
 	}
-
-//	public float getOffset() {
-//		return offset;
-//	}
 	
 	protected void getCommandForTime(double itime,ArrayList<Signal.Command> commandlist){
 		

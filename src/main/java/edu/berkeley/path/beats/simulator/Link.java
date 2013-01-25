@@ -87,6 +87,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
+	public void setLanes(BigDecimal value) {
+		System.out.println("This setter is hidden.");
+	}
+	
+	@Override
 	public void setBegin(Begin value) {
 		System.out.println("This setter is hidden.");
 	}
@@ -136,7 +141,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		System.out.println("This setter is hidden.");
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -870,13 +874,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		else
 			return outflow[ensemble][vt_ind];
 	}
-	
-	@Override
-	public void setLanes(BigDecimal value) {
-		System.out.println("This method has been hidden");
-	}
-	
-
 	
 
 }

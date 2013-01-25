@@ -43,7 +43,17 @@ import org.apache.log4j.Logger;
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
+import edu.berkeley.path.beats.jaxb.ControllerSet;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
+import edu.berkeley.path.beats.jaxb.DestinationNetworks;
+import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfileSet;
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet;
+import edu.berkeley.path.beats.jaxb.NetworkConnections;
+import edu.berkeley.path.beats.jaxb.NetworkList;
+import edu.berkeley.path.beats.jaxb.Routes;
+import edu.berkeley.path.beats.jaxb.Settings;
+import edu.berkeley.path.beats.jaxb.SignalList;
+import edu.berkeley.path.beats.jaxb.WeavingFactorSet;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
@@ -74,7 +84,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		  gaussian }
 
 	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
-
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
 	/** @y.exclude */	protected Scenario.UncertaintyType uncertaintyModel;
@@ -83,7 +92,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
 	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
 	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
-	/** @y.exclude */	protected ControllerSet controllerset = new ControllerSet();
+	/** @y.exclude */	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
 	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
 	/** @y.exclude */	protected int numEnsemble;
@@ -104,6 +113,109 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	/** @y.exclude */
 	protected Scenario(){}
+	
+	/////////////////////////////////////////////////////////////////////
+	// hide base class setters
+	/////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public void setDescription(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setControllerSet(ControllerSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSettings(Settings value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setNetworkList(NetworkList value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSignalList(SignalList value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSensorList(edu.berkeley.path.beats.jaxb.SensorList value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setInitialDensitySet(
+			edu.berkeley.path.beats.jaxb.InitialDensitySet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setWeavingFactorSet(WeavingFactorSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSplitRatioProfileSet(
+			edu.berkeley.path.beats.jaxb.SplitRatioProfileSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setDownstreamBoundaryCapacityProfileSet(
+			DownstreamBoundaryCapacityProfileSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setEventSet(edu.berkeley.path.beats.jaxb.EventSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setDemandProfileSet(
+			edu.berkeley.path.beats.jaxb.DemandProfileSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setFundamentalDiagramProfileSet(FundamentalDiagramProfileSet value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setNetworkConnections(NetworkConnections value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setDestinationNetworks(DestinationNetworks value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setRoutes(Routes value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setId(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setName(String value) {
+		System.out.println("This setter is hidden.");
+	}
+
+	@Override
+	public void setSchemaVersion(String value) {
+		System.out.println("This setter is hidden.");
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -156,19 +268,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/** @y.exclude */
-	public void validate() {
+	public static void validate(Scenario S) {
 				
 		// validate network
-		if( networkList!=null)
-			for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
+		if( S.networkList!=null)
+			for(edu.berkeley.path.beats.jaxb.Network network : S.networkList.getNetwork())
 				((Network)network).validate();
 
 		// sensor list
-		sensorlist.validate();
+		S.sensorlist.validate();
 		
 		// signal list
-		if(signalList!=null)
-			for (edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
+		if(S.signalList!=null)
+			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalList.getSignal())
 				((Signal) signal).validate();
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
@@ -177,25 +289,25 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			((_InitialDensityProfile) getInitialDensityProfile()).validate();
 
 		// validate capacity profiles	
-		if(downstreamBoundaryCapacityProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacityProfileSet.getCapacityProfile())
+		if(S.downstreamBoundaryCapacityProfileSet!=null)
+			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : S.downstreamBoundaryCapacityProfileSet.getCapacityProfile())
 				((CapacityProfile)capacityProfile).validate();
 		
 		// validate demand profiles
-		if(demandProfileSet!=null)
-			((DemandProfileSet)demandProfileSet).validate();
+		if(S.demandProfileSet!=null)
+			((DemandProfileSet)S.demandProfileSet).validate();
 
 		// validate split ratio profiles
-		if(splitRatioProfileSet!=null)
-			((SplitRatioProfileSet)splitRatioProfileSet).validate();
+		if(S.splitRatioProfileSet!=null)
+			((SplitRatioProfileSet)S.splitRatioProfileSet).validate();
 		
 		// validate fundamental diagram profiles
-		if(fundamentalDiagramProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
+		if(S.fundamentalDiagramProfileSet!=null)
+			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : S.fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile)fd).validate();
 		
 		// validate controllers
-		controllerset.validate();
+		S.controllerset.validate();
 
 	}
 	
@@ -500,13 +612,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		else
 			return this.clock.getEndTime();
 	}
-
-	/** Output frequency
-	 * @return output time step, sec
-	 */
-//	public double getOutputDt() {
-//		return outdt;
-//	}
 	
 	/** Get configuration file name */
 	public String getConfigFilename() {

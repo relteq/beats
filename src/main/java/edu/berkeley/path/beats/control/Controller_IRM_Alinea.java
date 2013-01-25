@@ -27,7 +27,6 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.InterfaceComponent;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -88,14 +87,14 @@ public class Controller_IRM_Alinea extends Controller {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceController
+	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
 
 	/** Implementation of {@link InterfaceComponent#populate}.
 	 * @param jaxbobject Object
 	 */
 	@Override
-	public void populate(Object jaxbobject) {
+	protected void populate(Object jaxbobject) {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
@@ -188,7 +187,7 @@ public class Controller_IRM_Alinea extends Controller {
 	}
 	
 	@Override
-	public void validate() {
+	protected void validate() {
 		
 		super.validate();
 
@@ -227,7 +226,7 @@ public class Controller_IRM_Alinea extends Controller {
 	}
 
 	@Override
-	public void update() {
+	protected void update() {
 		
 		// get mainline density either from sensor or from link
 		double mainlinevehicles;		// [veh]
@@ -244,12 +243,16 @@ public class Controller_IRM_Alinea extends Controller {
 		control_maxflow[0] = Math.max(Math.min(onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles), 1705),0);
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// register / deregister
+	/////////////////////////////////////////////////////////////////////
+
 	@Override
-	public boolean register() {
+	protected boolean register() {
 		return registerFlowController(onramplink,0);
 	}
 	
-	public boolean deregister() {
+	protected boolean deregister() {
 		return deregisterFlowController(onramplink);
 	}
 
