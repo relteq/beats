@@ -268,19 +268,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/** @y.exclude */
-	public void validate() {
+	public static void validate(Scenario S) {
 				
 		// validate network
-		if( networkList!=null)
-			for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
+		if( S.networkList!=null)
+			for(edu.berkeley.path.beats.jaxb.Network network : S.networkList.getNetwork())
 				((Network)network).validate();
 
 		// sensor list
-		sensorlist.validate();
+		S.sensorlist.validate();
 		
 		// signal list
-		if(signalList!=null)
-			for (edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
+		if(S.signalList!=null)
+			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalList.getSignal())
 				((Signal) signal).validate();
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
@@ -289,25 +289,25 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			((_InitialDensityProfile) getInitialDensityProfile()).validate();
 
 		// validate capacity profiles	
-		if(downstreamBoundaryCapacityProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacityProfileSet.getCapacityProfile())
+		if(S.downstreamBoundaryCapacityProfileSet!=null)
+			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : S.downstreamBoundaryCapacityProfileSet.getCapacityProfile())
 				((CapacityProfile)capacityProfile).validate();
 		
 		// validate demand profiles
-		if(demandProfileSet!=null)
-			((DemandProfileSet)demandProfileSet).validate();
+		if(S.demandProfileSet!=null)
+			((DemandProfileSet)S.demandProfileSet).validate();
 
 		// validate split ratio profiles
-		if(splitRatioProfileSet!=null)
-			((SplitRatioProfileSet)splitRatioProfileSet).validate();
+		if(S.splitRatioProfileSet!=null)
+			((SplitRatioProfileSet)S.splitRatioProfileSet).validate();
 		
 		// validate fundamental diagram profiles
-		if(fundamentalDiagramProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
+		if(S.fundamentalDiagramProfileSet!=null)
+			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : S.fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile)fd).validate();
 		
 		// validate controllers
-		controllerset.validate();
+		S.controllerset.validate();
 
 	}
 	
