@@ -1175,7 +1175,7 @@ public class ScenarioImporter {
 	 */
 	private DestinationNetworks save(edu.berkeley.path.beats.jaxb.DestinationNetwork destnet) throws TorqueException {
 		DestinationNetworks db_destnet = new DestinationNetworks();
-		db_destnet.setDestinationLinkId(getDBLinkId(destnet.getDestinationLinkId()));
+		db_destnet.setDestinationLinkId(getDBLinkId(destnet.getLinkIdDestination()));
 		db_destnet.setProjectId(getProjectId());
 		db_destnet.save(conn);
 		for (edu.berkeley.path.beats.jaxb.LinkReference linkref : destnet.getLinkReferences().getLinkReference())

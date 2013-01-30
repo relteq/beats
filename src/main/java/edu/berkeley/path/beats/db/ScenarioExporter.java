@@ -833,7 +833,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.DestinationNetwork restoreDestinationNetwork(DestinationNetworks db_destnet) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.DestinationNetwork destnet = factory.createDestinationNetwork();
 		destnet.setId(id2str(db_destnet.getId()));
-		destnet.setDestinationLinkId(id2str(db_destnet.getDestinationLinkId()));
+		destnet.setLinkIdDestination(id2str(db_destnet.getDestinationLinkId()));
 		edu.berkeley.path.beats.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
 		@SuppressWarnings("unchecked")
 		List<DestinationNetworkLinks> db_dnl_l = db_destnet.getDestinationNetworkLinkss();
