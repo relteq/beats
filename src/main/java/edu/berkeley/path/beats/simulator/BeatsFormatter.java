@@ -40,6 +40,12 @@ final public class BeatsFormatter {
 
 	public static String csv(Double [] V,String delim){
 		String str="";
+		if(V==null)
+			return str;
+		if(delim==null)
+			return str;
+		if(V.length==0)
+			return str;
 		if(V.length==0)
 			return str;
 		for(int i=0;i<V.length-1;i++)
@@ -50,6 +56,12 @@ final public class BeatsFormatter {
 
 	public static String csv(Double [][] V,String delim1,String delim2){
 		String str="";
+		if(V==null)
+			return str;
+		if(delim1==null)
+			return str;
+		if(delim2==null)
+			return str;
 		if(V.length==0)
 			return str;
 		for(int i=0;i<V.length-1;i++)
