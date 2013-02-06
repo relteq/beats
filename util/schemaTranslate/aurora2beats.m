@@ -1,5 +1,5 @@
-function []=aurora2sirius(aurorafile,siriusfile)
-% Translate a file from the aurora format to the sirius format
+function []=aurora2beats(aurorafile,beatsfile)
+% Translate a file from the aurora format to the beats format
 
 addpath([fileparts(mfilename('fullpath')) filesep 'xml_io_tools_2007_07']);
 
@@ -394,7 +394,7 @@ if(hasdemandprofile)
     end
 end
 
-writeToNetworkEditor(siriusfile,scenario);
+writeToNetworkEditor(beatsfile,scenario);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=safermfield(x,name)

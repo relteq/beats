@@ -1,10 +1,10 @@
 aurora_fnam = 'I80_aurora.csv';
-sirius_fnam = 'output_0.xml';
+beats_fnam = 'output_0.xml';
 
 fprintf('Reading %s\n', aurora_fnam);
 aout = readAuroraOutput(aurora_fnam);
-fprintf('Reading %s\n', sirius_fnam);
-sout = readSiriusOutput(sirius_fnam);
+fprintf('Reading %s\n', beats_fnam);
+sout = readBeatsOutput(beats_fnam);
 
 linktype = 'freeway';
 
@@ -54,7 +54,7 @@ title('Aurora Density, veh/mile/lane');
 colorbar;
 subplot(2, 3, 2);
 pcolor(sdens);
-title('Sirius Density, veh/mile/lane');
+title('BeATS Density, veh/mile/lane');
 colorbar;
 subplot(2, 3, 3);
 pcolor(densdiff);
@@ -66,7 +66,7 @@ title('Aurora Flow, veh/hr/lane');
 colorbar;
 subplot(2, 3, 5);
 pcolor(sflow);
-title('Sirius Flow, veh/hr/lane');
+title('BeATS Flow, veh/hr/lane');
 colorbar;
 subplot(2, 3, 6);
 pcolor(flowdiff);
@@ -101,7 +101,7 @@ xlim([0, size(flowerr, 1)]);
 title('Flow Error Spread');
 saveas(gcf, ['errorstat' fnsuff '.eps'], 'psc2');
 
-graphtitles = {'Aurora', 'Sirius'};
+graphtitles = {'Aurora', 'Beats'};
 
 figure('Position', [0, scrsz(2), 1024, 640]);
 subplot(2, 2, 1);
