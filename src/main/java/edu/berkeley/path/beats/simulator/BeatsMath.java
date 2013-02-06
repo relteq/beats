@@ -36,7 +36,7 @@ import java.util.Random;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class SiriusMath {
+public final class BeatsMath {
 	
 	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
@@ -112,11 +112,11 @@ public final class SiriusMath {
 	}
 	
 	public static int ceil(double a){
-		return (int) Math.ceil(a-SiriusMath.EPSILON);
+		return (int) Math.ceil(a-BeatsMath.EPSILON);
 	}
 	
 	public static int floor(double a){
-		return (int) Math.floor(a+SiriusMath.EPSILON);
+		return (int) Math.floor(a+BeatsMath.EPSILON);
 	}
 	
 	public static int round(double a){
@@ -168,13 +168,13 @@ public final class SiriusMath {
 		if(a==0)
 			return false;
 		boolean result;
-		result = SiriusMath.equals( SiriusMath.round(A/a) , A/a );
+		result = BeatsMath.equals( BeatsMath.round(A/a) , A/a );
 		result &=  A/a>0;
 		return result;
 	}
 	
 	public static boolean equals(double a,double b){
-		return Math.abs(a-b) < SiriusMath.EPSILON;
+		return Math.abs(a-b) < BeatsMath.EPSILON;
 	}	
 	
 	public static boolean equals1D(ArrayList<Double> a,ArrayList<Double> b){
@@ -183,7 +183,7 @@ public final class SiriusMath {
 		if(a.size()!=b.size())
 			return false;
 		for(int i=0;i<a.size();i++)
-			if( !SiriusMath.equals(a.get(i), b.get(i)) )
+			if( !BeatsMath.equals(a.get(i), b.get(i)) )
 				return false;
 		return true;
 	}
@@ -194,7 +194,7 @@ public final class SiriusMath {
 		if(a.size()!=b.size())
 			return false;
 		for(int i=0;i<a.size();i++)
-			if( !SiriusMath.equals1D(a.get(i), b.get(i)) )
+			if( !BeatsMath.equals1D(a.get(i), b.get(i)) )
 				return false;
 		return true;
 	}
@@ -205,13 +205,13 @@ public final class SiriusMath {
 		if(a.size()!=b.size())
 			return false;
 		for(int i=0;i<a.size();i++)
-			if( !SiriusMath.equals2D(a.get(i), b.get(i)) )
+			if( !BeatsMath.equals2D(a.get(i), b.get(i)) )
 				return false;
 		return true;
 	}
 	
 	public static boolean greaterthan(double a,double b){
-		return a > b + SiriusMath.EPSILON;
+		return a > b + BeatsMath.EPSILON;
 	}
 
 	public static boolean greaterorequalthan(double a,double b){
@@ -219,7 +219,7 @@ public final class SiriusMath {
 	}
 	
 	public static boolean lessthan(double a,double b){
-		return a < b - SiriusMath.EPSILON;
+		return a < b - BeatsMath.EPSILON;
 	}
 
 	public static boolean lessorequalthan(double a,double b){
@@ -251,10 +251,10 @@ public final class SiriusMath {
 	}
 
 	public static double sampleZeroMeanUniform(double std_dev){
-		return std_dev*Math.sqrt(3)*(2*SiriusMath.random.nextDouble()-1);
+		return std_dev*Math.sqrt(3)*(2*BeatsMath.random.nextDouble()-1);
 	}
 	
 	public static double sampleZeroMeanGaussian(double std_dev){
-		return std_dev*SiriusMath.random.nextGaussian();
+		return std_dev*BeatsMath.random.nextGaussian();
 	}
 }

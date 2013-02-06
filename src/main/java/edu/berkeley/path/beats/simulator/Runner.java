@@ -61,19 +61,19 @@ public final class Runner {
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(configfilename);
 			if (null == scenario)
-				throw new SiriusException("UNEXPECTED! Scenario was not loaded");
+				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 			
 			// run the scenario
 			scenario.run(simsettings,output_format,outputfileprefix);
 			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
 			
-		} catch (SiriusException exc) {
+		} catch (BeatsException exc) {
 			exc.printStackTrace();
 		} finally {
-			if (SiriusErrorLog.hasmessage()) {
-				SiriusErrorLog.print();
-				SiriusErrorLog.clearErrorMessage();
+			if (BeatsErrorLog.hasmessage()) {
+				BeatsErrorLog.print();
+				BeatsErrorLog.clearErrorMessage();
 			}
 		}
 		
@@ -107,7 +107,7 @@ public final class Runner {
 					"demand profiles and run to st. If st>tsidn, then the warmup will start at tsidn with the given initial " +
 					"density profile and run to st. The simulation state is not written in warmup mode. The output is a configuration " +
 					"file with the state at st contained in the initial density profile." + "\n";
-			SiriusErrorLog.addError(str);
+			BeatsErrorLog.addError(str);
 			return null;
 		}
 		
@@ -131,7 +131,7 @@ public final class Runner {
 		return simsettings;
 	}
 
-	public static void run_db(String [] args) throws SiriusException, edu.berkeley.path.beats.Runner.InvalidUsageException {
+	public static void run_db(String [] args) throws BeatsException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 		logger.info("Parsing arguments");
 		long scenario_id;
 		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
@@ -168,7 +168,7 @@ public final class Runner {
 			} catch (TooManyRowsException exc) {
 				logger.error("Too many default simulation settings for scenario " + scenario_id, exc);
 			} catch (TorqueException exc) {
-				throw new SiriusException(exc);
+				throw new BeatsException(exc);
 			}
 		}
 

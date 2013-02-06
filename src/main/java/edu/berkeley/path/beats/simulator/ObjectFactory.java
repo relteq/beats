@@ -247,9 +247,9 @@ public final class ObjectFactory {
 	 * 
 	 * @param configfilename		The name of the XML configuration file.
 	 * @return scenario				Scenario object.
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static Scenario createAndLoadScenario(String configfilename) throws SiriusException {
+	public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
 
 		JAXBContext context;
 		Unmarshaller u;
@@ -262,7 +262,7 @@ public final class ObjectFactory {
         	context = JAXBContext.newInstance("edu.berkeley.path.beats.jaxb");
 	        u = context.createUnmarshaller();
         } catch( JAXBException je ) {
-        	throw new SiriusException("Failed to create context for JAXB unmarshaller", je);
+        	throw new BeatsException("Failed to create context for JAXB unmarshaller", je);
         }
         
         // schema assignment ..........................................................
@@ -272,7 +272,7 @@ public final class ObjectFactory {
         	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
         	u.setSchema(schema);
         } catch(SAXException e){
-        	throw new SiriusException("Schema not found", e);
+        	throw new BeatsException("Schema not found", e);
         }
         
         // process configuration file name ...........................................
@@ -285,13 +285,13 @@ public final class ObjectFactory {
         	setObjectFactory(u, new JaxbObjectFactory());
         	S = (Scenario) u.unmarshal( new FileInputStream(configfilename) );
         } catch( JAXBException je ) {
-        	throw new SiriusException("JAXB threw an exception when loading the configuration file", je);
+        	throw new BeatsException("JAXB threw an exception when loading the configuration file", je);
         } catch (FileNotFoundException e) {
-        	throw new SiriusException("Configuration file not found", e);
+        	throw new BeatsException("Configuration file not found", e);
 		}
         
         if(S==null){
-        	throw new SiriusException("Unknown load error");
+        	throw new BeatsException("Unknown load error");
 		}
 
 		// check the scenario schema version
@@ -310,9 +310,9 @@ public final class ObjectFactory {
 	 * and validates the scenario.
 	 * @param S a scenario
 	 * @return the updated scenario or null if an error occurred
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static Scenario process(Scenario S) throws SiriusException {
+	public static Scenario process(Scenario S) throws BeatsException {
 		
 		if (null == S.getSettings() || null == S.getSettings().getUnits())
 			logger.warn("Scenario units not specified. Assuming SI");
@@ -327,7 +327,7 @@ public final class ObjectFactory {
 	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
 	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
 	    S.numVehicleTypes = 1;
-	    S.has_flow_unceratinty = SiriusMath.greaterthan(S.std_dev_flow,0.0);
+	    S.has_flow_unceratinty = BeatsMath.greaterthan(S.std_dev_flow,0.0);
 	    
 	    if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
@@ -343,29 +343,29 @@ public final class ObjectFactory {
 	    	for(edu.berkeley.path.beats.jaxb.Signal signal:S.getSignalList().getSignal())
 	    		registersuccess &= ((Signal)signal).register();
 	    if(!registersuccess){
-	    	throw new SiriusException("Signal registration failure");
+	    	throw new BeatsException("Signal registration failure");
 	    }
 
 	    if(S.controllerset!=null)
 	    	if(!S.controllerset.register()){
-	    		throw new SiriusException("Controller registration failure");
+	    		throw new BeatsException("Controller registration failure");
 		    }
 
 	    // print messages and clear before validation
-		if (SiriusErrorLog.hasmessage()) {
-			SiriusErrorLog.print();
-			SiriusErrorLog.clearErrorMessage();
+		if (BeatsErrorLog.hasmessage()) {
+			BeatsErrorLog.print();
+			BeatsErrorLog.clearErrorMessage();
 		}
 
 		// validate scenario ......................................
 	    Scenario.validate(S);
 
-		if(SiriusErrorLog.haserror())
+		if(BeatsErrorLog.haserror())
 			throw new ScenarioValidationError();
 		
-		if(SiriusErrorLog.haswarning()) {
-			SiriusErrorLog.print();
-			SiriusErrorLog.clearErrorMessage();
+		if(BeatsErrorLog.haswarning()) {
+			BeatsErrorLog.print();
+			BeatsErrorLog.clearErrorMessage();
 		}
 
 		return S;
@@ -701,20 +701,20 @@ public final class ObjectFactory {
 	 * @param link_id The String id of the link
 	 * @param vehtype An array of String link type names
 	 * @param init_density 2-D matrix of doubles with densities per link and vehicle type.
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 * @return InitialDensitySet
 	 */
-	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws SiriusException{
+	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws BeatsException{
 		
 		// check input
 		if(link_id.length!=init_density.length)
-			throw new SiriusException("1st dimension of the initial density matrix does not match the link array.");
+			throw new BeatsException("1st dimension of the initial density matrix does not match the link array.");
 		
 		if(init_density.length==0)
-			throw new SiriusException("Empty initial density matrix.");
+			throw new BeatsException("Empty initial density matrix.");
 
 		if(vehtype.length!=init_density[0].length)
-			throw new SiriusException("2nd dimension of the initial density matrix does not match the vehicle types array.");
+			throw new BeatsException("2nd dimension of the initial density matrix does not match the vehicle types array.");
 		
 		// new
 		InitialDensitySet ic = new InitialDensitySet();
@@ -735,7 +735,7 @@ public final class ObjectFactory {
 		for(i=0;i<init_density.length;i++){
 			Density density = new Density();
 			density.setLinkId(link_id[i]);
-			density.setContent(SiriusFormatter.csv(init_density[i],":"));			
+			density.setContent(BeatsFormatter.csv(init_density[i],":"));			
 			ic.getDensity().add(density);
 		}
 		
@@ -775,7 +775,7 @@ public final class ObjectFactory {
 		demandprofile.setDt(new BigDecimal(dt));
 		demandprofile.setStdDevAdd(new BigDecimal(StdDevAdd));
 		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
-		demandprofile.setContent(SiriusFormatter.csv(dem,":",","));
+		demandprofile.setContent(BeatsFormatter.csv(dem,":",","));
 		
 		// populate extended class properties
 		demandprofile.populate(scenario);
@@ -803,11 +803,11 @@ public final class ObjectFactory {
 		int tengcd = 0;		// in deciseconds
 		for(int i=0;i<networkList.size();i++){
 			dt = networkList.get(i).getDt().doubleValue();	// in seconds
-	        if( SiriusMath.lessthan( Math.abs(dt) ,0.1) ){
-	        	SiriusErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
+	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
+	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
 				dt *= 3600;
 	        }
-			tengcd = SiriusMath.gcd( SiriusMath.round(dt*10.0) , tengcd );
+			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
 		}
     	return ((double)tengcd)/10.0;
 	}

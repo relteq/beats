@@ -5,7 +5,7 @@ fnam = fullfile('..', '..', 'output_0.xml');
 path = {fullfile('..', 'verification', '')};
 addpath(path{:});
 fprintf('Reading %s\n', fnam);
-sout = readSiriusOutput(fnam);
+sout = readBeatsOutput(fnam);
 rmpath(path{:});
 
 disp('Processing data');

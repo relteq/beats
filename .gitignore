@@ -1,6 +1,7 @@
 /lib/
 /src/main/generated-java/
 sirius.jar
+beats.jar
 output_*
 *.asv
 *.mat

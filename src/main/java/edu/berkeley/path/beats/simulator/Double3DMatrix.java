@@ -135,7 +135,7 @@ final class Double3DMatrix {
 		}
 		
 		if(!issquare){
-			SiriusErrorLog.addError("Data is not square.");
+			BeatsErrorLog.addError("Data is not square.");
 			nIn=0;
 			nOut=0;
 			nVTypes=0;

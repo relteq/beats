@@ -1,9 +1,9 @@
-function []=config_report(siriusfile)
+function []=config_report(beatsfile)
 % Configuration summary
 
-scenario = xml_read(siriusfile);
+scenario = xml_read(beatsfile);
 
-str =  sprintf('Configuration file: %s\n\n',siriusfile);
+str =  sprintf('Configuration file: %s\n\n',beatsfile);
 
 % param
 nodetypes = {'simple','onramp','offramp','signalized_intersection','unsignalized_intersection','terminal','highway','stop_intersection','other'};

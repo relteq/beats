@@ -33,12 +33,12 @@ import java.util.ArrayList;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class SiriusErrorLog {
+public final class BeatsErrorLog {
 	
 	private static boolean haserror;
 	private static boolean haswarning;
 	private static enum level {Warning,Error};
-	private static ArrayList<SiriusError> error = new ArrayList<SiriusError>();
+	private static ArrayList<BeatsError> error = new ArrayList<BeatsError>();
 
 	public static void clearErrorMessage(){
 		error.clear();
@@ -67,8 +67,8 @@ public final class SiriusErrorLog {
 			str += "----------------------------------------\n";
 			c=0;
 			for(int i=0;i<error.size();i++){
-				SiriusError e = error.get(i);
-				if(e.mylevel.compareTo(SiriusErrorLog.level.Error)==0)
+				BeatsError e = error.get(i);
+				if(e.mylevel.compareTo(BeatsErrorLog.level.Error)==0)
 					str += ++c + ") " + e.description +"\n";
 			}
 		}
@@ -78,8 +78,8 @@ public final class SiriusErrorLog {
 			str += "----------------------------------------\n";
 			c=0;
 			for(int i=0;i<error.size();i++){
-				SiriusError e = error.get(i);
-				if(e.mylevel.compareTo(SiriusErrorLog.level.Warning)==0)
+				BeatsError e = error.get(i);
+				if(e.mylevel.compareTo(BeatsErrorLog.level.Warning)==0)
 					str += ++c + ") " + e.description + "\n";
 			}
 			
@@ -90,16 +90,16 @@ public final class SiriusErrorLog {
 	}
 	
 	public static void print(){
-		System.out.println(SiriusErrorLog.format());
+		System.out.println(BeatsErrorLog.format());
 	}
 
 	public static void addError(String str){
-		error.add(new SiriusError(str,SiriusErrorLog.level.Error));
+		error.add(new BeatsError(str,BeatsErrorLog.level.Error));
 		haserror = true;
 	}
 
 	public static void addWarning(String str){
-		error.add(new SiriusError(str,SiriusErrorLog.level.Warning));
+		error.add(new BeatsError(str,BeatsErrorLog.level.Warning));
 		haswarning = true;
 	}
 	
@@ -108,10 +108,10 @@ public final class SiriusErrorLog {
 	 *
 	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 	 */
-	public static class SiriusError {
+	public static class BeatsError {
 		String description;
-		SiriusErrorLog.level mylevel;
-		public SiriusError(String description,SiriusErrorLog.level mylevel){
+		BeatsErrorLog.level mylevel;
+		public BeatsError(String description,BeatsErrorLog.level mylevel){
 			this.description = description;
 			this.mylevel = mylevel;
 		}

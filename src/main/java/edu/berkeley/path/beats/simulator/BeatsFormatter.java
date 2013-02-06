@@ -36,7 +36,7 @@ import java.util.ArrayList;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class SiriusFormatter {
+public class BeatsFormatter {
 
 	public static String csv(Double [] V,String delim){
 		String str="";
@@ -53,8 +53,8 @@ public class SiriusFormatter {
 		if(V.length==0)
 			return str;
 		for(int i=0;i<V.length-1;i++)
-			str += SiriusFormatter.csv(V[i], delim1) + delim2;
-		str += SiriusFormatter.csv(V[V.length-1], delim1);
+			str += BeatsFormatter.csv(V[i], delim1) + delim2;
+		str += BeatsFormatter.csv(V[V.length-1], delim1);
 		return str;
 	}
 

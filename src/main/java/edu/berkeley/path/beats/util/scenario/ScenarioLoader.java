@@ -2,7 +2,7 @@ package edu.berkeley.path.beats.util.scenario;
 
 import java.io.File;
 
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Loads a scenario from a file or from a database.
@@ -15,22 +15,22 @@ import edu.berkeley.path.beats.simulator.SiriusException;
  */
 public class ScenarioLoader {
 
-	private static ScenarioLoaderIF getLoader(String filename, String format) throws SiriusException {
+	private static ScenarioLoaderIF getLoader(String filename, String format) throws BeatsException {
 		if (null == format)
-			throw new SiriusException("Format is NULL");
+			throw new BeatsException("Format is NULL");
 		else if ("XML".equals(format.toUpperCase()))
 			return new XMLScenarioLoader(filename);
 		else if ("JSON".equals(format.toUpperCase()))
 			return new JSONScenarioLoader(filename);
 		else
-			throw new SiriusException("Unsupported format " + format);
+			throw new BeatsException("Unsupported format " + format);
 	}
 
-	static String getFormat(String filename) throws SiriusException {
+	static String getFormat(String filename) throws BeatsException {
 		String name = new File(filename).getName();
 		final int dotindex = name.lastIndexOf('.');
 		if (-1 == dotindex || name.length() - 1 <= dotindex)
-			throw new SiriusException("Cannot define file format: filename=" + filename);
+			throw new BeatsException("Cannot define file format: filename=" + filename);
 		else return name.substring(dotindex + 1);
 	}
 
@@ -39,9 +39,9 @@ public class ScenarioLoader {
 	 * @param filename
 	 * @param format the file format
 	 * @return the raw scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(String filename, String format) throws SiriusException {
+	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(String filename, String format) throws BeatsException {
 		return getLoader(filename, format).loadRaw();
 	}
 
@@ -50,9 +50,9 @@ public class ScenarioLoader {
 	 * A file format is derived from the file name extension
 	 * @param filename
 	 * @return the raw scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(String filename) throws SiriusException {
+	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(String filename) throws BeatsException {
 		return getLoader(filename, getFormat(filename)).loadRaw();
 	}
 
@@ -61,9 +61,9 @@ public class ScenarioLoader {
 	 * @param filename
 	 * @param format
 	 * @return the processed scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.simulator.Scenario load(String filename, String format) throws SiriusException {
+	public static edu.berkeley.path.beats.simulator.Scenario load(String filename, String format) throws BeatsException {
 		return getLoader(filename, format).load();
 	}
 
@@ -72,9 +72,9 @@ public class ScenarioLoader {
 	 * A file format is derived from the file name extension
 	 * @param filename
 	 * @return the processed scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.simulator.Scenario load(String filename) throws SiriusException {
+	public static edu.berkeley.path.beats.simulator.Scenario load(String filename) throws BeatsException {
 		return getLoader(filename, getFormat(filename)).load();
 	}
 
@@ -82,9 +82,9 @@ public class ScenarioLoader {
 	 * Loads a raw scenario from the database
 	 * @param id the scenario ID in the database
 	 * @return the raw scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(Long id) throws SiriusException {
+	public static edu.berkeley.path.beats.jaxb.Scenario loadRaw(Long id) throws BeatsException {
 		return new DBScenarioLoader(id).loadRaw();
 	}
 
@@ -93,9 +93,9 @@ public class ScenarioLoader {
 	 * and prepares it for a simulation
 	 * @param id the scenario ID in the database
 	 * @return the processed scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.simulator.Scenario load(Long id) throws SiriusException {
+	public static edu.berkeley.path.beats.simulator.Scenario load(Long id) throws BeatsException {
 		return new DBScenarioLoader(id).load();
 	}
 

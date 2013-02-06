@@ -11,7 +11,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.ScenarioValidationError;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 @RunWith(Parameterized.class)
 public class BrokenScenarioTest {
@@ -82,10 +82,10 @@ public class BrokenScenarioTest {
 
 	/**
 	 * Checks if the configuration file validation fails
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
 	@Test(expected=ScenarioValidationError.class)
-	public void ensureValidationError() throws SiriusException {
+	public void ensureValidationError() throws BeatsException {
 		logger.info("CONFIG: " + config.getPath());
 		ObjectFactory.createAndLoadScenario(config.getPath());
 	}

@@ -6,19 +6,19 @@ import java.util.Vector;
 
 import edu.berkeley.path.beats.jaxb.ObjectFactory;
 import edu.berkeley.path.beats.jaxb.Point;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 //** Decodes a path from a string */
 public class GoogleDecoder extends DecoderBase implements DecoderIF {
 	public GoogleDecoder() {}
 
 	@Override
-	public List<Point> decode(String str) throws SiriusException {
+	public List<Point> decode(String str) throws BeatsException {
 		if (null == factory) factory = new ObjectFactory();
 		List<Point> result = new java.util.ArrayList<Point>();
 		Vector<BigDecimal> coords = decodeSequence(str);
 		if (0 != coords.size() % 2)
-			throw new SiriusException("Not an even number of coordinates");
+			throw new BeatsException("Not an even number of coordinates");
 		for (int nc = 0; nc < coords.size(); ++nc) {
 			if (0 == nc % 2) result.add(factory.createPoint());
 			final int np = nc / 2; // point index
@@ -31,7 +31,7 @@ public class GoogleDecoder extends DecoderBase implements DecoderIF {
 		return result;
 	}
 
-	private Vector<BigDecimal> decodeSequence(String str) throws SiriusException {
+	private Vector<BigDecimal> decodeSequence(String str) throws BeatsException {
 		Vector<BigDecimal> coords = new Vector<BigDecimal>();
 		int coord = 0;
 		int shift = 0;
@@ -57,7 +57,7 @@ public class GoogleDecoder extends DecoderBase implements DecoderIF {
 				shift += 5;
 		}
 		if (0 != shift)
-			throw new SiriusException("Incorect string format");
+			throw new BeatsException("Incorect string format");
 		return coords;
 	}
 

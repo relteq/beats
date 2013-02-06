@@ -23,7 +23,7 @@ public class LinkCumulativeData {
 		reset();
 	}
 
-	void update() throws SiriusException {
+	void update() throws BeatsException {
 		for (int i = 0; i < nensemble; ++i)
 			for (int j = 0; j < nvehtype; ++j) {
 				density[i][j] += link.getDensity(i, j);
@@ -45,7 +45,7 @@ public class LinkCumulativeData {
 		if (0 == nsteps)
 			return new Double[nvehtype];
 		else
-			return SiriusMath.times(density[ensemble], 1.0d / nsteps);
+			return BeatsMath.times(density[ensemble], 1.0d / nsteps);
 	}
 
 	public Double getCumulativeInputFlow(int ensemble, int vehtypenum) {
@@ -64,7 +64,7 @@ public class LinkCumulativeData {
 		if (0 == nsteps)
 			return new Double[nvehtype];
 		else
-			return SiriusMath.times(iflow[ensemble], 1.0d / nsteps);
+			return BeatsMath.times(iflow[ensemble], 1.0d / nsteps);
 	}
 	
 	public Double getMeanInputFlow(int ensemble, int vt_ind) {
@@ -95,7 +95,7 @@ public class LinkCumulativeData {
 		if (0 == nsteps)
 			return new Double[nvehtype];
 		else
-			return SiriusMath.times(oflow[ensemble], 1.0d / nsteps);
+			return BeatsMath.times(oflow[ensemble], 1.0d / nsteps);
 	}
 
 	void reset() {

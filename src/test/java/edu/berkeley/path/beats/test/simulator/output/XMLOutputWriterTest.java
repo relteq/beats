@@ -54,8 +54,8 @@ import javax.xml.validation.Validator;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 @RunWith(Parameterized.class)
 public class XMLOutputWriterTest {
@@ -110,10 +110,10 @@ public class XMLOutputWriterTest {
 	 * @throws SAXException
 	 * @throws XMLStreamException
 	 * @throws FactoryConfigurationError
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
 	@Test
-	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError, SiriusException {
+	public void testOutputWriter() throws IOException, SAXException, XMLStreamException, FactoryConfigurationError, BeatsException {
 		logger.info("CONFIG: " + conffile.getPath());
 		validate(conffile, ischema);
 		String confname = conffile.getName();
@@ -121,7 +121,7 @@ public class XMLOutputWriterTest {
 
 		String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
 		File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
-		runSirius(conffile.getPath(), outfile.getAbsolutePath());
+		runBeats(conffile.getPath(), outfile.getAbsolutePath());
 		logger.info("Simulation completed");
 
 		validate(outfile, oschema);
@@ -150,9 +150,9 @@ public class XMLOutputWriterTest {
 	 * Runs a simulation
 	 * @param confpath String a configuration file path
 	 * @param outpath String an output file path
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	protected void runSirius(String confpath, String outpath) throws SiriusException {
+	protected void runBeats(String confpath, String outpath) throws BeatsException {
 		// simulation settings
 		double timestart = 0d;
 		double duration = 3600d;
@@ -172,9 +172,9 @@ public class XMLOutputWriterTest {
 		logger.info("Running a simulation");
 		scenario.run(timestart,timestart+duration,outDt,outtype,outprefix,numReps);
 
-		if (SiriusErrorLog.haserror()) {
-			SiriusErrorLog.print();
-			SiriusErrorLog.clearErrorMessage();
+		if (BeatsErrorLog.haserror()) {
+			BeatsErrorLog.print();
+			BeatsErrorLog.clearErrorMessage();
 		}
 	}
 

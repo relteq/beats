@@ -94,7 +94,7 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 			// disallow pairs of events with equal time stamp, target, and type.
 			if(previousevent!=null)
 				if(event.equals(previousevent))
-					SiriusErrorLog.addError("Events id=" + previousevent.getId() + " and id=" + event.getId() + " are identical.");
+					BeatsErrorLog.addError("Events id=" + previousevent.getId() + " and id=" + event.getId() + " are identical.");
 			previousevent = event;
 		}
 	}
@@ -104,7 +104,7 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 		isdone = sortedevents.isEmpty();
 	}
 
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 
 		if(isdone)
 			return;
@@ -119,12 +119,12 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 			
 			Event event =  sortedevents.get(currentevent);
 			
-			SiriusErrorLog.clearErrorMessage();
+			BeatsErrorLog.clearErrorMessage();
 			event.validate();
-			if(!SiriusErrorLog.haserror())
+			if(!BeatsErrorLog.haserror())
 				event.activate(); 
 			else
-				throw new SiriusException("Event could not be validated.");
+				throw new BeatsException("Event could not be validated.");
 			
 			currentevent++;
 			

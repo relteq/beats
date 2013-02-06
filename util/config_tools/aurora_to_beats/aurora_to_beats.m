@@ -1,7 +1,7 @@
-function []=aurora2sirius(aurorafile,siriusfile)
-% Translate a file from the aurora format to the sirius format
+function []=aurora_to_beats(aurorafile,beatsfile)
+% Translate a file from the aurora format to the beats format
 
-addpath([fileparts(mfilename('fullpath')) filesep 'xml_io_tools_2007_07']);
+addpath([fileparts(fileparts(mfilename('fullpath'))) filesep 'xml_io_tools_2007_07']);
 
 scenario = xml_read(aurorafile);
 
@@ -394,7 +394,7 @@ if(hasdemandprofile)
     end
 end
 
-writeToNetworkEditor(siriusfile,scenario);
+writeToNetworkEditor(beatsfile,scenario);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [x]=safermfield(x,name)
@@ -495,13 +495,13 @@ end
 x.ATTRIBUTE.type = newtype;
 
 switch x.ATTRIBUTE.link_type
-    case {'FW','mainline'}
+    case 'FW'
         newtype = 'freeway';
     case 'HOV'
         newtype = 'HOV';
-    case {'OR','onramp'}
+    case 'OR'
         newtype = 'onramp';
-    case {'FR','offramp'}
+    case 'offramp'
         newtype = 'offramp';
     otherwise
         newtype = 'other';

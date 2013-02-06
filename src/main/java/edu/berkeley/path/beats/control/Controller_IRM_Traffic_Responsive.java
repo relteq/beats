@@ -30,7 +30,7 @@ import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.Table;
 
 public class Controller_IRM_Traffic_Responsive extends Controller {
@@ -181,39 +181,39 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 		// must have exactly one target
 		if(targets.size()!=1)
-			SiriusErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
+			BeatsErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
 		if(hasmainlinesensor && mainlinesensor==null)
-			SiriusErrorLog.addError("Bad mainline sensor id in traffic responsive controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad mainline sensor id in traffic responsive controller id=" + getId()+".");
 		
 		// bad queue sensor id
 		if(hasqueuesensor && queuesensor==null)
-			SiriusErrorLog.addError("Bad queue sensor id in traffic responsive controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad queue sensor id in traffic responsive controller id=" + getId()+".");
 		
 		// Target link id not found, or number of targets not 1.
 		if(onramplink==null)
-			SiriusErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
 
 		// both link and sensor feedback
 		if(hasmainlinelink && hasmainlinesensor)
-			SiriusErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
+			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
 
 		// sensor is disconnected
 		if(usesensor && mainlinesensor.getMyLink()==null)
-			SiriusErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller id=" + getId()+ " ");
+			BeatsErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller id=" + getId()+ " ");
 
 		// no feedback
 		if(mainlinelink==null)
-			SiriusErrorLog.addError("Invalid mainline link for traffic responsive controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid mainline link for traffic responsive controller id=" + getId()+ ".");
 
 		// Target link id not found, or number of targets not 1.
 		if(onramplink==null)
-			SiriusErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
 			
 		// invalid table
 		if(!istablevalid)
-			SiriusErrorLog.addError("Controller has an invalid table.");			
+			BeatsErrorLog.addError("Controller has an invalid table.");			
 	}
 	
 	@Override

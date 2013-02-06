@@ -26,8 +26,8 @@
 
 package edu.berkeley.path.beats.event;
 
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
 
@@ -73,11 +73,11 @@ public class Event_Global_Demand_Knob extends Event {
 		super.validate();
 
 		if(newknob<0)
-			SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+			BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 	}
 
 	@Override
-	protected void activate() throws SiriusException{
+	protected void activate() throws BeatsException{
 		setGlobalDemandEventKnob(newknob);
 	}
 }

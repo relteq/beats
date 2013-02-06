@@ -38,7 +38,7 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 
 public class Controller_CRM_HERO extends Controller {
 
@@ -304,62 +304,62 @@ public class Controller_CRM_HERO extends Controller {
 
 		// must have exactly one target
 		if(targets.size()!=1)
-			SiriusErrorLog.addError("Numnber of targets for HERO controller id=" + getId()+ " does not equal one.");
+			BeatsErrorLog.addError("Numnber of targets for HERO controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
 		if(hasMainlineSensor && mainlineSensor==null)
-			SiriusErrorLog.addError("Bad mainline sensor id in HERO controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad mainline sensor id in HERO controller id=" + getId()+".");
 
 		// bad queue sensor id
 		if(hasQueueSensor && queueSensor==null)
-			SiriusErrorLog.addError("Bad queue sensor id in HERO controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad queue sensor id in HERO controller id=" + getId()+".");
 		
 		// both link and sensor feedback
 		if(hasMainlineLink && hasMainlineSensor)
-			SiriusErrorLog.addError("Both mainline link and mainline sensor are not allowed in HERO controller id=" + getId()+".");
+			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in HERO controller id=" + getId()+".");
 		
 		// Mainline sensor is disconnected
 		if(useMainlineSensor && mainlineSensor.getMyLink()==null)
-			SiriusErrorLog.addError("Mainline sensor is not connected to a link in HERO controller id=" + getId()+ " ");
+			BeatsErrorLog.addError("Mainline sensor is not connected to a link in HERO controller id=" + getId()+ " ");
 		
 		// Queue sensor is disconnected
 		if(queueSensor!=null && queueSensor.getMyLink()==null)
-				SiriusErrorLog.addError("Queue sensor in HERO controller id=" + getId()+ " is not connected to a link");
+				BeatsErrorLog.addError("Queue sensor in HERO controller id=" + getId()+ " is not connected to a link");
 
 		// no feedback
 		if(mainlineLink==null)
-			SiriusErrorLog.addError("Invalid mainline link for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid mainline link for HERO controller id=" + getId()+ ".");
 		
 		// Target link id not found, or number of targets not 1.
 		if(onrampLink==null)
-			SiriusErrorLog.addError("Invalid onramp link for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for HERO controller id=" + getId()+ ".");
 		
 		// No queue sensor
 		if(queueSensor==null)
-			SiriusErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller id=" + getId()+ ".");
 		
 		// queueSensor link_reference is not the same as onrampLink id
 		if(queueSensor!=null && (!queueSensor.getMyLink().getId().equals(onrampLink.getId()) || !queueSensor.getMyLink().getType().equals("onramp")))
-			SiriusErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller id=" + getId()+ " ");		
+			BeatsErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller id=" + getId()+ " ");		
 				
 		// negative gain
 		if(mainlineLink!=null && alineaGainNormalized<=0f)
-			SiriusErrorLog.addError("Non-positive gainAlinea for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Non-positive gainAlinea for HERO controller id=" + getId()+ ".");
 		
 		//Controller Ids not unique
 		Set<String> s = new HashSet<String>(controllersOrdered);  
 		if(controllersOrdered.size()!=s.size())
-			SiriusErrorLog.addError("Controller ID's are not Unique");
+			BeatsErrorLog.addError("Controller ID's are not Unique");
 		
 		//negative inputs
 		if(minFlow<0f || maxFlow<0f || queueControllerGainNormalized<0f || queueMinControllerGainNormalized<0f 
 				|| alineaGainNormalized<0f || queueMax<0f ||targetVehicles<0f){
-			SiriusErrorLog.addError("Negative input value(s) for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Negative input value(s) for HERO controller id=" + getId()+ ".");
 		}
 		
 		//Thresholds smaller or equal to zero
 		if(actThresholdQ<=0f || deactThresholdQ<=0f || actThresholdM<=0f || deactThresholdM <=0f ) {
-			SiriusErrorLog.addError("Negative threshold value(s) for HERO controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Negative threshold value(s) for HERO controller id=" + getId()+ ".");
 		}
 		
 		

@@ -66,7 +66,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			return;
 		
 		if(myScenario.getSimDtInSeconds()<=0)
-			SiriusErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
+			BeatsErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
 		
 		// node list
 		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
@@ -77,7 +77,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			((Link)link).validate();
 	}
 
-	protected void reset(Scenario.ModeType simulationMode) throws SiriusException {
+	protected void reset(Scenario.ModeType simulationMode) throws BeatsException {
 
 		if(isempty)
 			return;
@@ -95,7 +95,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		}
 	}
 
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 
 		if(isempty)
 			return;

@@ -32,17 +32,17 @@ package edu.berkeley.path.beats.simulator;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("serial")
-public class SiriusException extends Exception {
+public class BeatsException extends Exception {
 
-	public SiriusException(String string){
+	public BeatsException(String string){
 		super(string);
 	}
 
-	public SiriusException(String message, Throwable cause) {
+	public BeatsException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public SiriusException(Throwable exc) {
+	public BeatsException(Throwable exc) {
 		super(exc);
 	}
 

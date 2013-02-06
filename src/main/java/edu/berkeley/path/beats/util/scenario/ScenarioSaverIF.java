@@ -1,6 +1,6 @@
 package edu.berkeley.path.beats.util.scenario;
 
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Scenario saving interface.
@@ -8,6 +8,6 @@ import edu.berkeley.path.beats.simulator.SiriusException;
  */
 interface ScenarioSaverIF {
 
-	public void save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException;
+	public void save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws BeatsException;
 
 }

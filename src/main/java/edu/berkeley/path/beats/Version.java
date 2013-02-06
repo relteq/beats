@@ -32,7 +32,7 @@ import java.io.InputStreamReader;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Retrieves and stores application schema and engine versions
@@ -87,7 +87,7 @@ public class Version {
 		// schema version
 		try {
 			version.setSchemaVersion(edu.berkeley.path.beats.util.ScenarioUtil.getSchemaVersion());
-		} catch (SiriusException exc) {
+		} catch (BeatsException exc) {
 			logger.error("Failed to retrieve schema version", exc);
 		}
 

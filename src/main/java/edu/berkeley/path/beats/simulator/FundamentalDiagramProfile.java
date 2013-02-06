@@ -57,7 +57,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	protected void populate(Scenario myScenario) throws SiriusException {
+	protected void populate(Scenario myScenario) throws BeatsException {
 		
 		this.myScenario = myScenario;
 		isdone = false;
@@ -72,7 +72,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		}
 		else{ 	// only allow if it contains only one fd
 			if(getFundamentalDiagram().size()==1){
@@ -99,18 +99,18 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 	protected void validate() {
 		
 		if(myLink==null)
-			SiriusErrorLog.addError("Bad link id=" + getLinkId() + " in fundamental diagram.");
+			BeatsErrorLog.addError("Bad link id=" + getLinkId() + " in fundamental diagram.");
 		
 		// check dtinseconds
-		if( SiriusMath.lessthan(dtinseconds,0d) )
-			SiriusErrorLog.addError("Negative dt in fundamental diagram profile for link id=" + getLinkId() + ".");
+		if( BeatsMath.lessthan(dtinseconds,0d) )
+			BeatsErrorLog.addError("Negative dt in fundamental diagram profile for link id=" + getLinkId() + ".");
 		
 		// check dtinseconds
-		if( SiriusMath.equals(dtinseconds,0d) && FD.size()>1 )
-			SiriusErrorLog.addError("dt=0 in fundamental diagram profile for link id=" + getLinkId() + ".");
+		if( BeatsMath.equals(dtinseconds,0d) && FD.size()>1 )
+			BeatsErrorLog.addError("dt=0 in fundamental diagram profile for link id=" + getLinkId() + ".");
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-			SiriusErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			BeatsErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check fundamental diagrams
 		for(FundamentalDiagram fd : FD)
@@ -118,14 +118,14 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 
 	}
 
-	protected void reset() throws SiriusException {
+	protected void reset() throws BeatsException {
 		isdone = false;
 		
 		// read start time, convert to stepinitial
 		double profile_starttime;	// [sec]
 		
 		profile_starttime = getStartTime()==null ? 0f : getStartTime().floatValue();
-		stepinitial = SiriusMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = BeatsMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 		if(FD!=null)
 			for(FundamentalDiagram fd : FD)
@@ -136,7 +136,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		
 	}
 
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 		if(myLink==null)
 			return;
 		if(isdone || FD.isEmpty())

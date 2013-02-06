@@ -48,7 +48,7 @@ public class FDCalibrator {
 	/** run calibration on all sensors and propagate result to links.
 	 * 
 	 */
-	public static void calibrate(Scenario scenario) throws SiriusException {
+	public static void calibrate(Scenario scenario) throws BeatsException {
 
 		HashMap <SensorLoopStation,FDParameters> sensorFD = new HashMap <SensorLoopStation,FDParameters> ();
 		
@@ -422,7 +422,7 @@ public class FDCalibrator {
 			
 			System.out.println("done");
 			
-		} catch (SiriusException e) {
+		} catch (BeatsException e) {
 			e.printStackTrace();
 		}
 	}	

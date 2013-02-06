@@ -38,9 +38,9 @@ import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SiriusException;
-import edu.berkeley.path.beats.simulator.SiriusFormatter;
-import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.BeatsFormatter;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 
 public class SimulatorTest {
 
@@ -106,7 +106,7 @@ public class SimulatorTest {
 				scenario = ObjectFactory.createAndLoadScenario(configfile);
 	
 				if (null == scenario)
-					throw new SiriusException("UNEXPECTED! Scenario was not loaded");
+					throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 				
 				// run the scenario
 				System.out.println("\tRunning");
@@ -119,14 +119,14 @@ public class SimulatorTest {
 				for(String vt : vehicleTypes)
 					for(String q : quantities){
 						String filename = config_name+"_"+q+"_"+vt+"_0.txt";
-						ArrayList<ArrayList<Double>> A = SiriusFormatter.readCSV(fixture_folder+filename,"\t");
-						ArrayList<ArrayList<Double>> B = SiriusFormatter.readCSV(output_folder+filename,"\t");
-						assertTrue("The files are not equal.",SiriusMath.equals2D(A,B));
+						ArrayList<ArrayList<Double>> A = BeatsFormatter.readCSV(fixture_folder+filename,"\t");
+						ArrayList<ArrayList<Double>> B = BeatsFormatter.readCSV(output_folder+filename,"\t");
+						assertTrue("The files are not equal.",BeatsMath.equals2D(A,B));
 					}
 			
 			}
 
-		} catch (SiriusException exc) {
+		} catch (BeatsException exc) {
 			exc.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();

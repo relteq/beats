@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -82,12 +82,12 @@ public class Event_Control_Toggle extends Event {
 		if(targets!=null)
 			for(ScenarioElement s : targets)
 				if(s.getMyType().compareTo(ScenarioElement.Type.controller)!=0)
-					SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
+					BeatsErrorLog.addError("Wrong target type for event id=" +getId() +".");
 
 	}
 
 	@Override
-	protected void activate() throws SiriusException{
+	protected void activate() throws BeatsException{
 		for(ScenarioElement s : targets){
 			Controller c = myScenario.getControllerWithId(s.getId());
 			setControllerIsOn(c, ison);

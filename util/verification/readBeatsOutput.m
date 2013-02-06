@@ -1,8 +1,8 @@
-function data = readSiriusOutput(fnam)
+function data = readBeatsOutput(fnam)
 data = struct;
-javapath = {fullfile('..', '..', 'sirius.jar')};
+javapath = {fullfile('..', '..', 'beats.jar')};
 javaaddpath(javapath{:});
-import com.relteq.sirius.simulator.*;
+% import com.relteq.sirius.simulator.*;
 out = OutputReader.Read(fnam);
 links = out.getLinks().toArray();
 nlinks = numel(links);

@@ -204,27 +204,27 @@ public class SignalPhase {
 
 		// check that there are links attached
 		if(targetlinks==null || targetlinks.length==0)
-			SiriusErrorLog.addError("No valid target link for phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
 		
 		// target links are valid
 		if(targetlinks!=null)
 			for(int i=0;i<targetlinks.length;i++)
 				if(targetlinks[i]==null)
-					SiriusErrorLog.addError("Unknown link reference in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
+					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
 		
 		// myNEMA is valid
 		if(myNEMA.compareTo(Signal.NEMA.NULL)==0)
-			SiriusErrorLog.addError("Invalid NEMA code in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
 		
 		// numbers are positive
 		if( mingreen<0 )
-			SiriusErrorLog.addError("Negative mingreen=" + mingreen + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Negative mingreen=" + mingreen + " in signal id=" + mySignal.getId());
 
 		if( yellowtime<0 )
-			SiriusErrorLog.addError("Negative yellowtime=" + yellowtime + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Negative yellowtime=" + yellowtime + " in signal id=" + mySignal.getId());
 
 		if( redcleartime<0 )
-			SiriusErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal id=" + mySignal.getId());
 	}
 	
 //	 -------------------------------------------------------------------------------------------------
@@ -239,11 +239,11 @@ public class SignalPhase {
 			break;
 		case YELLOW:
 			// iff near end yellow time and there is no red clear time
-			permitopposinghold =  SiriusMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.dt) && redcleartime==0 ;
+			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),actualyellowtime-bulbtimer.dt) && redcleartime==0 ;
 			break;
 		case RED:	
 			// iff near end of red clear time and not starting again.
-			permitopposinghold =  SiriusMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.dt) && !hold_requested;
+			permitopposinghold =  BeatsMath.greaterorequalthan(bulbtimer.getT(),redcleartime-bulbtimer.dt) && !hold_requested;
 			break;
 		case DARK:
 			break;
@@ -306,11 +306,11 @@ public class SignalPhase {
 //				permitopposinghold = false;
 				
 				
-//				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0)
+//				if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime-bulbtimer.dt) && redcleartime==0)
 //					permitopposinghold = true;
 
 				// yellow time over, go immediately to red if redcleartime==0
-				if( SiriusMath.greaterorequalthan(bulbt,actualyellowtime) ){
+				if( BeatsMath.greaterorequalthan(bulbt,actualyellowtime) ){
 					setPhaseColor(Signal.BulbColor.RED);
 					bulbtimer.reset();
 					done = redcleartime>0;
@@ -324,8 +324,8 @@ public class SignalPhase {
 	
 				setPhaseColor(Signal.BulbColor.RED);
 	
-				//if( SiriusMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
-//				if( SiriusMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
+				//if( BeatsMath.greaterorequalthan(bulbt,redcleartime-myNode.getMyNetwork().getTP()*3600f  && !goG )
+//				if( BeatsMath.greaterorequalthan(bulbt,redcleartime-bulbtimer.dt) && !hold_approved )
 //					permitopposinghold = true;
 //				else
 //					permitopposinghold = false;

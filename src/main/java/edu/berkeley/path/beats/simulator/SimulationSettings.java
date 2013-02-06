@@ -147,7 +147,7 @@ public class SimulationSettings {
 	 * @return the "rounded" value
 	 */
 	private double round(double val) {
-		return SiriusMath.round(val * 10.0) / 10.0;
+		return BeatsMath.round(val * 10.0) / 10.0;
 	}
 
 	/**

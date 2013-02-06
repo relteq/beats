@@ -84,7 +84,7 @@ final class Clock {
 	
 	protected int sampleindex(int stepinitial,int samplesteps){
 		if(samplesteps>0){
-			return SiriusMath.floor((currentstep-stepinitial)/((float)samplesteps));
+			return BeatsMath.floor((currentstep-stepinitial)/((float)samplesteps));
 		}
 		else
 			return 0;

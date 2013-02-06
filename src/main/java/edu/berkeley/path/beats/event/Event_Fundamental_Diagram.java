@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -106,19 +106,19 @@ public class Event_Fundamental_Diagram extends Event {
 		super.validate();
 		
 		if(FD==null)
-			SiriusErrorLog.addError("Event id=" +getId() +" does not define a fundamental diagram.");
+			BeatsErrorLog.addError("Event id=" +getId() +" does not define a fundamental diagram.");
 		
 		// check each target is valid
 		for(ScenarioElement s : targets)
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
-				SiriusErrorLog.addError("Wrong target type for event id=" +getId() +".");
+				BeatsErrorLog.addError("Wrong target type for event id=" +getId() +".");
 		
 		// check that new fundamental diagram does not invalidate current state
 		
 	}
 
 	@Override
-	protected void activate() throws SiriusException{
+	protected void activate() throws BeatsException{
 		for(ScenarioElement s : targets){
 			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)

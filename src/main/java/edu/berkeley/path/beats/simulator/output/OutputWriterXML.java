@@ -43,8 +43,8 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 @SuppressWarnings("restriction")
 public final class OutputWriterXML extends OutputWriterBase {
@@ -60,7 +60,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 
 	private Marshaller marshaller;
 
-	public OutputWriterXML(Scenario scenario, Properties props,double outDt,int outsteps) throws SiriusException {
+	public OutputWriterXML(Scenario scenario, Properties props,double outDt,int outsteps) throws BeatsException {
 		super(scenario,outDt,outsteps);
 		if (null != props) prefix = props.getProperty("prefix");
 		if (null == prefix) prefix = "output";
@@ -75,7 +75,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 			marshaller.setSchema(edu.berkeley.path.beats.util.ScenarioUtil.getOutputSchema());
 			marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 		} catch (JAXBException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 
 		requestLinkCumulatives();
@@ -83,7 +83,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 	}
 
 	@Override
-	public void open(int run_id) throws SiriusException {
+	public void open(int run_id) throws BeatsException {
 		XMLOutputFactory xmlof = XMLOutputFactory.newInstance();
 		try {
 			xmlsw = xmlof.createXMLStreamWriter(new FileOutputStream(prefix + "_" + String.format("%d", run_id) + ".xml"), "utf-8");
@@ -109,16 +109,16 @@ public final class OutputWriterXML extends OutputWriterBase {
 			// data
 			xmlsw.writeStartElement("data");
 		} catch (XMLStreamException exc) {
-			SiriusErrorLog.addError(exc.toString());
+			BeatsErrorLog.addError(exc.toString());
 		} catch (FileNotFoundException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} catch (JAXBException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
 	@Override
-	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
+	public void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException {
 		boolean firststep = 0 == scenario.getCurrentTimeStep();
 		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimDtInSeconds() * outsteps);
 		try {
@@ -231,7 +231,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 			xmlsw.writeEndDocument();
 			xmlsw.close();
 		} catch (XMLStreamException exc) {
-			SiriusErrorLog.addError(exc.toString());
+			BeatsErrorLog.addError(exc.toString());
 		}
 	}
 
