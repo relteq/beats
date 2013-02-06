@@ -87,7 +87,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <targetDatabase>postgresql</targetDatabase>
-              <outputDir>${torque.sql.dir}/postgres</outputDir>
+              <outputDir>${torque.sql.dir}/postgresql</outputDir>
             </configuration>
             <goals>
               <goal>sql</goal>
