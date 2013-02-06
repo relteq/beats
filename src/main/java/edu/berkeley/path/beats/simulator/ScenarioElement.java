@@ -55,7 +55,7 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 	protected ScenarioElement(){}
 	
 	/////////////////////////////////////////////////////////////////////
-	// API
+	// public API
 	/////////////////////////////////////////////////////////////////////
 
 	/** The scenario that contains the referenced component.

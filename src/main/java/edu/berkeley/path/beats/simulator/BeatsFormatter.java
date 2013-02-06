@@ -36,7 +36,7 @@ import java.util.ArrayList;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class BeatsFormatter {
+final public class BeatsFormatter {
 
 	public static String csv(Double [] V,String delim){
 		String str="";

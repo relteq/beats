@@ -32,7 +32,7 @@ import java.util.List;
  * <p>
 * @author Gabriel Gomes
 */
-public class BeatsState {
+final public class BeatsState {
 
 	protected Scenario myScenario;
 	protected int numNetworks;					// number of networks in the scenario

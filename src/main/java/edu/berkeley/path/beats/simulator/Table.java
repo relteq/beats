@@ -33,13 +33,33 @@ import java.util.HashSet;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class Table {
+final public class Table {
 	
-	/** List of Column names*/	
-	protected ArrayList<String> ColumnNames;
+	protected ArrayList<String> ColumnNames;			// List of Column names
+	protected ArrayList<ArrayList<String>> Rows;		// List of Rows. Each row contains a list of strings denoting different columns
 	
-	/** List of Rows. Each row contains a list of strings denoting different columns */	
-	protected ArrayList<ArrayList<String>> Rows;
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
+	public Table(edu.berkeley.path.beats.jaxb.Table T1){	
+		Rows = new ArrayList<ArrayList<String>>();
+		ColumnNames=new ArrayList<String>();
+		for (edu.berkeley.path.beats.jaxb.Row row : T1.getRow())
+			Rows.add((ArrayList<String>) row.getColumn());
+		for (edu.berkeley.path.beats.jaxb.ColumnName colname : T1.getColumnNames().getColumnName())
+			ColumnNames.add(colname.getName());
+	}
+
+	public Table(ArrayList<String> columnNames,	ArrayList<ArrayList<String>> rows) {
+		super();
+		ColumnNames = columnNames;
+		Rows = rows;
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
 	
 	/** Checks that each row has the same number of columns as the column_names. Also checks for unique column names*/  
 	public boolean checkTable(){
@@ -75,22 +95,6 @@ public class Table {
 	/** Returns an element in the table, indexed by row number and column name*/
 	public String getTableElement(int RowNo,String cname){
 		return (Rows.get(RowNo)).get(this.getColumnNo(cname));
-	}
-	
-	/** Constructors*/
-	public Table(edu.berkeley.path.beats.jaxb.Table T1){	
-		Rows = new ArrayList<ArrayList<String>>();
-		ColumnNames=new ArrayList<String>();
-		for (edu.berkeley.path.beats.jaxb.Row row : T1.getRow())
-			Rows.add((ArrayList<String>) row.getColumn());
-		for (edu.berkeley.path.beats.jaxb.ColumnName colname : T1.getColumnNames().getColumnName())
-			ColumnNames.add(colname.getName());
-	}
-
-	public Table(ArrayList<String> columnNames,	ArrayList<ArrayList<String>> rows) {
-		super();
-		ColumnNames = columnNames;
-		Rows = rows;
 	}
 	
 }

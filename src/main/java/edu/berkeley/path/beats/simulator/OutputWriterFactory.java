@@ -32,11 +32,10 @@ import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
 import edu.berkeley.path.beats.simulator.output.OutputWriterTXT;
 import edu.berkeley.path.beats.simulator.output.OutputWriterXML;
 
-
 /**
  *
  */
-public class OutputWriterFactory {
+final public class OutputWriterFactory {
 	
 	/**
 	 * Constructs an output writer of a given type

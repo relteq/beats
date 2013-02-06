@@ -30,7 +30,7 @@ package edu.berkeley.path.beats.simulator;
  * YYY
  *
 */
-public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
+final public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
 	
 	/**
 	 * Tests whether a parameter with the given name exists
