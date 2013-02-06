@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.db;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -84,8 +85,7 @@ public class Admin {
 		}
 		Service.init(params);
 		exec.runStatements(new java.io.InputStreamReader(Admin.class.getClassLoader().getResourceAsStream(
-				"sql" + File.separator + params.getDriver() + File.separator + "sirius-db-schema.sql")),
-				System.err);
+				"sql" + File.separator + params.getDriver() + File.separator + "sirius-db-schema.sql")));
 		logger.info("Database tables created");
 
 		new Initializer().run();
@@ -95,20 +95,46 @@ public class Admin {
 	/**
 	 * Executes SQL statements
 	 */
-	public static class SQLExec extends org.apache.torque.task.TorqueSQLExec {
-		public SQLExec() {
-			org.apache.tools.ant.Project project = new org.apache.tools.ant.Project();
-			project.init();
-			setProject(project);
+	public static class SQLExec {
+		public SQLExec() {}
+
+		private String delimiter = ";";
+
+		/**
+		 * Derived from org.apache.torque.task.TorqueSQLExec.runStatements
+		 * @param reader
+		 * @throws IOException
+		 */
+		public void runStatements(java.io.Reader reader) throws IOException {
+			StringBuilder sql = new StringBuilder();
+			String line = null;
+
+			BufferedReader bufreader = new BufferedReader(reader);
+
+			while (null != (line = bufreader.readLine())) {
+				line = line.trim();
+				// ignore empty lines and comments
+				if (line.isEmpty() || line.startsWith("//") || line.startsWith("--") || line.toUpperCase().startsWith("REM ")) continue;
+
+				// SQL defines "--" as a comment to EOL
+				// and in Oracle it may contain a hint
+				// so we cannot just remove it, instead we must end it
+				if (line.indexOf("--") >= 0) line += "\n";
+
+				sql.append(" " + line);
+
+				if (line.endsWith(delimiter)) {
+					execSQL(sql.substring(0, sql.length() - delimiter.length()));
+					sql.setLength(0);
+				}
+			}
+
+			// Catch any statements not followed by ;
+			if (0 < sql.length()) execSQL(sql.toString());
 		}
 
-		@Override
-		public void runStatements(java.io.Reader reader, java.io.PrintStream out) throws IOException, SQLException {
-			super.runStatements(reader, out);
-		}
-
-		@Override
-		protected void execSQL(String sql, java.io.PrintStream out) {
+		protected void execSQL(String sql) {
+			logger.debug("SQL: " + sql);
 			try {
 				BasePeer.executeStatement(sql);
 			} catch (TorqueException exc) {

@@ -218,11 +218,6 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.torque</groupId>
-      <artifactId>torque-generator</artifactId>
-      <version>3.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.torque</groupId>
       <artifactId>torque-runtime</artifactId>
       <version>3.3</version>
     </dependency>
