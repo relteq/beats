@@ -36,7 +36,7 @@ import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 public class Cleaner {
 
@@ -55,43 +55,43 @@ public class Cleaner {
 		BasePeer.executeStatement(statement);
 	}
 
-	private static ApplicationTypes getApplicationTypes(String application_type) throws SiriusException {
+	private static ApplicationTypes getApplicationTypes(String application_type) throws BeatsException {
 		Criteria crit = new Criteria();
 		crit.add(ApplicationTypesPeer.NAME, application_type);
 		try{
 			@SuppressWarnings("unchecked")
 			List<ApplicationTypes> db_at_l = ApplicationTypesPeer.doSelect(crit);
 			if (db_at_l.isEmpty()) {
-				throw new SiriusException("Application type '" + application_type + "' does not exist");
+				throw new BeatsException("Application type '" + application_type + "' does not exist");
 			} else {
 				if (1 < db_at_l.size())
 					logger.warn("Found " + db_at_l.size() + " application types '" + application_type + "'");
 				return db_at_l.get(0);
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
-	private static AggregationTypes getAggregationTypes(String aggregation_type) throws SiriusException {
+	private static AggregationTypes getAggregationTypes(String aggregation_type) throws BeatsException {
 		Criteria crit = new Criteria();
 		crit.add(AggregationTypesPeer.NAME, aggregation_type);
 		try {
 			@SuppressWarnings("unchecked")
 			List<AggregationTypes> db_at_l = AggregationTypesPeer.doSelect(crit);
 			if (db_at_l.isEmpty()) {
-				throw new SiriusException("Aggregation type '" + aggregation_type + "' does not exist");
+				throw new BeatsException("Aggregation type '" + aggregation_type + "' does not exist");
 			} else {
 				if (1 < db_at_l.size())
 					logger.warn("Found " + db_at_l.size() + " aggregation types '" + aggregation_type + "'");
 				return db_at_l.get(0);
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
-	private static List<AggregationTypes> getAggregationTypes(List<String> aggregation_l) throws SiriusException {
+	private static List<AggregationTypes> getAggregationTypes(List<String> aggregation_l) throws BeatsException {
 		Criteria crit = new Criteria();
 		crit.addIn(AggregationTypesPeer.NAME, aggregation_l);
 		try {
@@ -99,11 +99,11 @@ public class Cleaner {
 			List<AggregationTypes> db_agg_type_l = AggregationTypesPeer.doSelect(crit);
 			return db_agg_type_l;
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
-	private static List<Long> getAggregationTypeIds(List<String> aggregation_l) throws SiriusException {
+	private static List<Long> getAggregationTypeIds(List<String> aggregation_l) throws BeatsException {
 		List<AggregationTypes> db_agg_type_l = getAggregationTypes(aggregation_l);
 		List<Long> agg_type_id_l = new java.util.ArrayList<Long>(db_agg_type_l.size());
 		for (AggregationTypes db_agg_type : db_agg_type_l)
@@ -111,16 +111,16 @@ public class Cleaner {
 		return agg_type_id_l;
 	}
 
-	private static List<SimulationRuns> getSimulationRuns(long scenario_id, List<Long> run_number_l) throws SiriusException {
+	private static List<SimulationRuns> getSimulationRuns(long scenario_id, List<Long> run_number_l) throws BeatsException {
 		Scenarios db_scenario = null;
 		try {
 			db_scenario = ScenariosPeer.retrieveByPK(scenario_id);
 		} catch (NoRowsException exc) {
-			throw new SiriusException("Scenario '" + scenario_id + "' does not exist", exc);
+			throw new BeatsException("Scenario '" + scenario_id + "' does not exist", exc);
 		} catch (TooManyRowsException exc) {
-			throw new SiriusException("Table " + ScenariosPeer.TABLE_NAME + ": consistency broken", exc);
+			throw new BeatsException("Table " + ScenariosPeer.TABLE_NAME + ": consistency broken", exc);
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 		try {
 			if (null == run_number_l) {
@@ -145,11 +145,11 @@ public class Cleaner {
 				return db_sr_l;
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
-	private static List<Long> getSimulationRunIds(long scenario_id, List<Long> run_number_l) throws SiriusException {
+	private static List<Long> getSimulationRunIds(long scenario_id, List<Long> run_number_l) throws BeatsException {
 		List<SimulationRuns> db_sr_l = getSimulationRuns(scenario_id, run_number_l);
 		List<Long> sr_id_l = new java.util.ArrayList<Long>(db_sr_l.size());
 		StringBuilder sb = new StringBuilder();
@@ -165,9 +165,9 @@ public class Cleaner {
 	/**
 	 * Erases processing results for the given scenario
 	 * @param scenario_id the scenario ID
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void clearProcessed(long scenario_id) throws SiriusException {
+	public static void clearProcessed(long scenario_id) throws BeatsException {
 		clearProcessed(scenario_id, null);
 	}
 
@@ -176,9 +176,9 @@ public class Cleaner {
 	 * for the given scenario and run numbers
 	 * @param scenario_id the scenario ID
 	 * @param run_number_l a list of run numbers; if null, assume all run numbers
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void clearProcessed(long scenario_id, List<Long> run_number_l) throws SiriusException {
+	public static void clearProcessed(long scenario_id, List<Long> run_number_l) throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		final List<Long> sr_id_l = getSimulationRunIds(scenario_id, run_number_l);
 		if (0 == sr_id_l.size()) {
@@ -235,16 +235,16 @@ public class Cleaner {
 			crit.addIn(SignalPhasePerformancePeer.APP_RUN_ID, sr_id_l);
 			executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)));
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
 	/**
 	 * Erases scenario simulation results and processing results
 	 * @param scenario_id the scenario ID
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void clearData(long scenario_id) throws SiriusException {
+	public static void clearData(long scenario_id) throws BeatsException {
 		clearData(scenario_id, null, null);
 	}
 
@@ -253,9 +253,9 @@ public class Cleaner {
 	 * @param scenario_id the scenario ID
 	 * @param run_number_l a list of run numbers; if null, assume all run numbers
 	 * @param aggregation_l a list of aggregation types; if null, assume all types
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void clearData(long scenario_id, List<Long> run_number_l, List<String> aggregation_l) throws SiriusException {
+	public static void clearData(long scenario_id, List<Long> run_number_l, List<String> aggregation_l) throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		final List<Long> sr_id_l = getSimulationRunIds(scenario_id, run_number_l);
 		if (0 == sr_id_l.size()) {
@@ -324,16 +324,16 @@ public class Cleaner {
 			if (null != agg_type_id_l) crit.addIn(SignalPhasePerformancePeer.AGG_TYPE_ID, agg_type_id_l);
 			executeStatement(select2delete(SignalPhasePerformancePeer.createQueryString(crit)));
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
 	/**
 	 * Erases a scenario and all related data
 	 * @param scenario_id the scenario ID
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void clearScenario(long scenario_id) throws SiriusException {
+	public static void clearScenario(long scenario_id) throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		logger.info("Deleting scenario simulation results, aggregated data and performance data");
 		clearData(scenario_id);
@@ -344,7 +344,7 @@ public class Cleaner {
 			ScenariosPeer.doDelete(crit);
 			logger.info("Scenario " + scenario_id + " deleted");
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 

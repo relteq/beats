@@ -134,7 +134,7 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 		this.id = jaxbE.getId();
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.timestampstep = SiriusMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
+		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
 		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
@@ -151,22 +151,22 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 	protected void validate() {
 		
 		if(myType==null)
-			SiriusErrorLog.addError("Event with id=" + getId() + " has bad type.");
+			BeatsErrorLog.addError("Event with id=" + getId() + " has bad type.");
 			
 		// check that there are targets assigned to non-global events
 		if(myType!=null)
 			if(myType.compareTo(Event.Type.global_control_toggle)!=0 && myType.compareTo(Event.Type.global_demand_knob)!=0)
 				if(targets.isEmpty())
-					SiriusErrorLog.addError("No targets assigned in event with id=" + getId() + ".");
+					BeatsErrorLog.addError("No targets assigned in event with id=" + getId() + ".");
 		
 		// check each target is valid
 		for(ScenarioElement s : targets)
 			if(s.reference==null)
-				SiriusErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
+				BeatsErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
 
 	}
 	
-	protected void activate() throws SiriusException {		
+	protected void activate() throws BeatsException {		
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -246,19 +246,19 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 		c.ison = ison;
 	}
 
-    protected void setLinkLanes(Link link,double lanes) throws SiriusException{
+    protected void setLinkLanes(Link link,double lanes) throws BeatsException{
 		if(link==null)
 			return;
     	link.set_Lanes(lanes);
     }
     	
-	protected void setLinkFundamentalDiagram(Link link,edu.berkeley.path.beats.jaxb.FundamentalDiagram newFD) throws SiriusException{
+	protected void setLinkFundamentalDiagram(Link link,edu.berkeley.path.beats.jaxb.FundamentalDiagram newFD) throws BeatsException{
 		if(link==null)
 			return;
 		link.activateFundamentalDiagramEvent(newFD);
 	}
 	
-    protected void revertLinkFundamentalDiagram(Link link) throws SiriusException{
+    protected void revertLinkFundamentalDiagram(Link link) throws BeatsException{
     	if(link==null)
     		return;
     	link.revertFundamentalDiagramEvent();

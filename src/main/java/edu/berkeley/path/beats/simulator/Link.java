@@ -208,10 +208,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     	myFDprofile = fdp;
     }
 
-	/** @throws SiriusException 
+	/** @throws BeatsException 
 	 * @y.exclude */
     // used by FundamentalDiagramProfile to set the FD
-    protected void setFundamentalDiagramFromProfile(FundamentalDiagram fd) throws SiriusException{
+    protected void setFundamentalDiagramFromProfile(FundamentalDiagram fd) throws BeatsException{
     	if(fd==null)
     		return;
     	
@@ -220,10 +220,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     		FDfromProfile[e] = fd.perturb();
     }
 
-	/** @throws SiriusException 
+	/** @throws BeatsException 
 	 * @y.exclude */
     // used by Event.setLinkFundamentalDiagram to activate an FD event
-    protected void activateFundamentalDiagramEvent(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd) throws SiriusException {
+    protected void activateFundamentalDiagramEvent(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd) throws BeatsException {
     	if(fd==null)
     		return;
     	
@@ -232,30 +232,30 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     	// carry numEnsemble event FDs.
     	FDfromEvent.copyfrom(fd);			// replace values with those defined in the event
     	
-    	SiriusErrorLog.clearErrorMessage();
+    	BeatsErrorLog.clearErrorMessage();
     	FDfromEvent.validate();
-		if(SiriusErrorLog.haserror())
-			throw new SiriusException("Fundamental diagram event could not be validated.");
+		if(BeatsErrorLog.haserror())
+			throw new BeatsException("Fundamental diagram event could not be validated.");
 		
 		activeFDevent = true;
     }
 
-	/** @throws SiriusException 
+	/** @throws BeatsException 
 	 * @y.exclude */
     // used by Event.revertLinkFundamentalDiagram
-    protected void revertFundamentalDiagramEvent() throws SiriusException{
+    protected void revertFundamentalDiagramEvent() throws BeatsException{
     	if(!activeFDevent)
     		return;
     	activeFDevent = false;
     }
 
-	/** @throws SiriusException 
+	/** @throws BeatsException 
 	 * @y.exclude */
     // used by Event.setLinkLanes
-	protected void set_Lanes(double newlanes) throws SiriusException{
+	protected void set_Lanes(double newlanes) throws BeatsException{
 		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
-				throw new SiriusException("ERROR: Lanes could not be set.");
+				throw new BeatsException("ERROR: Lanes could not be set.");
 
 		if(myFDprofile!=null)
 			myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
@@ -293,11 +293,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
         	FD = currentFD(e);
         	
-            totaldensity = SiriusMath.sum(density[e]);
+            totaldensity = BeatsMath.sum(density[e]);
 
             // case empty link
-            if( SiriusMath.lessorequalthan(totaldensity,0d) ){
-            	outflowDemand[e] =  SiriusMath.zeros(numVehicleTypes);        		
+            if( BeatsMath.lessorequalthan(totaldensity,0d) ){
+            	outflowDemand[e] =  BeatsMath.zeros(numVehicleTypes);        		
             	continue;
             }
 
@@ -333,11 +333,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	            
 				switch(myNetwork.myScenario.uncertaintyModel){
 				case uniform:
-					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
 					break;
 		
 				case gaussian:
-					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+					delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
 					break;
 				}
 	            
@@ -346,7 +346,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             }
 
             // split among types
-            outflowDemand[e] = SiriusMath.times(density[e],totaloutflow/totaldensity);
+            outflowDemand[e] = BeatsMath.times(density[e],totaloutflow/totaldensity);
         }
 
         return;
@@ -358,7 +358,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		FundamentalDiagram FD;
     	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
     		FD = currentFD(e);
-        	totaldensity = SiriusMath.sum(density[e]);
+        	totaldensity = BeatsMath.sum(density[e]);
             spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
             spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
             
@@ -369,11 +369,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	            
 				switch(myNetwork.myScenario.uncertaintyModel){
 				case uniform:
-					delta_flow = SiriusMath.sampleZeroMeanUniform(std_dev_flow);
+					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
 					break;
 		
 				case gaussian:
-					delta_flow = SiriusMath.sampleZeroMeanGaussian(std_dev_flow);
+					delta_flow = BeatsMath.sampleZeroMeanGaussian(std_dev_flow);
 					break;
 				}
 				spaceSupply[e] = Math.max( 0d , spaceSupply[e] + delta_flow );
@@ -415,16 +415,16 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	protected void validate() {
 		
 		if(!issource && begin_node==null)
-			SiriusErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
 
 		if(!issink && end_node==null)
-			SiriusErrorLog.addError("Incorrect e d node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Incorrect e d node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
 		
 		if(_length<=0)
-			SiriusErrorLog.addError("Non-positive length in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Non-positive length in link id=" + getId() + ".");
 		
 		if(_lanes<=0)
-			SiriusErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
+			BeatsErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
 	}
 
 	/** @y.exclude */
@@ -438,7 +438,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		switch(simulationMode){
 		
 		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
-			density = SiriusMath.zeros(n1,n2);
+			density = BeatsMath.zeros(n1,n2);
 			break;
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
@@ -448,7 +448,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				if(myScenario.getInitialDensitySet()!=null)
 					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
 				else 
-					density[i] = SiriusMath.zeros(myScenario.getNumVehicleTypes());
+					density[i] = BeatsMath.zeros(myScenario.getNumVehicleTypes());
 			break;
 			
 		default:
@@ -457,11 +457,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 
 		// reset other quantities
-        inflow 				= SiriusMath.zeros(n1,n2);
-        outflow 			= SiriusMath.zeros(n1,n2);
-        sourcedemand 		= SiriusMath.zeros(n2);
-        outflowDemand 		= SiriusMath.zeros(n1,n2);
-        spaceSupply 		= SiriusMath.zeros(n1);
+        inflow 				= BeatsMath.zeros(n1,n2);
+        outflow 			= BeatsMath.zeros(n1,n2);
+        sourcedemand 		= BeatsMath.zeros(n2);
+        outflowDemand 		= BeatsMath.zeros(n1,n2);
+        spaceSupply 		= BeatsMath.zeros(n1);
 
 		return;
 	}
@@ -595,7 +595,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	public double getTotalDensityInVeh(int ensemble) {
 		try{
 			if(density!=null)
-				return SiriusMath.sum(density[ensemble]);
+				return BeatsMath.sum(density[ensemble]);
 			else
 				return 0d;
 		} catch(Exception e){
@@ -632,7 +632,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 */
 	public double getTotalOutflowInVeh(int ensemble) {
 		try{
-			return SiriusMath.sum(outflow[ensemble]);
+			return BeatsMath.sum(outflow[ensemble]);
 		} catch(Exception e){
 			return 0d;
 		}
@@ -660,7 +660,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 */
 	public double getTotalInlowInVeh(int ensemble) {
 		try{
-			return SiriusMath.sum(inflow[ensemble]);
+			return BeatsMath.sum(inflow[ensemble]);
 		} catch(Exception e){
 			return 0d;
 		}
@@ -677,10 +677,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			if(myNetwork.myScenario.clock.getCurrentstep()==0)
 				return Double.NaN;
 			
-			double totaldensity = SiriusMath.sum(density[ensemble]);
+			double totaldensity = BeatsMath.sum(density[ensemble]);
 			double speed;
-			if( SiriusMath.greaterthan(totaldensity,0d) )
-				speed = SiriusMath.sum(outflow[ensemble])/totaldensity;
+			if( BeatsMath.greaterthan(totaldensity,0d) )
+				speed = BeatsMath.sum(outflow[ensemble])/totaldensity;
 			else
 				speed = currentFD(ensemble).getVfNormalized();
 			return speed * _length / myNetwork.myScenario.getSimDtInSeconds();

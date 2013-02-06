@@ -235,7 +235,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	protected void setLanes(double newlanes){
 		if(newlanes<=0)
 			return;
-		if(SiriusMath.equals(newlanes,lanes))
+		if(BeatsMath.equals(newlanes,lanes))
 			return;
 		double alpha = newlanes/lanes;
 		_densityJam 	  *= alpha; 
@@ -341,11 +341,11 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		if(!std_dev_capacity.isNaN() && std_dev_capacity>0){
 			switch(myLink.myNetwork.myScenario.uncertaintyModel){
 			case uniform:
-				samp._capacity += SiriusMath.sampleZeroMeanUniform(std_dev_capacity);
+				samp._capacity += BeatsMath.sampleZeroMeanUniform(std_dev_capacity);
 				break;
 
 			case gaussian:
-				samp._capacity += SiriusMath.sampleZeroMeanUniform(std_dev_capacity);
+				samp._capacity += BeatsMath.sampleZeroMeanUniform(std_dev_capacity);
 				break;
 			}			
 		}
@@ -357,7 +357,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		
 		// density_critical no greater than dens_crit_congestion
 		double dens_crit_congestion = samp._densityJam-samp._capacity/samp._w;	// [veh]
-		if(SiriusMath.greaterthan(samp.density_critical,dens_crit_congestion)){
+		if(BeatsMath.greaterthan(samp.density_critical,dens_crit_congestion)){
 			samp.density_critical = dens_crit_congestion;
 			samp._capacity = samp._vf * samp.density_critical;
 		}
@@ -371,26 +371,26 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			return;
 		
 //		if(_vf.isNaN() || _w.isNaN() || _densityJam.isNaN() || _capacity.isNaN() || _capacityDrop.isNaN())
-//			SiriusErrorLog.addError("Undefined fundamental diagram parameters for link id=" + myLinkIdparameters in the fundamental diagram.");
+//			BeatsErrorLog.addError("Undefined fundamental diagram parameters for link id=" + myLinkIdparameters in the fundamental diagram.");
 		
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
-			SiriusErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLink.getId());
+			BeatsErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLink.getId());
 
 		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
 			
-		if(SiriusMath.greaterthan(density_critical,dens_crit_congestion))
-			SiriusErrorLog.addError("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+density_critical+")");
+		if(BeatsMath.greaterthan(density_critical,dens_crit_congestion))
+			BeatsErrorLog.addError("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+density_critical+")");
 		
 		if(_vf>1)
-			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
+			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);
 
 		if(_w>1)
-			SiriusErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
+			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 		
 		if(myLink!=null)
 			for(int e=0;e<myLink.myNetwork.myScenario.numEnsemble;e++)
 				if(myLink.getTotalDensityInVeh(e)>_densityJam)
-					SiriusErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLink.getId() + " exceeds jam density=" + _densityJam);
+					BeatsErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLink.getId() + " exceeds jam density=" + _densityJam);
 	}
 
 }

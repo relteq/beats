@@ -1,6 +1,6 @@
 package edu.berkeley.path.beats.util.scenario;
 
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Scenario loader interface.
@@ -8,8 +8,8 @@ import edu.berkeley.path.beats.simulator.SiriusException;
  */
 interface ScenarioLoaderIF {
 
-	public edu.berkeley.path.beats.jaxb.Scenario loadRaw() throws SiriusException;
+	public edu.berkeley.path.beats.jaxb.Scenario loadRaw() throws BeatsException;
 
-	public edu.berkeley.path.beats.simulator.Scenario load() throws SiriusException;
+	public edu.berkeley.path.beats.simulator.Scenario load() throws BeatsException;
 
 }

@@ -47,13 +47,13 @@ import edu.berkeley.path.beats.om.SignalPhasePerformance;
 import edu.berkeley.path.beats.processor.AggregateData;
 import edu.berkeley.path.beats.processor.PdfReport;
 import edu.berkeley.path.beats.processor.PerformanceData;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.ScenarioValidationError;
 import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
 /**
- * Implements "Sirius: Concept of Operations"
+ * Implements "Beats: Concept of Operations"
  */
 public class Runner {
 
@@ -283,9 +283,9 @@ public class Runner {
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		} finally {
-			if (SiriusErrorLog.hasmessage()) {
-				SiriusErrorLog.print();
-				SiriusErrorLog.clearErrorMessage();
+			if (BeatsErrorLog.hasmessage()) {
+				BeatsErrorLog.print();
+				BeatsErrorLog.clearErrorMessage();
 			}
 			if (edu.berkeley.path.beats.db.Service.isInit()) {
 				logger.debug("Shutting down the DB service");

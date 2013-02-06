@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.jaxb.Point;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.util.polyline.GoogleDecoder;
 import edu.berkeley.path.beats.util.polyline.GoogleEncoder;
 
@@ -44,10 +44,10 @@ public class GoogleEncoderTest {
 
 	/**
 	 * Checks if the encoding process is invertible for coordinates with precision 5 or less
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
 	@Test
-	public void testExact() throws SiriusException {
+	public void testExact() throws BeatsException {
 		GoogleEncoder encoder = new GoogleEncoder();
 		BigDecimal[] ilat = new BigDecimal[NPOINTS];
 		BigDecimal[] ilng = new BigDecimal[NPOINTS];
@@ -89,10 +89,10 @@ public class GoogleEncoderTest {
 
 	/**
 	 * Checks if the encoding precision is 1E-5
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
 	@Test
-	public void testRounding() throws SiriusException {
+	public void testRounding() throws BeatsException {
 		Random rnd = new Random();
 
 		List<Point> ipoints = new java.util.ArrayList<Point>(NPOINTS);

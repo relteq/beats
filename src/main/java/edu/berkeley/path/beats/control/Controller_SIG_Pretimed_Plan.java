@@ -28,8 +28,8 @@ package edu.berkeley.path.beats.control;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 import edu.berkeley.path.beats.simulator.Signal;
@@ -89,16 +89,16 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	protected void validate(){
 		
 		if(myController==null)
-			SiriusErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
+			BeatsErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
 		
 		// positive cycle
 		if(_cyclelength<=0)
-			SiriusErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
+			BeatsErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
 		
 		// cycle length should be a multiple of controller dt
 		if(myController!=null)
-			if(!SiriusMath.isintegermultipleof(_cyclelength,myController.getDtinseconds()))
-				SiriusErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
+			if(!BeatsMath.isintegermultipleof(_cyclelength,myController.getDtinseconds()))
+				BeatsErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
 		
 		// plan includes all targets
 		boolean foundit;
@@ -112,7 +112,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 					}
 				}
 				if(!foundit)
-					SiriusErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
+					BeatsErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
 			}
 		
 		// intersection plans

@@ -37,14 +37,14 @@ import edu.berkeley.path.beats.om.Scenarios;
 import edu.berkeley.path.beats.om.ScenariosPeer;
 import edu.berkeley.path.beats.om.SimulationRuns;
 import edu.berkeley.path.beats.om.SimulationRunsPeer;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Implements "list" commands
  */
 public class Lister {
 
-	public static void listScenarios() throws SiriusException {
+	public static void listScenarios() throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		
 		try {
@@ -61,11 +61,11 @@ public class Lister {
 				System.out.println(sb.toString());
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
-	public static void listRuns(long scenario_id) throws SiriusException {
+	public static void listRuns(long scenario_id) throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		DateFormat date_format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
 		try {
@@ -84,9 +84,9 @@ public class Lister {
 				System.out.println(sb.toString());
 			}
 		} catch (NoRowsException exc) {
-			throw new SiriusException("Scenario " + scenario_id + " does not exist");
+			throw new BeatsException("Scenario " + scenario_id + " does not exist");
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 

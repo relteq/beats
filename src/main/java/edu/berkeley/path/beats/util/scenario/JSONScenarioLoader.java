@@ -12,7 +12,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 class JSONScenarioLoader extends ScenarioLoaderBase implements ScenarioLoaderIF {
 
@@ -23,18 +23,18 @@ class JSONScenarioLoader extends ScenarioLoaderBase implements ScenarioLoaderIF 
 	}
 
 	@Override
-	public Scenario loadRaw() throws SiriusException {
+	public Scenario loadRaw() throws BeatsException {
 		try {
 			XMLStreamReader xmlsr = new MappedXMLStreamReader(new JSONObject(org.apache.commons.io.FileUtils.readFileToString(new File(filename))), JSONSettings.getConvention());
 			return (edu.berkeley.path.beats.jaxb.Scenario) getUnmarshaller().unmarshal(xmlsr);
 		} catch (JAXBException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} catch (JSONException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} catch (XMLStreamException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} catch (IOException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 

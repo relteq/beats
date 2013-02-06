@@ -29,8 +29,8 @@ package edu.berkeley.path.beats.event;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -141,30 +141,30 @@ public class Event_Node_Split_Ratio extends Event {
 		super.validate();
 		
 		if(targets.size()!=1)
-			SiriusErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
+			BeatsErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
 		
 		// check each target is valid
 		if(targets.get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
-			SiriusErrorLog.addError("Wrong target type for event id="+getId()+".");
+			BeatsErrorLog.addError("Wrong target type for event id="+getId()+".");
 		
 		if(myNode==null)
-			SiriusErrorLog.addWarning("Invalid node id for event id="+getId()+".");
+			BeatsErrorLog.addWarning("Invalid node id for event id="+getId()+".");
 		
 		// check split ratio matrix
 		if(!resetToNominal){
 			for (SplitRatio sr : splitratios) {
 				if (sr.getInputIndex() < 0 || sr.getInputIndex() >= myNode.getnIn())
-					SiriusErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
+					BeatsErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
 				if (sr.getOutputIndex() < 0 || sr.getOutputIndex() >= myNode.getnOut())
-					SiriusErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
+					BeatsErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
 				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= myScenario.getNumVehicleTypes())
-					SiriusErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
+					BeatsErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
 			}
 		}
 	}
 	
 	@Override
-	protected void activate() throws SiriusException{
+	protected void activate() throws BeatsException{
 		if(myNode==null)
 			return;
 		if(resetToNominal)

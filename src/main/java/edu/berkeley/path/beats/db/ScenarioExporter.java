@@ -35,7 +35,7 @@ import org.apache.torque.TorqueException;
 import org.apache.torque.util.Criteria;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Loads a scenario from the database
@@ -48,9 +48,9 @@ public class ScenarioExporter {
 	 * it needs unit conversion, validation, etc
 	 * @param id
 	 * @return the raw restored scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static edu.berkeley.path.beats.jaxb.Scenario doExport(Long id) throws SiriusException {
+	public static edu.berkeley.path.beats.jaxb.Scenario doExport(Long id) throws BeatsException {
 		return new ScenarioExporter().restore(id);
 	}
 
@@ -65,15 +65,15 @@ public class ScenarioExporter {
 
 	private static Logger logger = Logger.getLogger(ScenarioExporter.class);
 
-	private edu.berkeley.path.beats.jaxb.Scenario restore(Long id) throws SiriusException {
+	private edu.berkeley.path.beats.jaxb.Scenario restore(Long id) throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		Scenarios db_scenario = null;
 		try {
 			db_scenario = ScenariosPeer.retrieveByPK(id);
 		} catch (NoRowsException exc) {
-			throw new SiriusException("Scenario " + id + " does not exist", exc);
+			throw new BeatsException("Scenario " + id + " does not exist", exc);
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 		return restoreScenario(db_scenario);
 	}
@@ -88,7 +88,7 @@ public class ScenarioExporter {
 		return id.toString();
 	}
 
-	private edu.berkeley.path.beats.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws SiriusException {
+	private edu.berkeley.path.beats.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws BeatsException {
 		if (null == db_scenario) return null;
 		edu.berkeley.path.beats.jaxb.Scenario scenario = factory.createScenario();
 		scenario.setId(id2str(db_scenario.getId()));
@@ -123,7 +123,7 @@ public class ScenarioExporter {
 					network.setDt(db_defss.get(0).getSimDt());
 			}
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 		return scenario;
 	}
@@ -1023,7 +1023,7 @@ public class ScenarioExporter {
 		polyline_decoder.reset();
 		try {
 			return polyline_decoder.decode(path);
-		} catch (SiriusException exc) {
+		} catch (BeatsException exc) {
 			logger.error("Failed to restore a list of points", exc);
 		}
 		return null;

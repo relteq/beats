@@ -31,8 +31,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
@@ -89,7 +89,7 @@ public class Controller_SIG_Pretimed extends Controller {
 		// check all tables
 		for (String table_name : new String[] {"Cycle Length", "Offsets", "Plan List", "Plan Sequence"})
 			if (null == tables.get(table_name)) {
-				SiriusErrorLog.addError("Controller " + jaxbc.getId() + ": no '" + table_name + "' table");
+				BeatsErrorLog.addError("Controller " + jaxbc.getId() + ": no '" + table_name + "' table");
 				return;
 			}
 
@@ -134,7 +134,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
 		// time to switch plans .....................................
 		if( cperiod < planstarttime.length-1 ){
-			if( SiriusMath.greaterorequalthan( simtime , planstarttime[cperiod+1] + transdelay ) ){
+			if( BeatsMath.greaterorequalthan( simtime , planstarttime[cperiod+1] + transdelay ) ){
 				cperiod++;
 				if(null == plansequence[cperiod]){
 					// GCG asc.ResetSignals();  GG FIX THIS
@@ -161,26 +161,26 @@ public class Controller_SIG_Pretimed extends Controller {
 		
 		// transdelay>=0
 		if(transdelay<0)
-			SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+			BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		// first planstarttime=0
 		if(planstarttime[0]!=0)
-			SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+			BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		// planstarttime is increasing
 		for(i=1;i<planstarttime.length;i++)
 			if(planstarttime[i]<=planstarttime[i-1])
-				SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		// all plansequence ids found
 		for(i=0;i<plansequence.length;i++)
 			if (null == plansequence[i])
-				SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 
 		// all targets are signals
 		for(ScenarioElement se: targets)
 			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
-				SiriusErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		for (Controller_SIG_Pretimed_Plan pretimed_plan : plan.values())
 			pretimed_plan.validate();

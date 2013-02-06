@@ -232,18 +232,18 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		if(output_link!=null)
 			for(Link link : output_link)
 				if(link==null)
-					SiriusErrorLog.addError("Incorrect output link id in node id=" + getId());
+					BeatsErrorLog.addError("Incorrect output link id in node id=" + getId());
 
 		if(input_link!=null)
 			for(Link link : input_link)
 				if(link==null)
-					SiriusErrorLog.addError("Incorrect input link id in node id=" + getId());
+					BeatsErrorLog.addError("Incorrect input link id in node id=" + getId());
 		
 		if(nIn==0)
-			SiriusErrorLog.addError("No inputs into non-terminal node id=" + getId());
+			BeatsErrorLog.addError("No inputs into non-terminal node id=" + getId());
 
 		if(nOut==0)
-			SiriusErrorLog.addError("No outputs from non-terminal node id=" + getId());
+			BeatsErrorLog.addError("No outputs from non-terminal node id=" + getId());
 		
 	}
 
@@ -329,7 +329,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 		// dimension
 		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
-			SiriusErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
+			BeatsErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
 			return false;
 		}
 		
@@ -339,7 +339,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 				for(k=0;k<X.getnVTypes();k++){
 					value = X.get(i,j,k);
 					if( !value.isNaN() && (value>1 || value<0) ){
-						SiriusErrorLog.addError("Invalid split ratio values for node id=" + getId());
+						BeatsErrorLog.addError("Invalid split ratio values for node id=" + getId());
 						return false;
 					}
 				}
@@ -378,7 +378,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 					sum += X.get(i,idxNegative,k);
 				}
 				
-				if ( !hasNaN && SiriusMath.equals(sum,0.0) ) {	
+				if ( !hasNaN && BeatsMath.equals(sum,0.0) ) {	
 					X.set(i,0,k,1d);
 					//for (j=0; j<n2; j++)			
 					//	data[i][j][k] = 1/((double) n2);
@@ -431,7 +431,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	            		outDemandKnown[e][j] += inDemand[e][i][k]*splitratio.get(i,j,k);
 	            
 	            // compute and sort output demand/supply ratio .............
-	            if(SiriusMath.greaterthan(outSupply[e][j],0d))
+	            if(BeatsMath.greaterthan(outSupply[e][j],0d))
 	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
 	            else
 	            	dsratio[e][j] = 1d;
@@ -514,7 +514,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		            		dsmin = Math.min(dsmax,r);
 		            	}
 		                
-		                if(SiriusMath.equals(dsmax,dsmin))
+		                if(BeatsMath.equals(dsmax,dsmin))
 		                    break;
 		                    
 	                	// indices of smallest dsratio
@@ -523,7 +523,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		            	sendtoeach.clear();		// flow needed to bring each dsmin up to dsmax
 		            	double sumsendtoeach = 0f;
 		            	for(int z=1;z<numunknown;z++)
-		            		if( SiriusMath.equals(unknown_dsratio.get(z),dsmin) ){
+		            		if( BeatsMath.equals(unknown_dsratio.get(z),dsmin) ){
 		            			int index = unknownind.get(z);
 		            			minind_to_nOut.add(index);
 		            			minind_to_unknown.add(z);
@@ -743,14 +743,14 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
 	
 	/** ADDED TEMPORARILY FOR MANUEL'S DTA WORK 
-	 * @throws SiriusException */
-	public void setSplitRatioMatrix(double [][][] x) throws SiriusException {
+	 * @throws BeatsException */
+	public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
 		if(x.length!=splitratio.getnIn())
-			throw new SiriusException("Node.setSplitRatioMatrix, bad first dimension.");
+			throw new BeatsException("Node.setSplitRatioMatrix, bad first dimension.");
 		if(x[0].length!=splitratio.getnOut())
-			throw new SiriusException("Node.setSplitRatioMatrix, bad second dimension.");
+			throw new BeatsException("Node.setSplitRatioMatrix, bad second dimension.");
 		if(x[0][0].length!=splitratio.getnVTypes())
-			throw new SiriusException("Node.setSplitRatioMatrix, bad third dimension.");
+			throw new BeatsException("Node.setSplitRatioMatrix, bad third dimension.");
 		int i,j,k;
 		for(i=0;i<splitratio.getnIn();i++)
 			for(j=0;j<splitratio.getnOut();j++)

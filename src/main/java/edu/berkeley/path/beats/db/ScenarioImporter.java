@@ -38,7 +38,7 @@ import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.util.Data1D;
 import edu.berkeley.path.beats.util.Data2D;
 
@@ -86,13 +86,13 @@ public class ScenarioImporter {
 	 * Imports a scenario
 	 * @param scenario
 	 * @return the scenario ID in the database
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static Long doImport(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
+	public static Long doImport(edu.berkeley.path.beats.jaxb.Scenario scenario) throws BeatsException {
 		return new ScenarioImporter().store(scenario).getId();
 	}
 
-	private Scenarios store(edu.berkeley.path.beats.jaxb.Scenario scenario) throws SiriusException {
+	private Scenarios store(edu.berkeley.path.beats.jaxb.Scenario scenario) throws BeatsException {
 		edu.berkeley.path.beats.db.Service.ensureInit();
 		
 		try {
@@ -102,7 +102,7 @@ public class ScenarioImporter {
 			conn = null;
 			return db_scenario;
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} finally {
 			if (null != conn) {
 				Transaction.safeRollback(conn);
@@ -115,12 +115,12 @@ public class ScenarioImporter {
 	 * Imports a scenario
 	 * @param scenario
 	 * @throws TorqueException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	private Scenarios save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws TorqueException, SiriusException {
+	private Scenarios save(edu.berkeley.path.beats.jaxb.Scenario scenario) throws TorqueException, BeatsException {
 		if (null == scenario) return null;
 		if (null != scenario.getSettings() && !"SI".equalsIgnoreCase(scenario.getSettings().getUnits()))
-			throw new SiriusException("Scenario's system of units is not SI");
+			throw new BeatsException("Scenario's system of units is not SI");
 		Scenarios db_scenario = new Scenarios();
 		db_scenario.setProjectId(getProjectId());
 		db_scenario.setName(scenario.getName());
@@ -239,9 +239,9 @@ public class ScenarioImporter {
 	 * Imports a network list
 	 * @param nl
 	 * @throws TorqueException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	private void save(edu.berkeley.path.beats.jaxb.NetworkList nl, Scenarios db_scenario) throws TorqueException, SiriusException {
+	private void save(edu.berkeley.path.beats.jaxb.NetworkList nl, Scenarios db_scenario) throws TorqueException, BeatsException {
 		network_id = new HashMap<String, Long>(nl.getNetwork().size());
 		nodes = new HashMap<String, Nodes>();
 		links = new HashMap<String, Links>();
@@ -258,9 +258,9 @@ public class ScenarioImporter {
 	 * @param network
 	 * @return the imported network
 	 * @throws TorqueException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	private Networks save(edu.berkeley.path.beats.jaxb.Network network) throws TorqueException, SiriusException {
+	private Networks save(edu.berkeley.path.beats.jaxb.Network network) throws TorqueException, BeatsException {
 		Networks db_network = new Networks();
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
@@ -301,10 +301,10 @@ public class ScenarioImporter {
 	 * @param node
 	 * @param db_network
 	 * @throws TorqueException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	private void save(edu.berkeley.path.beats.jaxb.Node node, Networks db_network) throws TorqueException, SiriusException {
-		if (nodes.containsKey(node.getId())) throw new SiriusException("Node " + node.getId() + " already exists");
+	private void save(edu.berkeley.path.beats.jaxb.Node node, Networks db_network) throws TorqueException, BeatsException {
+		if (nodes.containsKey(node.getId())) throw new BeatsException("Node " + node.getId() + " already exists");
 		NodeFamilies db_nf = new NodeFamilies();
 		db_nf.setId(NodeFamiliesPeer.nextId(NodeFamiliesPeer.ID, conn));
 		db_nf.save(conn);
@@ -383,10 +383,10 @@ public class ScenarioImporter {
 	 * @param link
 	 * @param db_network
 	 * @throws TorqueException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	private void save(edu.berkeley.path.beats.jaxb.Link link, Networks db_network) throws TorqueException, SiriusException {
-		if (links.containsKey(link.getId())) throw new SiriusException("Link " + link.getId() + " already exists");
+	private void save(edu.berkeley.path.beats.jaxb.Link link, Networks db_network) throws TorqueException, BeatsException {
+		if (links.containsKey(link.getId())) throw new BeatsException("Link " + link.getId() + " already exists");
 		LinkFamilies db_lf = new LinkFamilies();
 		db_lf.setId(LinkFamiliesPeer.nextId(LinkFamiliesPeer.ID, conn));
 		db_lf.save(conn);

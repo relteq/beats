@@ -30,7 +30,7 @@ import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.Table;
 
 public class Controller_IRM_Time_of_Day extends Controller {
@@ -104,19 +104,19 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		
 		// must have exactly one target
 		if(targets.size()!=1)
-			SiriusErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
+			BeatsErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
 		
 		// bad queue sensor id
 		if(hasqueuesensor && queuesensor==null)
-			SiriusErrorLog.addError("Bad queue sensor id in TOD controller id=" + getId()+".");
+			BeatsErrorLog.addError("Bad queue sensor id in TOD controller id=" + getId()+".");
 		
 		// Target link id not found, or number of targets not 1.
 		if(onramplink==null)
-			SiriusErrorLog.addError("Invalid onramp link for TOD controller id=" + getId()+ ".");
+			BeatsErrorLog.addError("Invalid onramp link for TOD controller id=" + getId()+ ".");
 			
 		// has valid tables	
 		if(!istablevalid)
-			SiriusErrorLog.addError("Controller has an invalid TOD table.");
+			BeatsErrorLog.addError("Controller has an invalid TOD table.");
 	}
 	
 	@Override

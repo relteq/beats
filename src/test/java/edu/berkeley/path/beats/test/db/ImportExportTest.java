@@ -43,8 +43,8 @@ import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
 
 import edu.berkeley.path.beats.jaxb.Scenario;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
@@ -59,11 +59,11 @@ public class ImportExportTest {
 	 * Creates a temporary database and initializes the DB service
 	 * @throws SQLException
 	 * @throws IOException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 * @throws ClassNotFoundException
 	 */
 	@BeforeClass
-	public static void createDatabase() throws SQLException, IOException, SiriusException, ClassNotFoundException {
+	public static void createDatabase() throws SQLException, IOException, BeatsException, ClassNotFoundException {
 		params = new edu.berkeley.path.beats.db.Parameters();
 		params.setDriver("derby");
 		params.setDBName(("sirius-" + edu.berkeley.path.beats.util.UUID.generate()).replace('-', '_'));
@@ -86,9 +86,9 @@ public class ImportExportTest {
 	}
 
 	private static void clearErrors() {
-		if (SiriusErrorLog.haserror()) {
-			SiriusErrorLog.print();
-			SiriusErrorLog.clearErrorMessage();
+		if (BeatsErrorLog.haserror()) {
+			BeatsErrorLog.print();
+			BeatsErrorLog.clearErrorMessage();
 		}
 	}
 
@@ -113,13 +113,13 @@ public class ImportExportTest {
 
 	/**
 	 * Imports and exports a scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 * @throws IOException
 	 * @throws JAXBException
 	 * @throws SAXException
 	 */
 	@Test
-	public void test() throws SiriusException, IOException, JAXBException, SAXException {
+	public void test() throws BeatsException, IOException, JAXBException, SAXException {
 		logger.info("Importing " + conffile.getPath());
 		Scenario scenario = ScenarioLoader.load(conffile.getPath());
 		final Long id = ScenarioSaver.save(scenario);

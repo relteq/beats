@@ -44,8 +44,8 @@ import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
-import edu.berkeley.path.beats.simulator.SiriusException;
-import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 
 import com.workingdogs.village.DataSetException;
 
@@ -173,12 +173,12 @@ public class OutputWriterDB extends OutputWriterBase {
 	}
 
 	@Override
-	public void open(int run_id) throws SiriusException {
+	public void open(int run_id) throws BeatsException {
 		success = false;
 		if (1 != scenario.getNumEnsemble())
 			logger.warn("scenario.numEnsembles != 1");
 		if (null == db_scenario)
-			throw new SiriusException("Scenario was not loaded from the database");
+			throw new BeatsException("Scenario was not loaded from the database");
 
 		logger.info("Initializing simulation run");
 		try {
@@ -207,18 +207,18 @@ public class OutputWriterDB extends OutputWriterBase {
 
 			success = true;
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} catch (DataSetException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		} catch (Exception exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
 	private java.util.Date date = null;
 
 	@Override
-	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
+	public void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException {
 		success = false;
 		date = sec2date(time);
 
@@ -229,7 +229,7 @@ public class OutputWriterDB extends OutputWriterBase {
 					LinkDataTotal db_ldt = fill_total(_link, exportflows);
 					fill_detailed(_link, exportflows, db_ldt.getSpeed());
 				} catch (Exception exc) {
-					throw new SiriusException(exc);
+					throw new BeatsException(exc);
 				}
 			}
 			List<edu.berkeley.path.beats.jaxb.Signal> sigl = ((Network) network).getListOfSignals();
@@ -238,7 +238,7 @@ public class OutputWriterDB extends OutputWriterBase {
 					try {
 						fill_signal_data(network, signal);
 					} catch (Exception exc) {
-						throw new SiriusException(exc);
+						throw new BeatsException(exc);
 					}
 			}
 		}
@@ -264,7 +264,7 @@ public class OutputWriterDB extends OutputWriterBase {
 
 		LinkCumulativeData link_cum_data = getCumulatives(link);
 		// mean density, vehicles
-		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : SiriusMath.sum(link.getDensityInVeh(0));
+		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : BeatsMath.sum(link.getDensityInVeh(0));
 		db_ldt.setDensity(double2decimal(density));
 
 		if (exportflows) {

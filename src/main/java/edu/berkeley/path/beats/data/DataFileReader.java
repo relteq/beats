@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import edu.berkeley.path.beats.sensor.DataSource;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /** Use the Read5minData() method of this class to read five-minute data from data sources.
 * @author Gabriel Gomes
@@ -48,7 +48,7 @@ public class DataFileReader {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 	
-    public void Read5minData(HashMap <Integer,FiveMinuteData> data,ArrayList<DataSource> datasources) throws SiriusException {
+    public void Read5minData(HashMap <Integer,FiveMinuteData> data,ArrayList<DataSource> datasources) throws BeatsException {
 
     	// step through data file
     	int count = 0;
@@ -84,7 +84,7 @@ public class DataFileReader {
         return formatter.parse(timestr,pp);
     }
 
-    private static void ReadDataFile(HashMap <Integer,FiveMinuteData> data,DataSource datasource, ColumnFormat format) throws SiriusException {
+    private static void ReadDataFile(HashMap <Integer,FiveMinuteData> data,DataSource datasource, ColumnFormat format) throws BeatsException {
 		int lane;
     	String line,str;
     	int indexof;
@@ -174,7 +174,7 @@ public class DataFileReader {
 			}
     	}
 		catch(Exception e){
-			throw new SiriusException(e);
+			throw new BeatsException(e);
 		}
     }
     

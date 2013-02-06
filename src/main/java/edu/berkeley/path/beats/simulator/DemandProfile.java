@@ -74,7 +74,7 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		}
 		else{ 	// allow only if it contains one time step
 			if(demand_nominal.getnTime()==1){
@@ -112,22 +112,22 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 			return;
 		
 		if(myLinkOrigin==null)
-			SiriusErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
+			BeatsErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
 		// check dtinseconds
 		if( dtinseconds<=0 )
-			SiriusErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
+			BeatsErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
 		
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-			SiriusErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			BeatsErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
 		
 		// check dimensions
 		if(demand_nominal.getnVTypes()!=myScenario.getNumVehicleTypes())
-			SiriusErrorLog.addError("Incorrect dimensions for demand for link id=" + getLinkIdOrigin());
+			BeatsErrorLog.addError("Incorrect dimensions for demand for link id=" + getLinkIdOrigin());
 		
 		// check non-negative
 		if(demand_nominal.hasNaN())
-			SiriusErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrigin());
+			BeatsErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrigin());
 
 	}
 
@@ -141,7 +141,7 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 		else
 			starttime = 0f;
 
-		stepinitial = SiriusMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
 		// set knob back to its original value
 		_knob = getKnob().doubleValue();	
@@ -209,12 +209,12 @@ final class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 			switch(myScenario.uncertaintyModel){
 			case uniform:
 				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-					demandvalue[j] += SiriusMath.sampleZeroMeanUniform(std_dev_apply[j]);
+					demandvalue[j] += BeatsMath.sampleZeroMeanUniform(std_dev_apply[j]);
 				break;
 	
 			case gaussian:
 				for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-					demandvalue[j] += SiriusMath.sampleZeroMeanGaussian(std_dev_apply[j]);
+					demandvalue[j] += BeatsMath.sampleZeroMeanGaussian(std_dev_apply[j]);
 				break;
 			}
 		}

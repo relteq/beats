@@ -43,9 +43,9 @@ public class OutputWriterFactory {
 	 * @param scenario
 	 * @param props output writer properties (type, prefix)
 	 * @return an output writer
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) throws SiriusException {
+	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) throws BeatsException {
 		final String type = props.getProperty("type");
 		if (type.equals("xml")) 
 			return new OutputWriterXML(scenario, props,outDt,outsteps);
@@ -54,7 +54,7 @@ public class OutputWriterFactory {
 		else if (type.equals("text") || type.equals("plaintext")) 
 			return new OutputWriterTXT(scenario, props,outDt,outsteps);
 		else 
-			throw new SiriusException("Unknown output writer type '" + type + "'");
+			throw new BeatsException("Unknown output writer type '" + type + "'");
 	}
 	
 }

@@ -38,8 +38,8 @@ import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Transaction;
 
 import edu.berkeley.path.beats.om.*;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Administers the Sirius Database
@@ -51,9 +51,9 @@ public class Admin {
 	 * If the database exists, it is dropped and recreated.
 	 * @throws SQLException
 	 * @throws IOException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void init() throws SQLException, IOException, SiriusException {
+	public static void init() throws SQLException, IOException, BeatsException {
 		init(Parameters.fromEnvironment());
 	}
 
@@ -62,9 +62,9 @@ public class Admin {
 	 * @param params the database connection parameters
 	 * @throws SQLException
 	 * @throws IOException
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void init(Parameters params) throws SQLException, IOException, SiriusException {
+	public static void init(Parameters params) throws SQLException, IOException, BeatsException {
 		SQLExec exec = new SQLExec();
 		drop(params);
 		if (params.getDriver().equals("derby")) params.setCreate(true);
@@ -76,7 +76,7 @@ public class Admin {
 				BasePeer.executeStatement("CREATE DATABASE " + dbname);
 				logger.info("Database " + dbname + " created");
 			} catch (TorqueException exc) {
-				throw new SiriusException(exc);
+				throw new BeatsException(exc);
 			} finally {
 				Service.shutdown();
 				params.setDBName(dbname);
@@ -129,7 +129,7 @@ public class Admin {
 			try {
 				org.apache.commons.io.FileUtils.deleteDirectory(new File(params.getDBName()));
 			} catch (IOException exc) {
-				SiriusErrorLog.addError(exc.getMessage());
+				BeatsErrorLog.addError(exc.getMessage());
 			}
 		else {
 			String dbname = params.getDBName();
@@ -140,7 +140,7 @@ public class Admin {
 				logger.info("Database " + dbname + " dropped");
 			} catch (TorqueException exc) {
 				logger.error("Could not drop database " + dbname, exc);
-			} catch (SiriusException exc) {
+			} catch (BeatsException exc) {
 				logger.error(exc.getMessage(), exc);
 			} finally {
 				Service.shutdown();
@@ -152,7 +152,7 @@ public class Admin {
 	private static class Initializer {
 		public Initializer() {}
 		Connection conn = null;
-		public void run() throws SiriusException {
+		public void run() throws BeatsException {
 			try {
 				conn = Transaction.begin();
 
@@ -173,7 +173,7 @@ public class Admin {
 				Transaction.commit(conn);
 				conn = null;
 			} catch (TorqueException exc) {
-				throw new SiriusException(exc);
+				throw new BeatsException(exc);
 			} finally {
 				if (null != conn) {
 					Transaction.safeRollback(conn);
@@ -200,7 +200,7 @@ public class Admin {
 			addNodeType("signalized_intersection", "Signals can be placed on nodes only of this type.");
 			addNodeType("stop_intersection", null);
 			addNodeType("simple", "Single-Input-Single-Output (SISO) node, where the input and the output links have the same properties.");
-			addNodeType("terminal", "Node that has only 1 input or only 1 output link Ð it is either the begin node for an origin link, or the end node for the destination link.");
+			addNodeType("terminal", "Node that has only 1 input or only 1 output link ï¿½ it is either the begin node for an origin link, or the end node for the destination link.");
 			addNodeType("other", null);
 			logger.info("Added node types");
 		}
@@ -250,21 +250,21 @@ public class Admin {
 			addType(new SensorTypes(), name, description);
 		}
 		private void addControllerTypes() throws TorqueException {
-			addControllerType("IRM_ALINEA", "IRM stands for Isolated Ramp Metering Ð ramp metering on individual on-ramps. ALINEA is the name of RM algorithm.");
-			addControllerType("IRM_TOD", "TOD stands for Time Of Day Ð fixed rates for given times of the day.");
+			addControllerType("IRM_ALINEA", "IRM stands for Isolated Ramp Metering ï¿½ ramp metering on individual on-ramps. ALINEA is the name of RM algorithm.");
+			addControllerType("IRM_TOD", "TOD stands for Time Of Day ï¿½ fixed rates for given times of the day.");
 			addControllerType("IRM_TOS", "Traffic responsive controller based on lookup tables.");
 			addControllerType("CRM_HERO", "CRM stands for Coordinated Ramp Metering. HERO is the name of CRM algorithm.");
 			addControllerType("CRM_SWARM", "SWARM is the name of another CRM algorithm, developed by Delcan.");
-			addControllerType("VSL_TOD", "VSL stands for Variable Speed Limit, TOD Ð for Time Of Day.");
+			addControllerType("VSL_TOD", "VSL stands for Variable Speed Limit, TOD ï¿½ for Time Of Day.");
 			addControllerType("VSL_ALINEA", "VSL with ALINEA algorithm.");
-			addControllerType("ML_TOLL_Reaction", "ML Ð Managed Lanes. Models driversÕ reaction to tolls.");
+			addControllerType("ML_TOLL_Reaction", "ML ï¿½ Managed Lanes. Models driversï¿½ reaction to tolls.");
 			addControllerType("ML_TOLL_Pricing", "Controller that computes toll pricing.");
 			addControllerType("ML_Shoulder", "Controller that opens a shoulder as an extra lane based on traffic condition.");
 			addControllerType("SIG_Pretimed", "Pre-timed signal control.");
 			addControllerType("SIG_Actuated", "Actuated signal control.");
 			addControllerType("SIG_Synchronized", "Actuated signal control synchronized over multiple intersections.");
 			addControllerType("SIG_TUC", "One of the adaptive signal control algorithms. TUC stands for Traffic-responsive Urban Control.");
-			addControllerType("FAC_1", "Freeway Arterial Coordination Ð scenario 1.");
+			addControllerType("FAC_1", "Freeway Arterial Coordination ï¿½ scenario 1.");
 			addControllerType("FAC_2", "Scenario 2.");
 			addControllerType("FAC_3", "Scenario 3.");
 			addControllerType("FAC_4", "Scenario 4.");
@@ -328,7 +328,7 @@ public class Admin {
 			addType(new QuantityTypes(), name, description);
 		}
 		private void addAggregationTypes() throws TorqueException {
-			addAggregationType("raw", "Output of simulator, estimator, other programs. Other aggregations result from processing ÔrawÕ data.");
+			addAggregationType("raw", "Output of simulator, estimator, other programs. Other aggregations result from processing ï¿½rawï¿½ data.");
 			addAggregationType("total", null);
 			addAggregationType("1min", null);
 			addAggregationType("5min", null);

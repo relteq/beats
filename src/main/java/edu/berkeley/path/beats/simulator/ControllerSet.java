@@ -102,7 +102,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		for(Controller controller : controllers){			
 			if (controller.activationTimes==null)
 				if (!controller.register()){
-					SiriusErrorLog.addError("Controller registration failure, controller " + controller.getId());
+					BeatsErrorLog.addError("Controller registration failure, controller " + controller.getId());
 					return false;
 				}
 		}
@@ -123,7 +123,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex()));					
 				}
 				if (!validated){
-					SiriusErrorLog.addError("Multiple controllers accessing the same link at the same time. Controller registration failure, controller " + controllers.get(activecmd.getIndex()).getId());
+					BeatsErrorLog.addError("Multiple controllers accessing the same link at the same time. Controller registration failure, controller " + controllers.get(activecmd.getIndex()).getId());
 					return false;
 				}
 			}	
@@ -179,7 +179,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 	
 	}
 	
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 		processActivations(myScenario.clock.getT());			
 		
     	for(Controller controller : controllers)

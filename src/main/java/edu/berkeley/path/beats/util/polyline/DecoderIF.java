@@ -2,7 +2,7 @@ package edu.berkeley.path.beats.util.polyline;
 
 import edu.berkeley.path.beats.jaxb.ObjectFactory;
 import edu.berkeley.path.beats.jaxb.Point;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * Decodes a polyline from a string
@@ -20,7 +20,7 @@ public interface DecoderIF {
 	 * @param encoded String
 	 * @return the list of polyline points
 	 */
-	public java.util.List<Point> decode(String encoded) throws SiriusException;
+	public java.util.List<Point> decode(String encoded) throws BeatsException;
 
 	/**
 	 * Restores the initial state.

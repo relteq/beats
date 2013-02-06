@@ -210,11 +210,11 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	protected void validate() {
 	}
 
-	protected void reset() throws SiriusException {
+	protected void reset() throws BeatsException {
 		return;
 	}
 
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 		return;
 	}
 

@@ -35,18 +35,18 @@ public interface InterfaceOutputWriter {
 	/**
 	 * Opens the output writer
 	 * @param run_id the run number
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	void open(int run_id) throws SiriusException;
+	void open(int run_id) throws BeatsException;
 	
 	/**
 	 * Records the simulator state
 	 * @param time
 	 * @param exportflows
 	 * @param outsteps
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException;
+	void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException;
 	
 	/**
 	 * Closes the output writer

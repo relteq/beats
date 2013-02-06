@@ -69,12 +69,12 @@ final class SensorList extends edu.berkeley.path.beats.jaxb.SensorList  {
 			sensor.validate();
 	}
 	
-	protected void reset() throws SiriusException {
+	protected void reset() throws BeatsException {
 		for(Sensor sensor : sensors)
 			sensor.reset();
 	}
 
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 
         // NOTE: ensembles have not been implemented for sensors. They do not apply
         // to the loop sensor, but would make a difference for floating sensors.

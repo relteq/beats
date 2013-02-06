@@ -130,7 +130,7 @@ public class Controller {
 	 * <p> Because events are state-less, the {@link Event} class provides a default 
 	 * implementation of this method, so it need not be implemented by other event classes.
 	 */
-	protected void update() throws SiriusException {
+	protected void update() throws BeatsException {
 	}
 
 	/** Validate the component.
@@ -145,15 +145,15 @@ public class Controller {
 		
 		// check that type was read correctly
 		if(myType==null)
-			SiriusErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
+			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
 		
 		// check that the target is valid
 		if(targets==null)
-			SiriusErrorLog.addError("Invalid target for controller id=" + getId());
+			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-			SiriusErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			BeatsErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
 
 		// check that activation times are valid.
 		for (int i=0; i<activationTimes.size(); i++ ){
@@ -336,13 +336,13 @@ public class Controller {
 		this.ison = false; //c.isEnabled(); 
 		this.activationTimes=new ArrayList<ActivationTimes>();
 		dtinseconds = c.getDt().floatValue();		// assume given in seconds
-		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
+		samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
 		
 		// Copy tables
 		tables = new java.util.HashMap<String, Table>();
 		for (edu.berkeley.path.beats.jaxb.Table table : c.getTable()) {
 			if (tables.containsKey(table.getName()))
-				SiriusErrorLog.addError("Table '" + table.getName() + "' already exists");
+				BeatsErrorLog.addError("Table '" + table.getName() + "' already exists");
 			tables.put(table.getName(), new Table(table));
 		}
 		
@@ -448,12 +448,12 @@ public class Controller {
 		
 		protected void validate(){			
 			if (begintime-endtime>=0)
-				SiriusErrorLog.addError("Begin time must be larger than end time.");		  
+				BeatsErrorLog.addError("Begin time must be larger than end time.");		  
 		}
 		
 		protected void validateWith(ActivationTimes that){			
 			if (Math.max(this.begintime-that.getEndtime(), that.getBegintime()-this.endtime)<0)  // Assumption - activation times is sorted before this is invoked, should remove this assumption later.
-				SiriusErrorLog.addError("Activation Periods of the controllers must not overlap.");
+				BeatsErrorLog.addError("Activation Periods of the controllers must not overlap.");
 		}
 		
 		/////////////////////////////////////////////////////////////////////

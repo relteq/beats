@@ -66,7 +66,7 @@ public class BeatsState {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
-	protected void recordstate() throws SiriusException {
+	protected void recordstate() throws BeatsException {
 		int i,j;
 		for(int netindex=0;netindex<numNetworks;netindex++){
 			edu.berkeley.path.beats.jaxb.Network network = myScenario.getNetworkList().getNetwork().get(netindex);

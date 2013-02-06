@@ -159,12 +159,12 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	protected void validate() {
 		
 		if(myNode==null){
-			SiriusErrorLog.addWarning("Unknow node id=" + getNodeId() + " in signal id=" + getId());
+			BeatsErrorLog.addWarning("Unknow node id=" + getNodeId() + " in signal id=" + getId());
 			return; // this signal will be ignored
 		}
 		
 		if(phase==null)
-			SiriusErrorLog.addError("Signal id=" + getId() + " contains no valid phases.");
+			BeatsErrorLog.addError("Signal id=" + getId() + " contains no valid phases.");
 
 		if(phase!=null)	
 			for(SignalPhase p : phase)
@@ -268,7 +268,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 
 		// No transition if green time < mingreen
 		for(i=0;i<phase.length;i++)
-			if( phase[i].bulbcolor.compareTo(BulbColor.GREEN)==0  && SiriusMath.lessthan(phase[i].bulbtimer.getT(),phase[i].mingreen) )
+			if( phase[i].bulbcolor.compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].bulbtimer.getT(),phase[i].mingreen) )
 				forceoff_approved[i] = false;
 		
 			
@@ -578,7 +578,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		public void populate(Object jaxbobject) {}
 		
 		@Override 
-		public void update() throws SiriusException {}
+		public void update() throws BeatsException {}
 
 		@Override
 		public boolean register() {

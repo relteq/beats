@@ -60,7 +60,7 @@ final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileS
 		
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
-			SiriusErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");
+			BeatsErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");
 		
 		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile)dp).validate();		

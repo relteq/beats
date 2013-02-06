@@ -77,9 +77,9 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * Retrieves completed phases for the given signal
 	 * @param signal
 	 * @return completed signal phases
-	 * @throws SiriusException if the signal phase storage has not been initialized
+	 * @throws BeatsException if the signal phase storage has not been initialized
 	 */
-	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws SiriusException {
+	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
 		return scenario.cumulatives.get(signal);
 	}
 	
@@ -87,9 +87,9 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * Retrieves link cumulative data for the given link
 	 * @param link
 	 * @return link cumulative data
-	 * @throws SiriusException if the link cumulative data storage has not been initialized
+	 * @throws BeatsException if the link cumulative data storage has not been initialized
 	 */
-	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws SiriusException {
+	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
 		return scenario.cumulatives.get(link);
 	}
 }

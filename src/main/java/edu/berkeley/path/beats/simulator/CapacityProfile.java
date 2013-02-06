@@ -46,7 +46,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		this.myScenario = myScenario;
 		myLink = myScenario.getLinkWithId(getLinkId());
 		dtinseconds = getDt().floatValue();					// assume given in seconds
-		samplesteps = SiriusMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+		samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
 		isdone = false;
 		
 		// read capacity and convert to vehicle units
@@ -67,20 +67,20 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 			return;
 		
 		if(myLink==null){
-			SiriusErrorLog.addWarning("Unknown link id=" + getLinkId() + " in capacity profile.");
+			BeatsErrorLog.addWarning("Unknown link id=" + getLinkId() + " in capacity profile.");
 			return;
 		}
 		
 		// check dtinseconds
 		if( dtinseconds<=0 )
-			SiriusErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
+			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 
-		if(!SiriusMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-			SiriusErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+			BeatsErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
 		if(capacity.hasNaN())
-			SiriusErrorLog.addError("Capacity profile for link id=" +getLinkId()+ " has illegal values.");
+			BeatsErrorLog.addError("Capacity profile for link id=" +getLinkId()+ " has illegal values.");
 
 	}
 

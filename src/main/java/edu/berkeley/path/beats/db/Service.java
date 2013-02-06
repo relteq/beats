@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.apache.torque.Torque;
 import org.apache.torque.TorqueException;
 
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 /**
  * DB service initialization and shutdown
@@ -40,9 +40,9 @@ public class Service {
 	 * Initializes the DB service.
 	 * Connection parameters are read from the environment,
 	 * as described in the "Concept of Operations"
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void init() throws SiriusException {
+	public static void init() throws BeatsException {
 		init(Parameters.fromEnvironment());
 	}
 
@@ -51,14 +51,14 @@ public class Service {
 	/**
 	 * Initializes the DB service for the specified parameters
 	 * @param params
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void init(Parameters params) throws SiriusException {
+	public static void init(Parameters params) throws BeatsException {
 		try {
 			logger.info("Connection URL: " + params.getUrl());
 			Torque.init(params.toConfiguration());
 		} catch (TorqueException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
@@ -71,15 +71,15 @@ public class Service {
 
 	/**
 	 * Initializes the DB service if it hasn't been initialized yet
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void ensureInit() throws SiriusException {
+	public static void ensureInit() throws BeatsException {
 		if (!isInit()) init();
 	}
 
 	/**
 	 * Shuts down the DB service
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
 	public static void shutdown() {
 		try {

@@ -39,7 +39,7 @@ import javax.measure.unit.Unit;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.jaxb.*;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
 import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
 
@@ -53,9 +53,9 @@ public class UnitConverter {
 	 * Loads a scenario, performs unit conversion, saves the resulting scenario
 	 * @param iconfig input scenario file
 	 * @param oconfig output file
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void convertUnits(String iconfig, String oconfig) throws SiriusException {
+	public static void convertUnits(String iconfig, String oconfig) throws BeatsException {
 		Scenario scenario = ScenarioLoader.loadRaw(iconfig);
 		process(scenario);
 		ScenarioSaver.save(scenario, oconfig);
@@ -65,7 +65,7 @@ public class UnitConverter {
 
 	private enum UnitSystem {SI, US, METRIC};
 
-	private static UnitSystem getUnitSystem(String units) throws SiriusException {
+	private static UnitSystem getUnitSystem(String units) throws BeatsException {
 		if (units.equalsIgnoreCase("SI"))
 			return UnitSystem.SI;
 		else if (units.equalsIgnoreCase("US"))
@@ -73,7 +73,7 @@ public class UnitConverter {
 		else if (units.equalsIgnoreCase("Metric"))
 			return UnitSystem.METRIC;
 		else
-			throw new SiriusException("Unknown units '" + units + "'");
+			throw new BeatsException("Unknown units '" + units + "'");
 	}
 
 	private static Unit<Length> getLengthUnit(UnitSystem usystem) {
@@ -109,7 +109,7 @@ public class UnitConverter {
 		return getDurationUnit(usystem).inverse();
 	}
 
-	private static Unit<? extends Quantity> getFlowUnit(String units) throws SiriusException {
+	private static Unit<? extends Quantity> getFlowUnit(String units) throws BeatsException {
 		return getFlowUnit(getUnitSystem(units));
 	}
 
@@ -126,7 +126,7 @@ public class UnitConverter {
 		}
 	}
 
-	private static Unit<Velocity> getSpeedUnit(String units) throws SiriusException {
+	private static Unit<Velocity> getSpeedUnit(String units) throws BeatsException {
 		return getSpeedUnit(getUnitSystem(units));
 	}
 
@@ -134,9 +134,9 @@ public class UnitConverter {
 	 * Creates a to-SI flow converter
 	 * @param iunits the units of the input data
 	 * @return a converter
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static javax.measure.converter.UnitConverter getFlowConverter(String iunits) throws SiriusException {
+	public static javax.measure.converter.UnitConverter getFlowConverter(String iunits) throws BeatsException {
 		return getFlowConverter(iunits, "SI");
 	}
 
@@ -145,9 +145,9 @@ public class UnitConverter {
 	 * @param iunits the units of the input data
 	 * @param ounits the units of the output data
 	 * @return a converter
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static javax.measure.converter.UnitConverter getFlowConverter(String iunits, String ounits) throws SiriusException {
+	public static javax.measure.converter.UnitConverter getFlowConverter(String iunits, String ounits) throws BeatsException {
 		return getFlowUnit(iunits).getConverterTo(getFlowUnit(ounits));
 	}
 
@@ -155,9 +155,9 @@ public class UnitConverter {
 	 * Creates a to-SI unit converter
 	 * @param iunits the units of the input data
 	 * @return a converter
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static javax.measure.converter.UnitConverter getSpeedConverter(String iunits) throws SiriusException {
+	public static javax.measure.converter.UnitConverter getSpeedConverter(String iunits) throws BeatsException {
 		return getSpeedConverter(iunits, "SI");
 	}
 
@@ -166,23 +166,23 @@ public class UnitConverter {
 	 * @param iunits the units of the input data
 	 * @param ounits the units of the output data
 	 * @return a converter
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static javax.measure.converter.UnitConverter getSpeedConverter(String iunits, String ounits) throws SiriusException {
+	public static javax.measure.converter.UnitConverter getSpeedConverter(String iunits, String ounits) throws BeatsException {
 		return getSpeedUnit(iunits).getConverterTo(getSpeedUnit(ounits));
 	}
 
 	/**
 	 * Performs in-line unit conversion from the given units (settings/units) to SI
 	 * @param scenario
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void process(Scenario scenario) throws SiriusException {
+	public static void process(Scenario scenario) throws BeatsException {
 		String units = null;
 		if (null != scenario.getSettings())
 			units = scenario.getSettings().getUnits();
 		if (null == units)
-			throw new SiriusException("no units");
+			throw new BeatsException("no units");
 		process(scenario, units, "SI");
 	}
 
@@ -190,9 +190,9 @@ public class UnitConverter {
 	 * @param scenario
 	 * @param iunits input units
 	 * @param ounits output units
-	 * @throws SiriusException
+	 * @throws BeatsException
 	 */
-	public static void process(Scenario scenario, String iunits, String ounits) throws SiriusException {
+	public static void process(Scenario scenario, String iunits, String ounits) throws BeatsException {
 		UnitSystem iusystem = getUnitSystem(iunits);
 		UnitSystem ousystem = getUnitSystem(ounits);
 		if (iusystem == ousystem) {
@@ -242,7 +242,7 @@ public class UnitConverter {
 		return convert(value, sconv);
 	}
 
-	private void process() throws SiriusException {
+	private void process() throws BeatsException {
 		// settings: nothing to process
 		process(scenario.getNetworkList());
 		// signal list, sensor list: nothing to process

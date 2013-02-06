@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.data.FiveMinuteData;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 
@@ -99,7 +99,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	@Override
 	protected void validate() {
 		if(myLink==null)
-			SiriusErrorLog.addWarning("Loop sensor with id=" + getId() +" is not attached.");
+			BeatsErrorLog.addWarning("Loop sensor with id=" + getId() +" is not attached.");
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
-		return SiriusMath.times(myLink.getDensityInVeh(ensemble), 1 / myLink.getLengthInMeters());
+		return BeatsMath.times(myLink.getDensityInVeh(ensemble), 1 / myLink.getLengthInMeters());
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
-		return SiriusMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
+		return BeatsMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
 	}
 
 	@Override

@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import edu.berkeley.path.beats.simulator.SignalPhase;
-import edu.berkeley.path.beats.simulator.SiriusErrorLog;
-import edu.berkeley.path.beats.simulator.SiriusMath;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.Signal.Command;
@@ -215,39 +215,39 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		
 		// at least two stages
 		if(numstages<=1)
-			SiriusErrorLog.addError("Signal id=" + mySignal.getId() + " has less than two stages.");
+			BeatsErrorLog.addError("Signal id=" + mySignal.getId() + " has less than two stages.");
 		
 		// check offset
 		if(offset<0 || offset>=myPlan._cyclelength)
-			SiriusErrorLog.addError("Offset for signal id=" + mySignal.getId() + " is not between zero and the cycle length.");
+			BeatsErrorLog.addError("Offset for signal id=" + mySignal.getId() + " is not between zero and the cycle length.");
 		
 		//  greentime, movA, movB
 		for(int k=0;k<numstages;k++){
 			if(greentime[k]==null || greentime[k]<=0)
-				SiriusErrorLog.addError("Invalid green time in stage for signal id=" + mySignal.getId());
+				BeatsErrorLog.addError("Invalid green time in stage for signal id=" + mySignal.getId());
 			if(movA[k]==null && movB[k]==null)
-				SiriusErrorLog.addError("Invalid phase in stage for signal id=" + mySignal.getId());
+				BeatsErrorLog.addError("Invalid phase in stage for signal id=" + mySignal.getId());
 		}
 		
 		// values are integer multiples of controller dt
 		for(int k=0;k<numstages;k++){
-			if(!SiriusMath.isintegermultipleof((double) greentime[k],controldt))
-				SiriusErrorLog.addError("Green time not a multiple of control time step in signal id=" + mySignal.getId());
+			if(!BeatsMath.isintegermultipleof((double) greentime[k],controldt))
+				BeatsErrorLog.addError("Green time not a multiple of control time step in signal id=" + mySignal.getId());
 			if(stagelength[k]!=greentime[k])
-				if(!SiriusMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
-					SiriusErrorLog.addError("Lost time not a multiple of control time step in signal id=" + mySignal.getId());
+				if(!BeatsMath.isintegermultipleof((double) stagelength[k]-greentime[k],controldt))
+					BeatsErrorLog.addError("Lost time not a multiple of control time step in signal id=" + mySignal.getId());
 		}
 
 		// check cycles are long enough .....................................	
 		float totphaselength=0;
 		for(int k=0;k<numstages;k++)
 			totphaselength += stagelength[k];
-		if(!SiriusMath.equals(myPlan._cyclelength,totphaselength))
-			SiriusErrorLog.addError("Stages do not add up to cycle time in signal id=" + mySignal.getId());
+		if(!BeatsMath.equals(myPlan._cyclelength,totphaselength))
+			BeatsErrorLog.addError("Stages do not add up to cycle time in signal id=" + mySignal.getId());
 		
 		// first two commands have zero timestamp
 		if(command.get(0).time!=0.0)
-			SiriusErrorLog.addError("Initial stages for pretimed plan of signal id=" + mySignal.getId() + " must have time stamp equal zero.");
+			BeatsErrorLog.addError("Initial stages for pretimed plan of signal id=" + mySignal.getId() + " must have time stamp equal zero.");
 	}
 		
 	protected void reset(){

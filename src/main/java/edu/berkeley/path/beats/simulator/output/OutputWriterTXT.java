@@ -38,7 +38,7 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SiriusException;
+import edu.berkeley.path.beats.simulator.BeatsException;
 
 public final class OutputWriterTXT extends OutputWriterBase {
 	protected Writer out_time = null;
@@ -57,7 +57,7 @@ public final class OutputWriterTXT extends OutputWriterBase {
 	}
 
 	@Override
-	public void open(int run_id) throws SiriusException {
+	public void open(int run_id) throws BeatsException {
 		String suffix = String.format("_%d.txt", run_id);
 		String [] VTnames = scenario.getVehicleTypeNames();
 		numVT = scenario.getNumVehicleTypes();
@@ -72,12 +72,12 @@ public final class OutputWriterTXT extends OutputWriterBase {
 				out_inflow[j] = new OutputStreamWriter(new FileOutputStream(prefix+"_inflow_"+VTnames[j]+suffix));	
 			}
 		} catch (FileNotFoundException exc) {
-			throw new SiriusException(exc);
+			throw new BeatsException(exc);
 		}
 	}
 
 	@Override
-	public void recordstate(double time, boolean exportflows, int outsteps) throws SiriusException {
+	public void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException {
 		
 		if(scenario==null)
 			return;
@@ -116,7 +116,7 @@ public final class OutputWriterTXT extends OutputWriterBase {
 			}
 			
 		} catch (IOException e) {
-			throw new SiriusException(e);
+			throw new BeatsException(e);
 		}
 	}
 
