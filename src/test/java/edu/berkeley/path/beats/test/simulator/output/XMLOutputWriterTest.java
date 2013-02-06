@@ -121,7 +121,7 @@ public class XMLOutputWriterTest {
 
 		String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
 		File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
-		runSirius(conffile.getPath(), outfile.getAbsolutePath());
+		runBeats(conffile.getPath(), outfile.getAbsolutePath());
 		logger.info("Simulation completed");
 
 		validate(outfile, oschema);
@@ -152,7 +152,7 @@ public class XMLOutputWriterTest {
 	 * @param outpath String an output file path
 	 * @throws BeatsException
 	 */
-	protected void runSirius(String confpath, String outpath) throws BeatsException {
+	protected void runBeats(String confpath, String outpath) throws BeatsException {
 		// simulation settings
 		double timestart = 0d;
 		double duration = 3600d;
