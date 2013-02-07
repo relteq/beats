@@ -236,7 +236,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
 			}
 			else {
-				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPM(0) / myScenario.getSimDtInSeconds();
+				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPMeter(0) / myScenario.getSimDtInSeconds();
 			}
 		
 		if (hasflowthres)

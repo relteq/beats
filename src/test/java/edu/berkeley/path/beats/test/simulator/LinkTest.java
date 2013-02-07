@@ -8,10 +8,30 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+
 public class LinkTest {
 
+	private static Scenario scenario;
+	private static Link link;
+	private static String config_folder = "data/config/";
+	private static String config_file = "_smalltest_nocontrol.xml";
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		if(scenario==null)
+			fail("scenario did not load");
+		link = scenario.getLinkWithId("-4");
+		try {
+			scenario.initialize_run(1, 300d);
+			scenario.advanceNSeconds(300d);
+		} catch (BeatsException e) {
+			fail("initialization failure.");
+		}
 	}
 
 	@AfterClass
@@ -28,223 +48,393 @@ public class LinkTest {
 
 	@Test
 	public void test_getMyType() {
-//		public Link.Type getMyType() 
-		fail("Not yet implemented");
+		assertTrue(link.getMyType().compareTo(Link.Type.freeway)==0);
 	}
 
 	@Test
 	public void test_isFreewayType() {
-//		public static boolean isFreewayType(Link link)
-		fail("Not yet implemented");
+		assertTrue(Link.isFreewayType(link));
+		
+		// edge case
+		assertFalse(Link.isFreewayType(null));
 	}
 
 	@Test
 	public void test_getMyNetwork() {
-//		public Network getMyNetwork() 
-		fail("Not yet implemented");
+		assertEquals(link.getMyNetwork().getId(),"-1");
 	}
 
 	@Test
 	public void test_getBegin_node() {
-//		public Node getBegin_node() 
-		fail("Not yet implemented");
+		assertEquals(link.getBegin_node().getId(),"-4");
 	}
 
 	@Test
 	public void test_getEnd_node() {
-//		public Node getEnd_node() 
-		fail("Not yet implemented");
+		assertEquals(link.getEnd_node().getId(),"-5");
 	}
 
 	@Test
 	public void test_getLengthInMeters() {
-//		public double getLengthInMeters() 
-		fail("Not yet implemented");
+		double length_in_miles = 0.527494326813265;
+		double expected = 1609.34*length_in_miles;
+		assertEquals(link.getLengthInMeters(),expected,1e-2);
 	}
 
 	@Test
 	public void test_get_Lanes() {
-//		public double get_Lanes() 
-		fail("Not yet implemented");
+		assertEquals(link.get_Lanes(),1,1e-4);
 	}	
 	
 	@Test
 	public void test_isSource() {
-//		public boolean isSource() 
-		fail("Not yet implemented");
+		Link linksource = scenario.getLinkWithId("-6");
+		assertFalse(link.isSource());
+		assertTrue(linksource.isSource());
 	}
 
 	@Test
 	public void test_isSink() {
-//		public boolean isSink() 
-		fail("Not yet implemented");
+		Link linksink = scenario.getLinkWithId("-7");
+		assertFalse(link.isSink());
+		assertTrue(linksink.isSink());
 	}
 
 	@Test
 	public void test_getDensityInVeh_a() {
-//		public Double[] getDensityInVeh(int ensemble) {
-		fail("Not yet implemented");
+
+		double x = link.getDensityInVeh(0)[0]; 
+		double exp = 4.619603897390897;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertNull(link.getDensityInVeh(-1));
+		assertNull(link.getDensityInVeh(100));
 	}
 
 	@Test
 	public void test_getDensityInVeh_b() {
-//		public double getDensityInVeh(int ensemble,int vehicletype) {
-		fail("Not yet implemented");
+
+		double x = link.getDensityInVeh(0,0); 
+		double exp = 4.619603897390897;
+		
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertEquals(link.getDensityInVeh(-1,0),0d,1e-4);
+		assertEquals(link.getDensityInVeh(100,0),0d,1e-4);
+		assertEquals(link.getDensityInVeh(0,-1),0d,1e-4);
+		assertEquals(link.getDensityInVeh(0,100),0d,1e-4);
 	}
 	
 	@Test
 	public void test_getTotalDensityInVeh() {
-//		public double getTotalDensityInVeh(int ensemble) {
-		fail("Not yet implemented");
+
+		double x = link.getTotalDensityInVeh(0); 
+		double exp = 4.619603897390897;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertEquals(link.getTotalDensityInVeh(-1),0d,1e-4);
+		assertEquals(link.getTotalDensityInVeh(100),0d,1e-4);
 	}
 
 	@Test
 	public void test_getTotalDensityInVPM() {
-//		public double getTotalDensityInVPM(int ensemble) {
-		fail("Not yet implemented");
+
+		double x = link.getTotalDensityInVPMeter(0); 
+		double exp = 0.0054417434187916496;
+		
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertEquals(link.getTotalDensityInVPMeter(-1),0d,1e-4);
+		assertEquals(link.getTotalDensityInVPMeter(100),0d,1e-4);
 	}
 	
 	@Test
 	public void test_getOutflowInVeh() {
-//		public Double[] getOutflowInVeh(int ensemble) {
-		fail("Not yet implemented");
+
+		double x = link.getOutflowInVeh(0)[0]; 
+		double exp = 0.7334938248960583;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases 
+		assertNull(link.getOutflowInVeh(-1));
+		assertNull(link.getOutflowInVeh(100));
 	}
 
 	@Test
 	public void test_getTotalOutflowInVeh() {
-//		public double getTotalOutflowInVeh(int ensemble) {
-		fail("Not yet implemented");
+
+
+		double x = link.getTotalOutflowInVeh(0); 
+		double exp = 0.7334938248960583;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertEquals(link.getTotalOutflowInVeh(-1),0d,1e-4);
+		assertEquals(link.getTotalOutflowInVeh(100),0d,1e-4);
+
 	}
 
 	@Test
 	public void test_getInflowInVeh() {
-//		public Double[] getInflowInVeh(int ensemble) {
-		fail("Not yet implemented");
+
+		double x = link.getInflowInVeh(0)[0]; 
+		double exp = 0.7101317456641572;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertNull(link.getInflowInVeh(-1));
+		assertNull(link.getInflowInVeh(100));
 	}
 
 	@Test
 	public void test_getTotalInlowInVeh() {
-//		public double getTotalInlowInVeh(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getTotalInlowInVeh(0); 
+		double exp = 0.7101317456641572;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertEquals(link.getTotalInlowInVeh(-1),0d,1e-4);
+		assertEquals(link.getTotalInlowInVeh(100),0d,1e-4);
 	}
 
 	@Test
 	public void test_computeSpeedInMPS() {
-//		public double computeSpeedInMPS(int ensemble){
-		fail("Not yet implemented");
+		double x = link.computeSpeedInMPS(0); 
+		double exp = 26.958045186883588;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertTrue(Double.isNaN(link.computeSpeedInMPS(-1)));
+		assertTrue(Double.isNaN(link.computeSpeedInMPS(100)));
 	}
 
 	@Test
 	public void test_getDensityJamInVeh() {
-//		public double getDensityJamInVeh(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getDensityJamInVeh(0); 
+		double exp = 79.12414902198975;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertTrue(Double.isNaN(link.getDensityJamInVeh(-1)));
+		assertTrue(Double.isNaN(link.getDensityJamInVeh(100)));
 	}
 	
 	@Test
 	public void test_getDensityCriticalInVeh() {
-//		public double getDensityCriticalInVeh(int ensemble) 
-		fail("Not yet implemented");
+		double x = link.getDensityCriticalInVeh(0); 
+		double exp = 15.824829804397952;
+
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertTrue(Double.isNaN(link.getDensityCriticalInVeh(-1)));
+		assertTrue(Double.isNaN(link.getDensityCriticalInVeh(100)));
 	}
 
 	@Test
 	public void test_getCapacityDropInVeh() {
-//		public double getCapacityDropInVeh(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getCapacityDropInVeh(0);
+		double exp = 0.0;
+		
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getCapacityDropInVeh(-1)));
+		assertTrue(Double.isNaN(link.getCapacityDropInVeh(100)));
 	}
 
 	@Test
 	public void test_getCapacityInVeh() {
-//		public double getCapacityInVeh(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getCapacityInVeh(0);
+		double exp = 2.5;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getCapacityInVeh(-1)));
+		assertTrue(Double.isNaN(link.getCapacityInVeh(100)));
 	}
 	
 	@Test
 	public void test_getDensityJamInVPMPL() {
-//		public double getDensityJamInVPMPL(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getDensityJamInVPMPL(0);
+		double exp = 0.09320567883560009;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getDensityJamInVPMPL(-1)));
+		assertTrue(Double.isNaN(link.getDensityJamInVPMPL(100)));
 	}
 
 	@Test
 	public void test_getDensityCriticalInVPMPL() {
-//		public double getDensityCriticalInVPMPL(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getDensityCriticalInVPMPL(0);
+		double exp = 0.01864113576712002;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getDensityCriticalInVPMPL(-1)));
+		assertTrue(Double.isNaN(link.getDensityCriticalInVPMPL(100)));
 	}
 
 	@Test
 	public void test_getCapacityDropInVPSPL() {
-//		public double getCapacityDropInVPSPL(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getCapacityDropInVPSPL(0);
+		double exp = 0.0;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getCapacityDropInVPSPL(-1)));
+		assertTrue(Double.isNaN(link.getCapacityDropInVPSPL(100)));
 	}
 
 	@Test
 	public void test_getCapacityInVPS() {
-//		public double getCapacityInVPS(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getCapacityInVPS(0);
+		double exp = 0.5;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getCapacityInVPS(-1)));
+		assertTrue(Double.isNaN(link.getCapacityInVPS(100)));
 	}
 
 	@Test
 	public void test_getCapacityInVPSPL() {
-//		public double getCapacityInVPSPL(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getCapacityInVPSPL(0);
+		double exp = 0.5;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getCapacityInVPSPL(-1)));
+		assertTrue(Double.isNaN(link.getCapacityInVPSPL(100)));
 	}
 
 	@Test
 	public void test_getNormalizedVf() {
-//		public double getNormalizedVf(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getNormalizedVf(0);
+		double exp = 0.15797958214408178;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getNormalizedVf(-1)));
+		assertTrue(Double.isNaN(link.getNormalizedVf(100)));
 	}
 
 	@Test
 	public void test_getVfInMPS() {
-//		public double getVfInMPS(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getVfInMPS(0);
+		double exp = 26.8224;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getVfInMPS(-1)));
+		assertTrue(Double.isNaN(link.getVfInMPS(100)));
 	}
 	
 	@Test
 	public void test_getCriticalSpeedInMPS() {
-//		public double getCriticalSpeedInMPS(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getCriticalSpeedInMPS(0);
+		double exp = 26.8224;
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getCriticalSpeedInMPS(-1)));
+		assertTrue(Double.isNaN(link.getCriticalSpeedInMPS(100)));
 	}
 
 	@Test
 	public void test_getNormalizedW() {
-//		public double getNormalizedW(int ensemble) {
-		fail("Not yet implemented");
+		double x = link.getNormalizedW(0);
+		double exp = 0.039494895536020445;
+		
+
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getNormalizedW(-1)));
+		assertTrue(Double.isNaN(link.getNormalizedW(100)));
 	}
 
 	@Test
 	public void test_getWInMPS() {
-//		public double getWInMPS(int ensemble) {
-		fail("Not yet implemented");
-	}
+		double x = link.getWInMPS(0);
+		double exp = 6.7056;
 
-	@Test
-	public void test_setSourcedemandFromVeh() {
-//		public void setSourcedemandFromVeh(Double[] sourcedemand) {
-		fail("Not yet implemented");
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getWInMPS(-1)));
+		assertTrue(Double.isNaN(link.getWInMPS(100)));
 	}
 
 	@Test
 	public void test_overrideDensityWithVeh() {
-//		public void overrideDensityWithVeh(Double[] x,int ensemble){
-		fail("Not yet implemented");
+		Double [] olddensity = link.getDensityInVeh(0);
+		Double [] newdensity = link.getDensityInVeh(0);
+		newdensity[0] *= 2d;
+		link.overrideDensityWithVeh(newdensity,0);
+		
+		assertEquals(link.getDensityInVeh(0,0) , olddensity[0]*2d , 1e-4 );
+
+		link.overrideDensityWithVeh(olddensity,0);
 	}
 	
 	@Test
 	public void test_getDensity() {
-//		public Double getDensity(int ensemble, int vt_ind) {
-		fail("Not yet implemented");
+		double x = link.getDensityInVeh(0)[0];
+		double exp = 4.619603897390897;
+		
+		assertEquals(x,exp,1e-4);
+
+		// edge case
+		assertNull(link.getDensityInVeh(-1));
+		assertNull(link.getDensityInVeh(100));
 	}
 
 	@Test
 	public void test_getInputFlow() {
-//		public Double getInputFlow(int ensemble, int vt_ind) {
-		fail("Not yet implemented");
+		double x = link.getInputFlow(0,0);
+		double exp = 0.7101317456641572;
+		assertEquals(x,exp,1e-4);
+		
+		// edge cases
+		assertTrue(Double.isNaN(link.getInputFlow(-1,0)));
+		assertTrue(Double.isNaN(link.getInputFlow(100,0)));
+		assertTrue(Double.isNaN(link.getInputFlow(0,-1)));
+		assertTrue(Double.isNaN(link.getInputFlow(0,100)));
 	}
 
 	@Test
 	public void test_getOutputFlow() {
-//		public Double getOutputFlow(int ensemble, int vt_ind) {	
-		fail("Not yet implemented");
+		double x = link.getOutputFlow(0,0);
+		double exp = 0.7334938248960583;
+		assertEquals(x,exp,1e-4);
+
+		// edge cases
+		assertTrue(Double.isNaN(link.getOutputFlow(-1,0)));
+		assertTrue(Double.isNaN(link.getOutputFlow(100,0)));
+		assertTrue(Double.isNaN(link.getOutputFlow(0,-1)));
+		assertTrue(Double.isNaN(link.getOutputFlow(0,100)));
 	}
 }

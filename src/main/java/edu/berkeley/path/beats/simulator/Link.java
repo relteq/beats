@@ -145,6 +145,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
+	// Demand profiles .................................................
+	/** @y.exclude */
+	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
+		this.sourcedemand = sourcedemand;		
+	}
+	
 	// Controller registration ..........................................
 	
 	/** @y.exclude */
@@ -194,10 +200,14 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/** @y.exclude */
 	// getter for the currently active fundamental diagram
 	protected FundamentalDiagram currentFD(int ensemble){
-		if(activeFDevent)
-			return FDfromEvent;
-		else
-			return FDfromProfile==null ? null : FDfromProfile[ensemble];
+		try{
+			if(activeFDevent)
+				return FDfromEvent;
+			else
+				return FDfromProfile==null ? null : FDfromProfile[ensemble];
+		} catch( Exception e){
+			return null;
+		}
 	}
 	
 	/** @y.exclude */
@@ -606,7 +616,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/** Total of vehicles in (vehicles/meter).
 	 * @return total density of vehicles in the link. 0 if something goes wrong.
 	 */
-	public double getTotalDensityInVPM(int ensemble) {
+	public double getTotalDensityInVPMeter(int ensemble) {
 		return getTotalDensityInVeh(ensemble)/_length;
 	}
 	
@@ -685,7 +695,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				speed = currentFD(ensemble).getVfNormalized();
 			return speed * _length / myNetwork.myScenario.getSimDtInSeconds();
 		} catch(Exception e){
-			return 0d;
+			return Double.NaN;
 		}
 	}
 
@@ -818,15 +828,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		else
 			return FD.getWNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
 	}
-	
-	/** Set input flow for source links.
-	 *  [This is API call is being made available for implementation of path-based DTA.
-	 *  The goal is to replace it later with an internal solution.]
-	 */
-	public void setSourcedemandFromVeh(Double[] sourcedemand) {
-		this.sourcedemand = sourcedemand;		
-	}
-	
+		
 	/** Replace link density with given values.
 	 *  [This is API call is being made available for implementation of particle filtering.
 	 *  Use with caution.]
@@ -836,7 +838,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return;
 		if(x.length!=density[0].length)
 			return;
-		for(int i=0;i<x.length;i++)
+		
+		int i;
+		for(i=0;i<x.length;i++)
+			if(x[i]<0)
+				return;
+		for(i=0;i<x.length;i++)
 			density[ensemble][i] = x[i];
 	}
 
@@ -846,9 +853,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return density for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getDensity(int ensemble, int vt_ind) {
-		if(density==null)
+		try{
+			if(density==null)
+				return Double.NaN;
+			return density[ensemble][vt_ind];
+		} catch(Exception e){
 			return Double.NaN;
-		return density[ensemble][vt_ind];
+		}
 	}
 
 	/** Flow entering the link in [veh] for a given ensemble and vehicle type.
@@ -857,10 +868,15 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return input flow for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getInputFlow(int ensemble, int vt_ind) {
-		if(inflow==null)
+		try{
+			if(inflow==null)
+				return Double.NaN;
+			else
+				return inflow[ensemble][vt_ind];
+		} catch(Exception e){
 			return Double.NaN;
-		else
-			return inflow[ensemble][vt_ind];
+		}
+		
 	}
 
 	/**
@@ -869,10 +885,14 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @return output flow for the given ensemble and vehicle type [vehicles]
 	 */
 	public Double getOutputFlow(int ensemble, int vt_ind) {
-		if(outflow==null)
+		try{
+			if(outflow==null)
+				return Double.NaN;
+			else
+				return outflow[ensemble][vt_ind];
+		} catch(Exception e){
 			return Double.NaN;
-		else
-			return outflow[ensemble][vt_ind];
+		}
 	}
 	
 
