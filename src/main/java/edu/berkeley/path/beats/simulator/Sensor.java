@@ -40,7 +40,7 @@ import edu.berkeley.path.beats.jaxb.Table;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceSensor {
-   			
+	
 	/** The scenario that contains this sensor. */
 	protected Scenario myScenario;	
 
@@ -183,12 +183,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
-
-	/** The scenario that contains this sensor. */
-	public Scenario getMyScenario() {
-		return myScenario;
-	}
-
+	
 	/** Sensor type. */
 	public Sensor.Type getMyType() {
 		return myType;

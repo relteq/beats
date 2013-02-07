@@ -823,9 +823,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(sensorList==null)
 			return null;
 		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : sensorList.getSensor()){
+		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.sensors){
 			if(sensor.getId().equals(id))
-				return (Sensor) sensor;
+				return sensor;
 		}
 		return null;
 	}

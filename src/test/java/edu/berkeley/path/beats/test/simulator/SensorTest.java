@@ -8,10 +8,23 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Sensor;
+
 public class SensorTest {
 
+	private static Scenario scenario;
+	private static Sensor sensor;
+	private static String config_folder = "data/config/";
+	private static String config_file = "complete.xml";
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		if(scenario==null)
+			fail("scenario did not load");
+		sensor = scenario.getSensorWithId("1");
 	}
 
 	@AfterClass
@@ -27,21 +40,13 @@ public class SensorTest {
 	}
 
 	@Test
-	public void test_getMyScenario() {
-//		public Scenario getMyScenario() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void test_getMyType() {
-//		public Sensor.Type getMyType() {
-		fail("Not yet implemented");
+		assertTrue(sensor.getMyType().compareTo(Sensor.Type.loop)==0);
 	}
 
 	@Test
 	public void test_getMyLink() {
-//		public Link getMyLink() {
-		fail("Not yet implemented");
+		assertEquals(sensor.getMyLink().getId(),"1");
 	}
 
 }
