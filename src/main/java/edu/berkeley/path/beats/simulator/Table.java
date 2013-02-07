@@ -89,12 +89,22 @@ final public class Table {
 	
 	/** Returns an element in the table, indexed by row and column numbers*/
 	public String getTableElement(int RowNo,int ColumnNo){
-		return (Rows.get(RowNo)).get(ColumnNo);
+		try{
+			return (Rows.get(RowNo)).get(ColumnNo);
+		}
+		catch(IndexOutOfBoundsException  e){
+			return null;
+		}
 	}
 	
 	/** Returns an element in the table, indexed by row number and column name*/
 	public String getTableElement(int RowNo,String cname){
-		return (Rows.get(RowNo)).get(this.getColumnNo(cname));
+		try{
+			return (Rows.get(RowNo)).get(this.getColumnNo(cname));
+		}
+		catch(IndexOutOfBoundsException  e){
+			return null;
+		}
 	}
 	
 }
