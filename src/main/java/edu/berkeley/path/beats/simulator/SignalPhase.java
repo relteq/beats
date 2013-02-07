@@ -393,6 +393,8 @@ final public class SignalPhase {
 	}
 
 	public void setActualyellowtime(float actualyellowtime) {
+		if(BeatsMath.lessthan(actualyellowtime,0d))
+			return;
 		this.actualyellowtime = actualyellowtime;
 	}
 	
@@ -401,6 +403,8 @@ final public class SignalPhase {
 	}
 
 	public void setActualredcleartime(float actualredcleartime) {
+		if(BeatsMath.lessthan(actualredcleartime,0d))
+			return;
 		this.actualredcleartime = actualredcleartime;
 	}
 

@@ -8,10 +8,24 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.Signal;
+import edu.berkeley.path.beats.simulator.Signal.NEMA;
+import edu.berkeley.path.beats.simulator.SignalPhase;
+
 public class SignalPhaseTest {
+
+	private static Scenario scenario;
+	private static SignalPhase signalphase;
+	private static String config_folder = "data/config/";
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		scenario = ObjectFactory.createAndLoadScenario(config_folder+"Albany-and-Berkeley.xml");
+		if(scenario==null)
+			fail("scenario did not load");
+		signalphase = scenario.getSignalWithId("-12").getPhaseByNEMA(NEMA._2);
 	}
 
 	@AfterClass
@@ -28,56 +42,56 @@ public class SignalPhaseTest {
 	
 	@Test
 	public void test_getYellowtime() {
-//		public float getYellowtime() {
-		fail("Not yet implemented");
+		assertEquals(signalphase.getYellowtime(),4.0,1e-4);
 	}
 
 	@Test
 	public void test_getRedcleartime() {
-//		public float getRedcleartime() {
-		fail("Not yet implemented");
+		assertEquals(signalphase.getRedcleartime(),3.0,1e-4);
 	}
 
 	@Test
 	public void test_getMingreen() {
-//		public float getMingreen() {
-		fail("Not yet implemented");
+		assertEquals(signalphase.getMingreen(),0.0,1e-4);
 	}
 	
 	@Test
 	public void test_getMyNEMA() {
-//		public Signal.NEMA getMyNEMA() {
-		fail("Not yet implemented");
+		assertEquals(signalphase.getMyNEMA().compareTo(NEMA._2),0);
 	}
 
 	@Test
 	public void test_getActualyellowtime() {
-//		public float getActualyellowtime() {
-		fail("Not yet implemented");
+		assertEquals(signalphase.getActualyellowtime(),4.0,1e-4);
 	}
 
 	@Test
 	public void test_setActualyellowtime() {
-//		public void setActualyellowtime(float actualyellowtime) {
-		fail("Not yet implemented");
+		float oldyellowtime = signalphase.getActualyellowtime();
+		signalphase.setActualyellowtime(oldyellowtime+1);
+		assertEquals(signalphase.getActualyellowtime(),oldyellowtime+1,1e-4);
+		
+		// edge cases
+		signalphase.setActualyellowtime(oldyellowtime);
+		signalphase.setActualyellowtime(-1);	// should do nothing
+		assertEquals(signalphase.getActualyellowtime(),oldyellowtime,1e-4);
 	}
 
 	@Test
 	public void test_getActualredcleartime() {
-//		public float getActualredcleartime() {
-		fail("Not yet implemented");
+		assertEquals(signalphase.getActualredcleartime(),3.0,1e-4);
 	}
 
 	@Test
 	public void test_setActualredcleartime() {
-//		public void setActualredcleartime(float actualredcleartime) {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void test_getBulbcolor() {
-//		public Signal.BulbColor getBulbcolor() {
-		fail("Not yet implemented");
+		float oldredcleartime = signalphase.getActualredcleartime();
+		signalphase.setActualredcleartime(oldredcleartime+1);
+		assertEquals(signalphase.getActualredcleartime(),oldredcleartime+1,1e-4);
+		
+		// edge cases
+		signalphase.setActualredcleartime(oldredcleartime);
+		signalphase.setActualredcleartime(-1);	// should do nothing
+		assertEquals(signalphase.getActualredcleartime(),oldredcleartime,1e-4);
 	}
 	
 }
