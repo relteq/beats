@@ -8,10 +8,25 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+
 public class NodeTest {
 
+	private static Node node;
+	private static String config_folder = "data/config/";
+	private static String config_file = "_smalltest_nocontrol.xml";
+	private static int nVT;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		if(scenario==null)
+			fail("scenario did not load");
+		node = scenario.getNodeWithId("-4");
+		nVT = scenario.getNumVehicleTypes();
 	}
 
 	@AfterClass
@@ -28,68 +43,76 @@ public class NodeTest {
 	
 	@Test
 	public void test_getMyNetwork() {
-//		public Network getMyNetwork() {
-		fail("Not yet implemented");
+		assertEquals(node.getMyNetwork().getId(),"-1");
 	}
 
 	@Test
 	public void test_getOutput_link() {
-	//  public Link[] getOutput_link() {
-		fail("Not yet implemented");
+		Link[] links = node.getOutput_link();
+		assertEquals(links[0].getId(),"-4");
+		assertEquals(links[1].getId(),"-7");
 	}
 
 	@Test
 	public void test_getInput_link() {
-//		public Link[] getInput_link() {
-		fail("Not yet implemented");
+		Link[] links = node.getInput_link();
+		System.out.println(links[0].getId());
+		assertEquals(links[0].getId(),"-3");
 	}
 
 	@Test
 	public void test_getInputLinkIndex() {
-//		public int getInputLinkIndex(String id){
-		fail("Not yet implemented");
+		assertEquals(node.getInputLinkIndex("-3"),0);
+		assertEquals(node.getInputLinkIndex("xx"),-1);
+
+		// edge case
+		assertEquals(node.getInputLinkIndex(null),-1);
 	}
 
 	@Test
 	public void test_getOutputLinkIndex() {
-//		public int getOutputLinkIndex(String id){
-		fail("Not yet implemented");
+		assertEquals(node.getOutputLinkIndex("-4"),0);		
+		assertEquals(node.getOutputLinkIndex("-7"),1);
+		assertEquals(node.getOutputLinkIndex("xx"),-1);
+
+		// edge case
+		assertEquals(node.getOutputLinkIndex(null),-1);
 	}
 
 	@Test
 	public void test_getnIn() {
-//		public int getnIn() {
-		fail("Not yet implemented");
+		assertEquals(node.getnIn(),1);
 	}
 
 	@Test
 	public void test_getnOut() {
-//		public int getnOut() {
-		fail("Not yet implemented");
+		assertEquals(node.getnOut(),2);
 	}
 
 	@Test
 	public void test_hasController() {
-//		public boolean hasController() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void test_setSplitRatioMatrix() {
-//		public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
-		fail("Not yet implemented");
+		assertFalse(node.hasController());
 	}
 
 	@Test
 	public void test_getSplitRatio_a() {
-//		public Double [][][] getSplitRatio(){
-		fail("Not yet implemented");
+		Double [][][] X = node.getSplitRatio();
+		assertEquals(X[0][0][0],1d,1e-4);
+		assertEquals(X[0][1][0],0d,1e-4);
 	}
 
 	@Test
 	public void test_getSplitRatio_b() {
-//		public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		fail("Not yet implemented");
+		assertEquals(node.getSplitRatio(0, 0, 0),1d,1e-4);
+		assertEquals(node.getSplitRatio(0, 1, 0),0d,1e-4);
+
+		// edge cases
+		assertNull(node.getSplitRatio(-1, 1, 0));
+		assertNull(node.getSplitRatio(100, 1, 0));
+		assertNull(node.getSplitRatio(0, -1, 0));
+		assertNull(node.getSplitRatio(0, 100, 0));
+		assertNull(node.getSplitRatio(0, 0, -1));
+		assertNull(node.getSplitRatio(0, 0, 100));
 	}	
 
 }

@@ -17,13 +17,13 @@ import edu.berkeley.path.beats.simulator.Scenario;
 
 public class NetworkTest {
 
-	private static Scenario scenario;
 	private static Network network;
 	private static String config_folder = "data/config/";
+	private static String config_file = "_smalltest_nocontrol.xml";
 		
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+"_smalltest_nocontrol.xml");
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		network = (Network) scenario.getNetworkList().getNetwork().get(0);
