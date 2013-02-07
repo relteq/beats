@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.simulator;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -70,10 +71,15 @@ final public class BeatsFormatter {
 		return str;
 	}
 
-	public static ArrayList<ArrayList<Double>> readCSV(String filename,String delim) throws IOException{
-		
-			ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
-			BufferedReader in = new BufferedReader(new FileReader(filename));
+	public static ArrayList<ArrayList<Double>> readCSV(String filename,String delim) {
+		if(filename==null)
+			return null;
+		if(delim==null)
+			return null;
+		try {
+			ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();		
+			BufferedReader in;
+			in = new BufferedReader(new FileReader(filename));
 		    String line;
 		    double val;
 		    while ((line = in.readLine()) != null){		    	
@@ -91,34 +97,49 @@ final public class BeatsFormatter {
 		    }
 		    in.close();
 		    return data;
+		} catch (IOException e1) {
+			return null;
+		}
 	}
 	
-	public static ArrayList<ArrayList<ArrayList<Double>>> readCSV(String filename,String delim1,String delim2) throws IOException{
+	public static ArrayList<ArrayList<ArrayList<Double>>> readCSV(String filename,String delim1,String delim2) {
 		
-		ArrayList<ArrayList<ArrayList<Double>>> data = new ArrayList<ArrayList<ArrayList<Double>>>();
-		BufferedReader in = new BufferedReader(new FileReader(filename));
-	    String line;
-	    double val;
-	    while ((line = in.readLine()) != null){		    	
-	    	ArrayList<ArrayList<Double>> dataline = new ArrayList<ArrayList<Double>>();
-	    	String F[] = line.split(delim1,-1);
-	    	for(String f : F){
-	    		ArrayList<Double> datablock = new ArrayList<Double>();
-	    		String G[] = f.split(delim2,-1);
-		    	for(String g : G){
-		    		try {
-						val = Double.parseDouble(g);
-					} catch (NumberFormatException e) {
-						val = Double.NaN;
-					}
-			    	datablock.add(val);
+		if(filename==null)
+			return null;
+		if(delim1==null)
+			return null;
+		if(delim2==null)
+			return null;
+
+		try {
+			ArrayList<ArrayList<ArrayList<Double>>> data = new ArrayList<ArrayList<ArrayList<Double>>>();
+			BufferedReader in;
+			in = new BufferedReader(new FileReader(filename));
+		    String line;
+		    double val;
+		    while ((line = in.readLine()) != null){		    	
+		    	ArrayList<ArrayList<Double>> dataline = new ArrayList<ArrayList<Double>>();
+		    	String F[] = line.split(delim1,-1);
+		    	for(String f : F){
+		    		ArrayList<Double> datablock = new ArrayList<Double>();
+		    		String G[] = f.split(delim2,-1);
+			    	for(String g : G){
+			    		try {
+							val = Double.parseDouble(g);
+						} catch (NumberFormatException e) {
+							val = Double.NaN;
+						}
+				    	datablock.add(val);
+			    	}
+			    	dataline.add(datablock);
 		    	}
-		    	dataline.add(datablock);
-	    	}
-	    	data.add(dataline);
-	    }
-	    in.close();
-	    return data;
+		    	data.add(dataline);
+		    }
+		    in.close();
+		    return data;
+		} catch (IOException e1) {
+			return null;
+		}
 }
 
 }

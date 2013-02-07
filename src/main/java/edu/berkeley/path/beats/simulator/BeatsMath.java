@@ -42,6 +42,8 @@ public final class BeatsMath {
 	private static final double EPSILON = (double) 1e-4;
 	
  	public static Double [] zeros(int n1){
+ 		if(n1<0)
+ 			return null;
 		Double [] answ = new Double [n1];
 		for(int i=0;i<n1;i++)
 			answ[i] = 0.0;
@@ -49,6 +51,8 @@ public final class BeatsMath {
 	}
  	
  	public static Double [][] zeros(int n1,int n2){
+ 		if(n1<0 || n2<0)
+ 			return null;
 		Double [][] answ = new Double [n1][n2];
 		int i,j;
 		for(i=0;i<n1;i++)
@@ -58,6 +62,8 @@ public final class BeatsMath {
 	}
 	
 	public static Double sum(Double [] V){
+		if(V==null)
+			return null;
 		Double answ = 0d;
 		for(int i=0;i<V.length;i++)
 			if(V[i]!=null)
@@ -66,7 +72,8 @@ public final class BeatsMath {
 	}
 	
 	public static Double sum(Collection<Double> V) {
-		if (null == V) return null;
+		if (null == V) 
+			return null;
 		Double ans = .0d;
 		Iterator<Double> iter = V.iterator();
 		while (iter.hasNext()) ans += iter.next();
@@ -88,16 +95,21 @@ public final class BeatsMath {
 		case 1:
 			answ = new Double[n2];
 			for(i=0;i<V.length;i++)
-				for(j=0;j<V[i].length;j++)
+				for(j=0;j<V[i].length;j++){
+					if(answ[j]==null)
+						answ[j]=0d;
 					if(V[i][j]!=null)
 						answ[j] += V[i][j];
+				}
 			return answ;
 		case 2:
 			answ = new Double[n1];
-			for(i=0;i<V.length;i++)
+			for(i=0;i<V.length;i++){
+				answ[i]=0d;
 				for(j=0;j<V[i].length;j++)
 					if(V[i][j]!=null)
 						answ[i] += V[i][j];
+			}
 			return answ;
 		default:
 			return null;
@@ -105,6 +117,8 @@ public final class BeatsMath {
 	}
 
 	public static Double [] times(Double [] V,double a){
+		if(V==null)
+			return null;
 		Double [] answ = new Double [V.length];
 		for(int i=0;i<V.length;i++)
 			answ[i] = a*V[i];
@@ -124,6 +138,10 @@ public final class BeatsMath {
 	}
 	
 	public static boolean any (boolean [] x){
+		if(x==null)
+			return false;
+		if(x.length==0)
+			return false;
 		for(int i=0;i<x.length;i++)
 			if(x[i])
 				return true;
@@ -131,6 +149,10 @@ public final class BeatsMath {
 	}
 	
 	public static boolean all (boolean [] x){
+		if(x==null)
+			return false;
+		if(x.length==0)
+			return false;
 		for(int i=0;i<x.length;i++)
 			if(!x[i])
 				return false;
@@ -138,6 +160,10 @@ public final class BeatsMath {
 	}
 	
 	public static boolean[] not(boolean [] x){
+		if(x==null)
+			return null;
+		if(x.length==0)
+			return null;
 		boolean [] y = x.clone();
 		for(int i=0;i<y.length;i++)
 			y[i] = !y[i];
@@ -145,6 +171,10 @@ public final class BeatsMath {
 	}
 	
 	public static int count(boolean [] x){
+		if(x==null)
+			return 0;
+		if(x.length==0)
+			return 0;
 		int s = 0;
 		for(int i=0;i<x.length;i++)
 			if(x[i])
@@ -153,6 +183,8 @@ public final class BeatsMath {
 	}
 	
 	public static ArrayList<Integer> find(boolean [] x){
+		if(x==null)
+			return null;
 		ArrayList<Integer> r = new ArrayList<Integer>();
 		for(int i=0;i<x.length;i++)
 			if(x[i])
@@ -236,6 +268,8 @@ public final class BeatsMath {
 
 	// deep copy a double array
 	public static Double[][] makecopy(Double [][]x){
+		if(x==null)
+			return null;
 		if(x.length==0)
 			return null;
 		if(x[0].length==0)

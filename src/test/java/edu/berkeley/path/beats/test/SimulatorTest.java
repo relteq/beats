@@ -121,6 +121,8 @@ public class SimulatorTest {
 						String filename = config_name+"_"+q+"_"+vt+"_0.txt";
 						ArrayList<ArrayList<Double>> A = BeatsFormatter.readCSV(fixture_folder+filename,"\t");
 						ArrayList<ArrayList<Double>> B = BeatsFormatter.readCSV(output_folder+filename,"\t");
+						assertNotNull(A);
+						assertNotNull(B);
 						assertTrue("The files are not equal.",BeatsMath.equals2D(A,B));
 					}
 			
@@ -128,9 +130,7 @@ public class SimulatorTest {
 
 		} catch (BeatsException exc) {
 			exc.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 		
+		} 	
 	}
 
 }
