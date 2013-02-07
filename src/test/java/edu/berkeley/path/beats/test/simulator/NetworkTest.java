@@ -2,22 +2,31 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
+
 public class NetworkTest {
 
-//	public Link getLinkWithId(String id){
-//	public Node getNodeWithId(String id){
-//	public List<edu.berkeley.path.beats.jaxb.Node> getListOfNodes() {
-//	public List<edu.berkeley.path.beats.jaxb.Link> getListOfLinks() {
-//	public List<edu.berkeley.path.beats.jaxb.Signal> getListOfSignals() {
+	private static Scenario scenario;
+	private static Network network;
+	private static String config_folder = "data/config/";
 		
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		scenario = ObjectFactory.createAndLoadScenario(config_folder+"_smalltest_nocontrol.xml");
+		if(scenario==null)
+			fail("scenario did not load");
+		network = (Network) scenario.getNetworkList().getNetwork().get(0);
 	}
 
 	@AfterClass
@@ -33,8 +42,32 @@ public class NetworkTest {
 	}
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void test_getLinkWithId() {
+		assertEquals(network.getLinkWithId("-2").getLengthInMeters(),976.0244598117758,1E-4);
+	}
+
+	@Test
+	public void test_getNodeWithId() {
+		Node node = network.getNodeWithId("-2");
+		assertEquals(node.getPosition().getPoint().get(0).getLat().doubleValue(),37.8437831193107,1E-4);
+	}
+
+	@Test
+	public void test_getListOfNodes() {
+		List<edu.berkeley.path.beats.jaxb.Node> nodelist = network.getListOfNodes();
+		assertEquals(nodelist.size(),8);
+	}
+
+	@Test
+	public void test_getListOfLinks() {
+		List<edu.berkeley.path.beats.jaxb.Link> linklist = network.getListOfLinks();
+		assertEquals(linklist.size(),7);
+	}
+
+	@Test
+	public void test_getListOfSignals() {
+		List<edu.berkeley.path.beats.jaxb.Signal> signallist = network.getListOfSignals();
+		assertNull(signallist);
 	}
 
 }

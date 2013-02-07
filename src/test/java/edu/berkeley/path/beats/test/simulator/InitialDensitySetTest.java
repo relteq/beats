@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Link;
@@ -21,7 +20,6 @@ public class InitialDensitySetTest {
 
 	private static Scenario scenario;
 	private static InitialDensitySet ids;
-
 	private static String config_folder = "data/config/";
 
 	@BeforeClass
