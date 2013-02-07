@@ -10,18 +10,6 @@ import org.junit.Test;
 
 public class NodeTest {
 
-//	public Network getMyNetwork() {
-//  public Link[] getOutput_link() {
-//	public Link[] getInput_link() {
-//	public int getInputLinkIndex(String id){
-//	public int getOutputLinkIndex(String id){
-//	public int getnIn() {
-//	public int getnOut() {
-//	public boolean hasController() {
-//	public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
-//	public Double [][][] getSplitRatio(){
-//	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-			
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -37,10 +25,71 @@ public class NodeTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-
+	
 	@Test
-	public void test() {
+	public void test_getMyNetwork() {
+//		public Network getMyNetwork() {
 		fail("Not yet implemented");
 	}
+
+	@Test
+	public void test_getOutput_link() {
+	//  public Link[] getOutput_link() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getInput_link() {
+//		public Link[] getInput_link() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getInputLinkIndex() {
+//		public int getInputLinkIndex(String id){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getOutputLinkIndex() {
+//		public int getOutputLinkIndex(String id){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getnIn() {
+//		public int getnIn() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getnOut() {
+//		public int getnOut() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_hasController() {
+//		public boolean hasController() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_setSplitRatioMatrix() {
+//		public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getSplitRatio_a() {
+//		public Double [][][] getSplitRatio(){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getSplitRatio_b() {
+//		public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
+		fail("Not yet implemented");
+	}	
 
 }

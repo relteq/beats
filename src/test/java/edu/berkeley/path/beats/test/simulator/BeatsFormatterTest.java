@@ -89,6 +89,5 @@ public class BeatsFormatterTest {
 		assertNull(BeatsFormatter.readCSV(filename,null,";"));
 		assertNull(BeatsFormatter.readCSV(filename,",",null));
 	}
-	
-	
+
 }

@@ -10,8 +10,6 @@ import org.junit.Test;
 
 public class ObjectWriterFactoryTest {
 	
-//	public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) 
-	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -29,7 +27,8 @@ public class ObjectWriterFactoryTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_getWriter() {
+//		public static OutputWriterBase getWriter(Scenario scenario, Properties props,double outDt,int outsteps) 
 		fail("Not yet implemented");
 	}
 

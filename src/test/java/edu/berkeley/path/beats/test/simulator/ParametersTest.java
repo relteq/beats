@@ -9,9 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ParametersTest {
-
-//	public boolean has(String name) {
-//	public String get(String name) {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -30,8 +27,14 @@ public class ParametersTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_has() {
+//		public boolean has(String name) {
 		fail("Not yet implemented");
 	}
 
+	@Test
+	public void test_get() {
+//		public String get(String name) {
+		fail("Not yet implemented");
+	}
 }

@@ -9,9 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class BeatsStateTest {
-
-//	public Double getDensity(int netindex,int i,int j) {
-//	public Double getFlow(int netindex,int i,int j) 
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -30,7 +27,14 @@ public class BeatsStateTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_getDensity() {
+//		public Double getDensity(int netindex,int i,int j) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getFlow() {
+//		public Double getFlow(int netindex,int i,int j) 
 		fail("Not yet implemented");
 	}
 

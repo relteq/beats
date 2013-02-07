@@ -10,10 +10,6 @@ import org.junit.Test;
 
 public class SensorTest {
 
-//	public Scenario getMyScenario() {
-//	public Sensor.Type getMyType() {
-//	public Link getMyLink() {
-	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -31,7 +27,20 @@ public class SensorTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_getMyScenario() {
+//		public Scenario getMyScenario() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getMyType() {
+//		public Sensor.Type getMyType() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getMyLink() {
+//		public Link getMyLink() {
 		fail("Not yet implemented");
 	}
 

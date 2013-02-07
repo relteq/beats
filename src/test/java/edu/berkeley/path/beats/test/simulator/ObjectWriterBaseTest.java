@@ -9,10 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ObjectWriterBaseTest {
-
-//	public int getOutSteps() {
-//	public double getOutDtInSeconds() {
-//	public Scenario getScenario() {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -31,7 +27,20 @@ public class ObjectWriterBaseTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_getOutSteps() {
+//		public int getOutSteps() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getOutDtInSeconds() {
+//		public double getOutDtInSeconds() {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getScenario() {
+//		public Scenario getScenario() {
 		fail("Not yet implemented");
 	}
 

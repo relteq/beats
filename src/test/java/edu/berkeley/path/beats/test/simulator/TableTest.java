@@ -9,13 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TableTest {
-
-//	public boolean checkTable(){
-//	public int getNoRows(){
-//	public int getNoColumns(){		
-//	public int getColumnNo(String cname){		
-//	public String getTableElement(int RowNo,int ColumnNo){
-//	public String getTableElement(int RowNo,String cname){
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -32,9 +25,40 @@ public class TableTest {
 	@After
 	public void tearDown() throws Exception {
 	}
+	
+	@Test
+	public void test_checkTable() {
+//		public boolean checkTable(){
+		fail("Not yet implemented");
+	}
 
 	@Test
-	public void test() {
+	public void test_getNoRows() {
+//		public int getNoRows(){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getNoColumns() {
+//		public int getNoColumns(){		
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getColumnNo() {
+//		public int getColumnNo(String cname){		
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getTableElement_a() {
+//		public String getTableElement(int RowNo,int ColumnNo){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getTableElement_b() {
+//		public String getTableElement(int RowNo,String cname){
 		fail("Not yet implemented");
 	}
 

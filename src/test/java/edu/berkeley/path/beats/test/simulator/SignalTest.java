@@ -10,9 +10,6 @@ import org.junit.Test;
 
 public class SignalTest {
 
-//	public SignalPhase getPhaseByNEMA(Signal.NEMA nema){
-//	public void requestCommand(ArrayList<Signal.Command> command){
-	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -30,7 +27,14 @@ public class SignalTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_getPhaseByNEMA() {
+//		public SignalPhase getPhaseByNEMA(Signal.NEMA nema){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_requestCommand() {
+//		public void requestCommand(ArrayList<Signal.Command> command){
 		fail("Not yet implemented");
 	}
 

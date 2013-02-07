@@ -11,14 +11,8 @@ import org.junit.Test;
 import edu.berkeley.path.beats.control.Controller_IRM_Alinea;
 import edu.berkeley.path.beats.event.Event_Link_Lanes;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
-import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.Event;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
-import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.Signal;
 
 public class ScenarioElementTest {
 	

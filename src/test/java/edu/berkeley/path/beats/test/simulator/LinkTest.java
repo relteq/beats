@@ -10,44 +10,6 @@ import org.junit.Test;
 
 public class LinkTest {
 
-//	public Link.Type getMyType() 
-//	public static boolean isFreewayType(Link link)
-//	public Network getMyNetwork() 
-//	public Node getBegin_node() 
-//	public Node getEnd_node() 
-//	public double getLengthInMeters() 
-//	public double get_Lanes() 
-//	public boolean isSource() 
-//	public boolean isSink() 
-//	public Double[] getDensityInVeh(int ensemble) {
-//	public double getDensityInVeh(int ensemble,int vehicletype) {
-//	public double getTotalDensityInVeh(int ensemble) {
-//	public double getTotalDensityInVPM(int ensemble) {
-//	public Double[] getOutflowInVeh(int ensemble) {
-//	public double getTotalOutflowInVeh(int ensemble) {
-//	public Double[] getInflowInVeh(int ensemble) {
-//	public double getTotalInlowInVeh(int ensemble) {
-//	public double computeSpeedInMPS(int ensemble){
-//	public double getDensityJamInVeh(int ensemble) {
-//	public double getDensityCriticalInVeh(int ensemble) 
-//	public double getCapacityDropInVeh(int ensemble) {
-//	public double getCapacityInVeh(int ensemble) {
-//	public double getDensityJamInVPMPL(int ensemble) {
-//	public double getDensityCriticalInVPMPL(int ensemble) {
-//	public double getCapacityDropInVPSPL(int ensemble) {
-//	public double getCapacityInVPS(int ensemble) {
-//	public double getCapacityInVPSPL(int ensemble) {
-//	public double getNormalizedVf(int ensemble) {
-//	public double getVfInMPS(int ensemble) {
-//	public double getCriticalSpeedInMPS(int ensemble) {
-//	public double getNormalizedW(int ensemble) {
-//	public double getWInMPS(int ensemble) {
-//	public void setSourcedemandFromVeh(Double[] sourcedemand) {
-//	public void overrideDensityWithVeh(Double[] x,int ensemble){
-//	public Double getDensity(int ensemble, int vt_ind) {
-//	public Double getInputFlow(int ensemble, int vt_ind) {
-//	public Double getOutputFlow(int ensemble, int vt_ind) {	
-	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -65,8 +27,224 @@ public class LinkTest {
 	}
 
 	@Test
-	public void test() {
+	public void test_getMyType() {
+//		public Link.Type getMyType() 
 		fail("Not yet implemented");
 	}
 
+	@Test
+	public void test_isFreewayType() {
+//		public static boolean isFreewayType(Link link)
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getMyNetwork() {
+//		public Network getMyNetwork() 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getBegin_node() {
+//		public Node getBegin_node() 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getEnd_node() {
+//		public Node getEnd_node() 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getLengthInMeters() {
+//		public double getLengthInMeters() 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_get_Lanes() {
+//		public double get_Lanes() 
+		fail("Not yet implemented");
+	}	
+	
+	@Test
+	public void test_isSource() {
+//		public boolean isSource() 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_isSink() {
+//		public boolean isSink() 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getDensityInVeh_a() {
+//		public Double[] getDensityInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getDensityInVeh_b() {
+//		public double getDensityInVeh(int ensemble,int vehicletype) {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test_getTotalDensityInVeh() {
+//		public double getTotalDensityInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getTotalDensityInVPM() {
+//		public double getTotalDensityInVPM(int ensemble) {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test_getOutflowInVeh() {
+//		public Double[] getOutflowInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getTotalOutflowInVeh() {
+//		public double getTotalOutflowInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getInflowInVeh() {
+//		public Double[] getInflowInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getTotalInlowInVeh() {
+//		public double getTotalInlowInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_computeSpeedInMPS() {
+//		public double computeSpeedInMPS(int ensemble){
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getDensityJamInVeh() {
+//		public double getDensityJamInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test_getDensityCriticalInVeh() {
+//		public double getDensityCriticalInVeh(int ensemble) 
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getCapacityDropInVeh() {
+//		public double getCapacityDropInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getCapacityInVeh() {
+//		public double getCapacityInVeh(int ensemble) {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test_getDensityJamInVPMPL() {
+//		public double getDensityJamInVPMPL(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getDensityCriticalInVPMPL() {
+//		public double getDensityCriticalInVPMPL(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getCapacityDropInVPSPL() {
+//		public double getCapacityDropInVPSPL(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getCapacityInVPS() {
+//		public double getCapacityInVPS(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getCapacityInVPSPL() {
+//		public double getCapacityInVPSPL(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getNormalizedVf() {
+//		public double getNormalizedVf(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getVfInMPS() {
+//		public double getVfInMPS(int ensemble) {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test_getCriticalSpeedInMPS() {
+//		public double getCriticalSpeedInMPS(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getNormalizedW() {
+//		public double getNormalizedW(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getWInMPS() {
+//		public double getWInMPS(int ensemble) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_setSourcedemandFromVeh() {
+//		public void setSourcedemandFromVeh(Double[] sourcedemand) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_overrideDensityWithVeh() {
+//		public void overrideDensityWithVeh(Double[] x,int ensemble){
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void test_getDensity() {
+//		public Double getDensity(int ensemble, int vt_ind) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getInputFlow() {
+//		public Double getInputFlow(int ensemble, int vt_ind) {
+		fail("Not yet implemented");
+	}
+
+	@Test
+	public void test_getOutputFlow() {
+//		public Double getOutputFlow(int ensemble, int vt_ind) {	
+		fail("Not yet implemented");
+	}
 }
