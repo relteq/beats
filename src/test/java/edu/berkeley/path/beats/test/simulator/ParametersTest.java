@@ -8,10 +8,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.Parameters;
+
 public class ParametersTest {
+
+	private static Parameters parameters;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		parameters = new Parameters();
+		parameters.addParameter("n1","v1");
+		parameters.addParameter("n2","v2");
 	}
 
 	@AfterClass
@@ -28,13 +35,20 @@ public class ParametersTest {
 
 	@Test
 	public void test_has() {
-//		public boolean has(String name) {
-		fail("Not yet implemented");
+		assertTrue(parameters.has("n1"));
+		assertFalse(parameters.has("n3"));
+		
+		// edge case
+		assertFalse(parameters.has(null));
 	}
 
 	@Test
 	public void test_get() {
-//		public String get(String name) {
-		fail("Not yet implemented");
+		
+		assertEquals(parameters.get("n1"),"v1");
+		assertNull(parameters.get("n3"));
+		
+		// edge cases
+		assertNull(parameters.get(null));
 	}
 }

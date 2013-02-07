@@ -10,19 +10,18 @@ import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Signal;
 import edu.berkeley.path.beats.simulator.Signal.NEMA;
 import edu.berkeley.path.beats.simulator.SignalPhase;
 
 public class SignalPhaseTest {
 
-	private static Scenario scenario;
 	private static SignalPhase signalphase;
 	private static String config_folder = "data/config/";
+	private static String config_file = "Albany-and-Berkeley.xml";
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+"Albany-and-Berkeley.xml");
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
 		signalphase = scenario.getSignalWithId("-12").getPhaseByNEMA(NEMA._2);

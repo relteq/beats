@@ -26,11 +26,42 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.util.ArrayList;
+
+import edu.berkeley.path.beats.jaxb.Parameter;
+
 /** XXX. 
  * YYY
  *
 */
 final public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
+	
+
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+
+	public Parameters(){
+        parameter = new ArrayList<Parameter>();
+	}
+	
+	public void addParameter(String name,String value){
+		
+		// check if it exists
+		for(Parameter p : parameter)
+			if(p.getName().equals(name))
+				return;
+		
+		// add to the list
+		Parameter newp = new Parameter();
+		newp.setName(name);
+		newp.setValue(value);
+		parameter.add(newp);
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
 	
 	/**
 	 * Tests whether a parameter with the given name exists
@@ -38,6 +69,8 @@ final public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
 	 * @return true, if such a parameter exists; false, otherwise
 	 */
 	public boolean has(String name) {
+		if(name==null)
+			return false;
 		for (edu.berkeley.path.beats.jaxb.Parameter param : getParameter()) {
 			if (name.equals(param.getName())) return true;
 		}
@@ -50,6 +83,8 @@ final public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
 	 * @return null, if such a parameter does not exist
 	 */
 	public String get(String name) {
+		if(name==null)
+			return null;
 		java.util.ListIterator<edu.berkeley.path.beats.jaxb.Parameter> iter = getParameter().listIterator(getParameter().size());
 		while (iter.hasPrevious()) {
 			edu.berkeley.path.beats.jaxb.Parameter param = iter.previous();
