@@ -359,7 +359,7 @@ final public class ObjectFactory {
 
 		// validate scenario ......................................
 	    Scenario.validate(S);
-
+	    
 		if(BeatsErrorLog.haserror())
 			throw new ScenarioValidationError();
 		
