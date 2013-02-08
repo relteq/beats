@@ -86,40 +86,40 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// hide base class setters
 	/////////////////////////////////////////////////////////////////////
 	
-	@Override
-	public void setRoadwayMarkers(RoadwayMarkers value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setOutputs(Outputs value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setInputs(Inputs value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setPosition(Position value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setType(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setId(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setInSync(Boolean value) {
-		System.out.println("This setter is hidden.");
-	}
+//	@Override
+//	public void setRoadwayMarkers(RoadwayMarkers value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setOutputs(Outputs value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setInputs(Inputs value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setPosition(Position value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setType(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setId(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setInSync(Boolean value) {
+//		System.out.println("This setter is hidden.");
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
