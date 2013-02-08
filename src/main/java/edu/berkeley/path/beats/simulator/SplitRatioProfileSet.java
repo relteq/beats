@@ -55,7 +55,7 @@ final class SplitRatioProfileSet extends edu.berkeley.path.beats.jaxb.SplitRatio
 
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
-			BeatsErrorLog.addError("Vehicle types list in demand profile id=" +getId()+ " does not match that of settings.");
+			BeatsErrorLog.addError("Vehicle types list in split ratio profile set does not match that of settings.");
 		
 		for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
 			((SplitRatioProfile)sr).validate();		

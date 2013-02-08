@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * The simulation settings
  */
-public class SimulationSettings {
+final class SimulationSettings {
 	private Double startTime = null; // sec
 	private Double duration = null; // sec
 	private Double outputDt = null; // sec

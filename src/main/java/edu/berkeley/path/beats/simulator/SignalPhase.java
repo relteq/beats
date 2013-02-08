@@ -33,7 +33,7 @@ import edu.berkeley.path.beats.simulator.Signal.NEMA;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class SignalPhase {
+final public class SignalPhase {
 	
 	// references ....................................................
 	protected Node myNode;
@@ -90,11 +90,19 @@ public class SignalPhase {
 
 	protected int numapproachloops = 0;	
 	
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
 	public SignalPhase(Node myNode,Signal mySignal,double dt){
 		this.myNode = myNode;
 		this.mySignal = mySignal;
 		this.bulbtimer = new Clock(0d,Double.POSITIVE_INFINITY,dt);		
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// populate / rese / validate
+	/////////////////////////////////////////////////////////////////////
 	
 	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Phase jaxbPhase){
 	
@@ -227,8 +235,10 @@ public class SignalPhase {
 			BeatsErrorLog.addError("Negative redcleartime=" + redcleartime + " in signal id=" + mySignal.getId());
 	}
 	
-//	 -------------------------------------------------------------------------------------------------
-	
+	/////////////////////////////////////////////////////////////////////
+	// protected
+	/////////////////////////////////////////////////////////////////////
+		
 	protected void updatePermitOpposingHold(){
 	
 		switch(bulbcolor){
@@ -358,6 +368,10 @@ public class SignalPhase {
 		bulbcolor = color;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public
+	/////////////////////////////////////////////////////////////////////		
+	
 	public float getYellowtime() {
 		return yellowtime;
 	}
@@ -379,6 +393,8 @@ public class SignalPhase {
 	}
 
 	public void setActualyellowtime(float actualyellowtime) {
+		if(BeatsMath.lessthan(actualyellowtime,0d))
+			return;
 		this.actualyellowtime = actualyellowtime;
 	}
 	
@@ -387,6 +403,8 @@ public class SignalPhase {
 	}
 
 	public void setActualredcleartime(float actualredcleartime) {
+		if(BeatsMath.lessthan(actualredcleartime,0d))
+			return;
 		this.actualredcleartime = actualredcleartime;
 	}
 

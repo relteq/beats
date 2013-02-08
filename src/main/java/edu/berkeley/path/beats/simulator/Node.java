@@ -709,6 +709,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 
     /** Index of link with given id in the list of input links of this node */ 
 	public int getInputLinkIndex(String id){
+		if(id==null)
+			return -1;
 		for(int i=0;i<getnIn();i++){
 			if(input_link[i]!=null)
 				if(input_link[i].getId().equals(id))
@@ -719,6 +721,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
     /** Index of link with given id in the list of output links of this node */ 
 	public int getOutputLinkIndex(String id){
+		if(id==null)
+			return -1;
 		for(int i=0;i<getnOut();i++){
 			if(output_link[i]!=null)
 				if(output_link[i].getId().equals(id))
@@ -744,20 +748,20 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
 	/** ADDED TEMPORARILY FOR MANUEL'S DTA WORK 
 	 * @throws BeatsException */
-	public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
-		if(x.length!=splitratio.getnIn())
-			throw new BeatsException("Node.setSplitRatioMatrix, bad first dimension.");
-		if(x[0].length!=splitratio.getnOut())
-			throw new BeatsException("Node.setSplitRatioMatrix, bad second dimension.");
-		if(x[0][0].length!=splitratio.getnVTypes())
-			throw new BeatsException("Node.setSplitRatioMatrix, bad third dimension.");
-		int i,j,k;
-		for(i=0;i<splitratio.getnIn();i++)
-			for(j=0;j<splitratio.getnOut();j++)
-				for(k=0;k<splitratio.getnVTypes();k++)
-					splitratio.set(i, j, k, x[i][j][k]);
-		normalizeSplitRatioMatrix(splitratio);
-	}
+//	public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
+//		if(x.length!=splitratio.getnIn())
+//			throw new BeatsException("Node.setSplitRatioMatrix, bad first dimension.");
+//		if(x[0].length!=splitratio.getnOut())
+//			throw new BeatsException("Node.setSplitRatioMatrix, bad second dimension.");
+//		if(x[0][0].length!=splitratio.getnVTypes())
+//			throw new BeatsException("Node.setSplitRatioMatrix, bad third dimension.");
+//		int i,j,k;
+//		for(i=0;i<splitratio.getnIn();i++)
+//			for(j=0;j<splitratio.getnOut();j++)
+//				for(k=0;k<splitratio.getnVTypes();k++)
+//					splitratio.set(i, j, k, x[i][j][k]);
+//		normalizeSplitRatioMatrix(splitratio);
+//	}
 
 	public Double [][][] getSplitRatio(){
 		if(splitratio==null)
@@ -777,8 +781,9 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
 		if(splitratio==null)
 			return Double.NaN;
-		else
+		else{
 			return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
+		}
 	}
 
 }

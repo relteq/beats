@@ -56,7 +56,7 @@ import edu.berkeley.path.beats.sensor.*;
  * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class ObjectFactory {
+final public class ObjectFactory {
 
 	private static Logger logger = Logger.getLogger(ObjectFactory.class);
 	
@@ -359,7 +359,7 @@ public final class ObjectFactory {
 
 		// validate scenario ......................................
 	    Scenario.validate(S);
-
+	    	    
 		if(BeatsErrorLog.haserror())
 			throw new ScenarioValidationError();
 		
@@ -458,8 +458,6 @@ public final class ObjectFactory {
 		return  new edu.berkeley.path.beats.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
 	}
 	
-	
-
 	/** [NOT IMPLEMENTED] Actuated signal control.
 	 * 
 	 * @return			_Controller object
@@ -611,7 +609,6 @@ public final class ObjectFactory {
 	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
 		return new edu.berkeley.path.beats.sensor.SensorLoopStation(myScenario,linkId);
 	}
-
 
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario element

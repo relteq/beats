@@ -30,18 +30,26 @@ import edu.berkeley.path.beats.simulator.Scenario.SignalPhases;
 
 public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	
-	public int getOutSteps() {
-		return outSteps;
-	}
-
 	protected Scenario scenario;
 	protected double outDt;			// output frequency in seconds
 	protected int outSteps;			// output frequency in simulation steps
 
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
 	public OutputWriterBase(Scenario scenario,double outDt,int outsteps) {
 		this.scenario = scenario;
 		this.outDt = outDt;
 		this.outSteps = outsteps;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
+	
+	public int getOutSteps() {
+		return outSteps;
 	}
 	
 	public double getOutDtInSeconds() {
@@ -55,6 +63,10 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 		return scenario;
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// protected
+	/////////////////////////////////////////////////////////////////////
+	
 	/**
 	 * Initializes a link cumulative data storage,
 	 * if that has not yet been done.
@@ -92,4 +104,5 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
 		return scenario.cumulatives.get(link);
 	}
+
 }

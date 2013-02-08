@@ -55,7 +55,7 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 	protected ArrayList<ScenarioElement> targets;
 	
 	/** Type of event. */
-	public static enum Type	{  
+	protected static enum Type	{  
 		/** see {@link ObjectFactory#createEvent_Fundamental_Diagram} 	*/ fundamental_diagram,
 		/** see {@link ObjectFactory#createEvent_Link_Demand_Knob} 		*/ link_demand_knob,
 		/** see {@link ObjectFactory#createEvent_Link_Lanes} 			*/ link_lanes, 

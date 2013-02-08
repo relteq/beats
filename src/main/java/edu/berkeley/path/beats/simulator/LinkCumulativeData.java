@@ -3,7 +3,7 @@ package edu.berkeley.path.beats.simulator;
 /**
  * Link cumulative data storage
  */
-public class LinkCumulativeData {
+final public class LinkCumulativeData {
 	private edu.berkeley.path.beats.simulator.Link link;
 	private int nensemble;
 	private int nvehtype;
@@ -11,6 +11,10 @@ public class LinkCumulativeData {
 	private Double[][] iflow;
 	private Double[][] oflow;
 	private int nsteps;
+
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
 
 	LinkCumulativeData(edu.berkeley.path.beats.simulator.Link link) {
 		this.link = link;
@@ -23,6 +27,10 @@ public class LinkCumulativeData {
 		reset();
 	}
 
+	/////////////////////////////////////////////////////////////////////
+	// update / reset
+	/////////////////////////////////////////////////////////////////////
+	
 	void update() throws BeatsException {
 		for (int i = 0; i < nensemble; ++i)
 			for (int j = 0; j < nvehtype; ++j) {
@@ -33,6 +41,17 @@ public class LinkCumulativeData {
 		++nsteps;
 	}
 
+	void reset() {
+		reset(density);
+		reset(iflow);
+		reset(oflow);
+		nsteps = 0;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public API
+	/////////////////////////////////////////////////////////////////////
+	
 	public Double getMeanDensity(int ensemble, int vehtypenum) {
 		return 0 == nsteps ? Double.NaN : density[ensemble][vehtypenum] / nsteps;
 	}
@@ -98,13 +117,10 @@ public class LinkCumulativeData {
 			return BeatsMath.times(oflow[ensemble], 1.0d / nsteps);
 	}
 
-	void reset() {
-		reset(density);
-		reset(iflow);
-		reset(oflow);
-		nsteps = 0;
-	}
-
+	/////////////////////////////////////////////////////////////////////
+	// private methods
+	/////////////////////////////////////////////////////////////////////
+	
 	private static void reset(Double[][] matrix) {
 		for (int i = 0; i < matrix.length; ++i)
 			for (int j = 0; j < matrix[i].length; ++j)

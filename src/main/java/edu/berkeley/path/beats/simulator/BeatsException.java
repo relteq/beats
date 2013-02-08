@@ -34,6 +34,10 @@ package edu.berkeley.path.beats.simulator;
 @SuppressWarnings("serial")
 public class BeatsException extends Exception {
 
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
 	public BeatsException(String string){
 		super(string);
 	}

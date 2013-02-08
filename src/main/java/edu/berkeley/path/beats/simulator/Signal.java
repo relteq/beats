@@ -336,6 +336,8 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	/////////////////////////////////////////////////////////////////////
 	
 	public SignalPhase getPhaseByNEMA(Signal.NEMA nema){
+		if(nema==null)
+			return null;
 		return nema2phase.get(nema);
 	}
 
