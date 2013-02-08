@@ -435,6 +435,52 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+	/** @y.exclude */
+	protected Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
+		
+		Integer [] vehicletypeindex;
+		
+		// single vehicle types in setting and no vtypeorder, return 0
+		if(vtypeorder==null && numVehicleTypes==1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			vehicletypeindex[0]=0;
+			return vehicletypeindex;
+		}
+		
+		// multiple vehicle types in setting and no vtypeorder, return 0...n
+		if(vtypeorder==null && numVehicleTypes>1){
+			vehicletypeindex = new Integer[numVehicleTypes];
+			for(int i=0;i<numVehicleTypes;i++)
+				vehicletypeindex[i] = i;	
+			return vehicletypeindex;	
+		}
+		
+		// vtypeorder is not null
+		int numTypesInOrder = vtypeorder.getVehicleType().size();
+		int i,j;
+		vehicletypeindex = new Integer[numTypesInOrder];
+		for(i=0;i<numTypesInOrder;i++)
+			vehicletypeindex[i] = -1;			
+
+		if(getSettings()==null)
+			return vehicletypeindex;
+
+		if(getSettings().getVehicleTypes()==null)
+			return vehicletypeindex;
+		
+		for(i=0;i<numTypesInOrder;i++){
+			String vtordername = vtypeorder.getVehicleType().get(i).getName();
+			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
+			for(j=0;j<settingsname.size();j++){
+				if(settingsname.get(j).getName().equals(vtordername)){
+					vehicletypeindex[i] =  j;
+					break;
+				}
+			}			
+		}
+		return vehicletypeindex;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
@@ -574,10 +620,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return integer index of the vehicle type.
 	 */
 	public int getVehicleTypeIndex(String name){
+		if(name==null)
+			return -1;
 		String [] vehicleTypeNames = getVehicleTypeNames();
 		if(vehicleTypeNames==null)
-			return 0;
-		if(vehicleTypeNames.length<=1)
 			return 0;
 		for(int i=0;i<vehicleTypeNames.length;i++)
 			if(vehicleTypeNames[i].equals(name))
@@ -620,51 +666,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	// array getters ........................................................
 
-	/** @y.exclude */
-	public Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
-		
-		Integer [] vehicletypeindex;
-		
-		// single vehicle types in setting and no vtypeorder, return 0
-		if(vtypeorder==null && numVehicleTypes==1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			vehicletypeindex[0]=0;
-			return vehicletypeindex;
-		}
-		
-		// multiple vehicle types in setting and no vtypeorder, return 0...n
-		if(vtypeorder==null && numVehicleTypes>1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			for(int i=0;i<numVehicleTypes;i++)
-				vehicletypeindex[i] = i;	
-			return vehicletypeindex;	
-		}
-		
-		// vtypeorder is not null
-		int numTypesInOrder = vtypeorder.getVehicleType().size();
-		int i,j;
-		vehicletypeindex = new Integer[numTypesInOrder];
-		for(i=0;i<numTypesInOrder;i++)
-			vehicletypeindex[i] = -1;			
-
-		if(getSettings()==null)
-			return vehicletypeindex;
-
-		if(getSettings().getVehicleTypes()==null)
-			return vehicletypeindex;
-		
-		for(i=0;i<numTypesInOrder;i++){
-			String vtordername = vtypeorder.getVehicleType().get(i).getName();
-			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
-			for(j=0;j<settingsname.size();j++){
-				if(settingsname.get(j).getName().equals(vtordername)){
-					vehicletypeindex[i] =  j;
-					break;
-				}
-			}			
-		}
-		return vehicletypeindex;
-	}
 	
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
@@ -700,7 +701,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})
 	 */
 	public double [][] getInitialDensityForNetwork(String network_id){
-				
+
 		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			return null;
@@ -732,6 +733,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public double [][] getDensityForNetwork(String network_id,int ensemble){
 		
+		if(ensemble<0 || ensemble>=numEnsemble)
+			return null;
 		Network network = getNetworkWithId(network_id);
 		if(network==null)
 			return null;
@@ -761,6 +764,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
 	public Link getLinkWithId(String id){
+		if(id==null)
+			return null;
 		if(networkList==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
@@ -777,6 +782,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
 	public Node getNodeWithId(String id){
+		if(id==null)
+			return null;
 		if(networkList==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
@@ -792,6 +799,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
 	public Controller getControllerWithId(String id){
+		if(id==null)
+			return null;
 		if(controllerset==null)
 			return null;
 		for(Controller c : controllerset.get_Controllers()){
@@ -806,6 +815,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return A reference to the event if it exists, <code>null</code> otherwise.
 	 */
 	public Event getEventWithId(String id){
+		if(id==null)
+			return null;
 		if(eventset==null)
 			return null;
 		for(Event e : eventset.sortedevents){
@@ -820,6 +831,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(String id){
+		if(id==null)
+			return null;
 		if(sensorList==null)
 			return null;
 		id.replaceAll("\\s","");
@@ -835,6 +848,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Signal object.
 	 */
 	public Signal getSignalWithId(String id){
+		if(id==null)
+			return null;
 		if(signalList==null)
 			return null;
 		id.replaceAll("\\s","");
@@ -851,6 +866,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
 	public Signal getSignalWithNodeId(String node_id){
+		if(node_id==null)
+			return null;
 		if(signalList==null)
 			return null;
 		id.replaceAll("\\s","");
