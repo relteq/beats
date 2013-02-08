@@ -75,55 +75,55 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 	// hide base class setters
 	/////////////////////////////////////////////////////////////////////
 
-	@Override
-	public void setDescription(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setDisplayPosition(DisplayPosition value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setTargetElements(TargetElements value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setParameters(Parameters value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setSplitratioEvent(SplitratioEvent value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setId(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setTstamp(BigDecimal value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setEnabled(boolean value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setType(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setJavaClass(String value) {
-		System.out.println("This setter is hidden.");
-	}
+//	@Override
+//	public void setDescription(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setDisplayPosition(DisplayPosition value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setTargetElements(TargetElements value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setParameters(Parameters value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setSplitratioEvent(SplitratioEvent value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setId(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setTstamp(BigDecimal value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setEnabled(boolean value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setType(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setJavaClass(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface

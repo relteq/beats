@@ -118,104 +118,104 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// hide base class setters
 	/////////////////////////////////////////////////////////////////////
 	
-	@Override
-	public void setDescription(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setControllerSet(ControllerSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setSettings(Settings value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setNetworkList(NetworkList value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setSignalList(SignalList value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setSensorList(edu.berkeley.path.beats.jaxb.SensorList value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setInitialDensitySet(
-			edu.berkeley.path.beats.jaxb.InitialDensitySet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setWeavingFactorSet(WeavingFactorSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setSplitRatioProfileSet(
-			edu.berkeley.path.beats.jaxb.SplitRatioProfileSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setDownstreamBoundaryCapacityProfileSet(
-			DownstreamBoundaryCapacityProfileSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setEventSet(edu.berkeley.path.beats.jaxb.EventSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setDemandProfileSet(
-			edu.berkeley.path.beats.jaxb.DemandProfileSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setFundamentalDiagramProfileSet(FundamentalDiagramProfileSet value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setNetworkConnections(NetworkConnections value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setDestinationNetworks(DestinationNetworks value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setRoutes(Routes value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setId(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setName(String value) {
-		System.out.println("This setter is hidden.");
-	}
-
-	@Override
-	public void setSchemaVersion(String value) {
-		System.out.println("This setter is hidden.");
-	}
+//	@Override
+//	public void setDescription(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setControllerSet(ControllerSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setSettings(Settings value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setNetworkList(NetworkList value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setSignalList(SignalList value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setSensorList(edu.berkeley.path.beats.jaxb.SensorList value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setInitialDensitySet(
+//			edu.berkeley.path.beats.jaxb.InitialDensitySet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setWeavingFactorSet(WeavingFactorSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setSplitRatioProfileSet(
+//			edu.berkeley.path.beats.jaxb.SplitRatioProfileSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setDownstreamBoundaryCapacityProfileSet(
+//			DownstreamBoundaryCapacityProfileSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setEventSet(edu.berkeley.path.beats.jaxb.EventSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setDemandProfileSet(
+//			edu.berkeley.path.beats.jaxb.DemandProfileSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setFundamentalDiagramProfileSet(FundamentalDiagramProfileSet value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setNetworkConnections(NetworkConnections value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setDestinationNetworks(DestinationNetworks value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setRoutes(Routes value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setId(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setName(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
+//
+//	@Override
+//	public void setSchemaVersion(String value) {
+//		System.out.println("This setter is hidden.");
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
