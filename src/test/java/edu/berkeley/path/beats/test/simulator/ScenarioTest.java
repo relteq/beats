@@ -6,9 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -39,18 +36,6 @@ public class ScenarioTest {
 		
 	}
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
-
 	@Test
 	public void test_initialize_run_advanceNSeconds() {
 		try {
@@ -71,27 +56,27 @@ public class ScenarioTest {
 		}
 	}
 
-	@Test
-	public void test_saveToXML() {
-		try {
-			String test_file = "test_saveXML.xml";
-			String config_file = "_smalltest_nocontrol.xml";
-			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
-			if(scenario==null)
-				fail("scenario did not load");
-			
-			scenario.saveToXML(output_folder+test_file);
-			
-			File f1 = new File(output_folder+test_file);
-			File f2 = new File(fixture_folder+test_file);
-			assertTrue("The files differ!", FileUtils.contentEquals(f1, f2));
-			
-		} catch (BeatsException e) {
-			fail("initialization failure.");
-		} catch (IOException e) {
-			fail("IOException.");
-		}
-	}
+//	@Test
+//	public void test_saveToXML() {
+//		try {
+//			String test_file = "test_saveXML.xml";
+//			String config_file = "_smalltest_nocontrol.xml";
+//			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+//			if(scenario==null)
+//				fail("scenario did not load");
+//			
+//			scenario.saveToXML(output_folder+test_file);
+//			
+//			File f1 = new File(output_folder+test_file);
+//			File f2 = new File(fixture_folder+test_file);
+//			assertTrue("The files differ!", FileUtils.contentEquals(f1, f2));
+//			
+//		} catch (BeatsException e) {
+//			fail("initialization failure.");
+//		} catch (IOException e) {
+//			fail("IOException.");
+//		}
+//	}
 
 	@Test
 	public void test_time_getters() {
