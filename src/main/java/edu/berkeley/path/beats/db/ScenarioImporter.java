@@ -67,10 +67,21 @@ public class ScenarioImporter {
 	private Map<String, DestinationNetworks> destnets = null;
 
 	private Long getDBNodeId(String id) {
-		return nodes.get(id).getId();
+		Nodes db_node = nodes.get(id);
+		if (null == db_node) {
+			logger.warn("Node " + id + " does not exist");
+			return null;
+		}
+		return db_node.getId();
 	}
+
 	private Long getDBLinkId(String id) {
-		return links.get(id).getId();
+		Links db_link = links.get(id);
+		if (null == db_link) {
+			logger.warn("Link " + id + " does not exist");
+			return null;
+		}
+		return db_link.getId();
 	}
 
 	private edu.berkeley.path.beats.util.polyline.EncoderBase polyline_encoder;
