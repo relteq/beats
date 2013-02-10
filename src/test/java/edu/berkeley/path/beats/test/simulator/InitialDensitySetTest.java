@@ -17,7 +17,7 @@ public class InitialDensitySetTest {
 
 	private static Scenario scenario;
 	private static InitialDensitySet ids;
-	private static String config_folder = "data/config/";
+	private static String config_folder = "data/config.quarantine/";
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

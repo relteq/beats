@@ -1,0 +1,9 @@
+complete.xml
+============
+1) link 100 does not exist (lines 212 and 258)
+2) node 500 does not exist (line 270)
+
+complete_twotypes.xml
+=====================
+link 100 does not exist (line 188)
+

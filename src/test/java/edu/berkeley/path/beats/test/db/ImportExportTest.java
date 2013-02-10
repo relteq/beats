@@ -67,9 +67,9 @@ public class ImportExportTest {
 		params = new edu.berkeley.path.beats.db.Parameters();
 		params.setDriver("derby");
 		params.setDBName(("sirius-" + edu.berkeley.path.beats.util.UUID.generate()).replace('-', '_'));
-		System.out.println("Initializing the database");
+		logger.info("Initializing the database");
 		edu.berkeley.path.beats.db.Admin.init(params);
-		System.out.println("Created a temporary database '" + params.getDBName() + "'");
+
 		params.setCreate(false);
 		edu.berkeley.path.beats.db.Service.init(params);
 		clearErrors();

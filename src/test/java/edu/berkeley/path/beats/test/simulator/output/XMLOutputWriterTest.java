@@ -39,7 +39,6 @@ import org.xml.sax.SAXException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.Vector;
 
 import javax.xml.XMLConstants;
@@ -153,12 +152,6 @@ public class XMLOutputWriterTest {
 	 * @throws BeatsException
 	 */
 	protected void runBeats(String confpath, String outpath) throws BeatsException {
-		// simulation settings
-		double timestart = 0d;
-		double duration = 3600d;
-		double outDt = 600d;
-		int numReps = 1;
-
 		// output writer properties
 		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
 		String outprefix = outpath.substring(0, outpath.length() - OUT_SUFFIX.length());
@@ -167,6 +160,14 @@ public class XMLOutputWriterTest {
 		// load the scenario
 		Scenario scenario = ObjectFactory.createAndLoadScenario(confpath);
 		if (null == scenario) fail("The scenario was not loaded");
+
+		// simulation settings
+		double timestart = 0d;
+		if (null != scenario.getInitialDensitySet())
+			timestart = scenario.getInitialDensitySet().getTstamp().doubleValue();
+		double duration = 3600d;
+		double outDt = 600d;
+		int numReps = 1;
 
 		// run the scenario
 		logger.info("Running a simulation");
