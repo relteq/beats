@@ -40,10 +40,12 @@ import edu.berkeley.path.beats.jaxb.TargetElements;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("rawtypes")
-public class Event extends edu.berkeley.path.beats.jaxb.Event implements Comparable {
+public class Event implements Comparable {
 
 	/** Scenario that contains this event */
 	protected Scenario myScenario;
+	
+	protected String id;
 	
 	/** Event type. */
 	protected Event.Type myType;
@@ -125,6 +127,14 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 //		System.out.println("This setter is hidden.");
 //	}
 
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public String getId(){
+		return id;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////

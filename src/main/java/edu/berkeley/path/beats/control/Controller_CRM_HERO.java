@@ -109,17 +109,17 @@ public class Controller_CRM_HERO extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-    public Controller_CRM_HERO() {
-    	
+    public Controller_CRM_HERO(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+		super(myScenario,c,myType);
     }
 
-	public Controller_CRM_HERO(Scenario myScenario) {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
-		// TODO Auto-generated constructor stub		
-	}
+//	public Controller_CRM_HERO(Scenario myScenario) {
+//		// TODO Auto-generated constructor stub
+//	}
+//	
+//	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
+//		// TODO Auto-generated constructor stub		
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update

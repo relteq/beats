@@ -77,42 +77,30 @@ final public class ObjectFactory {
 		Controller C;
 		switch(myType){
 			case IRM_ALINEA:
-				C = new Controller_IRM_Alinea();
+				C = new Controller_IRM_Alinea(myScenario, jaxbC, myType);
 				break;
 				
 			case IRM_TOD:
-				C = new Controller_IRM_Time_of_Day();
+				C = new Controller_IRM_Time_of_Day(myScenario, jaxbC, myType);
 				break;
 				
 			case IRM_TOS:
-				C = new Controller_IRM_Traffic_Responsive();
-				break;
-	
-			case CRM_SWARM:
-				C = new Controller_CRM_SWARM();
+				C = new Controller_IRM_Traffic_Responsive(myScenario, jaxbC, myType);
 				break;
 				
 			case CRM_HERO:
-				C = new Controller_CRM_HERO();
-				break;
-				
-			case VSL_TOD:
-				C = new Controller_VSL_Time_of_Day();
+				C = new Controller_CRM_HERO(myScenario, jaxbC, myType);
 				break;
 				
 			case SIG_Pretimed:
-				C = new Controller_SIG_Pretimed();
-				break;
-				
-			case SIG_Actuated:
-				C = new Controller_SIG_Actuated();
+				C = new Controller_SIG_Pretimed(myScenario, jaxbC, myType);
 				break;
 				
 			default:
 				C = null;
 				break;
 		}
-		C.populateFromJaxb(myScenario, jaxbC, myType);
+//		C.populateFromJaxb(myScenario, jaxbC, myType);
 		C.populate(jaxbC);
 		return C;
 
@@ -383,104 +371,104 @@ final public class ObjectFactory {
 	// public: controller
 	/////////////////////////////////////////////////////////////////////
 	
-	/** [NOT IMPLEMENTED]. HERO coordinated ramp metering..
-	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_CRM_HERO(Scenario myScenario){
-		return  new edu.berkeley.path.beats.control.Controller_CRM_HERO(myScenario);
-	}
-
-	/** [NOT IMPLEMENTED] SWARM coordinated ramp metering.
-	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_CRM_SWARM(Scenario myScenario){
-		return  new edu.berkeley.path.beats.control.Controller_CRM_SWARM(myScenario);
-	}
-
-	/** Alinea isolated ramp metering.
-	 * 
-	 * <p> Generates a controller executing the Alinea algorithm. Feedback for the controller is taken
-	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
-	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
-	 * employed if the <code>queuesensor</code> is non-null. The gain, defined in meters/sec units, is
-	 * normalized within the algorithm by dividing by the length a the mainline link (or by the link where the 
-	 * sensor resides in the case of sensor feedback).
-	 * 
-	 * @param myScenario		The scenario that contains the controller and its referenced links.
-	 * @param onramplink		The onramp link being controlled.
-	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
-	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
-	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
-	 * @param gain				The gain for the integral controller in meters/sec.
-	 * @return					Controller object
-	 */
-	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
-		return  new edu.berkeley.path.beats.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
-	}
-	
-	/** TOD isolated ramp metering.
-	 * 
-	 * <p> Generates a controller executing the TOD algorithm. A queue override algorithm will be 
-	 * employed if the <code>queuesensor</code> is non-null. The time of day profile is provided in a table.
-	 * Each row of the table contains a TOD entry, denoting the start time and the metering rates. This rate applies 
-	 * until the next entry becomes active/ the simulation ends. 
-	 * 
-	 * @param myScenario		The scenario that contains the controller and its referenced links.
-	 * @param onramplink		The onramp link being controlled.
-	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
-	 * @param todtable			The time of day profile is provided in a table. It contains two columns - StartTime and MeteringRates. 
-	 * @return					_Controller object
-	 */
-	public static Controller createController_IRM_Time_of_Day(Scenario myScenario,Link onramplink,Sensor queuesensor,Table todtable){
-		return  new edu.berkeley.path.beats.control.Controller_IRM_Time_of_Day(myScenario,onramplink,queuesensor,todtable);
-	}
-	
-	/** Traffic responsive isolated ramp metering.
-	 * 
-	 * <p> Generates a controller executing the Traffic responsive algorithm. Feedback for the controller is taken
-	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
-	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
-	 * employed if the <code>queuesensor</code> is non-null. trtable specifies the occupancy, flow and speed thresholds.
-	 * Unused threshold types can be omitted from the table definition, or set to 0, for all entries. 
-	 * At least one of these thresholds should be available.  
-	 * 
-	 * @param myScenario		The scenario that contains the controller and its referenced links.
-	 * @param onramplink		The onramp link being controlled.
-	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
-	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
-	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
-	 * @param trtable			The traffic responsive levels are provided in a table. It can contain four columns - MeteringRates, OccupancyThresholds, SpeedThresholds, FlowThresholds. 
-	 * @return					_Controller object
-	 */
-	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
-		return  new edu.berkeley.path.beats.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
-	}
-	
-	/** [NOT IMPLEMENTED] Actuated signal control.
-	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_SIG_Actuated(Scenario myScenario){
-		return  new edu.berkeley.path.beats.control.Controller_SIG_Actuated(myScenario);
-	}
-
-	/** [NOT IMPLEMENTED] Pretimed signal control.
-	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_SIG_Pretimed(Scenario myScenario){
-		return  new edu.berkeley.path.beats.control.Controller_SIG_Pretimed(myScenario);
-	}
-
-	/** [NOT IMPLEMENTED] Time of day variable speed limits.
-	 * 
-	 * @return			_Controller object
-	 */
-	public static Controller createController_VSL_Time_of_Day(Scenario myScenario){
-		return  new edu.berkeley.path.beats.control.Controller_VSL_Time_of_Day(myScenario);
-	}
+//	/** [NOT IMPLEMENTED]. HERO coordinated ramp metering..
+//	 * 
+//	 * @return			_Controller object
+//	 */
+//	public static Controller createController_CRM_HERO(Scenario myScenario){
+//		return  new edu.berkeley.path.beats.control.Controller_CRM_HERO(myScenario);
+//	}
+//
+//	/** [NOT IMPLEMENTED] SWARM coordinated ramp metering.
+//	 * 
+//	 * @return			_Controller object
+//	 */
+//	public static Controller createController_CRM_SWARM(Scenario myScenario){
+//		return  new edu.berkeley.path.beats.control.Controller_CRM_SWARM(myScenario);
+//	}
+//
+//	/** Alinea isolated ramp metering.
+//	 * 
+//	 * <p> Generates a controller executing the Alinea algorithm. Feedback for the controller is taken
+//	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
+//	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
+//	 * employed if the <code>queuesensor</code> is non-null. The gain, defined in meters/sec units, is
+//	 * normalized within the algorithm by dividing by the length a the mainline link (or by the link where the 
+//	 * sensor resides in the case of sensor feedback).
+//	 * 
+//	 * @param myScenario		The scenario that contains the controller and its referenced links.
+//	 * @param onramplink		The onramp link being controlled.
+//	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
+//	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
+//	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+//	 * @param gain				The gain for the integral controller in meters/sec.
+//	 * @return					Controller object
+//	 */
+//	public static Controller createController_IRM_Alinea(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain){
+//		return  new edu.berkeley.path.beats.control.Controller_IRM_Alinea(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,gain);
+//	}
+//	
+//	/** TOD isolated ramp metering.
+//	 * 
+//	 * <p> Generates a controller executing the TOD algorithm. A queue override algorithm will be 
+//	 * employed if the <code>queuesensor</code> is non-null. The time of day profile is provided in a table.
+//	 * Each row of the table contains a TOD entry, denoting the start time and the metering rates. This rate applies 
+//	 * until the next entry becomes active/ the simulation ends. 
+//	 * 
+//	 * @param myScenario		The scenario that contains the controller and its referenced links.
+//	 * @param onramplink		The onramp link being controlled.
+//	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+//	 * @param todtable			The time of day profile is provided in a table. It contains two columns - StartTime and MeteringRates. 
+//	 * @return					_Controller object
+//	 */
+//	public static Controller createController_IRM_Time_of_Day(Scenario myScenario,Link onramplink,Sensor queuesensor,Table todtable){
+//		return  new edu.berkeley.path.beats.control.Controller_IRM_Time_of_Day(myScenario,onramplink,queuesensor,todtable);
+//	}
+//	
+//	/** Traffic responsive isolated ramp metering.
+//	 * 
+//	 * <p> Generates a controller executing the Traffic responsive algorithm. Feedback for the controller is taken
+//	 * either from <code>mainlinelink</code> or <code>mainlinesensor</code>, depending on which is 
+//	 * specified. Hence exactly one of the two must be non-null. A queue override algorithm will be 
+//	 * employed if the <code>queuesensor</code> is non-null. trtable specifies the occupancy, flow and speed thresholds.
+//	 * Unused threshold types can be omitted from the table definition, or set to 0, for all entries. 
+//	 * At least one of these thresholds should be available.  
+//	 * 
+//	 * @param myScenario		The scenario that contains the controller and its referenced links.
+//	 * @param onramplink		The onramp link being controlled.
+//	 * @param mainlinelink		The mainline link used for feedback (optional, use <code>null</code> to omit).
+//	 * @param mainlinesensor	The onramp sensor used for feedback (optional, use <code>null</code> to omit).
+//	 * @param queuesensor		The sensor on the onramp used to detect queue spillover optional, use <code>null</code> to omit).
+//	 * @param trtable			The traffic responsive levels are provided in a table. It can contain four columns - MeteringRates, OccupancyThresholds, SpeedThresholds, FlowThresholds. 
+//	 * @return					_Controller object
+//	 */
+//	public static Controller createController_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink, Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
+//		return  new edu.berkeley.path.beats.control.Controller_IRM_Traffic_Responsive(myScenario,onramplink,mainlinelink,mainlinesensor,queuesensor,trtable);
+//	}
+//	
+//	/** [NOT IMPLEMENTED] Actuated signal control.
+//	 * 
+//	 * @return			_Controller object
+//	 */
+//	public static Controller createController_SIG_Actuated(Scenario myScenario){
+//		return  new edu.berkeley.path.beats.control.Controller_SIG_Actuated(myScenario);
+//	}
+//
+//	/** [NOT IMPLEMENTED] Pretimed signal control.
+//	 * 
+//	 * @return			_Controller object
+//	 */
+//	public static Controller createController_SIG_Pretimed(Scenario myScenario){
+//		return  new edu.berkeley.path.beats.control.Controller_SIG_Pretimed(myScenario);
+//	}
+//
+//	/** [NOT IMPLEMENTED] Time of day variable speed limits.
+//	 * 
+//	 * @return			_Controller object
+//	 */
+//	public static Controller createController_VSL_Time_of_Day(Scenario myScenario){
+//		return  new edu.berkeley.path.beats.control.Controller_VSL_Time_of_Day(myScenario);
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// public: event

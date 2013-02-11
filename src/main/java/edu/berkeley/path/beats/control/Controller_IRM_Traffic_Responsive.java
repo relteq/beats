@@ -64,40 +64,40 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Traffic_Responsive() {
-		// TODO Auto-generated constructor stub
+	public Controller_IRM_Traffic_Responsive(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+		super(myScenario,c,myType);
 	}
 
-	public Controller_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
-
-		this.myScenario = myScenario;
-		this.onramplink 	= onramplink;
-		this.mainlinelink 	= mainlinelink;
-		this.mainlinesensor = mainlinesensor;
-		this.queuesensor 	= queuesensor;
-		
-		hasmainlinelink   = mainlinelink!=null;
-		hasmainlinesensor = mainlinesensor!=null;
-		hasqueuesensor    = queuesensor!=null;
-		
-		// abort unless there is either one mainline link or one mainline sensor
-		if(mainlinelink==null && mainlinesensor==null)
-			return;
-		if(mainlinelink!=null  && mainlinesensor!=null)
-			return;
-		
-		usesensor = mainlinesensor!=null;
-		
-		// need the sensor's link for target density
-		if(usesensor)
-			mainlinelink = mainlinesensor.getMyLink();
-		
-		// Traffic responsive table.
-		this.table = trtable;
-		
-		this.extractTable();
-		
-	}
+//	public Controller_IRM_Traffic_Responsive(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,Table trtable){
+//
+//		this.myScenario = myScenario;
+//		this.onramplink 	= onramplink;
+//		this.mainlinelink 	= mainlinelink;
+//		this.mainlinesensor = mainlinesensor;
+//		this.queuesensor 	= queuesensor;
+//		
+//		hasmainlinelink   = mainlinelink!=null;
+//		hasmainlinesensor = mainlinesensor!=null;
+//		hasqueuesensor    = queuesensor!=null;
+//		
+//		// abort unless there is either one mainline link or one mainline sensor
+//		if(mainlinelink==null && mainlinesensor==null)
+//			return;
+//		if(mainlinelink!=null  && mainlinesensor!=null)
+//			return;
+//		
+//		usesensor = mainlinesensor!=null;
+//		
+//		// need the sensor's link for target density
+//		if(usesensor)
+//			mainlinelink = mainlinesensor.getMyLink();
+//		
+//		// Traffic responsive table.
+//		this.table = trtable;
+//		
+//		this.extractTable();
+//		
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update

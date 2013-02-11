@@ -552,8 +552,10 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 
 		private HashMap<Link,Integer> target2index;
 		private HashMap<Signal.NEMA,Integer[]> nema2indices;
-
+		
 		public PhaseController(Signal mySignal){
+			
+			super();
 			
 			int i,j;
 			

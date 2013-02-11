@@ -16,8 +16,8 @@ public class ScenarioElementTest {
 	public void test_getMyType() {
 		
 		// controller
-		ScenarioElement se1 = ObjectFactory.createScenarioElement(new Controller_IRM_Alinea());		
-		assertTrue(se1.getMyType().compareTo(ScenarioElement.Type.controller)==0);
+//		ScenarioElement se1 = ObjectFactory.createScenarioElement(new Controller_IRM_Alinea());		
+//		assertTrue(se1.getMyType().compareTo(ScenarioElement.Type.controller)==0);
 		
 		// sensor
 		ScenarioElement se2 = ObjectFactory.createScenarioElement(new SensorLoopStation());		
