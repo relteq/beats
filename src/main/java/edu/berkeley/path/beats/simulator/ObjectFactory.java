@@ -100,7 +100,6 @@ final public class ObjectFactory {
 				C = null;
 				break;
 		}
-//		C.populateFromJaxb(myScenario, jaxbC, myType);
 		C.populate(jaxbC);
 		return C;
 
@@ -113,38 +112,37 @@ final public class ObjectFactory {
 		Event E;
 		switch(myType){
 			case fundamental_diagram:
-				E = new Event_Fundamental_Diagram();
+				E = new Event_Fundamental_Diagram(myScenario, jaxbE, myType);
 				break;
 
 			case link_demand_knob:
-				E = new Event_Link_Demand_Knob();
+				E = new Event_Link_Demand_Knob(myScenario, jaxbE, myType);
 				break;
 
 			case link_lanes:
-				E = new Event_Link_Lanes();
+				E = new Event_Link_Lanes(myScenario, jaxbE, myType);
 				break;
 
 			case node_split_ratio:
-				E = new Event_Node_Split_Ratio();
+				E = new Event_Node_Split_Ratio(myScenario, jaxbE, myType);
 				break;
 
 			case control_toggle:
-				E = new Event_Control_Toggle();
+				E = new Event_Control_Toggle(myScenario, jaxbE, myType);
 				break;
 
 			case global_control_toggle:
-				E = new Event_Global_Control_Toggle();
+				E = new Event_Global_Control_Toggle(myScenario, jaxbE, myType);
 				break;
 
 			case global_demand_knob:
-				E = new Event_Global_Demand_Knob();
+				E = new Event_Global_Demand_Knob(myScenario, jaxbE, myType);
 				break;
 				
 			default:
 				E = null;
 				break;
 		}
-		E.populateFromJaxb(myScenario, jaxbE, myType);
 		E.populate(jaxbE);
 		return E;
 	}
@@ -156,18 +154,13 @@ final public class ObjectFactory {
 		Sensor S;
 		switch(myType){
 			case loop:
-				S = new SensorLoopStation();
-				break;
-
-			case camera:
-				S = null; 
+				S = new SensorLoopStation(myScenario, jaxbS, myType);
 				break;
 
 			default:
 				S = null;
 				break;
 		}
-		S.populateFromJaxb(myScenario, jaxbS, myType);
 		S.populate(jaxbS);
 		return S;
 	}
@@ -204,7 +197,7 @@ final public class ObjectFactory {
 	}
 	  
 	/////////////////////////////////////////////////////////////////////
-	// public: scenario
+	// Scenario 
 	/////////////////////////////////////////////////////////////////////
 
 	/** Loads and validates scenarios from XML. 
@@ -367,6 +360,31 @@ final public class ObjectFactory {
 		unmrsh.setProperty(propnam, factory);
 	}
 
+	// returns greatest common divisor among network time steps.
+	// The time steps are rounded to the nearest decisecond.
+	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
+		
+		if(scenario.getNetworkList()==null)
+			return Double.NaN;
+		
+		if(scenario.getNetworkList().getNetwork().size()==0)
+			return Double.NaN;
+			
+		// loop through networks calling gcd
+		double dt;
+		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
+		int tengcd = 0;		// in deciseconds
+		for(int i=0;i<networkList.size();i++){
+			dt = networkList.get(i).getDt().doubleValue();	// in seconds
+	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
+	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
+				dt *= 3600;
+	        }
+			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
+		}
+    	return ((double)tengcd)/10.0;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// public: controller
 	/////////////////////////////////////////////////////////////////////
@@ -474,327 +492,298 @@ final public class ObjectFactory {
 	// public: event
 	/////////////////////////////////////////////////////////////////////
 	
-	/** On/Off switch for controllers.
-	 * 
-	 * Turns all controllers included in the <code>controllers</code> array on or off,
-	 * depending on the value of <code>ison</code>, at time <code>timestampinseconds</code>.
-	 * Here "off" means that the control commands are ignored by their targets, and that the 
-	 * controller's update function is not called. 
-	 * 
-	 * @param myScenario			The scenario.
-	 * @param timestampinseconds	Activation time for the event.
-	 * @param controllers			List of target Controller objects.
-	 * @param ison					<code>true</code> turns controllers on, <code>false</code> turns controllers off.
-	 * @return						Event object
-	 */
-	public static Event createEvent_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
-		return  new edu.berkeley.path.beats.event.Event_Control_Toggle(myScenario,timestampinseconds,controllers,ison);
-	}	
-
-	/** Change the model parameters of a list of links.
-	 * 
-	 * <p> Use this event to modify any subset of the fundamental diagram parameters of a list of links.
-	 * The new parameters should be expressed in per-lane units. Use <code>null</code> in place of any
-	 * of the input parameters to indicate that the current value of the parameter should be kept. The
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param links				List of Link objects.
-	 * @param freeflowSpeed		Freeflow speed in [meters/sec]
-	 * @param congestionSpeed	Congestion wave speed in [meters/sec]
-	 * @param capacity			Capacity in [veh/sec/lane]
-	 * @param densityJam		Jam density in [veh/meter/lane]
-	 * @param capacityDrop		Capacity drop in [veh/sec/lane]
-	 * @param stdDevCapacity	Standard deviation for the capacity in [veh/sec/lane]
-	 * @return					Event object
-	 */
-	public static Event createEvent_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
-		return  new edu.berkeley.path.beats.event.Event_Fundamental_Diagram(myScenario,links,freeflowSpeed,congestionSpeed,capacity,densityJam,capacityDrop,stdDevCapacity);
-	}
-	
-	/** Revert to original parameters for a list of links.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param links				List of Link objects.
-	 * @return					Event object
-	 */
-	public static Event createEvent_Fundamental_Diagram_Revert(Scenario myScenario,List <Link> links) {		
-		return  new edu.berkeley.path.beats.event.Event_Fundamental_Diagram(myScenario,links);
-	}
-	
-	/** On/Off switch for <i>all</i> controllers. 
-	 * <p> This is equivalent to passing the full set of controllers to {@link ObjectFactory#createEvent_Control_Toggle}.
-	 *
-	 * @param myScenario		The scenario.
-	 * @return					Event object
-	 */
-	public static Event createEvent_Global_Control_Toggle(Scenario myScenario,boolean ison){
-		return  new edu.berkeley.path.beats.event.Event_Global_Control_Toggle(myScenario,ison);
-	}	
-	
-	/** Adjust the global demand knob.
-	 * 
-	 * <p>The amount of traffic entering the network at a given source equals the nominal profile value 
-	 * multiplied by both the knob for the profile and the global knob. Use this event to make 
-	 * changes to the global demand knob.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param newknob 			New value of the knob.
-	 * @return			Event object
-	 */
-	public static Event createEvent_Global_Demand_Knob(Scenario myScenario,double newknob){
-		return  new edu.berkeley.path.beats.event.Event_Global_Demand_Knob(myScenario,newknob);
-	}	
-	
-	/** Adjust the knob for the demand profile applied to a particular link.
-	 * 
-	 * <p>Use this event to scale the demand profile applied to a given link.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param newknob 			New value of the knob.
-	 * @return					Event object
-	 */
-	public static Event createEvent_Link_Demand_Knob(Scenario myScenario,double newknob){
-		return  new edu.berkeley.path.beats.event.Event_Link_Demand_Knob(myScenario,newknob);
-	}	
-	
-	/** Change the number of lanes on a particular link.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param links 			List of links to change.
-	 * @param deltalanes		Number of lanes to add to each link in the list
-	 * @return					Event object
-	 */
-	public static Event createEvent_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes){
-		return  new edu.berkeley.path.beats.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
-	}	
-	
-	/** Change the split ratio matrix on a node.
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param node				The node
-	 * @param inlink			String id of the input link 
-	 * @param vehicleType		String name of the vehicle type
-	 * @param splits			An array of splits for every link exiting the node.
-	 * @return					Event object
-	 */		
-	public static Event createEvent_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicleType,ArrayList<Double>splits){
-		return  new edu.berkeley.path.beats.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
-	}	
+//	/** On/Off switch for controllers.
+//	 * 
+//	 * Turns all controllers included in the <code>controllers</code> array on or off,
+//	 * depending on the value of <code>ison</code>, at time <code>timestampinseconds</code>.
+//	 * Here "off" means that the control commands are ignored by their targets, and that the 
+//	 * controller's update function is not called. 
+//	 * 
+//	 * @param myScenario			The scenario.
+//	 * @param timestampinseconds	Activation time for the event.
+//	 * @param controllers			List of target Controller objects.
+//	 * @param ison					<code>true</code> turns controllers on, <code>false</code> turns controllers off.
+//	 * @return						Event object
+//	 */
+//	public static Event createEvent_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
+//		return  new edu.berkeley.path.beats.event.Event_Control_Toggle(myScenario,timestampinseconds,controllers,ison);
+//	}	
+//
+//	/** Change the model parameters of a list of links.
+//	 * 
+//	 * <p> Use this event to modify any subset of the fundamental diagram parameters of a list of links.
+//	 * The new parameters should be expressed in per-lane units. Use <code>null</code> in place of any
+//	 * of the input parameters to indicate that the current value of the parameter should be kept. The
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param links				List of Link objects.
+//	 * @param freeflowSpeed		Freeflow speed in [meters/sec]
+//	 * @param congestionSpeed	Congestion wave speed in [meters/sec]
+//	 * @param capacity			Capacity in [veh/sec/lane]
+//	 * @param densityJam		Jam density in [veh/meter/lane]
+//	 * @param capacityDrop		Capacity drop in [veh/sec/lane]
+//	 * @param stdDevCapacity	Standard deviation for the capacity in [veh/sec/lane]
+//	 * @return					Event object
+//	 */
+//	public static Event createEvent_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
+//		return  new edu.berkeley.path.beats.event.Event_Fundamental_Diagram(myScenario,links,freeflowSpeed,congestionSpeed,capacity,densityJam,capacityDrop,stdDevCapacity);
+//	}
+//	
+//	/** Revert to original parameters for a list of links.
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param links				List of Link objects.
+//	 * @return					Event object
+//	 */
+//	public static Event createEvent_Fundamental_Diagram_Revert(Scenario myScenario,List <Link> links) {		
+//		return  new edu.berkeley.path.beats.event.Event_Fundamental_Diagram(myScenario,links);
+//	}
+//	
+//	/** On/Off switch for <i>all</i> controllers. 
+//	 * <p> This is equivalent to passing the full set of controllers to {@link ObjectFactory#createEvent_Control_Toggle}.
+//	 *
+//	 * @param myScenario		The scenario.
+//	 * @return					Event object
+//	 */
+//	public static Event createEvent_Global_Control_Toggle(Scenario myScenario,boolean ison){
+//		return  new edu.berkeley.path.beats.event.Event_Global_Control_Toggle(myScenario,ison);
+//	}	
+//	
+//	/** Adjust the global demand knob.
+//	 * 
+//	 * <p>The amount of traffic entering the network at a given source equals the nominal profile value 
+//	 * multiplied by both the knob for the profile and the global knob. Use this event to make 
+//	 * changes to the global demand knob.
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param newknob 			New value of the knob.
+//	 * @return			Event object
+//	 */
+//	public static Event createEvent_Global_Demand_Knob(Scenario myScenario,double newknob){
+//		return  new edu.berkeley.path.beats.event.Event_Global_Demand_Knob(myScenario,newknob);
+//	}	
+//	
+//	/** Adjust the knob for the demand profile applied to a particular link.
+//	 * 
+//	 * <p>Use this event to scale the demand profile applied to a given link.
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param newknob 			New value of the knob.
+//	 * @return					Event object
+//	 */
+//	public static Event createEvent_Link_Demand_Knob(Scenario myScenario,double newknob){
+//		return  new edu.berkeley.path.beats.event.Event_Link_Demand_Knob(myScenario,newknob);
+//	}	
+//	
+//	/** Change the number of lanes on a particular link.
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param links 			List of links to change.
+//	 * @param deltalanes		Number of lanes to add to each link in the list
+//	 * @return					Event object
+//	 */
+//	public static Event createEvent_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes){
+//		return  new edu.berkeley.path.beats.event.Event_Link_Lanes(myScenario,links,isrevert,deltalanes);
+//	}	
+//	
+//	/** Change the split ratio matrix on a node.
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param node				The node
+//	 * @param inlink			String id of the input link 
+//	 * @param vehicleType		String name of the vehicle type
+//	 * @param splits			An array of splits for every link exiting the node.
+//	 * @return					Event object
+//	 */		
+//	public static Event createEvent_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicleType,ArrayList<Double>splits){
+//		return  new edu.berkeley.path.beats.event.Event_Node_Split_Ratio(myScenario,node,inlink,vehicleType,splits);
+//	}	
 	
 	/////////////////////////////////////////////////////////////////////
 	// public: sensor
 	/////////////////////////////////////////////////////////////////////
 
-	/** Create a fixed loop detector station.
-	 * 
-	 * <p> This sensor models a loop detector station with loops covering all lanes at a particular
-	 * location on a link. 
-	 * 
-	 * @param myScenario		The scenario.
-	 * @param linkId			The id of the link where the sensor is placed.
-	 * @return					Sensor object
-	 */
-	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
-		return new edu.berkeley.path.beats.sensor.SensorLoopStation(myScenario,linkId);
-	}
+//	/** Create a fixed loop detector station.
+//	 * 
+//	 * <p> This sensor models a loop detector station with loops covering all lanes at a particular
+//	 * location on a link. 
+//	 * 
+//	 * @param myScenario		The scenario.
+//	 * @param linkId			The id of the link where the sensor is placed.
+//	 * @return					Sensor object
+//	 */
+//	public static Sensor createSensor_LoopStation(Scenario myScenario,String linkId){
+//		return new edu.berkeley.path.beats.sensor.SensorLoopStation(myScenario,linkId);
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// public: scenario element
 	/////////////////////////////////////////////////////////////////////
 	
-	/** Container for a node.
-	 * 
-	 * @param node		The node.
-	 * @return			ScenarioElement object
-	 */
-	public static ScenarioElement createScenarioElement(Node node){
-		if(node==null)
-			return null;
-		ScenarioElement se = new ScenarioElement();
-		se.myScenario = node.getMyNetwork().myScenario;
-		se.myType = ScenarioElement.Type.node;
-		se.reference = node;
-		return se;
-	}
-	
-	/** Container for a link.
-	 * 
-	 * @param link		The link.
-	 * @return			ScenarioElement object
-	 */
-	public static ScenarioElement createScenarioElement(Link link){
-		if(link==null)
-			return null;
-		ScenarioElement se = new ScenarioElement();
-		se.myScenario = link.getMyNetwork().myScenario;
-		se.myType = ScenarioElement.Type.link;
-		se.reference = link;
-		return se;
-	}
-
-	/** Container for a sensor.
-	 * 
-	 * @param sensor	The sensor.
-	 * @return			ScenarioElement object
-	 */
-	public static ScenarioElement createScenarioElement(Sensor sensor){
-		if(sensor==null)
-			return null;
-		ScenarioElement se = new ScenarioElement();
-		se.myScenario = sensor.myScenario;
-		se.myType = ScenarioElement.Type.sensor;
-		se.reference = sensor;
-		return se;
-	}
-	
-	/** Container for a controller.
-	 * 
-	 * @param controller	The controller.
-	 * @return			ScenarioElement object
-	 */
-	public static ScenarioElement createScenarioElement(Controller controller){
-		if(controller==null)
-			return null;
-		ScenarioElement se = new ScenarioElement();
-		se.myType = ScenarioElement.Type.controller;
-		se.reference = controller;
-		return se;
-	}
-
-	/** Container for an event.
-	 * 
-	 * @param event	The event.
-	 * @return ScenarioElement object
-	 */
-	public static ScenarioElement createScenarioElement(Event event){
-		if(event==null)
-			return null;
-		ScenarioElement se = new ScenarioElement();
-		se.myType = ScenarioElement.Type.event;
-		se.reference = event;
-		return se;
-	}
+//	/** Container for a node.
+//	 * 
+//	 * @param node		The node.
+//	 * @return			ScenarioElement object
+//	 */
+//	public static ScenarioElement createScenarioElement(Node node){
+//		if(node==null)
+//			return null;
+//		ScenarioElement se = new ScenarioElement();
+//		se.myScenario = node.getMyNetwork().myScenario;
+//		se.myType = ScenarioElement.Type.node;
+//		se.reference = node;
+//		return se;
+//	}
+//	
+//	/** Container for a link.
+//	 * 
+//	 * @param link		The link.
+//	 * @return			ScenarioElement object
+//	 */
+//	public static ScenarioElement createScenarioElement(Link link){
+//		if(link==null)
+//			return null;
+//		ScenarioElement se = new ScenarioElement();
+//		se.myScenario = link.getMyNetwork().myScenario;
+//		se.myType = ScenarioElement.Type.link;
+//		se.reference = link;
+//		return se;
+//	}
+//
+//	/** Container for a sensor.
+//	 * 
+//	 * @param sensor	The sensor.
+//	 * @return			ScenarioElement object
+//	 */
+//	public static ScenarioElement createScenarioElement(Sensor sensor){
+//		if(sensor==null)
+//			return null;
+//		ScenarioElement se = new ScenarioElement();
+//		se.myScenario = sensor.myScenario;
+//		se.myType = ScenarioElement.Type.sensor;
+//		se.reference = sensor;
+//		return se;
+//	}
+//	
+//	/** Container for a controller.
+//	 * 
+//	 * @param controller	The controller.
+//	 * @return			ScenarioElement object
+//	 */
+//	public static ScenarioElement createScenarioElement(Controller controller){
+//		if(controller==null)
+//			return null;
+//		ScenarioElement se = new ScenarioElement();
+//		se.myType = ScenarioElement.Type.controller;
+//		se.reference = controller;
+//		return se;
+//	}
+//
+//	/** Container for an event.
+//	 * 
+//	 * @param event	The event.
+//	 * @return ScenarioElement object
+//	 */
+//	public static ScenarioElement createScenarioElement(Event event){
+//		if(event==null)
+//			return null;
+//		ScenarioElement se = new ScenarioElement();
+//		se.myType = ScenarioElement.Type.event;
+//		se.reference = event;
+//		return se;
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// public: sets and profiles
 	/////////////////////////////////////////////////////////////////////
 
-	/** Create an initial density.
-	 * 
-	 * @param scenario The scenario
-	 * @param tstamp A double with the time stamp in seconds after midnight
-	 * @param link_id The String id of the link
-	 * @param vehtype An array of String link type names
-	 * @param init_density 2-D matrix of doubles with densities per link and vehicle type.
-	 * @throws BeatsException
-	 * @return InitialDensitySet
-	 */
-	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws BeatsException{
-		
-		// check input
-		if(link_id.length!=init_density.length)
-			throw new BeatsException("1st dimension of the initial density matrix does not match the link array.");
-		
-		if(init_density.length==0)
-			throw new BeatsException("Empty initial density matrix.");
-
-		if(vehtype.length!=init_density[0].length)
-			throw new BeatsException("2nd dimension of the initial density matrix does not match the vehicle types array.");
-		
-		// new
-		InitialDensitySet ic = new InitialDensitySet();
-		
-		// populate base class
-		
-		// vehicle types
-		VehicleTypeOrder vto = new VehicleTypeOrder();
-		for(String str : vehtype){
-			VehicleType vt = new VehicleType();
-			vt.setName(str);
-			vto.getVehicleType().add(vt);
-		}
-		ic.setVehicleTypeOrder(vto);
-
-		// initial density
-		int i;
-		for(i=0;i<init_density.length;i++){
-			Density density = new Density();
-			density.setLinkId(link_id[i]);
-			density.setContent(BeatsFormatter.csv(init_density[i],":"));			
-			ic.getDensity().add(density);
-		}
-		
-		// populate extended properties
-		ic.populate(scenario);
-		return ic;
-	}
-	
-	/** Create a demand profile.
-	 * 
-	 * @param scenario The scenario
-	 * @param dem A list of list of demand values.
-	 * @param starttime start time float
-	 * @param dt time step float
-	 * @param knob scalar multiplier float
-	 * @param StdDevAdd additive uncertainty
-	 * @param StdDevMult multiplicative uncertainty
-	 * @return DemandProfile
-	 */
-	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,Double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
-
-		// check input parameters
-		int i,j;
-		for(i=0;i<dem.length;i++)
-			for(j=0;j<dem[i].length;j++){
-				dem[i][j] = dem[i][j]==null ? 0d : dem[i][j];
-				dem[i][j] = dem[i][j]<0d ? 0d : dem[i][j];
-			}
-		
-		// new
-		DemandProfile demandprofile = new DemandProfile();
-		
-		// copy to base class
-		demandprofile.setLinkIdOrigin(linkid);
-		demandprofile.setKnob(new BigDecimal(knob));
-		demandprofile.setStartTime(new BigDecimal(starttime));
-		demandprofile.setDt(new BigDecimal(dt));
-		demandprofile.setStdDevAdd(new BigDecimal(StdDevAdd));
-		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
-		demandprofile.setContent(BeatsFormatter.csv(dem,":",","));
-		
-		// populate extended class properties
-		demandprofile.populate(scenario);
-
-		return demandprofile;
-	}
-
-	/////////////////////////////////////////////////////////////////////
-	// private
-	/////////////////////////////////////////////////////////////////////
-
-	// returns greatest common divisor among network time steps.
-	// The time steps are rounded to the nearest decisecond.
-	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
-		
-		if(scenario.getNetworkList()==null)
-			return Double.NaN;
-		
-		if(scenario.getNetworkList().getNetwork().size()==0)
-			return Double.NaN;
-			
-		// loop through networks calling gcd
-		double dt;
-		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
-		int tengcd = 0;		// in deciseconds
-		for(int i=0;i<networkList.size();i++){
-			dt = networkList.get(i).getDt().doubleValue();	// in seconds
-	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
-	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
-				dt *= 3600;
-	        }
-			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
-		}
-    	return ((double)tengcd)/10.0;
-	}
+//	/** Create an initial density.
+//	 * 
+//	 * @param scenario The scenario
+//	 * @param tstamp A double with the time stamp in seconds after midnight
+//	 * @param link_id The String id of the link
+//	 * @param vehtype An array of String link type names
+//	 * @param init_density 2-D matrix of doubles with densities per link and vehicle type.
+//	 * @throws BeatsException
+//	 * @return InitialDensitySet
+//	 */
+//	public static InitialDensitySet createInitialDensitySet(Scenario scenario,double tstamp,String [] link_id,String [] vehtype,Double [][] init_density) throws BeatsException{
+//		
+//		// check input
+//		if(link_id.length!=init_density.length)
+//			throw new BeatsException("1st dimension of the initial density matrix does not match the link array.");
+//		
+//		if(init_density.length==0)
+//			throw new BeatsException("Empty initial density matrix.");
+//
+//		if(vehtype.length!=init_density[0].length)
+//			throw new BeatsException("2nd dimension of the initial density matrix does not match the vehicle types array.");
+//		
+//		// new
+//		InitialDensitySet ic = new InitialDensitySet();
+//		
+//		// populate base class
+//		
+//		// vehicle types
+//		VehicleTypeOrder vto = new VehicleTypeOrder();
+//		for(String str : vehtype){
+//			VehicleType vt = new VehicleType();
+//			vt.setName(str);
+//			vto.getVehicleType().add(vt);
+//		}
+//		ic.setVehicleTypeOrder(vto);
+//
+//		// initial density
+//		int i;
+//		for(i=0;i<init_density.length;i++){
+//			Density density = new Density();
+//			density.setLinkId(link_id[i]);
+//			density.setContent(BeatsFormatter.csv(init_density[i],":"));			
+//			ic.getDensity().add(density);
+//		}
+//		
+//		// populate extended properties
+//		ic.populate(scenario);
+//		return ic;
+//	}
+//	
+//	/** Create a demand profile.
+//	 * 
+//	 * @param scenario The scenario
+//	 * @param dem A list of list of demand values.
+//	 * @param starttime start time float
+//	 * @param dt time step float
+//	 * @param knob scalar multiplier float
+//	 * @param StdDevAdd additive uncertainty
+//	 * @param StdDevMult multiplicative uncertainty
+//	 * @return DemandProfile
+//	 */
+//	public static DemandProfile createDemandProfile(Scenario scenario,String linkid,Double [][] dem,float starttime,float dt,float knob,float StdDevAdd,float StdDevMult){
+//
+//		// check input parameters
+//		int i,j;
+//		for(i=0;i<dem.length;i++)
+//			for(j=0;j<dem[i].length;j++){
+//				dem[i][j] = dem[i][j]==null ? 0d : dem[i][j];
+//				dem[i][j] = dem[i][j]<0d ? 0d : dem[i][j];
+//			}
+//		
+//		// new
+//		DemandProfile demandprofile = new DemandProfile();
+//		
+//		// copy to base class
+//		demandprofile.setLinkIdOrigin(linkid);
+//		demandprofile.setKnob(new BigDecimal(knob));
+//		demandprofile.setStartTime(new BigDecimal(starttime));
+//		demandprofile.setDt(new BigDecimal(dt));
+//		demandprofile.setStdDevAdd(new BigDecimal(StdDevAdd));
+//		demandprofile.setStdDevMult(new BigDecimal(StdDevMult));
+//		demandprofile.setContent(BeatsFormatter.csv(dem,":",","));
+//		
+//		// populate extended class properties
+//		demandprofile.populate(scenario);
+//
+//		return demandprofile;
+//	}
 	
 }

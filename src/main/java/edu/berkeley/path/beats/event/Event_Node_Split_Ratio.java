@@ -50,31 +50,35 @@ public class Event_Node_Split_Ratio extends Event {
 	public Event_Node_Split_Ratio(){
 	}
 	
-	// constructor for change event with single node target, single input, single vehicle type
-	public Event_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicletype,ArrayList<Double>splits) {
-		if(node==null)
-			return;
-		if(myScenario==null)
-			return;
-		this.resetToNominal = false;
-		splitratios = new ArrayList<SplitRatio>(splits.size());
-		int input_index = node.getInputLinkIndex(inlink);
-		int vt_index = myScenario.getVehicleTypeIndex(vehicletype);
-		int output_index = 0;
-		for (Double split : splits)
-			splitratios.add(new SplitRatio(input_index, output_index++, vt_index, split));
-		this.targets = new ArrayList<ScenarioElement>();
-		this.targets.add(ObjectFactory.createScenarioElement(node));		
+	public Event_Node_Split_Ratio(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		super(myScenario, jaxbE, myType);
 	}
+	
+//	// constructor for change event with single node target, single input, single vehicle type
+//	public Event_Node_Split_Ratio(Scenario myScenario,Node node,String inlink,String vehicletype,ArrayList<Double>splits) {
+//		if(node==null)
+//			return;
+//		if(myScenario==null)
+//			return;
+//		this.resetToNominal = false;
+//		splitratios = new ArrayList<SplitRatio>(splits.size());
+//		int input_index = node.getInputLinkIndex(inlink);
+//		int vt_index = myScenario.getVehicleTypeIndex(vehicletype);
+//		int output_index = 0;
+//		for (Double split : splits)
+//			splitratios.add(new SplitRatio(input_index, output_index++, vt_index, split));
+//		this.targets = new ArrayList<ScenarioElement>();
+//		this.targets.add(ObjectFactory.createScenarioElement(node));		
+//	}
 
-	// constructor for reset event with single node target
-	public Event_Node_Split_Ratio(Scenario myScenario,Node node) {
-		this.resetToNominal = true;
-		this.splitratios = null;
-		this.myType = Event.Type.node_split_ratio;
-		this.targets = new ArrayList<ScenarioElement>();
-		this.targets.add(ObjectFactory.createScenarioElement(node));	
-	}
+//	// constructor for reset event with single node target
+//	public Event_Node_Split_Ratio(Scenario myScenario,Node node) {
+//		this.resetToNominal = true;
+//		this.splitratios = null;
+//		this.myType = Event.Type.node_split_ratio;
+//		this.targets = new ArrayList<ScenarioElement>();
+//		this.targets.add(ObjectFactory.createScenarioElement(node));	
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate

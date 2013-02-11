@@ -41,8 +41,7 @@ public class Controller {
 	/** Scenario that contains this controller */
 	protected Scenario myScenario;										       								       
 	
-	/** Id of the controller. */
-	protected String id;
+	protected edu.berkeley.path.beats.jaxb.Controller jaxbController;
 										
 	/** Controller type. */
 	protected Controller.Type myType;
@@ -98,35 +97,35 @@ public class Controller {
     protected Controller(){};
       
 	/** @y.exclude */
-	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType){
+	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType){
 		 
 			this.myScenario = myScenario;
 			this.myType = myType;
-			this.id = c.getId();
+			this.jaxbController = jaxbC;
 			this.ison = false; //c.isEnabled(); 
 			this.activationTimes=new ArrayList<ActivationTimes>();
-			dtinseconds = c.getDt().floatValue();		// assume given in seconds
+			dtinseconds = jaxbC.getDt().floatValue();		// assume given in seconds
 			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
 			
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
-			for (edu.berkeley.path.beats.jaxb.Table table : c.getTable()) {
+			for (edu.berkeley.path.beats.jaxb.Table table : jaxbC.getTable()) {
 				if (tables.containsKey(table.getName()))
 					BeatsErrorLog.addError("Table '" + table.getName() + "' already exists");
 				tables.put(table.getName(), new Table(table));
 			}
 			
 			// Get activation times and sort	
-			if (c.getActivationIntervals()!=null)
-				for (edu.berkeley.path.beats.jaxb.Interval tinterval : c.getActivationIntervals().getInterval())		
+			if (jaxbC.getActivationIntervals()!=null)
+				for (edu.berkeley.path.beats.jaxb.Interval tinterval : jaxbC.getActivationIntervals().getInterval())		
 					if(tinterval!=null)
 						activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
 			Collections.sort(activationTimes);
 			
 			// store targets ......
 			targets = new ArrayList<ScenarioElement>();
-			if(c.getTargetElements()!=null)
-				for(edu.berkeley.path.beats.jaxb.ScenarioElement s : c.getTargetElements().getScenarioElement() ){
+			if(jaxbC.getTargetElements()!=null)
+				for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbC.getTargetElements().getScenarioElement() ){
 					ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
 					if(se!=null)
 						targets.add(se);
@@ -137,8 +136,8 @@ public class Controller {
 
 			// store feedbacks ......
 			feedbacks = new ArrayList<ScenarioElement>();
-			if(c.getFeedbackElements()!=null)
-				for(edu.berkeley.path.beats.jaxb.ScenarioElement s : c.getFeedbackElements().getScenarioElement()){
+			if(jaxbC.getFeedbackElements()!=null)
+				for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbC.getFeedbackElements().getScenarioElement()){
 					ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
 					if(se!=null)
 						feedbacks.add(se);	
@@ -370,63 +369,12 @@ public class Controller {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// InterfaceComponent
-	/////////////////////////////////////////////////////////////////////
-		
-	/** @y.exclude */
-//	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType){
-//		this.myScenario = myScenario;
-//		this.myType = myType;
-//		this.id = c.getId();
-//		this.ison = false; //c.isEnabled(); 
-//		this.activationTimes=new ArrayList<ActivationTimes>();
-//		dtinseconds = c.getDt().floatValue();		// assume given in seconds
-//		samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
-//		
-//		// Copy tables
-//		tables = new java.util.HashMap<String, Table>();
-//		for (edu.berkeley.path.beats.jaxb.Table table : c.getTable()) {
-//			if (tables.containsKey(table.getName()))
-//				BeatsErrorLog.addError("Table '" + table.getName() + "' already exists");
-//			tables.put(table.getName(), new Table(table));
-//		}
-//		
-//		// Get activation times and sort	
-//		if (c.getActivationIntervals()!=null)
-//			for (edu.berkeley.path.beats.jaxb.Interval tinterval : c.getActivationIntervals().getInterval())		
-//				if(tinterval!=null)
-//					activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
-//		Collections.sort(activationTimes);
-//		
-//		// store targets ......
-//		targets = new ArrayList<ScenarioElement>();
-//		if(c.getTargetElements()!=null)
-//			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : c.getTargetElements().getScenarioElement() ){
-//				ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
-//				if(se!=null)
-//					targets.add(se);
-//			}
-//		
-//		control_maxflow  = new Double [targets.size()];
-//		control_maxspeed = new Double [targets.size()];
-//
-//		// store feedbacks ......
-//		feedbacks = new ArrayList<ScenarioElement>();
-//		if(c.getFeedbackElements()!=null)
-//			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : c.getFeedbackElements().getScenarioElement()){
-//				ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
-//				if(se!=null)
-//					feedbacks.add(se);	
-//			}
-//	}
-
-	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
    	/** Get the ID of the controller  */
 	public String getId() {
-		return id;
+		return this.jaxbController.getId();
 	}	
 
    	/** Get the type of the controller.  */

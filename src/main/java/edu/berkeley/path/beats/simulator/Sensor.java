@@ -44,6 +44,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/** The scenario that contains this sensor. */
 	protected Scenario myScenario;	
 
+	protected edu.berkeley.path.beats.jaxb.Sensor jaxbSensor;
 	/** Sensor type. */
 	protected Sensor.Type myType;
 	
@@ -57,12 +58,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	 * employed by INRIX, Navteq, etc.
 	 */
 	public static enum Type	{  
-	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop,
-		magnetic,
-		radar,
-		camera,
-		TMC
-	};
+	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop };
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -72,67 +68,14 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	protected Sensor(){
 	}		  
 
-	protected final void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor s,Sensor.Type myType){
+	protected Sensor(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor jaxbS,Sensor.Type myType){
 		this.myScenario = myScenario;
+		this.jaxbSensor = jaxbS;
 		this.myType = myType;
-		this.id = s.getId();
-		if(s.getLinkReference()!=null)
-			myLink = myScenario.getLinkWithId(s.getLinkReference().getId());
+		this.id = jaxbS.getId();
+		if(jaxbS.getLinkReference()!=null)
+			myLink = myScenario.getLinkWithId(jaxbS.getLinkReference().getId());
 	}
-
-	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-
-//	@Override
-//	public void setDisplayPosition(DisplayPosition value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setLinkReference(LinkReference value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setParameters(Parameters value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setTable(Table value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setLinkPosition(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setType(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setSensorIdOriginal(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setLaneNumber(BigInteger value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setHealthStatus(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}	
 	
 	/////////////////////////////////////////////////////////////////////
 	// InterfaceSensor

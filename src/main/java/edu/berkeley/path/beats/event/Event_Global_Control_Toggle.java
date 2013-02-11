@@ -41,10 +41,14 @@ public class Event_Global_Control_Toggle extends Event {
 	public Event_Global_Control_Toggle(){
 	}
 	
-	public Event_Global_Control_Toggle(Scenario myScenario,boolean ison) {
-		this.myScenario = myScenario;
-		this.ison = ison;
+	public Event_Global_Control_Toggle(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		super(myScenario, jaxbE, myType);
 	}
+	
+//	public Event_Global_Control_Toggle(Scenario myScenario,boolean ison) {
+//		this.myScenario = myScenario;
+//		this.ison = ison;
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate

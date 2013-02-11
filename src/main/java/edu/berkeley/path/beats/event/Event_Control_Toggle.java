@@ -47,16 +47,20 @@ public class Event_Control_Toggle extends Event {
 	
 	public Event_Control_Toggle(){
 	}
-		
-	public Event_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
-		this.myScenario = myScenario;
-		this.ison = ison;
-		this.myType = Event.Type.control_toggle;
-		this.timestampstep = (int) Math.round(timestampinseconds/myScenario.getSimDtInSeconds());
-		this.targets = new ArrayList<ScenarioElement>();
-			for(Controller controller : controllers )
-				this.targets.add(ObjectFactory.createScenarioElement(controller));	
+
+	public Event_Control_Toggle(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		super(myScenario, jaxbE, myType);
 	}
+	
+//	public Event_Control_Toggle(Scenario myScenario,float timestampinseconds,List <Controller> controllers,boolean ison) {
+//		this.myScenario = myScenario;
+//		this.ison = ison;
+//		this.myType = Event.Type.control_toggle;
+//		this.timestampstep = (int) Math.round(timestampinseconds/myScenario.getSimDtInSeconds());
+//		this.targets = new ArrayList<ScenarioElement>();
+//			for(Controller controller : controllers )
+//				this.targets.add(ObjectFactory.createScenarioElement(controller));	
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate
