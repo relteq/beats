@@ -72,21 +72,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		/** EB through **/	_6,
 		/** NB left **/		_7,
 		/** SB through **/	_8};
-		
-	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setNodeId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-		
+				
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
