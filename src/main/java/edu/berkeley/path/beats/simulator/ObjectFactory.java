@@ -28,8 +28,6 @@ package edu.berkeley.path.beats.simulator;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.XMLConstants;
@@ -45,9 +43,6 @@ import org.xml.sax.SAXException;
 
 import edu.berkeley.path.beats.control.*;
 import edu.berkeley.path.beats.event.*;
-import edu.berkeley.path.beats.jaxb.Density;
-import edu.berkeley.path.beats.jaxb.VehicleType;
-import edu.berkeley.path.beats.jaxb.VehicleTypeOrder;
 import edu.berkeley.path.beats.sensor.*;
 
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
@@ -90,6 +85,10 @@ final public class ObjectFactory {
 				
 			case CRM_HERO:
 				C = new Controller_CRM_HERO(myScenario, jaxbC, myType);
+				break;
+
+			case CRM_MPC:
+				C = new Controller_CRM_MPC(myScenario, jaxbC, myType);
 				break;
 				
 			case SIG_Pretimed:

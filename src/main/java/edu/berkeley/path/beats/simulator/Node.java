@@ -28,11 +28,6 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.jaxb.Inputs;
-import edu.berkeley.path.beats.jaxb.Outputs;
-import edu.berkeley.path.beats.jaxb.Position;
-import edu.berkeley.path.beats.jaxb.RoadwayMarkers;
-
 /** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)

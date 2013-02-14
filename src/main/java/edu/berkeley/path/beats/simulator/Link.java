@@ -26,13 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.math.BigDecimal;
-
-import edu.berkeley.path.beats.jaxb.Begin;
-import edu.berkeley.path.beats.jaxb.Dynamics;
-import edu.berkeley.path.beats.jaxb.End;
-import edu.berkeley.path.beats.jaxb.Roads;
-
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)

@@ -26,14 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-import edu.berkeley.path.beats.jaxb.DisplayPosition;
-import edu.berkeley.path.beats.jaxb.LinkReference;
-import edu.berkeley.path.beats.jaxb.Parameters;
-import edu.berkeley.path.beats.jaxb.Table;
-
 /** Base class for sensors. 
  * Provides a default implementation of <code>InterfaceSensor</code>.
  *

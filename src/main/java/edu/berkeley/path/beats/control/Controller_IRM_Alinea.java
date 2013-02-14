@@ -88,12 +88,9 @@ public class Controller_IRM_Alinea extends Controller {
 //	}
 
 	/////////////////////////////////////////////////////////////////////
-	// populate / validate / reset  / update
+	// populate / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** Implementation of {@link InterfaceComponent#populate}.
-	 * @param jaxbobject Object
-	 */
 	@Override
 	protected void populate(Object jaxbobject) {
 

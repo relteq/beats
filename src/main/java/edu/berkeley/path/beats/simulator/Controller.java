@@ -87,6 +87,7 @@ public class Controller {
 	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
 	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
       /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
+      /** see {@link ObjectFactory#createController_CRM_MPC}				*/ 	CRM_MPC,
       /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed };
 	
 	/////////////////////////////////////////////////////////////////////
@@ -144,12 +145,12 @@ public class Controller {
 				}
 	 }
 
-	 /** @y.exclude */
-	 protected Controller(ArrayList<ScenarioElement> targets){
-		 this.targets = targets;
-		 this.control_maxflow  = new Double [targets.size()];
-		 this.control_maxspeed = new Double [targets.size()];
-	 }
+//	 /** @y.exclude */
+//	 protected Controller(ArrayList<ScenarioElement> targets){
+//		 this.targets = targets;
+//		 this.control_maxflow  = new Double [targets.size()];
+//		 this.control_maxspeed = new Double [targets.size()];
+//	 }
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
@@ -217,7 +218,7 @@ public class Controller {
 	 */
 	protected void reset() {
 		//switch on conroller if it is always on by default.
-		if (activationTimes==null)
+		if (activationTimes==null || activationTimes.isEmpty())
 			ison = true;
 	}
 		

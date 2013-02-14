@@ -26,13 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import edu.berkeley.path.beats.jaxb.DisplayPosition;
-import edu.berkeley.path.beats.jaxb.Parameters;
-import edu.berkeley.path.beats.jaxb.SplitratioEvent;
-import edu.berkeley.path.beats.jaxb.TargetElements;
 
 /** Base class for events. 
  * Provides a default implementation of <code>InterfaceEvent</code>.

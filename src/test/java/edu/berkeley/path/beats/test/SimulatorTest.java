@@ -29,9 +29,7 @@ package edu.berkeley.path.beats.test;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
@@ -52,7 +50,7 @@ public class SimulatorTest {
 												"Albany-and-Berkeley",
 												"_scenario_2009_02_12",
 												"_scenario_constantsplits",
-												//"_smalltest",
+												"_smalltest",
 												"_smalltest_multipletypes",
 												//"complete",
 												//"multipletypes-SI",
