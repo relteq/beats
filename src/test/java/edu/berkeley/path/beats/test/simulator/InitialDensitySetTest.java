@@ -57,10 +57,8 @@ public class InitialDensitySetTest {
 		double linklength;
 		for(i=0;i<links.length;i++){
 			linklength = links[i].getLengthInMeters()*(0.621371/1000d);
-			for(j=0;j<scenario.getNumVehicleTypes();j++){
-				System.out.println(X[i][j]/linklength);
+			for(j=0;j<scenario.getNumVehicleTypes();j++)
 				assertEquals(X[i][j]/linklength,expected[i][j],1E-4);
-			}
 		}
 	}
 

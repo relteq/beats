@@ -39,7 +39,6 @@ public class NodeTest {
 	@Test
 	public void test_getInput_link() {
 		Link[] links = node.getInput_link();
-		System.out.println(links[0].getId());
 		assertEquals(links[0].getId(),"-3");
 	}
 

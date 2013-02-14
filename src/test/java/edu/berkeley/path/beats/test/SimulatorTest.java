@@ -81,8 +81,6 @@ public class SimulatorTest {
 	public void testSimulator() {
 
 		Scenario scenario;
-
-		System.out.println("Test");
 					
 		try {
 			
@@ -100,20 +98,17 @@ public class SimulatorTest {
 				int numReps = 1;
 	
 				// load configuration file
-				System.out.println("\tLoading");
 				scenario = ObjectFactory.createAndLoadScenario(configfile);
 	
 				if (null == scenario)
 					throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 				
 				// run the scenario
-				System.out.println("\tRunning");
 				scenario.run(startTime,startTime+duration,outDt,"text",outputprefix,numReps);
 				
 				String [] vehicleTypes = scenario.getVehicleTypeNames();
 								
 				// compare output
-				System.out.println("\tComparing outputS");
 				for(String vt : vehicleTypes)
 					for(String q : quantities){
 						String filename = config_name+"_"+q+"_"+vt+"_0.txt";

@@ -74,66 +74,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** @y.exclude */
 	protected Link(){}
-
-	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-
-//	@Override
-//	public void setLanes(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//	
-//	@Override
-//	public void setBegin(Begin value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setEnd(End value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setRoads(Roads value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setDynamics(Dynamics value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setShape(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setLaneOffset(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-// 
-//	@Override
-//	public void setLength(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setType(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setInSync(Boolean value) {
-//		System.out.println("This setter is hidden.");
-//	}
-
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
