@@ -50,6 +50,9 @@ final class SplitRatioProfileSet extends edu.berkeley.path.beats.jaxb.SplitRatio
 
 	protected void validate() {
 
+		if(getSplitratioProfile()==null)
+			return;
+		
 		if(getSplitratioProfile().isEmpty())
 			return;
 

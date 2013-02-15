@@ -55,6 +55,10 @@ final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileS
 	
 	protected void validate() {
 
+
+		if(getDemandProfile()==null)
+			return;
+		
 		if(getDemandProfile().isEmpty())
 			return;
 		
