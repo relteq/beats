@@ -31,7 +31,7 @@ public class BrokenScenarioTest {
 		return conf_l;
 	}
 
-	private static String[] broken_config_names = {"_smalltest", "complete_bad", "scenario_twotypes"};
+	private static String[] broken_config_names = {"complete_bad", "scenario_twotypes"};
 
 	/**
 	 * Determines if the configuration file is working
