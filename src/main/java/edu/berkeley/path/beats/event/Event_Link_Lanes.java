@@ -48,14 +48,18 @@ public class Event_Link_Lanes extends Event {
 
 	public Event_Link_Lanes(){
 	}
-			
-	public Event_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes) {
-		this.targets = new ArrayList<ScenarioElement>();
-		this.resetToNominal = isrevert;
-		for(Link link : links)
-			this.targets.add(ObjectFactory.createScenarioElement(link));
-		this.deltalanes = deltalanes;
+	
+	public Event_Link_Lanes(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		super(myScenario, jaxbE, myType);
 	}
+			
+//	public Event_Link_Lanes(Scenario myScenario,List<Link> links,boolean isrevert,double deltalanes) {
+//		this.targets = new ArrayList<ScenarioElement>();
+//		this.resetToNominal = isrevert;
+//		for(Link link : links)
+//			this.targets.add(ObjectFactory.createScenarioElement(link));
+//		this.deltalanes = deltalanes;
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate

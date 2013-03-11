@@ -45,6 +45,8 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	private Double [] cumulative_inflow;	// [veh] 	numEnsemble
 	private Double [] cumulative_outflow;	// [veh] 	numEnsemble
 	       
+	private static Logger logger = Logger.getLogger(SensorLoopStation.class);
+
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -52,15 +54,17 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	public  SensorLoopStation(){
 	}
 
-	public SensorLoopStation(Scenario myScenario,String linkId){
-		if(myScenario==null)
-			return;
-		this.myScenario  = myScenario;
-	    this.myType = Sensor.Type.loop;
-	    this.myLink = myScenario.getLinkWithId(linkId);
+	public  SensorLoopStation(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor s,Sensor.Type myType){
+		super(myScenario,s,myType);
 	}
-
-	private static Logger logger = Logger.getLogger(SensorLoopStation.class);
+	
+//	public SensorLoopStation(Scenario myScenario,String linkId){
+//		if(myScenario==null)
+//			return;
+//		this.myScenario  = myScenario;
+//	    this.myType = Sensor.Type.loop;
+//	    this.myLink = myScenario.getLinkWithId(linkId);
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / update

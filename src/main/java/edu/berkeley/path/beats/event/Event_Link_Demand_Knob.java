@@ -45,10 +45,14 @@ public class Event_Link_Demand_Knob extends Event {
 	public Event_Link_Demand_Knob(){
 	}
 	
-	public Event_Link_Demand_Knob(Scenario myScenario,double newknob) {
-		this.myScenario = myScenario;
-		this.newknob = newknob;
+	public Event_Link_Demand_Knob(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		super(myScenario, jaxbE, myType);
 	}
+	
+//	public Event_Link_Demand_Knob(Scenario myScenario,double newknob) {
+//		this.myScenario = myScenario;
+//		this.newknob = newknob;
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate

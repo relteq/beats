@@ -60,13 +60,13 @@ public class Controller_SIG_Pretimed extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_SIG_Pretimed() {
-		// TODO Auto-generated constructor stub
+	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+		super(myScenario,c,myType);
 	}
 	
-	public Controller_SIG_Pretimed(Scenario myScenario) {
-		// TODO Auto-generated constructor stub
-	}
+//	public Controller_SIG_Pretimed(Scenario myScenario) {
+//		// TODO Auto-generated constructor stub
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update

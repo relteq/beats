@@ -40,10 +40,12 @@ import edu.berkeley.path.beats.jaxb.TargetElements;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("rawtypes")
-public class Event extends edu.berkeley.path.beats.jaxb.Event implements Comparable {
+public class Event implements Comparable {
 
 	/** Scenario that contains this event */
 	protected Scenario myScenario;
+	
+	protected edu.berkeley.path.beats.jaxb.Event jaxbEvent;
 	
 	/** Event type. */
 	protected Event.Type myType;
@@ -71,67 +73,9 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 	/** @y.exclude */
 	protected Event(){}
 
-	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-
-//	@Override
-//	public void setDescription(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setDisplayPosition(DisplayPosition value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setTargetElements(TargetElements value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setParameters(Parameters value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setSplitratioEvent(SplitratioEvent value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setTstamp(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setEnabled(boolean value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setType(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setJavaClass(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-	
 	/** @y.exclude */
-	protected void populateFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
-		this.id = jaxbE.getId();
+	protected Event(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
 		this.myType = myType;
 		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
@@ -140,6 +84,30 @@ public class Event extends edu.berkeley.path.beats.jaxb.Event implements Compara
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
 				this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public String getId(){
+		return this.jaxbEvent.getId();
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// protected interface
+	/////////////////////////////////////////////////////////////////////
+	
+//	/** @y.exclude */
+//	protected void populateFromJaxbXXX(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+//		this.id = jaxbE.getId();
+//		this.myScenario = myScenario;
+//		this.myType = myType;
+//		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
+//		this.targets = new ArrayList<ScenarioElement>();
+//		if(jaxbE.getTargetElements()!=null)
+//			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
+//				this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate

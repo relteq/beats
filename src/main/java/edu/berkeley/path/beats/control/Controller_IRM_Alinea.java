@@ -55,36 +55,37 @@ public class Controller_IRM_Alinea extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Alinea() {
+	public Controller_IRM_Alinea(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+		super(myScenario,c,myType);
 	}
 
-	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
-
-		this.myScenario = myScenario;
-		this.onramplink 	= onramplink;
-		this.mainlinelink 	= mainlinelink;
-		this.mainlinesensor = mainlinesensor;
-		this.queuesensor 	= queuesensor;
-		
-		hasmainlinelink   = mainlinelink!=null;
-		hasmainlinesensor = mainlinesensor!=null;
-		hasqueuesensor    = queuesensor!=null;
-		
-		// abort unless there is either one mainline link or one mainline sensor
-		if(mainlinelink==null && mainlinesensor==null)
-			return;
-		if(mainlinelink!=null  && mainlinesensor!=null)
-			return;
-		
-		usesensor = mainlinesensor!=null;
-		
-		// need the sensor's link for target density
-		if(usesensor)
-			mainlinelink = mainlinesensor.getMyLink();
-		
-		gain_normalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlinelink.getLengthInMeters();
-		
-	}
+//	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
+//
+//		this.myScenario = myScenario;
+//		this.onramplink 	= onramplink;
+//		this.mainlinelink 	= mainlinelink;
+//		this.mainlinesensor = mainlinesensor;
+//		this.queuesensor 	= queuesensor;
+//		
+//		hasmainlinelink   = mainlinelink!=null;
+//		hasmainlinesensor = mainlinesensor!=null;
+//		hasqueuesensor    = queuesensor!=null;
+//		
+//		// abort unless there is either one mainline link or one mainline sensor
+//		if(mainlinelink==null && mainlinesensor==null)
+//			return;
+//		if(mainlinelink!=null  && mainlinesensor!=null)
+//			return;
+//		
+//		usesensor = mainlinesensor!=null;
+//		
+//		// need the sensor's link for target density
+//		if(usesensor)
+//			mainlinelink = mainlinesensor.getMyLink();
+//		
+//		gain_normalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlinelink.getLengthInMeters();
+//		
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update

@@ -109,17 +109,17 @@ public class Controller_CRM_HERO extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-    public Controller_CRM_HERO() {
-    	
+    public Controller_CRM_HERO(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+		super(myScenario,c,myType);
     }
 
-	public Controller_CRM_HERO(Scenario myScenario) {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
-		// TODO Auto-generated constructor stub		
-	}
+//	public Controller_CRM_HERO(Scenario myScenario) {
+//		// TODO Auto-generated constructor stub
+//	}
+//	
+//	public Controller_CRM_HERO(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){
+//		// TODO Auto-generated constructor stub		
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
@@ -290,7 +290,7 @@ public class Controller_CRM_HERO extends Controller {
 		
 		// Add HERO controller to controllerLists in its corresponding Downstream to Upstream Order
 		for(int i=0; i< controllersOrdered.size(); i++){
-			if(this.id.equals(controllersOrdered.get(i))){
+			if(this.getId().equals(controllersOrdered.get(i))){
 				controllerList.set(i, this);
 				break;
 			}
@@ -641,14 +641,14 @@ public class Controller_CRM_HERO extends Controller {
     protected void printSensorCumulativeInflowAndOutflow(Integer controllerIndex){
     	Integer i =controllerIndex;
 		if (printMessages)
-			System.out.println("time "+timeStep+": Controller " +controllerList.get(i).id + " Sensor cumInflow: " + controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0)+
+			System.out.println("time "+timeStep+": Controller " +controllerList.get(i).getId() + " Sensor cumInflow: " + controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0)+
 							   " Sensor cumOutflow: " + controllerList.get(i).queueSensor.getCumulativeOutflowInVeh(0));
     }
     
     protected void printFlows(Controller_CRM_HERO C){
 		if (printMessages){
 			DecimalFormat df = new DecimalFormat("#.##");
-			System.out.println("time "+timeStep+": Controller " +C.id+ " --- control_maxflow[0]:"+ df.format(C.flowControl_MaxFlow) +
+			System.out.println("time "+timeStep+": Controller " +C.getId()+ " --- control_maxflow[0]:"+ df.format(C.flowControl_MaxFlow) +
 				" --- Min:"+ df.format(C.minFlow)+ ", Alinea:"+ df.format(C.flowAlinea)+ ", Queue:"+ df.format(C.flowQueue)
 				+ ", QueueMin:"+ df.format(C.flowQueueMin) +", Hero:"+df.format(C.flowHero )+", Max:"+ df.format(C.maxFlow));
 		}

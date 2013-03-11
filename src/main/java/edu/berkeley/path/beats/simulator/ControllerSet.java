@@ -66,8 +66,8 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 					myType = Controller.Type.valueOf(controller.getType());
 				} catch (IllegalArgumentException e) {
 					continue;
-				}	
-				
+				}
+		    					
 				// generate controller
 				if(myType!=null){
 					Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);

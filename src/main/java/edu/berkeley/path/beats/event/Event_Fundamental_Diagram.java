@@ -49,26 +49,30 @@ public class Event_Fundamental_Diagram extends Event {
 	
 	public Event_Fundamental_Diagram(){
 	}
-	
-	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
-		this.FD = new edu.berkeley.path.beats.jaxb.FundamentalDiagram();
-		this.FD.setFreeFlowSpeed(new BigDecimal(freeflowSpeed));
-		this.FD.setCongestionSpeed(new BigDecimal(congestionSpeed));
-		this.FD.setCapacity(new BigDecimal(capacity));
-		this.FD.setJamDensity(new BigDecimal(densityJam));
-		this.FD.setCapacityDrop(new BigDecimal(capacityDrop));
-		this.FD.setStdDevCapacity(new BigDecimal(stdDevCapacity));
-		this.resetToNominal = false;
-		this.targets = new ArrayList<ScenarioElement>();
-		for(Link link : links)
-			this.targets.add(ObjectFactory.createScenarioElement(link));
+
+	public Event_Fundamental_Diagram(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
+		super(myScenario, jaxbE, myType);
 	}
 	
-	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links) {		
-		this.resetToNominal = true;
-		for(Link link : links)
-			this.targets.add(ObjectFactory.createScenarioElement(link));
-	}
+//	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links,double freeflowSpeed,double congestionSpeed,double capacity,double densityJam,double capacityDrop,double stdDevCapacity) {		
+//		this.FD = new edu.berkeley.path.beats.jaxb.FundamentalDiagram();
+//		this.FD.setFreeFlowSpeed(new BigDecimal(freeflowSpeed));
+//		this.FD.setCongestionSpeed(new BigDecimal(congestionSpeed));
+//		this.FD.setCapacity(new BigDecimal(capacity));
+//		this.FD.setJamDensity(new BigDecimal(densityJam));
+//		this.FD.setCapacityDrop(new BigDecimal(capacityDrop));
+//		this.FD.setStdDevCapacity(new BigDecimal(stdDevCapacity));
+//		this.resetToNominal = false;
+//		this.targets = new ArrayList<ScenarioElement>();
+//		for(Link link : links)
+//			this.targets.add(ObjectFactory.createScenarioElement(link));
+//	}
+//	
+//	public Event_Fundamental_Diagram(Scenario myScenario,List <Link> links) {		
+//		this.resetToNominal = true;
+//		for(Link link : links)
+//			this.targets.add(ObjectFactory.createScenarioElement(link));
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate

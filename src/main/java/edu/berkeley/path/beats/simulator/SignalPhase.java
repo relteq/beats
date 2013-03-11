@@ -142,7 +142,6 @@ final public class SignalPhase {
 		this.actualyellowtime   = yellowtime;
 		this.actualredcleartime = redcleartime;
 		
-		
 		// dual ring structure: opposingPhase, isthrough, myRingGroup
 		switch(myNEMA){
 		case _1:

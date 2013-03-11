@@ -51,7 +51,7 @@ final class SensorList extends edu.berkeley.path.beats.jaxb.SensorList  {
 					myType = Sensor.Type.valueOf(sensorjaxb.getType());
 				} catch (IllegalArgumentException e) {
 					continue;
-				}	
+				}
 				
 				// generate sensor
 				if(myType!=null){
