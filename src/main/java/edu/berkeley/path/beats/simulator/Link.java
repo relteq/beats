@@ -51,8 +51,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 																			// false means FD points to FDfromprofile
     // flow into the link
 	/** @y.exclude */ 	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
+	
+	// source demand profile
+	protected DemandProfile myDemandProfile;
 	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	numVehTypes
     
+	
     // demand and actual flow out of the link   
 	/** @y.exclude */ 	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
 	/** @y.exclude */ 	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
@@ -142,6 +146,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/** @y.exclude */
 	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
 		this.sourcedemand = sourcedemand;		
+	}
+	
+	protected void setMyDemandProfile(DemandProfile dp){
+		this.myDemandProfile = dp;
 	}
 	
 	// Controller registration ..........................................
@@ -421,7 +429,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			BeatsErrorLog.addError("Incorrect begin node id=" + getBegin().getNodeId() + " in link id=" + getId() + ".");
 
 		if(!issink && end_node==null)
-			BeatsErrorLog.addError("Incorrect e d node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
+			BeatsErrorLog.addError("Incorrect node id=" + getEnd().getNodeId() + " in link id=" + getId() + ".");
 		
 		if(_length<=0)
 			BeatsErrorLog.addError("Non-positive length in link id=" + getId() + ".");
@@ -888,5 +896,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 	
-
+	// Demand Profile ...................
+	
+	public DemandProfile getMyDemandProfile(){
+		return myDemandProfile;
+	}
 }

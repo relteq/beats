@@ -379,7 +379,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		double dens_crit_congestion = _densityJam-_capacity/_w;	// [veh]
 			
 		if(BeatsMath.greaterthan(density_critical,dens_crit_congestion))
-			BeatsErrorLog.addError("Minimum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+density_critical+")");
+			BeatsErrorLog.addError("Maximum allowable critical density for link " + myLink.getId() + " is " + dens_crit_congestion + "(current="+density_critical+")");
 		
 		if(_vf>1)
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has vf=" + _vf);

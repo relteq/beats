@@ -72,10 +72,10 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		}
 		
 		// check dtinseconds
-		if( dtinseconds<=0 )
+		if( dtinseconds<=0  && capacity.getLength()>1)
 			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()) && capacity.getLength()>1)
 			BeatsErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
