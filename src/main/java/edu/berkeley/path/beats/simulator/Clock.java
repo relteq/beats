@@ -46,6 +46,7 @@ final class Clock {
 		currentstep = 0;
 	}
 
+	/** current time in seconds **/
 	protected double getT() {
 		return t;
 	}
@@ -54,6 +55,7 @@ final class Clock {
 		return t-to;
 	}
 
+	/** time steps since beginning of simulation */
 	protected int getCurrentstep() {
 		return currentstep;
 	}
