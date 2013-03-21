@@ -53,9 +53,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/** @y.exclude */ 	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
 	
 	// source demand profile
-	protected DemandProfile myDemandProfile;
-	/** @y.exclude */ 	protected Double [] sourcedemand;		// [veh] 	numVehTypes
-    
+	protected DemandProfile myDemandProfile;    
 	
     // demand and actual flow out of the link   
 	/** @y.exclude */ 	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
@@ -143,11 +141,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	// Demand profiles .................................................
-	/** @y.exclude */
-	protected void setSourcedemandFromVeh(Double[] sourcedemand) {
-		this.sourcedemand = sourcedemand;		
-	}
-	
 	protected void setMyDemandProfile(DemandProfile dp){
 		this.myDemandProfile = dp;
 	}
@@ -470,7 +463,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		// reset other quantities
         inflow 				= BeatsMath.zeros(n1,n2);
         outflow 			= BeatsMath.zeros(n1,n2);
-        sourcedemand 		= BeatsMath.zeros(n2);
         outflowDemand 		= BeatsMath.zeros(n1,n2);
         spaceSupply 		= BeatsMath.zeros(n1);
 
@@ -499,8 +491,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             outflow = outflowDemand;
         
         if(issource){
-        	for(int e=0;e<this.myNetwork.myScenario.numEnsemble;e++)
-        		inflow[e] = sourcedemand.clone();
+        	for(int e=0;e<this.myNetwork.myScenario.numEnsemble;e++){
+        		if(myDemandProfile!=null)
+        			inflow[e] = myDemandProfile.getCurrentValue();
+        	}
         }
                 
         for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
@@ -897,8 +891,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 	
 	// Demand Profile ...................
-	
 	public DemandProfile getMyDemandProfile(){
 		return myDemandProfile;
 	}
+
 }

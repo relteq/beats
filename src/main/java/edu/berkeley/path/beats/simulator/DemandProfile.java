@@ -29,7 +29,9 @@ package edu.berkeley.path.beats.simulator;
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	protected Scenario myScenario;
-	protected Link myLinkOrigin;
+//	protected Link myLink;
+	protected Double [] current_sample;
+	protected boolean isOrphan;
 	protected double dtinseconds;				// not really necessary
 	protected int samplesteps;					// [sim steps] profile sample period
 	protected Double2DMatrix demand_nominal;	// [veh]
@@ -62,10 +64,14 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		isdone = false;
 		
 		// required
+		Link myLink = null;
 		if(getLinkIdOrigin()!=null)
-			myLinkOrigin = myScenario.getLinkWithId(getLinkIdOrigin());
+			myLink = myScenario.getLinkWithId(getLinkIdOrigin());
 
-		myLinkOrigin.setMyDemandProfile(this);
+		isOrphan = myLink==null;
+				
+		if(!isOrphan)
+			myLink.setMyDemandProfile(this);
 		
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
@@ -113,7 +119,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		if(demand_nominal.isEmpty())
 			return;
 		
-		if(myLinkOrigin==null)
+		if(isOrphan)
 			BeatsErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
 		// check dtinseconds
@@ -150,7 +156,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 	
 	protected void update(boolean forcesample) {
-		if(myLinkOrigin==null)
+		if(isOrphan)
 			return;
 		if(isdone && !forcesample)
 			return;
@@ -164,7 +170,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			
 			// forced sample due to knob change
 			if(forcesample){
-				myLinkOrigin.setSourcedemandFromVeh( sample_finalTime_addNoise_applyKnob() );
+				current_sample = sample_finalTime_addNoise_applyKnob();
 				return;
 			}
 			
@@ -174,13 +180,13 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			
 			// sample the profile
 			if(step<n){
-				myLinkOrigin.setSourcedemandFromVeh( sample_currentTime_addNoise_applyKnob() );
+				current_sample = sample_currentTime_addNoise_applyKnob();
 				return;
 			}
 			
 			// last sample
 			if(step>=n && !isdone){
-				myLinkOrigin.setSourcedemandFromVeh( sample_finalTime_addNoise_applyKnob() );
+				current_sample = sample_finalTime_addNoise_applyKnob();
 				isdone = true;
 				return;
 			}
@@ -264,6 +270,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	
 	public Double2DMatrix get_demand_nominal(){
 		return demand_nominal;
+	}
+	
+	public Double[] getCurrentValue(){
+		return this.current_sample;
 	}
 	
 	public Double[] getFutureTotalDemandInVeh_NoNoise(double dt_in_seconds,int num_steps) throws BeatsException{

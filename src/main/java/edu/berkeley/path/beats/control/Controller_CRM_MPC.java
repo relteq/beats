@@ -203,12 +203,7 @@ public class Controller_CRM_MPC extends Controller {
 			// copy split ratios
 			for(edu.berkeley.path.beats.jaxb.Node node : network.getListOfNodes())
 				splitRatios.put(node.getId(),null);
-			
-			if(time_current>1199)
-			System.out.println(time_current);
-
-			
-			
+	
 			// copy ramp demands
 			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
 				if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0){
