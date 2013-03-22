@@ -22,6 +22,18 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>jack-site</id>
+            <name>Jack's site</name>
+            <url>http://www3.decf.berkeley.edu/~jreilly/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
     </repositories>
 
     <pluginRepositories>
@@ -348,7 +360,7 @@
     	<version>3.9</version>
     </dependency>
       <dependency>
-          <groupId>default</groupId>
+          <groupId>org.wsj</groupId>
           <artifactId>adjoint_2.9.2</artifactId>
           <version>1.0-SNAPSHOT</version>
       </dependency>
