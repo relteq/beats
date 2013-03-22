@@ -218,7 +218,7 @@ public class Controller_CRM_MPC extends Controller {
 				}
 			
 			// call control algorithm
-			metering_rate = control_algorithm.compute(initialDensity,splitRatios, rampDemands, network);
+			metering_rate = control_algorithm.compute(initialDensity,splitRatios, rampDemands, myScenario);
 			time_last_opt = time_current;
 			time_since_last_opt = 0;
 			
