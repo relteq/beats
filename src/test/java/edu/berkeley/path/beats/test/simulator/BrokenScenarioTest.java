@@ -15,62 +15,50 @@ import edu.berkeley.path.beats.simulator.BeatsException;
 
 @RunWith(Parameterized.class)
 public class BrokenScenarioTest {
+	
 	/** configuration file name suffix */
 	private static String CONF_SUFFIX = ".xml";
 
-	/**
-	 * Lists all configuration files in data/config/
-	 * @return a Vector of configuration files
-	 */
-	private static Vector<File> getConfigFiles() {
-		File [] files = new File("data" + File.separator + "config").listFiles();
-		Vector<File> conf_l = new Vector<File>(files.length);
-		for (File file : files)
-			if (file.getName().endsWith(CONF_SUFFIX))
-				conf_l.add(file);
-		return conf_l;
-	}
-
+	private static Logger logger = Logger.getLogger(BrokenScenarioTest.class);
+	private File config;
+	
+	private static String[] working_config_names = { "Albany-and-Berkeley",
+													 "testfwy2",
+													 "testfwy_w",
+													 "test_event",
+													 "_scenario_2009_02_12",
+													 "_scenario_constantsplits",
+													 "_smalltest",
+													 "_smalltest_multipletypes",
+													 "_smalltest_nocontrol"};
+	
 	private static String[] broken_config_names = { "complete_bad", "scenario_twotypes"};
-
-	/**
-	 * Determines if the configuration file is working
-	 * @param file the configuration file
-	 * @return false, if the scenario is broken; true, if it is OK
-	 */
-	private static boolean isWorkingConfig(File file) {
-		for (String name : broken_config_names)
-			if (file.getName().equals(name + CONF_SUFFIX)) return false;
-		return true;
-	}
 
 	/**
 	 * Lists working configuration files
 	 * @return a Vector of working configuration files
 	 */
 	public static Vector<Object[]> getWorkingConfigs() {
-		Vector<File> conffiles = getConfigFiles();
 		Vector<Object[]> res = new Vector<Object[]>();
-		for (File file : conffiles)
-			if (isWorkingConfig(file)) res.add(new Object[] {file});
+		for(String name : working_config_names){
+			File file = new File("data" + File.separator + "config" + File.separator + name + CONF_SUFFIX);
+			if(file.exists())
+				res.add(new Object[] {file});
+		}
 		return res;
 	}
 
-	/**
-	 * Lists broken configuration files
-	 * @return a Vector of broken configuration files
-	 */
 	@Parameters
 	public static Vector<Object[]> getBrokenConfigs() {
-		Vector<File> conffiles = getConfigFiles();
 		Vector<Object[]> res = new Vector<Object[]>();
-		for (File file : conffiles)
-			if (!isWorkingConfig(file)) res.add(new Object[] {file});
+		for(String name : broken_config_names){
+			File file = new File("data" + File.separator + "config" + File.separator + name + CONF_SUFFIX);
+			if(file.exists())
+				res.add(new Object[] {file});
+		}
 		return res;
 	}
 
-	private static Logger logger = Logger.getLogger(BrokenScenarioTest.class);
-	private File config;
 
 	/**
 	 * Prepares a testing environment
