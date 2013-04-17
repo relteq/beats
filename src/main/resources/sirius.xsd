@@ -806,6 +806,7 @@
 				<xs:element ref="fundamentalDiagram" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
+			  <xs:attribute name="sensor_id" type="xs:string" use="optional" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			</xs:complexType>
