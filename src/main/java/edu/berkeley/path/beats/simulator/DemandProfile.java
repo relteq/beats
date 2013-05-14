@@ -151,6 +151,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
 		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
 		
+		// set current sample to zero
+		current_sample = BeatsMath.zeros(myScenario.getNumVehicleTypes());
+		
+		
 		// set knob back to its original value
 		_knob = getKnob().doubleValue();	
 	}
