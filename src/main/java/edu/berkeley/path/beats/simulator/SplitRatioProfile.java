@@ -140,11 +140,13 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		}
 
 		// check dtinhours
-		if( dtinseconds<=0 )
-			BeatsErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node id=" + getNodeId());
-
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-			BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
+		if( getSplitratio().size()>1 ){
+			if( dtinseconds<=0 )
+				BeatsErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node id=" + getNodeId());
+	
+			if( !BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
+		}
 		
 		// check split ratio dimensions and values
 		int in_index;
