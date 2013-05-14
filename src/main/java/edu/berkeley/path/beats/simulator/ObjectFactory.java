@@ -233,7 +233,9 @@ final public class ObjectFactory {
 
 		JAXBContext context;
 		Unmarshaller u;
-    	
+
+		BeatsErrorLog.clearErrorMessage();
+		
     	// create unmarshaller .......................................................
         try {
 		//Reset the classloader for main thread; need this if I want to run properly

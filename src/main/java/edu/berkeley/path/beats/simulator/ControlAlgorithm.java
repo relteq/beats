@@ -1,6 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 public class ControlAlgorithm {
 	
@@ -13,12 +13,22 @@ public class ControlAlgorithm {
 		this.name = name;
 	}
 	
-	public void compute(double[] metering_rate){
-		System.out.println("This method has not been implemented by "+name);
-	}
-
-	public void compute(Scenario scenario,double opt_horizon,ArrayList<ScenarioElement> targets,double[][] metering_rate){
-		System.out.println("This method has not been implemented by "+name);
-	}
+//	/** returns the array of metering rates **/
+//	public ArrayList<ArrayList<Double>> compute(){
+//		System.out.println("This method has not been implemented by "+name);
+//		return null;
+//	}
+//
+//	/** returns the array of metering rates **/
+//	public ArrayList<ArrayList<Double>> compute(Scenario scenario,double opt_horizon,ArrayList<ScenarioElement> targets){
+//		System.out.println("This method has not been implemented by "+name);
+//		return null;
+//	}
 	
+	/** returns the array of metering rates **/
+    public Map<String,Double[]> compute(Map<String, Double> initialDensity,Map<String,Double[]> splitRatios,Map<String,Double[]> rampDemands,Network network ){
+		System.out.println("This method has not been implemented by "+name);
+		return null;    
+	}
+    
 }

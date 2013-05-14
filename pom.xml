@@ -151,6 +151,14 @@
           <downloadJavadocs>true</downloadJavadocs>
         </configuration>
       </plugin>
+      <plugin>	
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <excludePackageNames>edu.berkeley.path.beats.om</excludePackageNames>
+        </configuration>
+      </plugin>  
     </plugins>
     <resources>
       <resource>

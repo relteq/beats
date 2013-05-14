@@ -806,6 +806,7 @@
 				<xs:element ref="fundamentalDiagram" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
+			  <xs:attribute name="sensor_id" type="xs:string" use="optional" />
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			</xs:complexType>
@@ -818,6 +819,7 @@
 				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
 				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
 				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/m/lane] -->
+				  <xs:attribute name="transition_density" type="xs:decimal" use="optional" />				<!-- [veh/m/lane] -->
 				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/s/lane]   -->
 				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/s/lane]   -->
 				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>			<!-- [m/s]   -->
