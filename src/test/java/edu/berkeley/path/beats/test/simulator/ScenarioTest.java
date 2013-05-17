@@ -19,7 +19,7 @@ public class ScenarioTest {
 
 	private static Scenario static_scenario;
 	private static String config_folder = "data/config/";
-	private static String quarantine_folder = "data/config.quarantine/";
+//	private static String quarantine_folder = "data/config.quarantine/";
 	private static String output_folder = "data/test/output/";
 	private static String fixture_folder = "data/test/fixture/";
 	
@@ -187,7 +187,7 @@ public class ScenarioTest {
 	public void test_get_Controller_Event_Sensor_WithId() {
 		try {
 			String config_file = "complete.xml";
-			Scenario scenario = ObjectFactory.createAndLoadScenario(quarantine_folder+config_file);
+			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(scenario==null)
 				fail("scenario did not load");
 			

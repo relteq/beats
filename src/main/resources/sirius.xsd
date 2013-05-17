@@ -41,7 +41,7 @@
     </xs:complexType>
   </xs:element>
   
-  <xs:element name="parameters">											<!-- used by sensor, controller, queue_controller -->
+  <xs:element name="parameters">	<!-- used by sensor, controller, queue_controller -->
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="parameter" minOccurs="0" maxOccurs="unbounded" />
@@ -95,6 +95,11 @@
 			</xs:simpleType>
 		</xs:element>
 
+		
+		
+		
+		
+		
   <xs:element name="targetElements">										<!-- used by event, controller -->
     <xs:complexType>
       <xs:sequence>
@@ -185,7 +190,19 @@
 		  </xs:all>
 		</xs:complexType>
 	  </xs:element>
-		
+		  
+		  <!-- [SI] ... 	length in meters, 	time in seconds
+			   US ... 		length in miles,	time in hours
+			   Metric ... 	length in km,		time in hours
+		  -->
+		  <xs:element name="units">
+			<xs:simpleType>
+			  <xs:restriction base="xs:string">
+				<xs:pattern value="US|Metric|SI" />
+			  </xs:restriction>
+			</xs:simpleType>
+		  </xs:element>
+		  
 		  <xs:element name="VehicleTypes">
 			<xs:complexType>
 			  <xs:sequence>
@@ -200,18 +217,7 @@
 				  <xs:attribute name="weight" type="xs:decimal" use="optional" />		<!-- default is 1, not used if part if VehicleTypeOrder -->
 				</xs:complexType>
 			  </xs:element>
-		  
-		  <!-- [SI] ... 	length in meters, 	time in seconds
-			   US ... 		length in miles,	time in hours
-			   Metric ... 	length in km,		time in hours
-		  -->
-		  <xs:element name="units">
-			<xs:simpleType>
-			  <xs:restriction base="xs:string">
-				<xs:pattern value="US|Metric|SI" />
-			  </xs:restriction>
-			</xs:simpleType>
-		  </xs:element>
+
 		
   <!-- NetworkList ............................................................... -->
 

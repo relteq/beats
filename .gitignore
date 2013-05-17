@@ -5,6 +5,7 @@ beats.jar
 *.lck
 *.dat
 output_*
+*.ppt
 *.asv
 *.mat
 /src/main/generated-java/

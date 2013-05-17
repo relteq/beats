@@ -29,10 +29,10 @@ public class BrokenScenarioTest {
 													 "_scenario_2009_02_12",
 													 "_scenario_constantsplits",
 													 "_smalltest",
-													 "_smalltest_multipletypes",
-													 "_smalltest_nocontrol"};
+													 "_smalltest_multipletypes"
+													 };
 	
-	private static String[] broken_config_names = { "complete_bad", "scenario_twotypes"};
+	private static String[] broken_config_names = { "complete_bad", "scenario_twotypes","_smalltest_nocontrol"};
 
 	/**
 	 * Lists working configuration files

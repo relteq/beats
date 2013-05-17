@@ -30,9 +30,13 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -40,29 +44,33 @@ import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 
+@RunWith(Parameterized.class)
 public class SimulatorTest {
 
+	/** scenario file */
+	private File conffile;
+	
     private String fixture_folder = "data/test/fixture/";
     private String output_folder = "data/test/output/";
-    private String config_folder = "data/config/";
-    
-	private static String [] config_names = {
-												"Albany-and-Berkeley",
-												"_scenario_2009_02_12",
-												"_scenario_constantsplits",
-												"_smalltest",
-												"_smalltest_multipletypes",
-												//"complete",
-												//"multipletypes-SI",
-												//"multipletypes",
-												//"scenario_twotypes",
-												"test_event",
-												"testfwy2",
-												"testfwy_w" };
-	
+    	
 	private static String [] quantities = {"density","inflow","outflow"};
 		
-	private static String CONF_SUFFIX = ".xml";
+	/**
+	 * Initializes the testing environment
+	 * @param conffile File the configuration file
+	 */
+	public SimulatorTest(File conffile) {
+		this.conffile = conffile;
+	}
+
+	/**
+	 * Retrieves a list of scenario files
+	 * @return
+	 */
+	@Parameters
+	public static Vector<Object[]> conffiles() {
+		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
+	}
 	
 	@After
 	public void clearOutput(){
@@ -86,48 +94,44 @@ public class SimulatorTest {
 					
 		try {
 			
-			for(String config_name : config_names ){
-
-				System.out.println(config_name);
-				
-				String configfile = config_folder+config_name+CONF_SUFFIX;
-				String outputprefix = output_folder+config_name;
-	
-				// input parameters
-				double startTime = 0d;
-				double duration = 3600d;
-				double outDt = 30d;
-				int numReps = 1;
-	
-				// load configuration file
-				System.out.println("\tLoading");
-				scenario = ObjectFactory.createAndLoadScenario(configfile);
-	
-				if (null == scenario)
-					throw new BeatsException("UNEXPECTED! Scenario was not loaded");
-				
-				// run the scenario
-				System.out.println("\tRunning");
-				scenario.run(startTime,startTime+duration,outDt,"text",outputprefix,numReps);
-				
-				String [] vehicleTypes = scenario.getVehicleTypeNames();
-								
-				// compare output
-				System.out.println("\tComparing outputS");
-				for(String vt : vehicleTypes)
-					for(String q : quantities){
-						String filename = config_name+"_"+q+"_"+vt+"_0.txt";
-						ArrayList<ArrayList<Double>> A = BeatsFormatter.readCSV(fixture_folder+filename,"\t");
-						ArrayList<ArrayList<Double>> B = BeatsFormatter.readCSV(output_folder+filename,"\t");
-						assertNotNull(A);
-						assertNotNull(B);
-						assertTrue("The files are not equal.",BeatsMath.equals2D(A,B));
-					}
+			System.out.println(conffile);
 			
-			}
+			String conffile_nameonly= conffile.getName().split(".xml")[0];
+			String outputprefix = output_folder+conffile_nameonly;
+
+			// input parameters
+			double startTime = 0d;
+			double duration = 3600d;
+			double outDt = 30d;
+			int numReps = 1;
+
+			// load configuration file
+			System.out.println("\tLoading");
+			scenario = ObjectFactory.createAndLoadScenario(conffile.toString());
+
+			if (null == scenario)
+				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
+			
+			// run the scenario
+			System.out.println("\tRunning");
+			scenario.run(startTime,startTime+duration,outDt,"text",outputprefix,numReps);
+			
+			String [] vehicleTypes = scenario.getVehicleTypeNames();
+							
+			// compare output
+			System.out.println("\tComparing outputS");
+			for(String vt : vehicleTypes)
+				for(String q : quantities){
+					String filename = conffile_nameonly +"_"+q+"_"+vt+"_0.txt";
+					ArrayList<ArrayList<Double>> A = BeatsFormatter.readCSV(fixture_folder+filename,"\t");
+					ArrayList<ArrayList<Double>> B = BeatsFormatter.readCSV(output_folder+filename,"\t");
+					assertNotNull(A);
+					assertNotNull(B);
+					assertTrue("The files are not equal.",BeatsMath.equals2D(A,B));
+				}
 
 		} catch (BeatsException exc) {
-			exc.printStackTrace();
+			fail(exc.getMessage());
 		} 	
 	}
 
