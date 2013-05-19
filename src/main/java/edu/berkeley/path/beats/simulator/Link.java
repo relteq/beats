@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
+
 /** Link class.
 * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -834,6 +836,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// Demand Profile ...................
 	public DemandProfile getMyDemandProfile(){
 		return myDemandProfile;
+	}
+
+	public double getPriority(int ensemble) {
+		BigDecimal priority = getPriority();
+		return null != priority ? priority.doubleValue() : getCapacityInVeh(ensemble);
 	}
 
 }
