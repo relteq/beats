@@ -14,7 +14,7 @@ public class NodeTest {
 
 	private static Node node;
 	private static String config_folder = "data/config/";
-	private static String config_file = "_smalltest_nocontrol.xml";
+	private static String config_file = "_smalltest.xml";
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

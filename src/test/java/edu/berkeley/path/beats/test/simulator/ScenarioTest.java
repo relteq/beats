@@ -26,7 +26,7 @@ public class ScenarioTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		try {
-			String config_file = "_smalltest_nocontrol.xml";
+			String config_file = "_smalltest.xml";
 			static_scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(static_scenario==null)
 				fail("scenario did not load");
@@ -40,17 +40,17 @@ public class ScenarioTest {
 	@Test
 	public void test_initialize_run_advanceNSeconds() {
 		try {
-			String config_file = "_smalltest_nocontrol.xml";
+			String config_file = "_smalltest.xml";
 			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(scenario==null)
 				fail("scenario did not load");
 			scenario.initialize_run(10, 300d);
 
-			assertEquals(scenario.getCurrentTimeInSeconds(),300d,1e-4);
+			assertEquals(scenario.getCurrentTimeInSeconds(),0d,1e-4);
 			assertEquals(scenario.getNumEnsemble(),10,1e-4);
 			
 			scenario.advanceNSeconds(300d);
-			assertEquals(scenario.getCurrentTimeInSeconds(),600d,1e-4);
+			assertEquals(scenario.getCurrentTimeInSeconds(),300d,1e-4);
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
@@ -81,7 +81,7 @@ public class ScenarioTest {
 
 	@Test
 	public void test_time_getters() {
-		assertEquals(static_scenario.getCurrentTimeInSeconds(),300d,1e-4);
+		assertEquals(static_scenario.getCurrentTimeInSeconds(),0d,1e-4);
 		assertEquals(static_scenario.getTimeElapsedInSeconds(),0d,1e-4);
 		assertEquals(static_scenario.getCurrentTimeStep(),0,1e-4);
 		assertEquals(static_scenario.getTotalTimeStepsToSimulate(),-1,1e-4);
@@ -113,7 +113,7 @@ public class ScenarioTest {
 
 	@Test
 	public void test_getTimeStart() {
-		assertEquals(static_scenario.getTimeStart(),300,1e-4);
+		assertEquals(static_scenario.getTimeStart(),0d,1e-4);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ScenarioTest {
 
 	@Test
 	public void test_getConfigFilename() {
-		assertEquals(static_scenario.getConfigFilename(),config_folder+"_smalltest_nocontrol.xml");
+		assertEquals(static_scenario.getConfigFilename(),config_folder+"_smalltest.xml");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class ScenarioTest {
 	@Test
 	public void test_getInitialDensityForNetwork() {
 		double x =  static_scenario.getInitialDensityForNetwork("-1")[0][0];
-		double exp = 5.33487385567184;
+		double exp = 0.0;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
@@ -147,7 +147,7 @@ public class ScenarioTest {
 	@Test
 	public void test_getDensityForNetwork() {
 		double x = static_scenario.getDensityForNetwork("-1",0)[0][0];
-		double exp = 5.33487385567184;
+		double exp = 0d;
 		assertEquals(x,exp,1e-4);
 
 		x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks

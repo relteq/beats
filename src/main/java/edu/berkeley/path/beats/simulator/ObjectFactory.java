@@ -342,8 +342,10 @@ final public class ObjectFactory {
 		// validate scenario ......................................
 	    Scenario.validate(S);
 	    	    
-		if(BeatsErrorLog.haserror())
+		if(BeatsErrorLog.haserror()){
+			BeatsErrorLog.print();
 			throw new ScenarioValidationError();
+		}
 		
 		if(BeatsErrorLog.haswarning()) {
 			BeatsErrorLog.print();
