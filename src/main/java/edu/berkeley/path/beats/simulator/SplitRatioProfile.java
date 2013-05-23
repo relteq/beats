@@ -159,15 +159,23 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		}
 		
 		// check split ratio dimensions and values
-		int in_index;
-		int out_index;
-		if(profile!=null)
-			for(in_index=0;in_index<profile.length;in_index++)
-				if(profile[in_index]!=null)
-					for(out_index=0;out_index<profile[in_index].length;out_index++)
-						if(profile[in_index][out_index]!=null)
-							if(profile[in_index][out_index].getnVTypes()!=myScenario.getNumVehicleTypes())
-								BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+		int k,v;
+		for(i=0;i<profile.length;i++)
+			if(profile[i]!=null)
+				for(j=0;j<profile[i].length;j++)
+					if(profile[i][j]!=null){
+
+						// check dimensions
+						if(profile[i][j].getnVTypes()!=myScenario.getNumVehicleTypes())
+							BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+
+						// check values
+						for(k=0;k<profile[i][j].getnTime();k++)
+							for(v=0;v<profile[i][j].getnVTypes();v++)
+								if( BeatsMath.greaterthan( profile[i][j].get(k,v) , 1.0 ) | BeatsMath.lessthan( profile[i][j].get(k,v) , 0.0 ) )
+									BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " is out of range.");
+
+					}
 		
 	}
 
