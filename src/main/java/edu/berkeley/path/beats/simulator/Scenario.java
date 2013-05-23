@@ -1030,7 +1030,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	        this.outsteps = BeatsMath.round(outdt/simdtinseconds);
 			this.outDt = outsteps*simdtinseconds;
 
-	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : 0d;  // [sec]
+	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp().doubleValue() : Double.POSITIVE_INFINITY;  // [sec]
 	        
 			// Simulation mode is normal <=> start time == initial profile time stamp
 			simulationMode = null;
