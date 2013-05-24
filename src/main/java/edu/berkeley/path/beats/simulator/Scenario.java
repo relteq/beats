@@ -400,6 +400,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// lock the scenario
         scenariolocked = true;	
+        
+        // advance to start of output time        
+        while( getCurrentTimeInSeconds()<param.timestartOutput )
+        	advanceNSeconds(simdtinseconds);
+        
 	}
 	
 	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
@@ -1015,6 +1020,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			simdtinseconds = round(simdtinseconds);
 			tend = round(tend);
 			outdt = round(outdt);
+			
+			// check tstart non-negative
+			if( BeatsMath.lessthan(tstart,0d))
+				throw new BeatsException("Negative start time.");
 
 			// check timestart < timeend
 			if( BeatsMath.greaterorequalthan(tstart,tend))
