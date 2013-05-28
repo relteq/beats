@@ -170,7 +170,11 @@ final class Double2DMatrix {
 	 * @return the split ratio
 	 */
 	public Double get(int timeslice, int vehicletypeindex) {
-		return data[timeslice][vehicletypeindex];
+		try{
+			return data[timeslice][vehicletypeindex];
+		} catch(Exception e){
+			return Double.NaN;
+		}
 	}
 
     @Override
