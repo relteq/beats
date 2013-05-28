@@ -89,7 +89,7 @@ public class LinkTest {
 	public void test_getDensityInVeh_a() {
 
 		double x = link.getDensityInVeh(0)[0]; 
-		double exp = 11.778625550736798;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -102,7 +102,7 @@ public class LinkTest {
 	public void test_getDensityInVeh_b() {
 
 		double x = link.getDensityInVeh(0,0); 
-		double exp = 11.778625550736798;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 		
@@ -117,7 +117,7 @@ public class LinkTest {
 	public void test_getTotalDensityInVeh() {
 
 		double x = link.getTotalDensityInVeh(0); 
-		double exp = 11.778625550736798;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -130,7 +130,7 @@ public class LinkTest {
 	public void test_getTotalDensityInVPM() {
 
 		double x = link.getTotalDensityInVPMeter(0); 
-		double exp = 0.013874838513608065;
+		double exp = 0.017679766286842164;
 		
 		assertEquals(x,exp,1e-4);
 		
@@ -143,7 +143,7 @@ public class LinkTest {
 	public void test_getOutflowInVeh() {
 
 		double x = link.getOutflowInVeh(0)[0]; 
-		double exp = 0.3072494425656946;
+		double exp = 0.39459704442691024;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -155,9 +155,8 @@ public class LinkTest {
 	@Test
 	public void test_getTotalOutflowInVeh() {
 
-
 		double x = link.getTotalOutflowInVeh(0); 
-		double exp = 0.3072494425656946;
+		double exp = 0.39459704442691024;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -195,7 +194,7 @@ public class LinkTest {
 	@Test
 	public void test_computeSpeedInMPS() {
 		double x = link.computeSpeedInMPS(0); 
-		double exp = 4.42887233987412;
+		double exp = 4.463826478527397;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -387,7 +386,7 @@ public class LinkTest {
 	@Test
 	public void test_getDensity() {
 		double x = link.getDensityInVeh(0)[0];
-		double exp = 11.778625550736798;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -412,7 +411,7 @@ public class LinkTest {
 	@Test
 	public void test_getOutputFlow() {
 		double x = link.getOutputFlow(0,0);
-		double exp = 0.3072494425656946;
+		double exp = 0.39459704442691024;
 		assertEquals(x,exp,1e-4);
 
 		// edge cases

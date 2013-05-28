@@ -46,11 +46,11 @@ public class ScenarioTest {
 				fail("scenario did not load");
 			scenario.initialize_run(10, 300d);
 
-			assertEquals(scenario.getCurrentTimeInSeconds(),0d,1e-4);
+			assertEquals(scenario.getCurrentTimeInSeconds(),300d,1e-4);
 			assertEquals(scenario.getNumEnsemble(),10,1e-4);
 			
 			scenario.advanceNSeconds(300d);
-			assertEquals(scenario.getCurrentTimeInSeconds(),300d,1e-4);
+			assertEquals(scenario.getCurrentTimeInSeconds(),600d,1e-4);
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
@@ -81,9 +81,9 @@ public class ScenarioTest {
 
 	@Test
 	public void test_time_getters() {
-		assertEquals(static_scenario.getCurrentTimeInSeconds(),0d,1e-4);
-		assertEquals(static_scenario.getTimeElapsedInSeconds(),0d,1e-4);
-		assertEquals(static_scenario.getCurrentTimeStep(),0,1e-4);
+		assertEquals(static_scenario.getCurrentTimeInSeconds(),300d,1e-4);
+		assertEquals(static_scenario.getTimeElapsedInSeconds(),300d,1e-4);
+		assertEquals(static_scenario.getCurrentTimeStep(),60,1e-4);
 		assertEquals(static_scenario.getTotalTimeStepsToSimulate(),-1,1e-4);
 	}
 
@@ -147,7 +147,7 @@ public class ScenarioTest {
 	@Test
 	public void test_getDensityForNetwork() {
 		double x = static_scenario.getDensityForNetwork("-1",0)[0][0];
-		double exp = 0d;
+		double exp =0.4445728212287675;
 		assertEquals(x,exp,1e-4);
 
 		x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks
