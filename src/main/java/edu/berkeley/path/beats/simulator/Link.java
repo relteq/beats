@@ -334,7 +334,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
             	double delta_flow=0.0;
             	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
-	            
+
 				switch(myNetwork.myScenario.uncertaintyModel){
 				case uniform:
 					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
@@ -370,7 +370,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             if(myNetwork.myScenario.has_flow_unceratinty){
             	double delta_flow=0.0;
             	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
-	            
 				switch(myNetwork.myScenario.uncertaintyModel){
 				case uniform:
 					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
@@ -432,7 +431,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	/** @y.exclude */
-	protected void resetState(Scenario.ModeType simulationMode) {
+	protected void resetState(SimulationSettings.ModeType simulationMode) {
 		
 		Scenario myScenario = myNetwork.myScenario;
 		

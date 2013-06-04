@@ -307,7 +307,7 @@ final public class ObjectFactory {
 	    S.global_control_on = true;
 	    S.global_demand_knob = 1d;
 	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
-	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
+	    S.uncertaintyModel = SimulationSettings.UncertaintyType.uniform;
 	    S.numVehicleTypes = 1;
 	    S.has_flow_unceratinty = BeatsMath.greaterthan(S.std_dev_flow,0.0);
 	    

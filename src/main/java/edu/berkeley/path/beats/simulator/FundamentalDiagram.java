@@ -323,7 +323,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		this.std_dev_capacity = that.std_dev_capacity;
 	}	
 	
-	protected void reset(Scenario.UncertaintyType uncertaintyModel){
+	protected void reset(SimulationSettings.UncertaintyType uncertaintyModel){
 		if(myLink==null)
 			return;
 		// set lanes back to original value

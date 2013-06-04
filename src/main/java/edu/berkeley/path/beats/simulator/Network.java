@@ -77,7 +77,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			((Link)link).validate();
 	}
 
-	protected void reset(Scenario.ModeType simulationMode) throws BeatsException {
+	protected void reset(SimulationSettings.ModeType simulationMode) throws BeatsException {
 
 		if(isempty)
 			return;

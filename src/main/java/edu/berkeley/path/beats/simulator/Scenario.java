@@ -67,15 +67,10 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 */
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-	/** @y.exclude */	protected static enum ModeType {  normal, 
-		  warmupFromZero , 
-		  warmupFromIC };
-	/** @y.exclude */	protected static enum UncertaintyType { none, uniform, gaussian }
-
 	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
 	/** @y.exclude */	protected Clock clock;
 	/** @y.exclude */	protected String configfilename;
-	/** @y.exclude */	protected Scenario.UncertaintyType uncertaintyModel;
+	/** @y.exclude */	protected SimulationSettings.UncertaintyType uncertaintyModel;
 	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
 	/** @y.exclude */	protected boolean global_control_on;	// global control switch
 	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
@@ -205,7 +200,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @throws BeatsException 
 	 * @y.exclude
 	 */
-	protected boolean reset(Scenario.ModeType simulationMode) throws BeatsException {
+	protected boolean reset(SimulationSettings.ModeType simulationMode) throws BeatsException {
 		
 		started_writing = false;
 		global_control_on = true;
@@ -428,7 +423,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
+		return advanceNSteps_internal(SimulationSettings.ModeType.normal,nsteps,false,null,-1d);
 	}
 
 	/** Save the scenario to XML.
@@ -966,7 +961,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = false;
 	}
 	
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
+	private boolean advanceNSteps_internal(SimulationSettings.ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
 		
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -1009,7 +1004,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public double timestartOutput;		// [sec] start outputing data
 		public double outDt;				// [sec] output sampling time
 		public int outsteps;				// [-] number of simulation steps per output step
-		public Scenario.ModeType simulationMode;
+		public SimulationSettings.ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws BeatsException{
@@ -1043,13 +1038,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			// Simulation mode is normal <=> start time == initial profile time stamp
 			simulationMode = null;
 			if(BeatsMath.equals(timestart,time_ic)){
-				simulationMode = Scenario.ModeType.normal;
+				simulationMode = SimulationSettings.ModeType.normal;
 			}
 			else{
 				// it is a warmup. we need to decide on start and end times
 				if(time_ic<timestart){	// go from ic to timestart
 					timestart = time_ic;
-					simulationMode = Scenario.ModeType.warmupFromIC;
+					simulationMode = SimulationSettings.ModeType.warmupFromIC;
 				}
 				else{							// start at earliest demand profile
 					timestart = Double.POSITIVE_INFINITY;
@@ -1059,7 +1054,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 					if(Double.isInfinite(timestart))
 						timestart = 0d;
 					timestart = Math.min(timestart, timestartOutput);
-					simulationMode = Scenario.ModeType.warmupFromZero;
+					simulationMode = SimulationSettings.ModeType.warmupFromZero;
 					
 					if(BeatsMath.greaterthan(timeend,time_ic))
 						throw new BeatsException("Simulation period stradles the initial condition time stamp.");

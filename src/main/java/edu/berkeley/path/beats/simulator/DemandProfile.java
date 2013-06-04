@@ -246,6 +246,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		// sample the distribution
 		switch(myScenario.uncertaintyModel){
+			
 		case uniform:
 			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
 				demandvalue[j] += BeatsMath.sampleZeroMeanUniform(std_dev_apply[j]);

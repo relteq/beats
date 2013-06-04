@@ -7,6 +7,9 @@ import java.math.BigDecimal;
  */
 final class SimulationSettings {
 	
+	public static enum ModeType {  normal, warmupFromZero , warmupFromIC };
+	public static enum UncertaintyType { uniform, gaussian }
+
 	private String configfilename;
 	private String outputfileprefix;
 	private String output_format;
@@ -14,6 +17,7 @@ final class SimulationSettings {
 	private Double duration = null; // sec
 	private Double outputDt = null; // sec
 	private Integer numReps = null;
+	private UncertaintyType uncertaintyType;
 
 	private SimulationSettings parent = null;
 
