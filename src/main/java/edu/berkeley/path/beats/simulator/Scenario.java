@@ -70,8 +70,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** @y.exclude */	protected static enum ModeType {  normal, 
 		  warmupFromZero , 
 		  warmupFromIC };
-	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
-		  gaussian }
+	/** @y.exclude */	protected static enum UncertaintyType { none, uniform, gaussian }
 
 	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
 	/** @y.exclude */	protected Clock clock;
@@ -294,10 +293,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void run(SimulationSettings simsettings,String outtype,String outprefix) throws BeatsException{
+	protected void run(SimulationSettings simsettings) throws BeatsException{
 		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param,simsettings.getNumReps(),true,outtype,outprefix);
+		run_internal(param,simsettings.getNumReps(),true,simsettings.getOutput_format(),simsettings.getOutputfileprefix());
 	}
 	
 	/** Retrieve a network with a given id.

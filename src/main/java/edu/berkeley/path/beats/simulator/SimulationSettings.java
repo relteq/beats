@@ -6,6 +6,10 @@ import java.math.BigDecimal;
  * The simulation settings
  */
 final class SimulationSettings {
+	
+	private String configfilename;
+	private String outputfileprefix;
+	private String output_format;
 	private Double startTime = null; // sec
 	private Double duration = null; // sec
 	private Double outputDt = null; // sec
@@ -28,11 +32,26 @@ final class SimulationSettings {
 	 * @param outputDt output sample rate, sec
 	 * @param numReps number of runs, sec
 	 */
-	public SimulationSettings(Double startTime, Double duration, Double outputDt, Integer numReps) {
+	public SimulationSettings(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps) {
+		this.outputfileprefix = outputfileprefix;
+		this.output_format = output_format;		
 		this.startTime = startTime;
 		this.duration = duration;
 		this.outputDt = outputDt;
 		this.numReps = numReps;
+	}
+
+	
+	public void setConfigfilename(String configfilename) {
+		this.configfilename = configfilename;
+	}
+
+	public void setOutputfileprefix(String outputfileprefix) {
+		this.outputfileprefix = outputfileprefix;
+	}
+
+	public void setOutput_format(String output_format) {
+		this.output_format = output_format;
 	}
 
 	/**
@@ -90,6 +109,28 @@ final class SimulationSettings {
 	public void setParent(SimulationSettings ss) {
 		this.parent = ss;
 	}
+
+	
+	public String getConfigfilename() {
+		if (null != configfilename) return configfilename;
+		else if (null != parent) return parent.getConfigfilename();
+		else return null;
+	}
+	
+
+	public String getOutputfileprefix() {
+		if (null != outputfileprefix) return outputfileprefix;
+		else if (null != parent) return parent.getOutputfileprefix();
+		else return null;
+	}
+	
+
+	public String getOutput_format() {
+		if (null != output_format) return output_format;
+		else if (null != parent) return parent.getOutput_format();
+		else return null;
+	}
+	
 
 	/**
 	 * @return start time, sec
@@ -156,10 +197,20 @@ final class SimulationSettings {
 	 * @param index an index to start from
 	 */
 	public void parseArgs(String[] args, int index) {
-		if (index < args.length) startTime = round(Double.parseDouble(args[index]));
-		if (++index < args.length) duration = Double.parseDouble(args[index]);
-		if (++index < args.length) outputDt = round(Double.parseDouble(args[index]));
-		if (++index < args.length) numReps = Integer.parseInt(args[index]);
+		if (index < args.length)
+			this.configfilename = args[index];
+		if (++index < args.length)
+			this.outputfileprefix = args[index];
+		if (++index < args.length)
+			this.output_format = args[index];
+		if (++index < args.length) 
+			startTime = round(Double.parseDouble(args[index]));
+		if (++index < args.length)
+			duration = Double.parseDouble(args[index]);
+		if (++index < args.length) 
+			outputDt = round(Double.parseDouble(args[index]));
+		if (++index < args.length) 
+			numReps = Integer.parseInt(args[index]);
 	}
 
 	public String toString() {
@@ -173,7 +224,7 @@ final class SimulationSettings {
 	 * @return the default simulation settings
 	 */
 	public static SimulationSettings defaults() {
-		return new SimulationSettings(Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
+		return new SimulationSettings("outputs", "xml", Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
 	}
 
 }
