@@ -35,19 +35,17 @@ import java.util.HashMap;
 */
 public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	
-	protected HashMap<NEMA,SignalPhase> nema2phase;
-
-	protected Scenario myScenario;
-	protected Node myNode;
-	protected PhaseController myPhaseController;	// used to control capacity on individual links
-	
-	protected SignalPhase [] phase;	
+	private HashMap<NEMA,SignalPhase> nema2phase;
+	private Scenario myScenario;
+	private Node myNode;
+	private PhaseController myPhaseController;	// used to control capacity on individual links
+	private SignalPhase [] phase;	
 	
 	// local copy of the command, subject to checks
-	protected boolean [] hold_approved;
-	protected boolean [] forceoff_approved;
+	private boolean [] hold_approved;
+	private boolean [] forceoff_approved;
 	
-	protected ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
+	private ArrayList<PhaseData> completedPhases = new ArrayList<PhaseData>(); // used for output
 
 	/** Commands that may be issued by a controller to each signal phase.  */
 	public static enum CommandType {
@@ -119,7 +117,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 				continue;
 			phase[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
 			phase[c].populateFromJaxb(myScenario,getPhase().get(i));
-			nema2phase.put(phase[c].myNEMA,phase[c]);
+			nema2phase.put(phase[c].getNEMA(),phase[c]);
 			c++;
 		}
 		
@@ -166,7 +164,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		
 		// 0) Advance all phase timers ...........................................
 		for(SignalPhase p:phase)
-			p.bulbtimer.advance();
+			p.getBulbtimer().advance();
 		
 		// 1) Update detector stations ............................................
 		/*
@@ -212,10 +210,10 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		
 		// 3) Update permitted holds ............................................
 		for(SignalPhase pA:phase){
-			pA.permithold = true;
+			pA.setPermithold(true);
 			for(SignalPhase pB:phase)
-				if(!isCompatible(pA,pB) && !pB.permitopposinghold )
-					pA.permithold = false;
+				if(!isCompatible(pA,pB) && !pB.isPermitopposinghold() )
+					pA.setPermithold(false);
 		}
 		
 		// 4) Update signal commands ...................................................
@@ -223,11 +221,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		// Throw away conflicting hold pairs 
 		// (This is purposely drastic to create an error)
 		for(SignalPhase pA:phase){
-			if(pA.hold_requested){
+			if(pA.isHold_requested()){
 				for(SignalPhase pB:phase){
-					if( pB.hold_requested && !isCompatible(pA,pB) ){
-						pA.hold_requested = false;
-						pB.hold_requested = false;
+					if( pB.isHold_requested() && !isCompatible(pA,pB) ){
+						pA.setHold_requested(false);
+						pB.setHold_requested(false);
 					}
 				}
 			}
@@ -235,38 +233,37 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 
 		// Deal with simultaneous hold and forceoff (RHODES needs this)
 		for(SignalPhase pA:phase){
-			if( pA.hold_requested && pA.forceoff_requested ){
-				pA.forceoff_requested = false;
+			if( pA.isHold_requested() && pA.isForceoff_requested() ){
+				pA.setForceoff_requested(false);
 			}
 		}
 
 		// Make local relaying copy
 		for(i=0;i<phase.length;i++){
-			hold_approved[i]     = phase[i].hold_requested;
-			forceoff_approved[i] = phase[i].forceoff_requested;
+			hold_approved[i]     = phase[i].isHold_requested();
+			forceoff_approved[i] = phase[i].isForceoff_requested();
 		}
 
 		// No transition if no permission
 		for(i=0;i<phase.length;i++)
-			if( !phase[i].permithold )
+			if( !phase[i].isPermithold() )
 				hold_approved[i] = false;
 
 		// No transition if green time < mingreen
 		for(i=0;i<phase.length;i++)
-			if( phase[i].bulbcolor.compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].bulbtimer.getT(),phase[i].mingreen) )
+			if( phase[i].getBulbColor().compareTo(BulbColor.GREEN)==0  && BeatsMath.lessthan(phase[i].getBulbtimer().getT(),phase[i].getMingreen()) )
 				forceoff_approved[i] = false;
 		
-			
 		// Update all phases
 		for(i=0;i<phase.length;i++)
 			phase[i].update(hold_approved[i],forceoff_approved[i]);
 
 		// Remove serviced commands 
 		for(SignalPhase pA: phase){
-			if(pA.bulbcolor.compareTo(Signal.BulbColor.GREEN)==0)
-				pA.hold_requested = false;
-			if(pA.bulbcolor.compareTo(Signal.BulbColor.YELLOW)==0 || pA.bulbcolor.compareTo(Signal.BulbColor.RED)==0 )
-				pA.forceoff_requested = false;
+			if(pA.getBulbColor().compareTo(Signal.BulbColor.GREEN)==0)
+				pA.setHold_requested(false);
+			if(pA.getBulbColor().compareTo(Signal.BulbColor.YELLOW)==0 || pA.getBulbColor().compareTo(Signal.BulbColor.RED)==0 )
+				pA.setForceoff_requested(false);
 		}
 	
 		// Set permissive opposing left turn to yellow
@@ -274,17 +271,17 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		// opposing is red if I am red and it is not protected
 		for(i=0;i<phase.length;i++){
 			SignalPhase p = phase[i];
-			SignalPhase o = phase[i].opposingPhase;
+			SignalPhase o = phase[i].getOpposingPhase();
 			if(o==null)
 				continue;
-			switch(p.bulbcolor){
+			switch(p.getBulbColor()){
 				case GREEN:
 				case YELLOW:
-					if(p.isthrough && o.permissive)
+					if(p.isIsthrough() && o.isPermissive())
 						o.setPhaseColor(Signal.BulbColor.YELLOW);
 					break;
 				case RED:
-					if(!o.protectd)
+					if(!o.isProtected())
 						o.setPhaseColor(Signal.BulbColor.RED);
 					break;
 			case DARK:
@@ -306,14 +303,22 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		else
 			return myPhaseController.register();
 	}
-	
+
 	protected SignalPhase getPhaseForNEMA(NEMA nema){
 		for(SignalPhase p:phase){
 			if(p!=null)
-				if(p.myNEMA.compareTo(nema)==0)
+				if(p.getNEMA().compareTo(nema)==0)
 					return p;
 		}
 		return null;
+	}
+	
+	protected PhaseController getMyPhaseController() {
+		return myPhaseController;
+	}
+
+	protected java.util.List<PhaseData> getCompletedPhases() {
+		return completedPhases;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -326,6 +331,10 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		return nema2phase.get(nema);
 	}
 
+	public Scenario getMyScenario() {
+		return myScenario;
+	}
+
 	public void requestCommand(ArrayList<Signal.Command> command){
 		for(Signal.Command c : command){
 			SignalPhase p = nema2phase.get(c.nema);
@@ -334,13 +343,13 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			
 			switch(c.type){
 			case forceoff:
-				p.forceoff_requested = true;
-				p.actualyellowtime = c.yellowtime>=0 ? c.yellowtime : p.getYellowtime();
-				p.actualredcleartime = c.redcleartime>=0 ? c.redcleartime : p.getRedcleartime();				
+				p.setForceoff_requested(true);
+				p.setActualyellowtime( c.yellowtime>=0 ? c.yellowtime : p.getYellowtime() ); 	
+				p.setActualredcleartime( c.redcleartime>=0 ? c.redcleartime : p.getRedcleartime() ); 
 				break;
 
 			case hold:
-				p.hold_requested = true;
+				p.setHold_requested(true);
 				break;
 				
 			}
@@ -370,13 +379,13 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	
 	public static boolean isCompatible(SignalPhase pA,SignalPhase pB)
 	{
-		Signal.NEMA nemaA = pA.myNEMA;
-		Signal.NEMA nemaB = pB.myNEMA;
+		Signal.NEMA nemaA = pA.getNEMA();
+		Signal.NEMA nemaB = pB.getNEMA();
 		
 		if(nemaA.compareTo(nemaB)==0)
 			return true;
 
-		if( !pA.protectd || !pB.protectd )
+		if( !pA.isProtected() || !pB.isProtected() )
 			return true;
 
 		switch(nemaA){
@@ -410,13 +419,6 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			break;
 		}
 		return false;
-	}
-
-	/**
-	 * @return a list of completed phases
-	 */
-	java.util.List<PhaseData> getCompletedPhases() {
-		return completedPhases;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -548,16 +550,16 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			int index = 0;
 			target2index = new HashMap<Link,Integer>();
 			for(i=0;i<mySignal.phase.length;i++)
-				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
-					target2index.put(mySignal.phase[i].targetlinks[j],index++);
+				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
+					target2index.put(mySignal.phase[i].getTargetlinks()[j],index++);
 			
 			// populate nema2indices
 			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
 			for(i=0;i<mySignal.phase.length;i++){
-				Integer [] indices = new Integer[mySignal.phase[i].targetlinks.length];
-				for(j=0;j<mySignal.phase[i].targetlinks.length;j++)
-					indices[j] = target2index.get(mySignal.phase[i].targetlinks[j]);
-				nema2indices.put(mySignal.phase[i].myNEMA,indices);
+				Integer [] indices = new Integer[mySignal.phase[i].getTargetlinks().length];
+				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
+					indices[j] = target2index.get(mySignal.phase[i].getTargetlinks()[j]);
+				nema2indices.put(mySignal.phase[i].getNEMA(),indices);
 			}
 			
 			control_maxflow = new Double[target2index.size()];
