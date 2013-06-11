@@ -18,7 +18,7 @@ final public class LinkCumulativeData {
 
 	LinkCumulativeData(edu.berkeley.path.beats.simulator.Link link) {
 		this.link = link;
-		Scenario scenario = link.myNetwork.myScenario;
+		Scenario scenario = link.getMyNetwork().myScenario;
 		nensemble = scenario.getNumEnsemble();
 		nvehtype = scenario.getNumVehicleTypes();
 		density = new Double[nensemble][nvehtype];

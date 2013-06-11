@@ -32,108 +32,50 @@ package edu.berkeley.path.beats.simulator;
 */
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
-	protected Network myNetwork;
-	protected Node begin_node;
-	protected Node end_node;
+	private Network myNetwork;
+	private Node begin_node;
+	private Node end_node;
 
 	// link type
-	protected Link.Type myType;
+	private Link.Type myType;
+	
 	/** Type of link. */
 	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll};
 	
-	protected double _length;							// [meters]
-	protected double _lanes;							// [-]
-	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
-	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
-	protected FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
-	protected boolean activeFDevent;					// true if an FD event is active on this link,
+	private double _length;							// [meters]
+	private double _lanes;							// [-]
+	private FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
+	private FundamentalDiagram FDfromEvent;			// event fundamental diagram
+	private FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
+	private boolean activeFDevent;					// true if an FD event is active on this link,
 																			// true  means FD points to FDfromEvent 
 																			// false means FD points to FDfromprofile
     // flow into the link
-	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
+	private Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
 	
 	// source demand profile
-	protected DemandProfile myDemandProfile;    
+	private DemandProfile myDemandProfile;    
 	
     // demand and actual flow out of the link   
-	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
-	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
+	private Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
+	private Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
     
     // contoller
-	protected int control_maxflow_index;
-	protected int control_maxspeed_index;
-	protected Controller myFlowController;
-	protected Controller mySpeedController;
+	private int control_maxflow_index;
+	private int control_maxspeed_index;
+	private Controller myFlowController;
+	private Controller mySpeedController;
    
-	protected Double [][] density;    			// [veh]	numEnsemble x numVehTypes
-	protected Double []spaceSupply;        		// [veh]	numEnsemble
-	protected boolean issource; 				// [boolean]
-	protected boolean issink;     				// [boolean]
+	private Double [][] density;    			// [veh]	numEnsemble x numVehTypes
+	private Double []spaceSupply;        		// [veh]	numEnsemble
+	private boolean issource; 				// [boolean]
+	private boolean issink;     				// [boolean]
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
 	protected Link(){}
-
-	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-
-//	@Override
-//	public void setLanes(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//	
-//	@Override
-//	public void setBegin(Begin value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setEnd(End value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setRoads(Roads value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setDynamics(Dynamics value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setShape(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setLaneOffset(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-// 
-//	@Override
-//	public void setLength(BigDecimal value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setType(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setInSync(Boolean value) {
-//		System.out.println("This setter is hidden.");
-//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -878,4 +820,27 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return myDemandProfile;
 	}
 
+
+
+	/////////////////////////////////////////////////////////////////////
+	// protected getters
+	/////////////////////////////////////////////////////////////////////
+	
+	protected Double[] getOutflowDemand(int ensemble) {
+		return outflowDemand[ensemble];
+	}
+
+	protected Double getSpaceSupply(int ensemble) {
+		return spaceSupply[ensemble];
+	}
+
+	protected void setInflow(int ensemble,Double[] inflow) {
+		this.inflow[ensemble] = inflow;
+	}
+
+	protected void setOutflow(int ensemble,Double[] outflow) {
+		this.outflow[ensemble] = outflow;
+	}
+
+	
 }

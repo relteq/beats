@@ -174,7 +174,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
     
-	
 	protected void populate(Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
@@ -217,7 +216,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		hasactivesplitevent = false;
 	}
     
-	
 	protected void validate() {
 				
 		if(isTerminal)
@@ -241,7 +239,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 	}
 
-	
 	protected void update() {
 		
         if(isTerminal)
@@ -253,9 +250,9 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
         // collect input demands and output supplies ...................
         for(e=0;e<numEnsemble;e++){        
     		for(i=0;i<nIn;i++)
-    			inDemand[e][i] = input_link[i].outflowDemand[e];
+    			inDemand[e][i] = input_link[i].getOutflowDemand(e);
     		for(j=0;j<nOut;j++)
-    			outSupply[e][j] = output_link[j].spaceSupply[e];
+    			outSupply[e][j] = output_link[j].getSpaceSupply(e);
         }
 
 		// solve unknown split ratios if they are non-trivial ..............
@@ -292,15 +289,14 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
         // assign flow to input links ..................................
 		for(e=0;e<numEnsemble;e++)
 	        for(i=0;i<nIn;i++)
-	            input_link[i].outflow[e]=inDemand[e][i];
+	            input_link[i].setOutflow(e, inDemand[e][i]);
         
         // assign flow to output links .................................
 		for(e=0;e<numEnsemble;e++)
 	        for (j=0;j<nOut;j++)
-	            output_link[j].inflow[e] = outFlow[e][j];
+	            output_link[j].setInflow(e, outFlow[e][j]);
 	}
 
-	
 	protected void reset() {	
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
     	int numEnsemble = myNetwork.myScenario.getNumEnsemble();		
