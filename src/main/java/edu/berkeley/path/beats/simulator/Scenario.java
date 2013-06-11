@@ -741,7 +741,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(sensorList==null)
 			return null;
 		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.sensors){
+		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.getSensors()){
 			if(sensor.getId().equals(id))
 				return sensor;
 		}
@@ -917,7 +917,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	public void loadSensorData() throws BeatsException {
 
-		if(sensorlist.sensors.isEmpty())
+		if(sensorlist.getSensors().isEmpty())
 			return;
 		
 		if(sensor_data_loaded)
@@ -928,7 +928,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(Sensor sensor : sensorlist.sensors){
+		for(Sensor sensor : sensorlist.getSensors()){
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -954,7 +954,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		P.Read5minData(data,datasources);
 		
 		// distribute data to sensors
-		for(Sensor sensor : sensorlist.sensors){
+		for(Sensor sensor : sensorlist.getSensors()){
 			
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;

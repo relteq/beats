@@ -34,9 +34,9 @@ package edu.berkeley.path.beats.simulator;
  */
 public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.ScenarioElement {
 	
-	protected Scenario myScenario;
-	protected ScenarioElement.Type myType;
-	protected Object reference;
+	private Scenario myScenario;
+	private ScenarioElement.Type myType;
+	private Object reference;
 
 	/** Type of scenario element. */
 	public static enum Type {  
@@ -46,7 +46,39 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 	/** see {@link Sensor} 	*/ sensor,
 	/** see {@link Event} 		*/ event,
 	/** see {@link Signal} 	*/ signal };
-							   
+			
+
+	/////////////////////////////////////////////////////////////////////
+	// public constructor
+	/////////////////////////////////////////////////////////////////////
+
+
+	protected ScenarioElement(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
+		this.myScenario = myScenario;
+		this.setId(jaxbS.getId().trim());
+		this.myType = ScenarioElement.Type.valueOf(jaxbS.getType());
+		
+		switch(myType){
+		case link:
+			this.reference = myScenario.getLinkWithId(id);
+			break;
+		case node:
+			this.reference = myScenario.getNodeWithId(id);
+			break;
+		case sensor:
+			this.reference = myScenario.getSensorWithId(id);
+			break;
+		case signal:
+			this.reference = myScenario.getSignalWithId(id);
+			break;
+		case controller:
+			this.reference = myScenario.getControllerWithId(id);
+			break;
+		default:
+			this.reference = null;	
+		}
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
@@ -71,26 +103,6 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 	public ScenarioElement.Type getMyType() {
 		return myType;
 	}
-
-//	/** The string id of the network that contains the component.
-//	 * <p> Returns the id of the parent network if the component is a link, node, sensor,
-//	 * or signal. 
-//	 * Otherwise it returns <code>null</code>.
-//	 * @return Network id, or <code>null</code>.
-//	 */
-//	@Override
-//	public String getNetworkId() {
-//		if(myType==null && type!=null)
-//			myType = ScenarioElement.Type.valueOf(type);
-//		if(myType.compareTo(ScenarioElement.Type.link)==0 || 
-//		   myType.compareTo(ScenarioElement.Type.node)==0 || 
-//		   myType.compareTo(ScenarioElement.Type.sensor)==0 || 
-//		   myType.compareTo(ScenarioElement.Type.signal)==0 ){
-//			return super.getNetworkId();
-//		}
-//		else
-//			return null;
-//	}
 
 	/** Reference to the component.
 	 * @return A java Object.

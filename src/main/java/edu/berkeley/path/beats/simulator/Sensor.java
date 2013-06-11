@@ -34,14 +34,14 @@ package edu.berkeley.path.beats.simulator;
 public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceSensor {
 	
 	/** The scenario that contains this sensor. */
-	protected Scenario myScenario;	
+	private Scenario myScenario;	
 
-	protected edu.berkeley.path.beats.jaxb.Sensor jaxbSensor;
+	private edu.berkeley.path.beats.jaxb.Sensor jaxbSensor;
 	/** Sensor type. */
-	protected Sensor.Type myType;
+	private Sensor.Type myType;
 	
 	/** Current link where the sensor is located. */
-	protected Link myLink = null;
+	private Link myLink = null;
 
 	/** Type of sensor.
 	 *
@@ -110,6 +110,10 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
+
+	public Scenario getMyScenario() {
+		return myScenario;
+	}	
 	
 	/** Sensor type. */
 	public Sensor.Type getMyType() {

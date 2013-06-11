@@ -164,30 +164,7 @@ final public class ObjectFactory {
 	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;
-		ScenarioElement S = new ScenarioElement();
-		S.myScenario = myScenario;
-		S.setId(jaxbS.getId().trim());
-		S.myType = ScenarioElement.Type.valueOf(jaxbS.getType());
-		switch(S.myType){
-		case link:
-			S.reference = myScenario.getLinkWithId(S.getId());
-			break;
-		case node:
-			S.reference = myScenario.getNodeWithId(S.getId());
-			break;
-		case sensor:
-			S.reference = myScenario.getSensorWithId(S.getId());
-			break;
-		case signal:
-			S.reference = myScenario.getSignalWithId(S.getId());
-			break;
-		case controller:
-			S.reference = myScenario.getControllerWithId(S.getId());
-			break;
-			
-		default:
-			S.reference = null;	
-		}
+		ScenarioElement S = new ScenarioElement(myScenario, jaxbS);
 		return S;
 	}
 	  

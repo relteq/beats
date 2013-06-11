@@ -145,7 +145,7 @@ public class Event implements Comparable {
 		
 		// check each target is valid
 		for(ScenarioElement s : targets)
-			if(s.reference==null)
+			if(s.getReference()==null)
 				BeatsErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
 
 	}
@@ -189,8 +189,8 @@ public class Event implements Comparable {
 		
 		// fourth ordering by target type
 		for(int i=0;i<thisnumtargets;i++){
-			ScenarioElement.Type thistargettype = this.targets.get(i).myType;
-			ScenarioElement.Type thattargettype = that.targets.get(i).myType;
+			ScenarioElement.Type thistargettype = this.targets.get(i).getMyType();
+			ScenarioElement.Type thattargettype = that.targets.get(i).getMyType();
 			compare = thistargettype.compareTo(thattargettype);
 			if(compare!=0)
 				return compare;		
