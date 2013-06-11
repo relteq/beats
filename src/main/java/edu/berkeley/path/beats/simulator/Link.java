@@ -334,9 +334,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         
 		// nodes must populate before links
 		if(begin_node!=null)
-			issource = begin_node.isTerminal;
+			issource = begin_node.isTerminal();
 		if(end_node!=null)
-			issink = end_node.isTerminal;
+			issink = end_node.isTerminal();
 
 		// lanes and length
 		if(getLanes()!=null)

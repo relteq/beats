@@ -34,41 +34,41 @@ import java.util.ArrayList;
 */
 public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		   
-	protected Network myNetwork;
+	private Network myNetwork;
 
 	// network references
-	protected Link [] output_link;
-	protected Link [] input_link;
+	private Link [] output_link;
+	private Link [] input_link;
 	
-	protected Double3DMatrix sampledSRprofile;
-	protected Double3DMatrix splitratio;
-	protected boolean istrivialsplit;
-	protected boolean hasSRprofile;
-	protected int nIn;
-	protected int nOut;
-	protected boolean isTerminal;
+	private Double3DMatrix sampledSRprofile;
+	private Double3DMatrix splitratio;
+	private boolean istrivialsplit;
+	private boolean hasSRprofile;
+	private int nIn;
+	private int nOut;
+	private boolean isTerminal;
 	
-	protected Signal mySignal = null;
+//	private Signal mySignal = null;
 
     // controller
-	protected boolean hascontroller;
-	protected boolean controlleron;
+	private boolean hascontroller;
+	private boolean controlleron;
 	
 	// split event
-	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
+	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
 																// controller split ratios
     // used in update()
-	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
-	protected double [][] outSupply;		// [ensemble][nOut]
-	protected double [][] outDemandKnown;	// [ensemble][nOut]
-	protected double [][] dsratio;			// [ensemble][nOut]
-	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
-	protected boolean [][] iscontributor;	// [nIn][nOut]
-	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
+	private Double [][][] inDemand;		// [ensemble][nIn][nTypes]
+	private double [][] outSupply;		// [ensemble][nOut]
+	private double [][] outDemandKnown;	// [ensemble][nOut]
+	private double [][] dsratio;			// [ensemble][nOut]
+	private Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	private boolean [][] iscontributor;	// [nIn][nOut]
+	private ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
+	private ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
+	private ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
+	private ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
+	private ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -79,7 +79,19 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
-	
+
+    protected Double3DMatrix getSplitratio() {
+		return splitratio;
+	}
+
+	protected boolean isHasActiveSplitEvent() {
+		return hasactivesplitevent;
+	}
+
+	protected void setHasActiveSplitEvent(boolean hasactivesplitevent) {
+		this.hasactivesplitevent = hasactivesplitevent;
+	}
+
 	protected boolean registerController(){
 		if(hascontroller)		// used to detect multiple controllers
 			return false;
@@ -90,7 +102,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 	
-    protected void setSampledSRProfile(Double3DMatrix s){
+	protected void setSampledSRProfile(Double3DMatrix s){
     	sampledSRprofile = s;
     }
 
@@ -635,12 +647,16 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+    public boolean isTerminal() {
+		return isTerminal;
+	}
+
 	/** network that containts this node */ 	
 	public Network getMyNetwork() {
 		return myNetwork;
 	}
 	    
-    /** List of links exiting this node */ 
+	/** List of links exiting this node */ 
     public Link[] getOutput_link() {
 		return output_link;
 	}
@@ -705,7 +721,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 //					splitratio.set(i, j, k, x[i][j][k]);
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
-
+	
 	public Double [][][] getSplitRatio(){
 		if(splitratio==null)
 			return null;

@@ -84,7 +84,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			}
 		}
 		
-		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
+		profile = new Double2DMatrix[myNode.getnIn()][myNode.getnOut()];
 		int in_index,out_index;
 		laststep = 0;
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
@@ -97,7 +97,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 				laststep = Math.max(laststep,profile[in_index][out_index].getnTime());
 		}
 		
-		currentSplitRatio = new Double3DMatrix(myNode.nIn,myNode.nOut,myScenario.getNumVehicleTypes(),Double.NaN);
+		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		
 		// inform the node
 		myNode.setHasSRprofile(true);
@@ -213,7 +213,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 	private Double3DMatrix sampleAtTimeStep(int k){
 		if(myNode==null)
 			return null;
-		Double3DMatrix X = new Double3DMatrix(myNode.nIn,myNode.nOut,
+		Double3DMatrix X = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),
 				myScenario.getNumVehicleTypes(),Double.NaN);	// initialize all unknown
 		
 		// get vehicle type order from SplitRatioProfileSet
@@ -222,8 +222,8 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
 		
 		int i,j,lastk;
-		for(i=0;i<myNode.nIn;i++){
-			for(j=0;j<myNode.nOut;j++){
+		for(i=0;i<myNode.getnIn();i++){
+			for(j=0;j<myNode.getnOut();j++){
 				if(profile[i][j]==null)						// nan if not defined
 					continue;
 				if(profile[i][j].isEmpty())					// nan if no data

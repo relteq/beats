@@ -252,21 +252,21 @@ public class Event implements Comparable {
 		if(node==null)
 			return;
 		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-		X.copydata(node.splitratio);
+		X.copydata(node.getSplitratio());
 		for (SplitRatio sr : splitratios)
 			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
 		if(!node.validateSplitRatioMatrix(X))
 			return;
 		node.setSplitratio(X);
-		node.hasactivesplitevent = true;
+		node.setHasActiveSplitEvent(true);
 	}
 
 	protected void revertNodeEventSplitRatio(Node node) {
 		if(node==null)
 			return;
-		if(node.hasactivesplitevent){
+		if(node.isHasActiveSplitEvent()){
 			node.resetSplitRatio();
-			node.hasactivesplitevent = false;
+			node.setHasActiveSplitEvent(false);
 		}
 	}
 	
