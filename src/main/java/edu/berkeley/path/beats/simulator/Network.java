@@ -33,8 +33,8 @@ import java.util.List;
 */
 public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
-	protected boolean isempty;
-	protected Scenario myScenario;
+	private boolean isempty;
+	private Scenario myScenario;
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -119,6 +119,14 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+	public boolean isIsempty() {
+		return isempty;
+	}
+
+	public Scenario getMyScenario() {
+		return myScenario;
+	}
+		
 	/** Get link with given id.
 	 * @param id String id of the link.
 	 * @return Link object.
@@ -133,6 +141,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		}
 		return null;
 	}
+
 
 	/** Get node with given id.
 	 * @param id String id of the node.

@@ -1155,7 +1155,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if (null == links) {
 				links = new java.util.HashMap<String, LinkCumulativeData>();
 				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-					if(((edu.berkeley.path.beats.simulator.Network) network).isempty)
+					if(((edu.berkeley.path.beats.simulator.Network) network).isIsempty())
 						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 						if (links.containsKey(link.getId()))

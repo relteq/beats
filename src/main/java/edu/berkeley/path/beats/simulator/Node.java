@@ -77,48 +77,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected Node(){}
 
 	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-	
-//	@Override
-//	public void setRoadwayMarkers(RoadwayMarkers value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setOutputs(Outputs value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setInputs(Inputs value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setPosition(Position value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setType(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setInSync(Boolean value) {
-//		System.out.println("This setter is hidden.");
-//	}
-	
-	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
-	
 	
 	protected boolean registerController(){
 		if(hascontroller)		// used to detect multiple controllers
@@ -130,20 +90,17 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 	
-	
     protected void setSampledSRProfile(Double3DMatrix s){
     	sampledSRprofile = s;
     }
 
-    
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
-			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
+			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 			normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
-
 	
 	protected void setControllerOn(boolean controlleron) {
 		if(hascontroller){
@@ -152,19 +109,17 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 				resetSplitRatio();
 		}
 	}
-
 	
     protected void resetSplitRatio(){
 
 		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
 		
 		//////
-		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
+		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio);
 		//////
     }
-    
-    
+        
 	protected void setSplitratio(Double3DMatrix x) {
 		splitratio.copydata(x);
 		normalizeSplitRatioMatrix(splitratio);
@@ -245,7 +200,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
             return;
 
         int e,i,j,k;        
-        int numEnsemble = myNetwork.myScenario.getNumEnsemble();
+        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         
         // collect input demands and output supplies ...................
         for(e=0;e<numEnsemble;e++){        
@@ -269,7 +224,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		        for(j=0;j<nOut;j++){
 		        	outDemandKnown[e][j] = 0f;
 		        	for(i=0;i<nIn;i++)
-		        		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++)
+		        		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++)
 		        			if(!splitratio.get(i,j,k).isNaN())
 		        				outDemandKnown[e][j] += splitratio.get(i,j,k) * inDemand[e][i][k];
 		        }
@@ -298,8 +253,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
 
 	protected void reset() {	
-		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
-    	int numEnsemble = myNetwork.myScenario.getNumEnsemble();		
+		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
+    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();		
     	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
 		outSupply 		= new double[numEnsemble][nOut];
 		outDemandKnown 	= new double[numEnsemble][nOut];
@@ -311,14 +266,13 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
 	
-	
 	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
 
 		int i,j,k;
 		Double value;
 		
 		// dimension
-		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
+		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().getNumVehicleTypes()){
 			BeatsErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
 			return false;
 		}
@@ -338,7 +292,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return true;
 	}
 	
-	
     protected void normalizeSplitRatioMatrix(Double3DMatrix X){
 
     	int i,j,k;
@@ -348,7 +301,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		double sum;
     	
     	for(i=0;i<X.getnIn();i++)
-    		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
+    		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
 				hasNaN = false;
 				countNaN = 0;
 				idxNegative = -1;
@@ -397,8 +350,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	private void computeLinkFlows(){
         
     	int e,i,j,k;
-    	int numEnsemble = myNetwork.myScenario.getNumEnsemble();
-    	int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
+    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+    	int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
 
         // input i contributes to output j .............................
     	for(i=0;i<splitratio.getnIn();i++)
@@ -462,9 +415,9 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
     	
     	// SHOULD ONLY BE CALLED WITH numEnsemble=1!!!
     	
-    	for(e=0;e<myNetwork.myScenario.getNumEnsemble();e++){
+    	for(e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
 	    	for(i=0;i<nIn;i++){
-		        for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
+		        for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
 		            
 		        	// number of outputs with unknown split ratio
 		        	numunknown = 0;
