@@ -114,28 +114,24 @@ final class SimulationSettings {
 		this.parent = ss;
 	}
 
-	
 	public String getConfigfilename() {
 		if (null != configfilename) return configfilename;
 		else if (null != parent) return parent.getConfigfilename();
 		else return null;
 	}
 	
-
 	public String getOutputfileprefix() {
 		if (null != outputfileprefix) return outputfileprefix;
 		else if (null != parent) return parent.getOutputfileprefix();
 		else return null;
 	}
 	
-
 	public String getOutput_format() {
 		if (null != output_format) return output_format;
 		else if (null != parent) return parent.getOutput_format();
 		else return null;
 	}
 	
-
 	/**
 	 * @return start time, sec
 	 */

@@ -4,6 +4,7 @@ package edu.berkeley.path.beats.simulator;
  * Link cumulative data storage
  */
 final public class LinkCumulativeData {
+	
 	private edu.berkeley.path.beats.simulator.Link link;
 	private int nensemble;
 	private int nvehtype;

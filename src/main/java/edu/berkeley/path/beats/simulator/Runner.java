@@ -42,10 +42,6 @@ import edu.berkeley.path.beats.util.scenario.ScenarioLoader;
  */
 public final class Runner {
 
-//	private static String configfilename;
-//	private static String outputfileprefix;
-//	private static String output_format;
-
 	private static Logger logger = Logger.getLogger(Runner.class);
 
 	public static void main(String[] args) {

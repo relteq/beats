@@ -41,11 +41,11 @@ final public class SignalPhase {
 	private Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
-	private boolean protectd		= false;
-	private boolean isthrough		= false;
+	private boolean protectd	= false;
+	private boolean isthrough	= false;
 	private boolean recall		= false;
 	private boolean permissive	= false;
-	private boolean lag 			= false;
+	private boolean lag 		= false;
 
 	// dual ring structure
 	private int myRingGroup		= -1;

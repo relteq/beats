@@ -28,19 +28,18 @@ package edu.berkeley.path.beats.simulator;
 
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
-	protected Scenario myScenario;
-//	protected Link myLink;
-	protected Double [] current_sample;
-	protected boolean isOrphan;
-	protected double dtinseconds;				// not really necessary
-	protected int samplesteps;					// [sim steps] profile sample period
-	protected Double2DMatrix demand_nominal;	// [veh]
-	protected boolean isdone; 
-	protected int stepinitial;
-	protected double _knob;
-	protected Double std_dev_add;			// [veh]
-	protected Double std_dev_mult;			// [veh]
-	protected boolean isdeterministic;		// true if the profile is deterministic
+	private Scenario myScenario;
+	private Double [] current_sample;
+	private boolean isOrphan;
+	private double dtinseconds;				// not really necessary
+	private int samplesteps;					// [sim steps] profile sample period
+	private Double2DMatrix demand_nominal;	// [veh]
+	private boolean isdone; 
+	private int stepinitial;
+	private double _knob;
+	private Double std_dev_add;			// [veh]
+	private Double std_dev_mult;			// [veh]
+	private boolean isdeterministic;		// true if the profile is deterministic
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -232,7 +231,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((DemandProfileSet)myScenario.getDemandProfileSet()).vehicletypeindex;
+			vehicletypeindex = ((DemandProfileSet)myScenario.getDemandProfileSet()).getVehicletypeindex();
 		
 		return demand_nominal.sampleAtTime(k,vehicletypeindex);
 	}
