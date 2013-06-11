@@ -76,13 +76,13 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		// sample demand distribution, convert to vehicle units
 		if(getContent()!=null){
 			demand_nominal = new Double2DMatrix(getContent());
-			demand_nominal.multiplyscalar(myScenario.getSimDtInSeconds());
+			demand_nominal.multiplyscalar(myScenario.getSimdtinseconds());
 		}
 		
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
 		else{ 	// allow only if it contains one time step
 			if(demand_nominal.getnTime()==1){
@@ -98,12 +98,12 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		// optional uncertainty model
 		if(getStdDevAdd()!=null)
-			std_dev_add = getStdDevAdd().doubleValue() * myScenario.getSimDtInSeconds();
+			std_dev_add = getStdDevAdd().doubleValue() * myScenario.getSimdtinseconds();
 		else
 			std_dev_add = Double.POSITIVE_INFINITY;		// so that the other will always win the min
 		
 		if(getStdDevMult()!=null)
-			std_dev_mult = getStdDevMult().doubleValue() * myScenario.getSimDtInSeconds();
+			std_dev_mult = getStdDevMult().doubleValue() * myScenario.getSimdtinseconds();
 		else
 			std_dev_mult = Double.POSITIVE_INFINITY;	// so that the other will always win the min
 		
@@ -126,7 +126,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		if( dtinseconds<=0 && demand_nominal.getnTime()>1 )
 			BeatsErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
 		
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()) && demand_nominal.getnTime()>1 )
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && demand_nominal.getnTime()>1 )
 			BeatsErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
 		
 		// check dimensions
@@ -149,7 +149,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		else
 			starttime = 0f;
 
-		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		
 		// set current sample to zero
 		current_sample = BeatsMath.zeros(myScenario.getNumVehicleTypes());
@@ -166,11 +166,11 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			return;
 		if(demand_nominal.isEmpty())
 				return;
-		if(forcesample || myScenario.clock.istimetosample(samplesteps,stepinitial)){
+		if(forcesample || myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
 			// REMOVE THESE
 			int n = demand_nominal.getnTime()-1;
-			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 			
 			// forced sample due to knob change
 			if(forcesample){
@@ -179,7 +179,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			}
 			
 			// demand is zero before stepinitial
-			if(myScenario.clock.getCurrentstep()<stepinitial)
+			if(myScenario.getClock().getCurrentstep()<stepinitial)
 				return;
 			
 			// sample the profile
@@ -208,7 +208,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 	
 	private Double [] sample_currentTime_addNoise_applyKnob(){
-		int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+		int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 		return sample_KthTime_addNoise_applyKnob(step);
 	}
 
@@ -245,7 +245,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
 		
 		// sample the distribution
-		switch(myScenario.uncertaintyModel){
+		switch(myScenario.getUncertaintyModel()){
 			
 		case uniform:
 			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
@@ -266,7 +266,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
 	private void applyKnob(Double [] demandvalue){
 		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-			demandvalue[j] *= myScenario.global_demand_knob*_knob;
+			demandvalue[j] *= myScenario.getGlobal_demand_knob()*_knob;
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -283,14 +283,14 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	
 	public Double[] getFutureTotalDemandInVeh_NoNoise(double dt_in_seconds,int num_steps) throws BeatsException{
 		
-		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimDtInSeconds()))
+		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))
 			throw new BeatsException("dt_in_seconds must be an integer multiple of simulation dt.");
 		
 		// simulation dt per output dt
-		int num_times_per_sample = BeatsMath.round(dt_in_seconds / myScenario.getSimDtInSeconds());
+		int num_times_per_sample = BeatsMath.round(dt_in_seconds / myScenario.getSimdtinseconds());
 
 		// current simulation time step
-		int current_step = myScenario.clock.getCurrentstep();
+		int current_step = myScenario.getClock().getCurrentstep();
 		
 		// return value
 		Double [] X = new Double [num_steps];

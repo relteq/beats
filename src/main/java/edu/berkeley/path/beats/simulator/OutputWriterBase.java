@@ -73,7 +73,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * Calling this method multiple times is safe
 	 */
 	protected void requestLinkCumulatives() {
-		scenario.cumulatives.storeLinks();
+		scenario.getCumulatives().storeLinks();
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * Calling this method multiple times is safe
 	 */
 	protected void requestSignalPhases() {
-		scenario.cumulatives.storeSignalPhases();
+		scenario.getCumulatives().storeSignalPhases();
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * @throws BeatsException if the signal phase storage has not been initialized
 	 */
 	protected SignalPhases getCompletedPhases(edu.berkeley.path.beats.jaxb.Signal signal) throws BeatsException {
-		return scenario.cumulatives.get(signal);
+		return scenario.getCumulatives().get(signal);
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public abstract class OutputWriterBase implements InterfaceOutputWriter{
 	 * @throws BeatsException if the link cumulative data storage has not been initialized
 	 */
 	protected LinkCumulativeData getCumulatives(edu.berkeley.path.beats.jaxb.Link link) throws BeatsException {
-		return scenario.cumulatives.get(link);
+		return scenario.getCumulatives().get(link);
 	}
 
 }

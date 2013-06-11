@@ -70,7 +70,7 @@ public class Event implements Comparable {
 		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
+		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimdtinseconds());		// assume in seconds
 		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
@@ -196,7 +196,7 @@ public class Event implements Comparable {
 	/////////////////////////////////////////////////////////////////////	
 
 	protected void setGlobalControlIsOn(boolean ison){
-		myScenario.global_control_on = ison;
+		myScenario.setGlobal_control_on(ison);
 	}
 	
 	protected void setControllerIsOn(Controller c,boolean ison){
@@ -254,7 +254,7 @@ public class Event implements Comparable {
     }
     
     protected void setGlobalDemandEventKnob(Double knob){
-    	myScenario.global_demand_knob = knob;
+    	myScenario.setGlobal_demand_knob(knob);
     }
 	    
 	/////////////////////////////////////////////////////////////////////

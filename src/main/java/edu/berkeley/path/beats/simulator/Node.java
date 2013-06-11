@@ -248,7 +248,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
             return;
 
         int e,i,j,k;        
-        int numEnsemble = myNetwork.myScenario.numEnsemble;
+        int numEnsemble = myNetwork.myScenario.getNumEnsemble();
         
         // collect input demands and output supplies ...................
         for(e=0;e<numEnsemble;e++){        
@@ -303,7 +303,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
 	protected void reset() {	
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
-    	int numEnsemble = myNetwork.myScenario.numEnsemble;		
+    	int numEnsemble = myNetwork.myScenario.getNumEnsemble();		
     	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
 		outSupply 		= new double[numEnsemble][nOut];
 		outDemandKnown 	= new double[numEnsemble][nOut];
@@ -401,7 +401,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	private void computeLinkFlows(){
         
     	int e,i,j,k;
-    	int numEnsemble = myNetwork.myScenario.numEnsemble;
+    	int numEnsemble = myNetwork.myScenario.getNumEnsemble();
     	int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
 
         // input i contributes to output j .............................
@@ -466,7 +466,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
     	
     	// SHOULD ONLY BE CALLED WITH numEnsemble=1!!!
     	
-    	for(e=0;e<myNetwork.myScenario.numEnsemble;e++){
+    	for(e=0;e<myNetwork.myScenario.getNumEnsemble();e++){
 	    	for(i=0;i<nIn;i++){
 		        for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
 		            

@@ -276,7 +276,7 @@ final public class ObjectFactory {
 		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
 
         // copy in input parameters ..................................................
-        S.configfilename = configfilename;
+        S.setConfigfilename(configfilename);
 
 		return process(S);
 	}
@@ -299,18 +299,18 @@ final public class ObjectFactory {
 			edu.berkeley.path.beats.util.UnitConverter.process(S);
 		}
 
-	    // copy data to static variables ..............................................
-	    S.global_control_on = true;
-	    S.global_demand_knob = 1d;
-	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
-	    S.uncertaintyModel = SimulationSettings.UncertaintyType.uniform;
-	    S.numVehicleTypes = 1;
-	    S.has_flow_unceratinty = BeatsMath.greaterthan(S.std_dev_flow,0.0);
-	    
+	    // initialize scenario attributes ..............................................
+		S.setGlobal_control_on(true);
+		S.setGlobal_demand_knob(1d);
+		S.setSimdtinseconds( computeCommonSimulationTimeInSeconds(S) );
+		S.setUncertaintyModel( SimulationSettings.UncertaintyType.uniform );
+		S.setHas_flow_unceratinty( BeatsMath.greaterthan(S.getStd_dev_flow(),0.0) );
+
+		S.setNumVehicleTypes(1);
 	    if(S.getSettings()!=null)
 	        if(S.getSettings().getVehicleTypes()!=null)
 	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
-	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
+	            	S.setNumVehicleTypes(S.getSettings().getVehicleTypes().getVehicleType().size());
 
 	    // populate the scenario ....................................................
 	    S.populate();
@@ -324,8 +324,8 @@ final public class ObjectFactory {
 	    	throw new BeatsException("Signal registration failure");
 	    }
 
-	    if(S.controllerset!=null)
-	    	if(!S.controllerset.register()){
+	    if(S.getControllerset()!=null)
+	    	if(!S.getControllerset().register()){
 	    		throw new BeatsException("Controller registration failure");
 		    }
 

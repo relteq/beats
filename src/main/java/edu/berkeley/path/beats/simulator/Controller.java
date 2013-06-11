@@ -104,7 +104,7 @@ public class Controller {
 			this.ison = false; //c.isEnabled(); 
 			this.activationTimes=new ArrayList<ActivationTimes>();
 			dtinseconds = jaxbC.getDt().floatValue();		// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());		
 			
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
@@ -194,7 +194,7 @@ public class Controller {
 			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
 			BeatsErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
 
 		// check that activation times are valid.

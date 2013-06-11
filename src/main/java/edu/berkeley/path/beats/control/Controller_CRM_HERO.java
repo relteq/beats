@@ -261,19 +261,19 @@ public class Controller_CRM_HERO extends Controller {
 				}
 				
 				if(p.getName().equals("minFlow")){
-					minFlow = Double.parseDouble(p.getValue()) * myScenario.getSimDtInSeconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					minFlow = Double.parseDouble(p.getValue()) * myScenario.getSimdtinseconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
 				    minFlow_Given=true;
 				}
 				
 				if(p.getName().equals("maxFlow")){
-					maxFlow = Double.parseDouble(p.getValue()) * myScenario.getSimDtInSeconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					maxFlow = Double.parseDouble(p.getValue()) * myScenario.getSimdtinseconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
 					maxFlow_Given=true;
 				}
 			}	
 		
 		
 		// Normalize ALINEA Gain
-		alineaGainNormalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlineLink.getLengthInMeters();
+		alineaGainNormalized = gain_in_mps * myScenario.getSimdtinseconds() / mainlineLink.getLengthInMeters();
 		
 		// Set minFlow equal to zero if not given
 		if(!minFlow_Given)
@@ -398,7 +398,7 @@ public class Controller_CRM_HERO extends Controller {
 				controllerList.get(i).flowQueue = ( -controllerList.get(i).queueControllerGainNormalized*
 						                          (controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
 						                          controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/ 
-						                          (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimDtInSeconds());
+						                          (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimdtinseconds());
 				
 		        //EQUATION (3) vs EQUATIONS(4) and(5)
 				if(controllerList.get(i).type.equals(status.MASTER)|| controllerList.get(i).type.equals(status.NOT_USED))
@@ -407,7 +407,7 @@ public class Controller_CRM_HERO extends Controller {
 					controllerList.get(i).flowQueueMin =(-controllerList.get(i).queueMinControllerGainNormalized*
 							                             (controllerList.get(i).queueMin-controllerList.get(i).queueCurrent)+
 							                             controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/
-							                             (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimDtInSeconds());
+							                             (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimdtinseconds());
 					
 					
 					controllerList.get(i).flowHero = Math.max(Math.min(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueueMin), controllerList.get(i).flowQueue);
@@ -526,7 +526,7 @@ public class Controller_CRM_HERO extends Controller {
 			
 
 			if(!controllerList.get(i).maxFlow_Given)
-				controllerList.get(i).maxFlow = onrampLink.getCapacityInVPSPL(0) * myScenario.getSimDtInSeconds() * onrampLink.get_Lanes(); //[veh/sim_period/onramp];
+				controllerList.get(i).maxFlow = onrampLink.getCapacityInVPSPL(0) * myScenario.getSimdtinseconds() * onrampLink.get_Lanes(); //[veh/sim_period/onramp];
 
 			if(!controllerList.get(i).queueMax_Given)
 				controllerList.get(i).queueMax = controllerList.get(i).onrampLink.getDensityJamInVeh(0); //[veh/onramp]

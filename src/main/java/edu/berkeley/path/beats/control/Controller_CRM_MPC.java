@@ -94,7 +94,7 @@ public class Controller_CRM_MPC extends Controller {
 			if(str!=null)
 				opt_dt =Double.parseDouble(str);
 			else
-				opt_dt = myScenario.getSimDtInSeconds();
+				opt_dt = myScenario.getSimdtinseconds();
 		}
 
 		if (null != params && params.has("opt_horizon")){

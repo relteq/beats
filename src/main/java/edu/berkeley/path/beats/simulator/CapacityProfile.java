@@ -46,14 +46,14 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		this.myScenario = myScenario;
 		myLink = myScenario.getLinkWithId(getLinkId());
 		dtinseconds = getDt().floatValue();					// assume given in seconds
-		samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+		samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		isdone = false;
 		
 		// read capacity and convert to vehicle units
 		String str = getContent();
 		if(!str.isEmpty()){
 			capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-			capacity.multiplyscalar(myScenario.getSimDtInSeconds() * myLink.get_Lanes());
+			capacity.multiplyscalar(myScenario.getSimdtinseconds() * myLink.get_Lanes());
 		}
 			
 	}
@@ -75,7 +75,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		if( dtinseconds<=0  && capacity.getLength()>1)
 			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()) && capacity.getLength()>1)
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && capacity.getLength()>1)
 			BeatsErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
@@ -94,7 +94,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		else
 			starttime = 0f;
 
-		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 
 	}
 	
@@ -105,10 +105,10 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 			return;
 		if(isdone || capacity.isEmpty())
 			return;
-		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
 			int n = capacity.getLength()-1;
-			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 
 			// zeroth sample extends to the left
 			step = Math.max(0,step);

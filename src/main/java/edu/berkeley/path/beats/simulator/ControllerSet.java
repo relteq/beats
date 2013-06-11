@@ -151,7 +151,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		
 		// Set activation index to zero, and process all events upto the starttime.
 		activationindex = 0;
-		processActivations(myScenario.clock.getStartTime());  	
+		processActivations(myScenario.getClock().getStartTime());  	
 		
 	}
 	
@@ -180,10 +180,10 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 	}
 	
 	protected void update() throws BeatsException {
-		processActivations(myScenario.clock.getT());			
+		processActivations(myScenario.getClock().getT());			
 		
     	for(Controller controller : controllers){
-    		if(controller.ison && myScenario.clock.istimetosample(controller.samplesteps,0))
+    		if(controller.ison && myScenario.getClock().istimetosample(controller.samplesteps,0))
     			controller.update();
     	}
 	}

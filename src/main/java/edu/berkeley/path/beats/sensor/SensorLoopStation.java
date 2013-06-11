@@ -154,12 +154,12 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
-		return BeatsMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
+		return BeatsMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimdtinseconds());
 	}
 
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
-		return myLink.getTotalOutflowInVeh(ensemble) / myScenario.getSimDtInSeconds();
+		return myLink.getTotalOutflowInVeh(ensemble) / myScenario.getSimdtinseconds();
 	}
 
 	@Override

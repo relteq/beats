@@ -108,7 +108,7 @@ public class ScenarioTest {
 	
 	@Test
 	public void test_getSimDtInSeconds() {
-		assertEquals(static_scenario.getSimDtInSeconds(),5,1e-4);
+		assertEquals(static_scenario.getSimdtinseconds(),5,1e-4);
 	}
 
 	@Test

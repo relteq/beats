@@ -181,7 +181,7 @@ public class Controller_IRM_Alinea extends Controller {
 		
 		// normalize the gain
 		if(mainlinelink!=null)
-			gain_normalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlinelink.getLengthInMeters();
+			gain_normalized = gain_in_mps * myScenario.getSimdtinseconds() / mainlinelink.getLengthInMeters();
 	}
 	
 	@Override

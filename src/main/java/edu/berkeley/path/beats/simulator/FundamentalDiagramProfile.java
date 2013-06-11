@@ -46,7 +46,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 	protected void set_Lanes(double newlanes){
 		if(newlanes<=0 || FD.isEmpty())
 			return;
-		int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+		int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 		step = Math.max(0,step);
 		for(int i=step;i<FD.size();i++){
 			FD.get(i).setLanes(newlanes);
@@ -72,7 +72,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
 		else{ 	// only allow if it contains only one fd
 			if(getFundamentalDiagram().size()==1){
@@ -109,7 +109,7 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		if( BeatsMath.equals(dtinseconds,0d) && FD.size()>1 )
 			BeatsErrorLog.addError("dt=0 in fundamental diagram profile for link id=" + getLinkId() + ".");
 		
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()) && FD.size()>1 )
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && FD.size()>1 )
 			BeatsErrorLog.addError("Time step in fundamental diagram profile for link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check fundamental diagrams
@@ -125,11 +125,11 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		double profile_starttime;	// [sec]
 		
 		profile_starttime = getStartTime()==null ? 0f : getStartTime().floatValue();
-		stepinitial = BeatsMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = BeatsMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		
 		if(FD!=null)
 			for(FundamentalDiagram fd : FD)
-				fd.reset(myScenario.uncertaintyModel);
+				fd.reset(myScenario.getUncertaintyModel());
 		
 		// assign the fundamental diagram to the link
 		//update();	
@@ -141,10 +141,10 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 			return;
 		if(isdone || FD.isEmpty())
 			return;
-		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
 			int n = FD.size()-1;
-			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 
 			// zeroth sample extends to the left
 			step = Math.max(0,step);

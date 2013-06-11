@@ -70,7 +70,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
 		else{ 	// only allow if it contains only one fd
 			if(getSplitratio().size()==1){
@@ -113,7 +113,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		else
 			starttime = 0f;
 		
-		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 	}
 
 	protected void validate() {
@@ -154,8 +154,8 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 				BeatsErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node id=" + getNodeId());
 
 			// dtinseconds must be multiple of simdt if any profile has >1 element
-			if( !BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
+			if( !BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
+				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimdtinseconds() + ")"); 
 		}
 		
 		// check split ratio dimensions and values
@@ -186,9 +186,9 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			return;
 		if(isdone)
 			return;
-		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
-			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 
 			// zeroth sample extends to the left
 			step = Math.max(0,step);

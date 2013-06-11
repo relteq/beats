@@ -213,7 +213,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     		return;
     	
     	// sample the fundamental digram
-    	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
+    	for(int e=0;e<myNetwork.myScenario.getNumEnsemble();e++)
     		FDfromProfile[e] = fd.perturb();
     }
 
@@ -250,13 +250,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 */
     // used by Event.setLinkLanes
 	protected void set_Lanes(double newlanes) throws BeatsException{
-		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
+		for(int e=0;e<myNetwork.myScenario.getNumEnsemble();e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
 				throw new BeatsException("ERROR: Lanes could not be set.");
 
 		if(myFDprofile!=null)
 			myFDprofile.set_Lanes(newlanes);	// adjust present and future fd's
-		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
+		for(int e=0;e<myNetwork.myScenario.getNumEnsemble();e++)
 			FDfromProfile[e].setLanes(newlanes);
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
@@ -284,7 +284,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         
         FundamentalDiagram FD;
         
-        for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
+        for(int e=0;e<myNetwork.myScenario.getNumEnsemble();e++){
 
         	FD = currentFD(e);
         	
@@ -321,12 +321,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             }    
 
             // flow uncertainty model
-            if(myNetwork.myScenario.has_flow_unceratinty){
+            if(myNetwork.myScenario.isHas_flow_unceratinty()){
 
             	double delta_flow=0.0;
-            	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
+            	double std_dev_flow = myNetwork.myScenario.getStd_dev_flow();
 
-				switch(myNetwork.myScenario.uncertaintyModel){
+				switch(myNetwork.myScenario.getUncertaintyModel()){
 				case uniform:
 					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
 					break;
@@ -350,17 +350,17 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     protected void updateSpaceSupply(){
 		double totaldensity;
 		FundamentalDiagram FD;
-    	for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
+    	for(int e=0;e<myNetwork.myScenario.getNumEnsemble();e++){
     		FD = currentFD(e);
         	totaldensity = BeatsMath.sum(density[e]);
             spaceSupply[e] = FD.getWNormalized()*(FD._getDensityJamInVeh() - totaldensity);
             spaceSupply[e] = Math.min(spaceSupply[e],FD._getCapacityInVeh());
             
             // flow uncertainty model
-            if(myNetwork.myScenario.has_flow_unceratinty){
+            if(myNetwork.myScenario.isHas_flow_unceratinty()){
             	double delta_flow=0.0;
-            	double std_dev_flow = myNetwork.myScenario.std_dev_flow;
-				switch(myNetwork.myScenario.uncertaintyModel){
+            	double std_dev_flow = myNetwork.myScenario.getStd_dev_flow();
+				switch(myNetwork.myScenario.getUncertaintyModel()){
 				case uniform:
 					delta_flow = BeatsMath.sampleZeroMeanUniform(std_dev_flow);
 					break;
@@ -422,7 +422,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		
 		Scenario myScenario = myNetwork.myScenario;
 		
-		int n1 = myScenario.numEnsemble;
+		int n1 = myScenario.getNumEnsemble();
 		int n2 = myScenario.getNumVehicleTypes();
 		
 		switch(simulationMode){
@@ -460,7 +460,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	protected void resetFD(){
-		FDfromProfile = new FundamentalDiagram [myNetwork.myScenario.numEnsemble];
+		FDfromProfile = new FundamentalDiagram [myNetwork.myScenario.getNumEnsemble()];
 		for(int i=0;i<FDfromProfile.length;i++){
 			FDfromProfile[i] = new FundamentalDiagram(this);
 			FDfromProfile[i].settoDefault();
@@ -474,13 +474,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             outflow = outflowDemand;
         
         if(issource){
-        	for(int e=0;e<this.myNetwork.myScenario.numEnsemble;e++){
+        	for(int e=0;e<this.myNetwork.myScenario.getNumEnsemble();e++){
         		if(myDemandProfile!=null)
         			inflow[e] = myDemandProfile.getCurrentValue();
         	}
         }
                 
-        for(int e=0;e<myNetwork.myScenario.numEnsemble;e++){
+        for(int e=0;e<myNetwork.myScenario.getNumEnsemble();e++){
         	  for(int j=0;j<myNetwork.myScenario.getNumVehicleTypes();j++){
               	density[e][j] += inflow[e][j] - outflow[e][j];
               }
@@ -662,7 +662,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	public double computeSpeedInMPS(int ensemble){
 		try{
 			
-			if(myNetwork.myScenario.clock.getCurrentstep()==0)
+			if(myNetwork.myScenario.getClock().getCurrentstep()==0)
 				return Double.NaN;
 			
 			double totaldensity = BeatsMath.sum(density[ensemble]);
@@ -671,7 +671,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				speed = BeatsMath.sum(outflow[ensemble])/totaldensity;
 			else
 				speed = currentFD(ensemble).getVfNormalized();
-			return speed * _length / myNetwork.myScenario.getSimDtInSeconds();
+			return speed * _length / myNetwork.myScenario.getSimdtinseconds();
 		} catch(Exception e){
 			return Double.NaN;
 		}
@@ -739,7 +739,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getCapacityDropInVeh() / myNetwork.myScenario.getSimDtInSeconds() / _lanes;
+			return FD._getCapacityDropInVeh() / myNetwork.myScenario.getSimdtinseconds() / _lanes;
 	}
 
 	/** Capacity in vehicles per second. */
@@ -748,7 +748,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInSeconds();
+			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimdtinseconds();
 	}
 
 	/** Capacity in vehicle/second/lane. */
@@ -757,7 +757,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimDtInSeconds() / _lanes;
+			return FD._getCapacityInVeh() / myNetwork.myScenario.getSimdtinseconds() / _lanes;
 	}
 
 	/** Freeflow speed in normalized units (link/time step). */
@@ -775,7 +775,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
+			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimdtinseconds();
 	}
 
 	/** Critical speed in meters/second. */
@@ -804,7 +804,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(FD==null)
 			return Double.NaN;
 		else
-			return FD.getWNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimDtInSeconds();
+			return FD.getWNormalized() * getLengthInMeters() / myNetwork.myScenario.getSimdtinseconds();
 	}
 		
 	/** Replace link density with given values.

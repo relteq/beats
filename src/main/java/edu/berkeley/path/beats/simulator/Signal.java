@@ -117,7 +117,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		for(i=0;i<getPhase().size();i++){
 			if(!isvalid[i])
 				continue;
-			phase[c] = new SignalPhase(myNode,this,myScenario.simdtinseconds);
+			phase[c] = new SignalPhase(myNode,this,myScenario.getSimdtinseconds());
 			phase[c].populateFromJaxb(myScenario,getPhase().get(i));
 			nema2phase.put(phase[c].myNEMA,phase[c]);
 			c++;

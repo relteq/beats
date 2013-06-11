@@ -177,7 +177,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		todActivationIndx=0;
 		
 		for (int i=0;i<table.getNoRows();i++){
-			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * myScenario.getSimDtInSeconds(); // in veh per sim step
+			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * myScenario.getSimdtinseconds(); // in veh per sim step
 			todActivationTimes[i]=Double.parseDouble(table.getTableElement(i,timeIndx)); // in sec
 			// check that table values are valid.			
 			if ((i>0 && todActivationTimes[i]<=todActivationTimes[i-1])||(todMeteringRates_normalized[i]<0))

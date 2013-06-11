@@ -68,28 +68,27 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	private static Logger logger = Logger.getLogger(Scenario.class);
-	protected Clock clock;
-	protected String configfilename;
-	protected SimulationSettings.UncertaintyType uncertaintyModel;
-	protected int numVehicleTypes;			// number of vehicle types
-	protected boolean global_control_on;	// global control switch
-	protected double global_demand_knob;	// scale factor for all demands
-	protected double simdtinseconds;		// [sec] simulation time step 
-	protected boolean scenariolocked=false;	// true when the simulation is running
-	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
-	protected SensorList sensorlist = new SensorList();
-	protected int numEnsemble;
-	protected boolean started_writing;
+	private Cumulatives cumulatives;
+	private Clock clock;
+	private String configfilename;
+	private SimulationSettings.UncertaintyType uncertaintyModel;
+	private int numVehicleTypes;			// number of vehicle types
+	private boolean global_control_on;	// global control switch
+	private double global_demand_knob;	// scale factor for all demands
+	private double simdtinseconds;		// [sec] simulation time step 
+	private boolean scenariolocked=false;	// true when the simulation is running
+	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
+	private EventSet eventset = new EventSet();	// holds time sorted list of events	
+	private SensorList sensorlist = new SensorList();
+	private int numEnsemble;
+	private boolean started_writing;
 
 	// Model uncertainty
-	protected double std_dev_flow = 0.0d;	// [veh]
-	protected boolean has_flow_unceratinty;
+	private double std_dev_flow = 0.0d;	// [veh]
+	private boolean has_flow_unceratinty;
 	
 	// data
 	private boolean sensor_data_loaded = false;
-
-	protected Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -444,7 +443,27 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 	
 	// scalar getters ........................................................
+
+	public SimulationSettings.UncertaintyType getUncertaintyModel() {
+		return uncertaintyModel;
+	}
+
+	public boolean isGlobal_control_on() {
+		return global_control_on;
+	}
+
+	public double getGlobal_demand_knob() {
+		return global_demand_knob;
+	}
+
+	public double getStd_dev_flow() {
+		return std_dev_flow;
+	}
 	
+	public boolean isHas_flow_unceratinty() {
+		return has_flow_unceratinty;
+	}
+
 	/** Current simulation time in seconds.
 	 * @return Simulation time in seconds after midnight.
 	 */
@@ -453,7 +472,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return Double.NaN;
 		return clock.getT();
 	}
-	
+
 	/** Time elapsed since the beginning of the simulation in seconds.
 	 * @return Simulation time in seconds after start time.
 	 */
@@ -514,7 +533,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 
 	 */
-	public double getSimDtInSeconds() {
+	public double getSimdtinseconds() {
 		return simdtinseconds;
 	}
 
@@ -636,6 +655,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	// object getters ........................................................
 
+	public Cumulatives getCumulatives() {
+		return cumulatives;
+	}
+
+	public Clock getClock() {
+		return clock;
+	}
+	
 	/** Get a reference to a link by its composite id.
 	 * 
 	 * @param id String id of the link. 
@@ -756,7 +783,46 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 	
-	// add stuff ........................................................
+	/////////////////////////////////////////////////////////////////////
+	// protected getters and setters
+	/////////////////////////////////////////////////////////////////////
+
+	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
+		return controllerset;
+	}
+	
+	protected void setSimdtinseconds(double simdtinseconds) {
+		this.simdtinseconds = simdtinseconds;
+	}
+
+	protected void setConfigfilename(String configfilename) {
+		this.configfilename = configfilename;
+	}
+
+	protected void setUncertaintyModel(
+			SimulationSettings.UncertaintyType uncertaintyModel) {
+		this.uncertaintyModel = uncertaintyModel;
+	}
+
+	protected void setNumVehicleTypes(int numVehicleTypes) {
+		this.numVehicleTypes = numVehicleTypes;
+	}
+
+	protected void setGlobal_control_on(boolean global_control_on) {
+		this.global_control_on = global_control_on;
+	}
+
+	protected void setGlobal_demand_knob(double global_demand_knob) {
+		this.global_demand_knob = global_demand_knob;
+	}
+
+	protected void setHas_flow_unceratinty(boolean has_flow_unceratinty) {
+		this.has_flow_unceratinty = has_flow_unceratinty;
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// adding stuff
+	/////////////////////////////////////////////////////////////////////
 
 	/** Add a controller to the scenario.
 	 * 

@@ -296,7 +296,7 @@ final public class SignalPhase {
 				// Force off 
 				if( forceoff_approved ){ 
 					setPhaseColor(Signal.BulbColor.YELLOW);
-					mySignal.completedPhases.add(mySignal.new PhaseData(myNEMA, mySignal.myScenario.clock.getT() - bulbtimer.getT(), bulbtimer.getT()));
+					mySignal.completedPhases.add(mySignal.new PhaseData(myNEMA, mySignal.myScenario.getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;
