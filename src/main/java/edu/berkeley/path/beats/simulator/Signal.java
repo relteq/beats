@@ -607,7 +607,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			}
 			
 			for(Integer index:indices)
-				control_maxflow[index] = maxflow;
+				this.setControl_maxflow(index, maxflow);
 
 		}
 		

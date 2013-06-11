@@ -28,13 +28,13 @@ package edu.berkeley.path.beats.simulator;
 
 final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile {
 
-	protected Scenario myScenario;
-	protected Link myLink;
-	protected double dtinseconds;			// not really necessary
-	protected int samplesteps;
-	protected Double1DVector capacity;		// [veh]
-	protected boolean isdone;
-	protected int stepinitial;
+	private Scenario myScenario;
+	private Link myLink;
+	private double dtinseconds;			// not really necessary
+	private int samplesteps;
+	private Double1DVector capacity;		// [veh]
+	private boolean isdone;
+	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update

@@ -31,13 +31,12 @@ import java.util.Collections;
 
 final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 
-	protected Scenario myScenario;
-	protected ArrayList<Controller> controllers = new ArrayList<Controller>();
-	
-	protected enum OperationType {Deactivate,Activate}; 
-	protected ArrayList<ActivationCommand> activations;
-	protected ArrayList<Integer> activeControllerIndex;
-	protected int activationindex;
+	private Scenario myScenario;
+	private ArrayList<Controller> controllers = new ArrayList<Controller>();
+	private enum OperationType {Deactivate,Activate}; 
+	private ArrayList<ActivationCommand> activations;
+	private ArrayList<Integer> activeControllerIndex;
+	private int activationindex;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -73,7 +72,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 					Controller C = ObjectFactory.createControllerFromJaxb(myScenario,controller,myType);
 					if(C!=null){
 						controllers.add(tempindex,C);									
-						for (Controller.ActivationTimes acttimes : C.activationTimes){
+						for (Controller.ActivationTimes acttimes : C.getActivationTimes()){
 							if (acttimes!=null){								
 								activations.add(new ActivationCommand(tempindex,acttimes.getBegintime(),OperationType.Activate));
 								activations.add(new ActivationCommand(tempindex,acttimes.getEndtime(),OperationType.Deactivate));
@@ -100,7 +99,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		// This is not added to the list of active controllers, because it is always active, thought we may need to change that.
 		// We also validate each controller for its internal paramters.
 		for(Controller controller : controllers){			
-			if (controller.activationTimes==null)
+			if (controller.getActivationTimes()==null)
 				if (!controller.register()){
 					BeatsErrorLog.addError("Controller registration failure, controller " + controller.getId());
 					return false;
@@ -119,7 +118,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 				}
 				else{
 					validated = controllers.get(activecmd.getIndex()).deregister();
-					controllers.get(activecmd.getIndex()).ison=false;
+					controllers.get(activecmd.getIndex()).setIson(false);
 					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex()));					
 				}
 				if (!validated){
@@ -164,13 +163,13 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 			if (activecmd!=null){
 				if (activecmd.getOperation().equals(OperationType.Activate)){
 					controllers.get(activecmd.getIndex()).register();
-					controllers.get(activecmd.getIndex()).ison=true;
+					controllers.get(activecmd.getIndex()).setIson(true);
 					controllers.get(activecmd.getIndex()).reset();
 					activeControllerIndex.add((Integer) activecmd.getIndex()); 
 				}
 				else{
 					controllers.get(activecmd.getIndex()).deregister();
-					controllers.get(activecmd.getIndex()).ison=false;					
+					controllers.get(activecmd.getIndex()).setIson(false);					
 					activeControllerIndex.remove(activeControllerIndex.indexOf((Integer) activecmd.getIndex())); 
 				}
 			}
@@ -183,7 +182,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		processActivations(myScenario.getClock().getT());			
 		
     	for(Controller controller : controllers){
-    		if(controller.ison && myScenario.getClock().istimetosample(controller.samplesteps,0))
+    		if(controller.isIson() && myScenario.getClock().istimetosample(controller.getSamplesteps(),0))
     			controller.update();
     	}
 	}

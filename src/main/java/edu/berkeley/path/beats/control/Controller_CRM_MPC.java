@@ -56,7 +56,7 @@ public class Controller_CRM_MPC extends Controller {
 		//this.opt_scenario = myScenario;
 				
 		// generate the controller algorithm
-		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbController.getParameters();
+		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
 		control_algorithm = null;
 		if (null != params && params.has("policy")){
 			Type myType;
@@ -86,7 +86,7 @@ public class Controller_CRM_MPC extends Controller {
 			if(str!=null)
 				opt_period =Double.parseDouble(str);
 			else
-				opt_period = dtinseconds;
+				opt_period = getDtinseconds();
 		}
 
 		if (null != params && params.has("opt_timestep")){
@@ -94,7 +94,7 @@ public class Controller_CRM_MPC extends Controller {
 			if(str!=null)
 				opt_dt =Double.parseDouble(str);
 			else
-				opt_dt = myScenario.getSimdtinseconds();
+				opt_dt = getMyScenario().getSimdtinseconds();
 		}
 
 		if (null != params && params.has("opt_horizon")){
@@ -106,13 +106,13 @@ public class Controller_CRM_MPC extends Controller {
 				opt_horizon = Double.NaN;
 		}
 		
-		opt_period_int = BeatsMath.round(opt_period/dtinseconds);
-		opt_horizon_int = BeatsMath.round(opt_horizon/dtinseconds);
+		opt_period_int = BeatsMath.round(opt_period/getDtinseconds());
+		opt_horizon_int = BeatsMath.round(opt_horizon/getDtinseconds());
 		
 		// initialize data for control algorithm
 		
 		// TEMPORARY: the network is a reference to the scenario network (dangerous)
-		network = (Network) myScenario.getNetworkList().getNetwork().get(0);
+		network = (Network) getMyScenario().getNetworkList().getNetwork().get(0);
 		
 		// populate initialDensity
 		initialDensity = new HashMap<String,Double>();
@@ -146,11 +146,11 @@ public class Controller_CRM_MPC extends Controller {
 			BeatsErrorLog.addError("Optimization horizon undefined.");
 		
 		// opt_period is a multiple of dtinseconds
-		if(!BeatsMath.isintegermultipleof(opt_period,dtinseconds))
+		if(!BeatsMath.isintegermultipleof(opt_period,getDtinseconds()))
 			BeatsErrorLog.addError("dt_optimize is not a a multiple of dtinseconds.");
 		
 		// dtinseconds is a multiple of opt_dt
-		if(!BeatsMath.isintegermultipleof(dtinseconds,opt_dt))
+		if(!BeatsMath.isintegermultipleof(getDtinseconds(),opt_dt))
 			BeatsErrorLog.addError("dtinseconds is not a multiple of opt_dt.");
 
 		// opt_horizon is a multiple of opt_dt
@@ -187,7 +187,7 @@ public class Controller_CRM_MPC extends Controller {
 	@Override
 	protected void update() throws BeatsException {
 		
-		double time_current = this.myScenario.getCurrentTimeInSeconds();
+		double time_current = getMyScenario().getCurrentTimeInSeconds();
 		double time_since_last_opt = time_current-time_last_opt;
 		
 		
@@ -230,9 +230,9 @@ public class Controller_CRM_MPC extends Controller {
 		}
 
 		// return the values corresponding to the current time
-		int time_index = BeatsMath.floor(time_since_last_opt/dtinseconds);		
-		for(int i=0;i<targets.size();i++)
-			control_maxflow[i] = metering_rate.get(targets.get(i).getId())[time_index];
+		int time_index = BeatsMath.floor(time_since_last_opt/getDtinseconds());		
+		for(int i=0;i<getTargets().size();i++)
+			setControl_maxflow(i, metering_rate.get(getTargets().get(i).getId())[time_index]);
 	}
 	
 }

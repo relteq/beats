@@ -298,9 +298,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
             // compute total flow leaving the link in the absence of flow control
             if( totaldensity < FD.getDensityCriticalInVeh() ){
-            	if(mySpeedController!=null && mySpeedController.ison){
+            	if(mySpeedController!=null && mySpeedController.isIson()){
             		// speed control sets a bound on freeflow speed
-                	control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
+                	control_maxspeed = mySpeedController.getControl_maxspeed(control_maxspeed_index);
             		totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
             	}
             	else
@@ -308,15 +308,15 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
             }
             else{
             	totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-                if(mySpeedController!=null && mySpeedController.ison){	// speed controller
-                	control_maxspeed = mySpeedController.control_maxspeed[control_maxspeed_index];
+                if(mySpeedController!=null && mySpeedController.isIson()){	// speed controller
+                	control_maxspeed = mySpeedController.getControl_maxspeed(control_maxspeed_index);
                 	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
                 }
             }
 
             // flow controller
-            if(myFlowController!=null && myFlowController.ison){
-            	control_maxflow = myFlowController.control_maxflow[control_maxflow_index];
+            if(myFlowController!=null && myFlowController.isIson()){
+            	control_maxflow = myFlowController.getControl_maxflow(control_maxflow_index);
             	totaloutflow = Math.min( totaloutflow , control_maxflow );
             }    
 

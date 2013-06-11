@@ -202,7 +202,7 @@ public class Event implements Comparable {
 	protected void setControllerIsOn(Controller c,boolean ison){
 		if(c==null)
 			return;
-		c.ison = ison;
+		c.setIson(ison);
 	}
 
     protected void setLinkLanes(Link link,double lanes) throws BeatsException{

@@ -830,7 +830,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * b) the controller is valid. 
 	 * @param C The controller
 	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
-	 */
+
 	public boolean addController(Controller C){
 		if(scenariolocked)
 			return false;
@@ -851,6 +851,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		return true;
 	}
+		 */
 
 	/** Add an event to the scenario.
 	 * 
