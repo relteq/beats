@@ -87,7 +87,7 @@ public class Event_Link_Lanes extends Event {
 		super.validate();
 		
 		// check each target is valid
-		for(ScenarioElement s : targets){
+		for(ScenarioElement s : getTargets()){
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
 				BeatsErrorLog.addError("wrong target type for event id=" +getId() +".");
 		}
@@ -96,7 +96,7 @@ public class Event_Link_Lanes extends Event {
 	@Override
 	protected void activate() throws BeatsException{
 		double newlanes;
-		for(ScenarioElement s : targets){
+		for(ScenarioElement s : getTargets()){
 			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)
 				newlanes = ((edu.berkeley.path.beats.jaxb.Link)targetlink).getLanes().doubleValue();

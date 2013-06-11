@@ -37,21 +37,21 @@ import java.util.ArrayList;
 public class Event implements Comparable {
 
 	/** Scenario that contains this event */
-	protected Scenario myScenario;
+	private Scenario myScenario;
 	
-	protected edu.berkeley.path.beats.jaxb.Event jaxbEvent;
+	private edu.berkeley.path.beats.jaxb.Event jaxbEvent;
 	
 	/** Event type. */
-	protected Event.Type myType;
+	private Event.Type myType;
 	
 	/** Activation time of the event, in number of simulation time steps. */
-	protected int timestampstep;
+	private int timestampstep;
 	
 	/** List of targets for the event. */
-	protected ArrayList<ScenarioElement> targets;
+	private ArrayList<ScenarioElement> targets;
 	
 	/** Type of event. */
-	protected static enum Type	{  
+	public static enum Type	{  
 		/** see {@link ObjectFactory#createEvent_Fundamental_Diagram} 	*/ fundamental_diagram,
 		/** see {@link ObjectFactory#createEvent_Link_Demand_Knob} 		*/ link_demand_knob,
 		/** see {@link ObjectFactory#createEvent_Link_Lanes} 			*/ link_lanes, 
@@ -84,6 +84,31 @@ public class Event implements Comparable {
 	public String getId(){
 		return this.jaxbEvent.getId();
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Scenario getMyScenario() {
+		return myScenario;
+	}
+
+	public edu.berkeley.path.beats.jaxb.Event getJaxbEvent() {
+		return jaxbEvent;
+	}
+
+	public Event.Type getMyType() {
+		return myType;
+	}
+
+	public int getTimestampstep() {
+		return timestampstep;
+	}
+
+	public ArrayList<ScenarioElement> getTargets() {
+		return targets;
+	}
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface

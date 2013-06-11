@@ -724,7 +724,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return null;
 		if(eventset==null)
 			return null;
-		for(Event e : eventset.sortedevents){
+		for(Event e : eventset.getSortedevents()){
 			if(e.getId().equals(id))
 				return e;
 		}
@@ -864,7 +864,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return false;
 		if(E==null)
 			return false;
-		if(E.myType==null)
+		if(E.getMyType()==null)
 			return false;
 		
 		// add event to list

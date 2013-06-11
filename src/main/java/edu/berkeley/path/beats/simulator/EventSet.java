@@ -31,10 +31,30 @@ import java.util.Collections;
 
 final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 
-	protected Scenario myScenario;
-	protected boolean isdone;			// true if we are done with events
-	protected int currentevent;
-	protected ArrayList<Event> sortedevents = new ArrayList<Event>();
+	private Scenario myScenario;
+	private boolean isdone;			// true if we are done with events
+	private int currentevent;
+	private ArrayList<Event> sortedevents = new ArrayList<Event>();
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Scenario getMyScenario() {
+		return myScenario;
+	}
+
+	public boolean isIsdone() {
+		return isdone;
+	}
+
+	public int getCurrentevent() {
+		return currentevent;
+	}
+
+	public ArrayList<Event> getSortedevents() {
+		return sortedevents;
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -54,7 +74,8 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
-	
+
+
 	@SuppressWarnings("unchecked")
 	protected void populate(Scenario myScenario) {
 		
@@ -115,7 +136,7 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 		}
 
 		// check whether next event is due
-		while(myScenario.getClock().getCurrentstep()>=sortedevents.get(currentevent).timestampstep){
+		while(myScenario.getClock().getCurrentstep()>=sortedevents.get(currentevent).getTimestampstep()){
 			
 			Event event =  sortedevents.get(currentevent);
 			
