@@ -30,13 +30,13 @@ import java.util.ArrayList;
 
 final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile {
 
-	protected Scenario myScenario;
-	protected Link myLink;
-	protected double dtinseconds;			// not really necessary
-	protected int samplesteps;
-	protected ArrayList<FundamentalDiagram> FD;
-	protected boolean isdone; 
-	protected int stepinitial;
+	private Scenario myScenario;
+	private Link myLink;
+	private double dtinseconds;			// not really necessary
+	private int samplesteps;
+	private ArrayList<FundamentalDiagram> FD;
+	private boolean isdone; 
+	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface

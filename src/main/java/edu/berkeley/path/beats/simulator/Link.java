@@ -264,9 +264,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// used by CapacityProfile.update. 
 	protected void setCapacityFromVeh(double c) {
 		for(FundamentalDiagram fd : FDfromProfile)
-			fd._capacity = fd._capacity<c ? fd._capacity : c;
+			fd.set_capacity( fd._getCapacityInVeh()<c ? fd._getCapacityInVeh() : c );
 		if(FDfromEvent!=null)
-			FDfromEvent._capacity = FDfromEvent._capacity<c ? FDfromEvent._capacity : c;
+			FDfromEvent.set_capacity( FDfromEvent._getCapacityInVeh()<c ? FDfromEvent._getCapacityInVeh() : c );
 	}
 	
 	/////////////////////////////////////////////////////////////////////

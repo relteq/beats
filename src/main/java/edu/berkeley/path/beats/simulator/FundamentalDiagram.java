@@ -28,15 +28,15 @@ package edu.berkeley.path.beats.simulator;
 
 final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
-	protected Link myLink;
-	protected double lanes;
-	protected Double _densityJam;     		// [veh] 
-	protected Double _capacity;   			// [veh] 
-	protected Double _capacityDrop;     	// [veh] 
-	protected Double _vf;                	// [-]
-	protected Double _w;                	// [-]
-	protected Double std_dev_capacity;		// [veh]
-	protected Double density_critical;		// [veh]
+	private Link myLink;
+	private double lanes;
+	private Double _densityJam;     	// [veh] 
+	private Double _capacity;   		// [veh] 
+	private Double _capacityDrop;     	// [veh] 
+	private Double _vf;                	// [-]
+	private Double _w;                	// [-]
+	private Double std_dev_capacity;	// [veh]
+	private Double density_critical;	// [veh]
 
 	/////////////////////////////////////////////////////////////////////
 	// construction 
@@ -203,6 +203,11 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
+
+	protected void set_capacity(Double _capacity) {
+		this._capacity = _capacity;
+	}	
+	
 	// we do not have to worry about getters returning NaN:
 	// they are only called for fundamental diagrams belonging
 	// to links, these are initialized with default values, and 
