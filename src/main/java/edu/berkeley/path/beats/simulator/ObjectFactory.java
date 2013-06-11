@@ -65,7 +65,6 @@ final public class ObjectFactory {
 	// protected create from Jaxb
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */
 	protected static Controller createControllerFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType) {		
 		if(myScenario==null)
 			return null;
@@ -104,7 +103,6 @@ final public class ObjectFactory {
 
 	}
 
-	/** @y.exclude */
 	protected static Event createEventFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType) {	
 		if(myScenario==null)
 			return null;
@@ -146,7 +144,6 @@ final public class ObjectFactory {
 		return E;
 	}
 
-	/** @y.exclude */
 	protected static Sensor createSensorFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor jaxbS,Sensor.Type myType) {	
 		if(myScenario==null)
 			return null;
@@ -164,7 +161,6 @@ final public class ObjectFactory {
 		return S;
 	}
 	
-	/** @y.exclude */
 	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;

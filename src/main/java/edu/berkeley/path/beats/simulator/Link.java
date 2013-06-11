@@ -32,49 +32,48 @@ package edu.berkeley.path.beats.simulator;
 */
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
-	/** @y.exclude */ 	protected Network myNetwork;
-	/** @y.exclude */ 	protected Node begin_node;
-	/** @y.exclude */ 	protected Node end_node;
+	protected Network myNetwork;
+	protected Node begin_node;
+	protected Node end_node;
 
 	// link type
 	protected Link.Type myType;
 	/** Type of link. */
 	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll};
 	
-	/** @y.exclude */ 	protected double _length;							// [meters]
-	/** @y.exclude */ 	protected double _lanes;							// [-]
-	/** @y.exclude */ 	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
-	/** @y.exclude */ 	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
-	/** @y.exclude */ 	protected FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
-	/** @y.exclude */ 	protected boolean activeFDevent;					// true if an FD event is active on this link,
+	protected double _length;							// [meters]
+	protected double _lanes;							// [-]
+	protected FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
+	protected FundamentalDiagram FDfromEvent;			// event fundamental diagram
+	protected FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
+	protected boolean activeFDevent;					// true if an FD event is active on this link,
 																			// true  means FD points to FDfromEvent 
 																			// false means FD points to FDfromprofile
     // flow into the link
-	/** @y.exclude */ 	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
+	protected Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
 	
 	// source demand profile
 	protected DemandProfile myDemandProfile;    
 	
     // demand and actual flow out of the link   
-	/** @y.exclude */ 	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
+	protected Double [][] outflowDemand;   	// [veh] 	numEnsemble x numVehTypes
+	protected Double [][] outflow;    		// [veh]	numEnsemble x numVehTypes
     
     // contoller
-	/** @y.exclude */ 	protected int control_maxflow_index;
-	/** @y.exclude */ 	protected int control_maxspeed_index;
-	/** @y.exclude */ 	protected Controller myFlowController;
-	/** @y.exclude */ 	protected Controller mySpeedController;
+	protected int control_maxflow_index;
+	protected int control_maxspeed_index;
+	protected Controller myFlowController;
+	protected Controller mySpeedController;
    
-	/** @y.exclude */ 	protected Double [][] density;    			// [veh]	numEnsemble x numVehTypes
-	/** @y.exclude */ 	protected Double []spaceSupply;        		// [veh]	numEnsemble
-	/** @y.exclude */ 	protected boolean issource; 				// [boolean]
-	/** @y.exclude */ 	protected boolean issink;     				// [boolean]
+	protected Double [][] density;    			// [veh]	numEnsemble x numVehTypes
+	protected Double []spaceSupply;        		// [veh]	numEnsemble
+	protected boolean issource; 				// [boolean]
+	protected boolean issink;     				// [boolean]
 	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Link(){}
 
 	/////////////////////////////////////////////////////////////////////
@@ -147,7 +146,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// Controller registration ..........................................
 	
-	/** @y.exclude */
 	protected boolean registerFlowController(Controller c,int index){
 		if(myFlowController!=null)
 			return false;
@@ -158,7 +156,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** @y.exclude */
 	protected boolean registerSpeedController(Controller c,int index){
 		if(mySpeedController!=null)
 			return false;
@@ -169,7 +166,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 	
-	/** @y.exclude */
 	protected boolean deregisterFlowController(Controller c){
 		if(myFlowController!=c)
 			return false;
@@ -179,7 +175,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/** @y.exclude */
 	protected boolean deregisterSpeedController(Controller c){
 		if(mySpeedController!=c)
 			return false;
@@ -191,7 +186,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// Fundamental diagram profiles and events .............................
 	
-	/** @y.exclude */
 	// getter for the currently active fundamental diagram
 	protected FundamentalDiagram currentFD(int ensemble){
 		try{
@@ -204,7 +198,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 	
-	/** @y.exclude */
 	// called by FundamentalDiagramProfile.populate,
     protected void setFundamentalDiagramProfile(FundamentalDiagramProfile fdp){
     	if(fdp==null)
@@ -213,7 +206,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
 	/** @throws BeatsException 
-	 * @y.exclude */
+	 */
     // used by FundamentalDiagramProfile to set the FD
     protected void setFundamentalDiagramFromProfile(FundamentalDiagram fd) throws BeatsException{
     	if(fd==null)
@@ -225,7 +218,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
 	/** @throws BeatsException 
-	 * @y.exclude */
+	  */
     // used by Event.setLinkFundamentalDiagram to activate an FD event
     protected void activateFundamentalDiagramEvent(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd) throws BeatsException {
     	if(fd==null)
@@ -245,7 +238,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
 	/** @throws BeatsException 
-	 * @y.exclude */
+	 */
     // used by Event.revertLinkFundamentalDiagram
     protected void revertFundamentalDiagramEvent() throws BeatsException{
     	if(!activeFDevent)
@@ -254,7 +247,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     }
 
 	/** @throws BeatsException 
-	 * @y.exclude */
+	 */
     // used by Event.setLinkLanes
 	protected void set_Lanes(double newlanes) throws BeatsException{
 		for(int e=0;e<myNetwork.myScenario.numEnsemble;e++)
@@ -268,7 +261,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		_lanes = newlanes;					// adjust local copy of lane count
 	}
 		
-	/** @y.exclude */
 	// used by CapacityProfile.update. 
 	protected void setCapacityFromVeh(double c) {
 		for(FundamentalDiagram fd : FDfromProfile)
@@ -281,7 +273,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// supply and demand calculation
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected void updateOutflowDemand(){
         
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
@@ -356,7 +347,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
         return;
     }
 
-	/** @y.exclude */
     protected void updateSpaceSupply(){
 		double totaldensity;
 		FundamentalDiagram FD;
@@ -389,7 +379,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////    
 
-	/** @y.exclude */
 	protected void populate(Network myNetwork) {
 
         this.myNetwork = myNetwork;
@@ -414,7 +403,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			_length = getLength().doubleValue();
 	}
 
-	/** @y.exclude */
 	protected void validate() {
 		
 		if(!issource && begin_node==null)
@@ -430,7 +418,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			BeatsErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
 	}
 
-	/** @y.exclude */
 	protected void resetState(SimulationSettings.ModeType simulationMode) {
 		
 		Scenario myScenario = myNetwork.myScenario;
@@ -468,12 +455,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return;
 	}
 
-	/** @y.exclude */
 	protected void resetLanes(){
 		_lanes = getLanes().doubleValue();
 	}
 
-	/** @y.exclude */
 	protected void resetFD(){
 		FDfromProfile = new FundamentalDiagram [myNetwork.myScenario.numEnsemble];
 		for(int i=0;i<FDfromProfile.length;i++){
@@ -483,7 +468,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
     	activeFDevent = false;
 	}
 
-	/** @y.exclude */
 	protected void update() {
 		
         if(issink)

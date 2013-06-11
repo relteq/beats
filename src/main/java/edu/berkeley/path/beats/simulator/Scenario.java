@@ -67,24 +67,24 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 */
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
-	/** @y.exclude */	protected Clock clock;
-	/** @y.exclude */	protected String configfilename;
-	/** @y.exclude */	protected SimulationSettings.UncertaintyType uncertaintyModel;
-	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
-	/** @y.exclude */	protected boolean global_control_on;	// global control switch
-	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
-	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
-	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
-	/** @y.exclude */	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
-	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
-	/** @y.exclude */	protected int numEnsemble;
-	/** @y.exclude */	protected boolean started_writing;
+	private static Logger logger = Logger.getLogger(Scenario.class);
+	protected Clock clock;
+	protected String configfilename;
+	protected SimulationSettings.UncertaintyType uncertaintyModel;
+	protected int numVehicleTypes;			// number of vehicle types
+	protected boolean global_control_on;	// global control switch
+	protected double global_demand_knob;	// scale factor for all demands
+	protected double simdtinseconds;		// [sec] simulation time step 
+	protected boolean scenariolocked=false;	// true when the simulation is running
+	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
+	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
+	protected SensorList sensorlist = new SensorList();
+	protected int numEnsemble;
+	protected boolean started_writing;
 
 	// Model uncertainty
-	/** @y.exclude */	protected double std_dev_flow = 0.0d;	// [veh]
-	/** @y.exclude */	protected boolean has_flow_unceratinty;
+	protected double std_dev_flow = 0.0d;	// [veh]
+	protected boolean has_flow_unceratinty;
 	
 	// data
 	private boolean sensor_data_loaded = false;
@@ -95,14 +95,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Scenario(){}
 		
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected void populate() throws BeatsException {
 		
 		// network list
@@ -148,7 +146,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		cumulatives = new Cumulatives(this);
 	}
 
-	/** @y.exclude */
 	public static void validate(Scenario S) {
 				
 		// validate network
@@ -198,7 +195,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * open output files
 	 * @return success		A boolean indicating whether the scenario was successfuly reset.
 	 * @throws BeatsException 
-	 * @y.exclude
 	 */
 	protected boolean reset(SimulationSettings.ModeType simulationMode) throws BeatsException {
 		
@@ -242,7 +238,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 	}	
 	
-	/** @y.exclude */
 	protected void update() throws BeatsException {	
 
         // sample profiles .............................	
@@ -316,7 +311,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-	/** @y.exclude */
 	protected Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
 		
 		Integer [] vehicletypeindex;
@@ -551,7 +545,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	// array getters ........................................................
-
 	
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
@@ -578,7 +571,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
 //		return vehtypeweights;
 //	}
-	
 
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network

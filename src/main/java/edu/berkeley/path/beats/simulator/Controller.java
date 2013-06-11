@@ -94,10 +94,8 @@ public class Controller {
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-  	/** @y.exclude */
     protected Controller(){};
       
-	/** @y.exclude */
 	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType){
 		 
 			this.myScenario = myScenario;
@@ -145,7 +143,6 @@ public class Controller {
 				}
 	 }
 
-//	 /** @y.exclude */
 //	 protected Controller(ArrayList<ScenarioElement> targets){
 //		 this.targets = targets;
 //		 this.control_maxflow  = new Double [targets.size()];

@@ -77,7 +77,6 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */	
 	protected void populate(Scenario myScenario) {
 		
 		this.myScenario = myScenario;

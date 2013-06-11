@@ -56,7 +56,6 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Sensor(){
 	}		  
 
@@ -73,43 +72,36 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getOccupancy(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVPM(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
 		return null;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getSpeedInMPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;

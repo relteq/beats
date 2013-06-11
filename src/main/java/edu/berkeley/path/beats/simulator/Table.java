@@ -28,9 +28,7 @@ package edu.berkeley.path.beats.simulator;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-/** XXX. 
- * YYY
- *
+/** 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 final public class Table {

@@ -34,47 +34,46 @@ import java.util.ArrayList;
 */
 public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		   
-	/** @y.exclude */ 	protected Network myNetwork;
+	protected Network myNetwork;
 
 	// network references
-	/** @y.exclude */ 	protected Link [] output_link;
-	/** @y.exclude */ 	protected Link [] input_link;
+	protected Link [] output_link;
+	protected Link [] input_link;
 	
-	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
-	/** @y.exclude */ 	protected Double3DMatrix splitratio;
-	/** @y.exclude */ 	protected boolean istrivialsplit;
-	/** @y.exclude */ 	protected boolean hasSRprofile;
-	/** @y.exclude */ 	protected int nIn;
-	/** @y.exclude */ 	protected int nOut;
-	/** @y.exclude */ 	protected boolean isTerminal;
+	protected Double3DMatrix sampledSRprofile;
+	protected Double3DMatrix splitratio;
+	protected boolean istrivialsplit;
+	protected boolean hasSRprofile;
+	protected int nIn;
+	protected int nOut;
+	protected boolean isTerminal;
 	
-	/** @y.exclude */ 	protected Signal mySignal = null;
+	protected Signal mySignal = null;
 
     // controller
-	/** @y.exclude */ 	protected boolean hascontroller;
-	/** @y.exclude */ 	protected boolean controlleron;
+	protected boolean hascontroller;
+	protected boolean controlleron;
 	
 	// split event
-	/** @y.exclude */ 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
+	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 																// controller split ratios
     // used in update()
-	/** @y.exclude */ 	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
-	/** @y.exclude */ 	protected double [][] outSupply;		// [ensemble][nOut]
-	/** @y.exclude */ 	protected double [][] outDemandKnown;	// [ensemble][nOut]
-	/** @y.exclude */ 	protected double [][] dsratio;			// [ensemble][nOut]
-	/** @y.exclude */ 	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
-	/** @y.exclude */ 	protected boolean [][] iscontributor;	// [nIn][nOut]
-	/** @y.exclude */ 	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	/** @y.exclude */ 	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	/** @y.exclude */ 	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
+	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
+	protected double [][] outSupply;		// [ensemble][nOut]
+	protected double [][] outDemandKnown;	// [ensemble][nOut]
+	protected double [][] dsratio;			// [ensemble][nOut]
+	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	protected boolean [][] iscontributor;	// [nIn][nOut]
+	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
+	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
+	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
+	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
+	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Node(){}
 
 	/////////////////////////////////////////////////////////////////////
@@ -120,7 +119,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */ 	
+	
 	protected boolean registerController(){
 		if(hascontroller)		// used to detect multiple controllers
 			return false;
@@ -131,12 +130,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 	
-	/** @y.exclude */ 	
+	
     protected void setSampledSRProfile(Double3DMatrix s){
     	sampledSRprofile = s;
     }
 
-    /** @y.exclude */ 	
+    
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
@@ -145,7 +144,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 
-	/** @y.exclude */ 	
+	
 	protected void setControllerOn(boolean controlleron) {
 		if(hascontroller){
 			this.controlleron = controlleron;
@@ -154,7 +153,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 
-	/** @y.exclude */ 	
+	
     protected void resetSplitRatio(){
 
 		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
@@ -165,7 +164,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		//////
     }
     
-    /** @y.exclude */ 	
+    
 	protected void setSplitratio(Double3DMatrix x) {
 		splitratio.copydata(x);
 		normalizeSplitRatioMatrix(splitratio);
@@ -175,7 +174,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
     
-	/** @y.exclude */ 	
+	
 	protected void populate(Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
@@ -218,7 +217,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		hasactivesplitevent = false;
 	}
     
-	/** @y.exclude */ 	
+	
 	protected void validate() {
 				
 		if(isTerminal)
@@ -242,7 +241,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 	}
 
-	/** @y.exclude */ 	
+	
 	protected void update() {
 		
         if(isTerminal)
@@ -301,7 +300,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	            output_link[j].inflow[e] = outFlow[e][j];
 	}
 
-	/** @y.exclude */ 	
+	
 	protected void reset() {	
 		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
     	int numEnsemble = myNetwork.myScenario.numEnsemble;		
@@ -316,7 +315,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */ 	
+	
 	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
 
 		int i,j,k;
@@ -343,7 +342,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return true;
 	}
 	
-	/** @y.exclude */ 	
+	
     protected void normalizeSplitRatioMatrix(Double3DMatrix X){
 
     	int i,j,k;

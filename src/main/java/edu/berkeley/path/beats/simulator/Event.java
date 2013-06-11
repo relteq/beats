@@ -64,10 +64,8 @@ public class Event implements Comparable {
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Event(){}
 
-	/** @y.exclude */
 	protected Event(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
 		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
@@ -91,7 +89,6 @@ public class Event implements Comparable {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-//	/** @y.exclude */
 //	protected void populateFromJaxbXXX(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
 //		this.id = jaxbE.getId();
 //		this.myScenario = myScenario;
@@ -264,7 +261,6 @@ public class Event implements Comparable {
 	// internal class
 	/////////////////////////////////////////////////////////////////////	
 
-	/** @y.exclude */
 	protected static class SplitRatio {
 		private int input_index;
 		private int output_index;

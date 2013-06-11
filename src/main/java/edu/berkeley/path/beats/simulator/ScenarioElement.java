@@ -34,9 +34,9 @@ package edu.berkeley.path.beats.simulator;
  */
 public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.ScenarioElement {
 	
-	/** @y.exclude */	protected Scenario myScenario;
-	/** @y.exclude */	protected ScenarioElement.Type myType;
-	/** @y.exclude */	protected Object reference;
+	protected Scenario myScenario;
+	protected ScenarioElement.Type myType;
+	protected Object reference;
 
 	/** Type of scenario element. */
 	public static enum Type {  
@@ -51,7 +51,6 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected ScenarioElement(){}
 	
 	/////////////////////////////////////////////////////////////////////
