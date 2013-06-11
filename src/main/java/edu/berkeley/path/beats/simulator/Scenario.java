@@ -292,15 +292,80 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// run
+	// start-to-end run
 	/////////////////////////////////////////////////////////////////////
+
+	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
+		this.numEnsemble = 1;
+		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+		run_internal(param,numReps,true,outputtype,outputfileprefix);
+	}
 	
 	protected void run(SimulationSettings simsettings) throws BeatsException{
 		this.numEnsemble = 1;
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
 		run_internal(param,simsettings.getNumReps(),true,simsettings.getOutput_format(),simsettings.getOutputfileprefix());
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// step-by-step run
+	/////////////////////////////////////////////////////////////////////
+
+
+	// intialization and running ........................................
+	
+	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
+	 * 
+	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
+	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
+	 * rolling back all profiles and clocks. 
+	 * @param numEnsemble Number of simulations to run in parallel
+	 */
+	public void initialize_run(int numEnsemble,double timestart) throws BeatsException{
+
+		if(numEnsemble<=0)
+			throw new BeatsException("Number of ensemble runs must be at least 1.");
 		
+		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
+
+		this.scenariolocked = false;
+		this.numEnsemble = numEnsemble;
+        
+		// create the clock
+		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
+
+		// reset the simulation
+		if(!reset(param.simulationMode))
+			throw new BeatsException("Reset failed.");
+		
+		// lock the scenario
+        scenariolocked = true;	
+        
+        // advance to start of output time        
+        while( getCurrentTimeInSeconds()<param.timestartOutput )
+        	advanceNSeconds(simdtinseconds);
+        
+	}
+	
+	/** Advance the simulation <i>nsec</i> seconds.
+	 * 
+	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
+	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
+	 * if the end of the simulation is reached.
+	 * @param nsec Number of seconds to advance.
+	 * @throws BeatsException 
+	 */
+	public boolean advanceNSeconds(double nsec) throws BeatsException{	
+		
+		if(!scenariolocked)
+			throw new BeatsException("Run not initialized. Use initialize_run() first.");
+		
+		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
+			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
+		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
+		return advanceNSteps_internal(SimulationSettings.ModeType.normal,nsteps,false,null,-1d);
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// protected simple getters and setters
 	/////////////////////////////////////////////////////////////////////
@@ -395,66 +460,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
-
-	// intialization and running ........................................
-	
-	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
-	 * 
-	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
-	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
-	 * rolling back all profiles and clocks. 
-	 * @param numEnsemble Number of simulations to run in parallel
-	 */
-	public void initialize_run(int numEnsemble,double timestart) throws BeatsException{
-
-		if(numEnsemble<=0)
-			throw new BeatsException("Number of ensemble runs must be at least 1.");
-		
-		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
-
-		this.scenariolocked = false;
-		this.numEnsemble = numEnsemble;
-        
-		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-
-		// reset the simulation
-		if(!reset(param.simulationMode))
-			throw new BeatsException("Reset failed.");
-		
-		// lock the scenario
-        scenariolocked = true;	
-        
-        // advance to start of output time        
-        while( getCurrentTimeInSeconds()<param.timestartOutput )
-        	advanceNSeconds(simdtinseconds);
-        
-	}
-	
-	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		run_internal(param,numReps,true,outputtype,outputfileprefix);
-	}
-		
-	/** Advance the simulation <i>nsec</i> seconds.
-	 * 
-	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
-	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
-	 * if the end of the simulation is reached.
-	 * @param nsec Number of seconds to advance.
-	 * @throws BeatsException 
-	 */
-	public boolean advanceNSeconds(double nsec) throws BeatsException{	
-		
-		if(!scenariolocked)
-			throw new BeatsException("Run not initialized. Use initialize_run() first.");
-		
-		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
-			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
-		return advanceNSteps_internal(SimulationSettings.ModeType.normal,nsteps,false,null,-1d);
-	}
 
 	// seriallization .................................................
 	
