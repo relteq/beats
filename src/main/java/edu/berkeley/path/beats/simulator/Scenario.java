@@ -102,6 +102,19 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	protected void populate() throws BeatsException {
 		
+	    // initialize scenario attributes ..............................................
+		this.global_control_on = true;
+		this.global_demand_knob = 1d;
+		this.simdtinseconds = computeCommonSimulationTimeInSeconds(this);
+		this.uncertaintyModel = SimulationSettings.UncertaintyType.uniform;
+		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
+
+		this.numVehicleTypes = 1;
+	    if(getSettings()!=null)
+	        if(getSettings().getVehicleTypes()!=null)
+	            if(getSettings().getVehicleTypes().getVehicleType()!=null) 
+	            	this.numVehicleTypes = getSettings().getVehicleTypes().getVehicleType().size();
+
 		// network list
 		if(networkList!=null)
 			for( edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork() )
@@ -279,7 +292,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// protected interface
+	// run
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void run(SimulationSettings simsettings) throws BeatsException{
@@ -287,7 +300,31 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
 		run_internal(param,simsettings.getNumReps(),true,simsettings.getOutput_format(),simsettings.getOutputfileprefix());
 	}
-	
+		
+	/////////////////////////////////////////////////////////////////////
+	// protected simple getters and setters
+	/////////////////////////////////////////////////////////////////////
+
+	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
+		return controllerset;
+	}
+
+	protected void setConfigfilename(String configfilename) {
+		this.configfilename = configfilename;
+	}
+
+	protected void setGlobal_control_on(boolean global_control_on) {
+		this.global_control_on = global_control_on;
+	}
+
+	protected void setGlobal_demand_knob(double global_demand_knob) {
+		this.global_demand_knob = global_demand_knob;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// protected complex getters
+	/////////////////////////////////////////////////////////////////////
+
 	/** Retrieve a network with a given id.
 	 * @param id The string id of the network
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
@@ -358,7 +395,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
-	
+
 	// intialization and running ........................................
 	
 	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
@@ -419,6 +456,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return advanceNSteps_internal(SimulationSettings.ModeType.normal,nsteps,false,null,-1d);
 	}
 
+	// seriallization .................................................
+	
 	/** Save the scenario to XML.
 	 * 
 	 * @param filename The name of the configuration file.
@@ -782,46 +821,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
-	
+		
 	/////////////////////////////////////////////////////////////////////
-	// protected getters and setters
-	/////////////////////////////////////////////////////////////////////
-
-	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
-		return controllerset;
-	}
-	
-	protected void setSimdtinseconds(double simdtinseconds) {
-		this.simdtinseconds = simdtinseconds;
-	}
-
-	protected void setConfigfilename(String configfilename) {
-		this.configfilename = configfilename;
-	}
-
-	protected void setUncertaintyModel(
-			SimulationSettings.UncertaintyType uncertaintyModel) {
-		this.uncertaintyModel = uncertaintyModel;
-	}
-
-	protected void setNumVehicleTypes(int numVehicleTypes) {
-		this.numVehicleTypes = numVehicleTypes;
-	}
-
-	protected void setGlobal_control_on(boolean global_control_on) {
-		this.global_control_on = global_control_on;
-	}
-
-	protected void setGlobal_demand_knob(double global_demand_knob) {
-		this.global_demand_knob = global_demand_knob;
-	}
-
-	protected void setHas_flow_unceratinty(boolean has_flow_unceratinty) {
-		this.has_flow_unceratinty = has_flow_unceratinty;
-	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// adding stuff
+	// scenario modification
 	/////////////////////////////////////////////////////////////////////
 
 	/** Add a controller to the scenario.
@@ -913,7 +915,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 	
-	// data and calibration .............................................
+	/////////////////////////////////////////////////////////////////////
+	// calibration
+	/////////////////////////////////////////////////////////////////////
 	
 	public void loadSensorData() throws BeatsException {
 
@@ -1053,6 +1057,37 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		cumulatives.reset();
 	}
 
+	
+	/////////////////////////////////////////////////////////////////////
+	// public static
+	/////////////////////////////////////////////////////////////////////	
+	
+	// returns greatest common divisor among network time steps.
+	// The time steps are rounded to the nearest decisecond.
+	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
+		
+		if(scenario.getNetworkList()==null)
+			return Double.NaN;
+		
+		if(scenario.getNetworkList().getNetwork().size()==0)
+			return Double.NaN;
+			
+		// loop through networks calling gcd
+		double dt;
+		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
+		int tengcd = 0;		// in deciseconds
+		for(int i=0;i<networkList.size();i++){
+			dt = networkList.get(i).getDt().doubleValue();	// in seconds
+	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
+	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
+				dt *= 3600;
+	        }
+			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
+		}
+    	return ((double)tengcd)/10.0;
+	}
+	
+	
 	/////////////////////////////////////////////////////////////////////
 	// private classes
 	/////////////////////////////////////////////////////////////////////	

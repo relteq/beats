@@ -276,19 +276,6 @@ final public class ObjectFactory {
 			edu.berkeley.path.beats.util.UnitConverter.process(S);
 		}
 
-	    // initialize scenario attributes ..............................................
-		S.setGlobal_control_on(true);
-		S.setGlobal_demand_knob(1d);
-		S.setSimdtinseconds( computeCommonSimulationTimeInSeconds(S) );
-		S.setUncertaintyModel( SimulationSettings.UncertaintyType.uniform );
-		S.setHas_flow_unceratinty( BeatsMath.greaterthan(S.getStd_dev_flow(),0.0) );
-
-		S.setNumVehicleTypes(1);
-	    if(S.getSettings()!=null)
-	        if(S.getSettings().getVehicleTypes()!=null)
-	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
-	            	S.setNumVehicleTypes(S.getSettings().getVehicleTypes().getVehicleType().size());
-
 	    // populate the scenario ....................................................
 	    S.populate();
 
@@ -336,31 +323,6 @@ final public class ObjectFactory {
 		unmrsh.setProperty(propnam, factory);
 	}
 
-	// returns greatest common divisor among network time steps.
-	// The time steps are rounded to the nearest decisecond.
-	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
-		
-		if(scenario.getNetworkList()==null)
-			return Double.NaN;
-		
-		if(scenario.getNetworkList().getNetwork().size()==0)
-			return Double.NaN;
-			
-		// loop through networks calling gcd
-		double dt;
-		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
-		int tengcd = 0;		// in deciseconds
-		for(int i=0;i<networkList.size();i++){
-			dt = networkList.get(i).getDt().doubleValue();	// in seconds
-	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
-	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
-				dt *= 3600;
-	        }
-			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
-		}
-    	return ((double)tengcd)/10.0;
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// public: controller
 	/////////////////////////////////////////////////////////////////////
