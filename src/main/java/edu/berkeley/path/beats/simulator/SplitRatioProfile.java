@@ -28,22 +28,19 @@ package edu.berkeley.path.beats.simulator;
 
 final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioProfile {
 
-	protected Scenario myScenario;
-	protected Node myNode;
+	private Scenario myScenario;
+	private Node myNode;
+	private double dtinseconds;				// not really necessary
+	private int samplesteps;
 	
-	protected double dtinseconds;				// not really necessary
-	protected int samplesteps;
-	
-	protected Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
+	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
 												// input link i, output link j. The first dimension 
 												// of the Double2DMatrix is time, the second in vehicle type.
 	
-	protected Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
-	
-	protected int laststep;
-	
-	protected boolean isdone; 
-	protected int stepinitial;
+	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
+	private int laststep;
+	private boolean isdone; 
+	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -219,7 +216,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
+			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).getVehicletypeindex();
 		
 		int i,j,lastk;
 		for(i=0;i<myNode.getnIn();i++){
