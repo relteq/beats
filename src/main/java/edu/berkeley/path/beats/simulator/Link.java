@@ -642,130 +642,186 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** Jam density in vehicle/link. */
 	public double getDensityJamInVeh(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getDensityJamInVeh();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getDensityJamInVeh();
+		}
 	}
 
 	/** Critical density in vehicle/link. */
 	public double getDensityCriticalInVeh(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else		
+				return FD.getDensityCriticalInVeh();
+		} catch (Exception e) {
 			return Double.NaN;
-		else		
-			return FD.getDensityCriticalInVeh();
+		}
 	}
 
 	/** Capacity drop in vehicle/simulation time step */
 	public double getCapacityDropInVeh(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getCapacityDropInVeh();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getCapacityDropInVeh();
+		}
 	}
 
 	/** Capacity in vehicle/simulation time step */
 	public double getCapacityInVeh(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getCapacityInVeh();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getCapacityInVeh();
+		}
 	}
 
 	/** Jam density in vehicle/meter/lane. */
 	public double getDensityJamInVPMPL(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getDensityJamInVeh() / getLengthInMeters() / _lanes;
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getDensityJamInVeh() / getLengthInMeters() / _lanes;
+		}
 	}
 
 	/** Critical density in vehicle/meter/lane. */
 	public double getDensityCriticalInVPMPL(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD.getDensityCriticalInVeh() / getLengthInMeters() / _lanes;
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD.getDensityCriticalInVeh() / getLengthInMeters() / _lanes;
+		}
 	}
 
 	/** Capacity drop in vehicle/second/lane. */
 	public double getCapacityDropInVPSPL(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getCapacityDropInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getCapacityDropInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+		}
 	}
 
 	/** Capacity in vehicles per second. */
 	public double getCapacityInVPS(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds();
+		}
 	}
 
 	/** Capacity in vehicle/second/lane. */
 	public double getCapacityInVPSPL(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+		}
 	}
 
 	/** Freeflow speed in normalized units (link/time step). */
 	public double getNormalizedVf(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD.getVfNormalized();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD.getVfNormalized();
+		}
 	}
 
 	/** Freeflow speed in meters/second. */
 	public double getVfInMPS(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD.getVfNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+		}
 	}
 
 	/** Critical speed in meters/second. */
 	public double getCriticalSpeedInMPS(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if (null == FD)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if (null == FD)
+				return Double.NaN;
+			else if (null != FD.getCriticalSpeed())
+				return FD.getCriticalSpeed().doubleValue();
+			else
+				return getVfInMPS(ensemble);
+		} catch (Exception e) {
 			return Double.NaN;
-		else if (null != FD.getCriticalSpeed())
-			return FD.getCriticalSpeed().doubleValue();
-		else
-			return getVfInMPS(ensemble);
+		}
 	}
 
 	/** Congestion wave speed in normalized units (link/time step). */
 	public double getNormalizedW(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD.getWNormalized();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD.getWNormalized();
+		}
 	}
 
 	/** Congestion wave speed in meters/second. */
 	public double getWInMPS(int ensemble) {
-		FundamentalDiagram FD = currentFD(ensemble);
-		if(FD==null)
+		try {
+			FundamentalDiagram FD = currentFD(ensemble);
+			if(FD==null)
+				return Double.NaN;
+			else
+				return FD.getWNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+		} catch (Exception e) {
 			return Double.NaN;
-		else
-			return FD.getWNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+		}
 	}
 
 	/** Replace link density with given values.
