@@ -47,11 +47,11 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	private Link [] input_link;
 	
 	// split ratio from profile
-	private Double3DMatrix sampledSRprofile;
+	private Double3DMatrix splitFromProfile;
 	private boolean hasSRprofile;
 	
 	// split ratio from event
-//	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
+	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
 	
 	// actual split ratio
 	private Double3DMatrix splitratio;
@@ -62,12 +62,16 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 //	private boolean hascontroller;
 //	private boolean controlleron;
 	
-    // used in update()
+	// input to node model, copied from link suppy/demand
 	private Double [][][] inDemand;		// [ensemble][nIn][nTypes]
 	private double [][] outSupply;		// [ensemble][nOut]
+	
+	// output from node model (inDemand gets scaled)
+	private Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	
+    // used in update()
 	private double [][] outDemandKnown;	// [ensemble][nOut]
 	private double [][] dsratio;		// [ensemble][nOut]
-	private Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
 	private boolean [][] iscontributor;	// [nIn][nOut]
 	private ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
 	private ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
@@ -118,10 +122,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		iscontributor = new boolean[nIn][nOut];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
-		sampledSRprofile = null;
 		
-		resetSplitRatio();
-		
+		// initialize the split ratio matrix
+		splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+		normalizeSplitRatioMatrix(splitratio);
+
 //		hascontroller = false;
 //		controlleron = false;
 		hasactivesplitevent = false;
@@ -183,7 +189,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 			// not actively controlled. Otherwise the mat has already been 
 			// set by the controller.
 			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
-				splitratio.copydata(sampledSRprofile);
+				splitratio.copydata(splitFromProfile);
 			
 	        // compute known output demands ................................
 			for(e=0;e<numEnsemble;e++)
@@ -221,32 +227,19 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
-
-	
-    
-	// used by Node and Event
-	protected void resetSplitRatio(){
-
-		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
-
-		//////
-		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
-		normalizeSplitRatioMatrix(splitratio);
-		//////
-	}
 	
 	// split ratio profile ..............................................
 	
 	protected void setHasSRprofile(boolean hasSRprofile) {
 		if(!istrivialsplit){
 			this.hasSRprofile = hasSRprofile;
-			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
-			normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+			this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+			normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
 
 	protected void setSampledSRProfile(Double3DMatrix s){
-    	sampledSRprofile = s;
+    	splitFromProfile = s;;
     }
 	
 	// controllers ......................................................
@@ -272,7 +265,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// events ..........................................................
 
 	// used by Event.setNodeEventSplitRatio
-	protected void applyEventSplitRatio(Double3DMatrix x) {
+	protected void applyEventSplitRatio(Double3DMatrix x) {		
 		splitratio.copydata(x);
 		normalizeSplitRatioMatrix(splitratio);
 		hasactivesplitevent = true;
@@ -280,7 +273,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 
 	// used by Event.revertNodeEventSplitRatio
 	protected void removeEventSplitRatio() {
-		resetSplitRatio();
+//		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+//		normalizeSplitRatioMatrix(splitratio);
 		hasactivesplitevent = false;
 	}
 	
@@ -289,18 +283,11 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return hasactivesplitevent;
 	}
 
-	// used by
 	// used by Event.setNodeEventSplitRatio
     protected Double3DMatrix getSplitratio() {
 		return splitratio;
 	}
     
-	// used by Event.setNodeEventSplitRatio
-	protected void setSplitratio(Double3DMatrix x) {
-		splitratio.copydata(x);
-		normalizeSplitRatioMatrix(splitratio);
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
