@@ -50,17 +50,22 @@ public final class Runner {
 
 		try {
 			// process input parameters
-			SimulationSettings simsettings = parseInput(args);
-			if (null == simsettings) 
+			RunnerArguments runargs = parseInput(args);
+			if (null == runargs) 
 				return;
 
 			// load configuration file
-			Scenario scenario = ObjectFactory.createAndLoadScenario(simsettings.getConfigfilename());
+			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename());
 			if (null == scenario)
 				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 			
 			// run the scenario
-			scenario.run(simsettings);
+			scenario.run(runargs.getStartTime(), 
+					runargs.getEndTime(), 
+					runargs.getOutputDt(),
+					runargs.getOutput_format(),
+					runargs.getOutputfileprefix(),
+					runargs.getNumReps());
 			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
 			
@@ -75,7 +80,7 @@ public final class Runner {
 		
 	}
 
-	private static SimulationSettings parseInput(String[] args){
+	private static RunnerArguments parseInput(String[] args){
 
 		if(args.length<1){
 			String str;
@@ -109,7 +114,7 @@ public final class Runner {
 			return null;
 		}
 		
-		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
+		RunnerArguments simsettings = new RunnerArguments(RunnerArguments.defaults());
 		simsettings.parseArgs(args, 0);
 		return simsettings;
 	}
@@ -117,7 +122,7 @@ public final class Runner {
 	public static void run_db(String [] args) throws BeatsException, edu.berkeley.path.beats.Runner.InvalidUsageException {
 		logger.info("Parsing arguments");
 		long scenario_id;
-		SimulationSettings simsettings = new SimulationSettings(SimulationSettings.defaults());
+		RunnerArguments runargs = new RunnerArguments(RunnerArguments.defaults());
 		if (0 == args.length || 5 < args.length) {
 			final String eol = System.getProperty("line.separator");
 			throw new edu.berkeley.path.beats.Runner.InvalidUsageException(
@@ -129,7 +134,7 @@ public final class Runner {
 					"\tnumber of simulations");
 		} else {
 			scenario_id = Long.parseLong(args[0]);
-			simsettings.parseArgs(args, 1);
+			runargs.parseArgs(args, 1);
 		}
 
 		edu.berkeley.path.beats.db.Service.init();
@@ -141,11 +146,11 @@ public final class Runner {
 			logger.info("Loading default simulation settings");
 			try {
 				DefSimSettings db_defss = DefSimSettingsPeer.retrieveByPK(Long.valueOf(scenario_id));
-				SimulationSettings defss = new SimulationSettings(simsettings.getParent());
+				RunnerArguments defss = new RunnerArguments(runargs.getParent());
 				defss.setStartTime(db_defss.getSimStartTime());
 				defss.setDuration(db_defss.getSimDuration());
 				defss.setOutputDt(db_defss.getOutputDt());
-				simsettings.setParent(defss);
+				runargs.setParent(defss);
 			} catch (NoRowsException exc) {
 				logger.warn("Found no default simulation settings for scenario " + scenario_id, exc);
 			} catch (TooManyRowsException exc) {
@@ -155,11 +160,15 @@ public final class Runner {
 			}
 		}
 
-		logger.info("Simulation parameters: " + simsettings);
+		logger.info("Simulation parameters: " + runargs);
 
 		logger.info("Simulation");
-		simsettings.setOutput_format("db");
-		scenario.run(simsettings);
+		scenario.run(runargs.getStartTime(), 
+				runargs.getEndTime(), 
+				runargs.getOutputDt(),
+				"db",
+				runargs.getOutputfileprefix(),
+				runargs.getNumReps());
 
 		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");

@@ -32,10 +32,11 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	private Double [] current_sample;
 	private boolean isOrphan;
 	private double dtinseconds;				// not really necessary
-	private int samplesteps;					// [sim steps] profile sample period
+	private int samplesteps;				// [sim steps] profile sample period
 	private Double2DMatrix demand_nominal;	// [veh]
 	private boolean isdone; 
 	private int stepinitial;
+	
 	private double _knob;
 	private Double std_dev_add;			// [veh]
 	private Double std_dev_mult;			// [veh]
@@ -73,7 +74,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			myLink.setMyDemandProfile(this);
 		
 		// sample demand distribution, convert to vehicle units
-		if(getContent()!=null){
+		if(!isOrphan && getContent()!=null){
 			demand_nominal = new Double2DMatrix(getContent());
 			demand_nominal.multiplyscalar(myScenario.getSimdtinseconds());
 		}
@@ -115,11 +116,11 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
 	protected void validate() {
 		
-		if(demand_nominal.isEmpty())
+		if(demand_nominal==null || demand_nominal.isEmpty())
 			return;
 		
 		if(isOrphan)
-			BeatsErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
+			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
 		// check dtinseconds
 		if( dtinseconds<=0 && demand_nominal.getnTime()>1 )
@@ -139,6 +140,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 
 	protected void reset() {
+		
+		if(isOrphan)
+			return;
+					
 		isdone = false;
 		
 		// read start time, convert to stepinitial
@@ -159,12 +164,16 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 	
 	protected void update(boolean forcesample) {
+		
 		if(isOrphan)
 			return;
+		
+		if(demand_nominal==null || demand_nominal.isEmpty())
+			return;
+		
 		if(isdone && !forcesample)
 			return;
-		if(demand_nominal.isEmpty())
-				return;
+		
 		if(forcesample || myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
 			// REMOVE THESE

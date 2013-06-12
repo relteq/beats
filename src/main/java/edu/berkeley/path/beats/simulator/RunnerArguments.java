@@ -5,27 +5,24 @@ import java.math.BigDecimal;
 /**
  * The simulation settings
  */
-final class SimulationSettings {
+final class RunnerArguments {
 	
-	public static enum ModeType {  normal, warmupFromZero , warmupFromIC };
-	public static enum UncertaintyType { uniform, gaussian }
-
-	private String configfilename;
-	private String outputfileprefix;
-	private String output_format;
-	private Double startTime = null; // sec
-	private Double duration = null; // sec
-	private Double outputDt = null; // sec
-	private Integer numReps = null;
-	private UncertaintyType uncertaintyType;
-
-	private SimulationSettings parent = null;
+	// given
+	private String configfilename;				// configuration file XML
+	private String outputfileprefix;			// prefix for output files
+	private String output_format;				// output format {text,xml,db}
+	private Double startTime = null; 			// [sec] output start time
+	private Double duration = null; 			// [sec] output duration
+	private Double outputDt = null; 			// [sec] output period
+	private Integer numReps = null;				// number of sequential runs
+	
+	private RunnerArguments parent = null;
 
 	/**
 	 * Constructor from default settings
 	 * @param parent
 	 */
-	public SimulationSettings(SimulationSettings parent) {
+	public RunnerArguments(RunnerArguments parent) {
 		this.parent = parent;
 	}
 
@@ -36,7 +33,7 @@ final class SimulationSettings {
 	 * @param outputDt output sample rate, sec
 	 * @param numReps number of runs, sec
 	 */
-	public SimulationSettings(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps) {
+	public RunnerArguments(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps) {
 		this.outputfileprefix = outputfileprefix;
 		this.output_format = output_format;		
 		this.startTime = startTime;
@@ -45,7 +42,6 @@ final class SimulationSettings {
 		this.numReps = numReps;
 	}
 
-	
 	public void setConfigfilename(String configfilename) {
 		this.configfilename = configfilename;
 	}
@@ -110,7 +106,7 @@ final class SimulationSettings {
 	/**
 	 * @param ss the parent simulation settings
 	 */
-	public void setParent(SimulationSettings ss) {
+	public void setParent(RunnerArguments ss) {
 		this.parent = ss;
 	}
 
@@ -171,7 +167,7 @@ final class SimulationSettings {
 	/**
 	 * @return the parent simulation settings
 	 */
-	public SimulationSettings getParent() {
+	public RunnerArguments getParent() {
 		return parent;
 	}
 
@@ -223,8 +219,8 @@ final class SimulationSettings {
 	/**
 	 * @return the default simulation settings
 	 */
-	public static SimulationSettings defaults() {
-		return new SimulationSettings("outputs", "xml", Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
+	public static RunnerArguments defaults() {
+		return new RunnerArguments("outputs", "xml", Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
 	}
 
 }

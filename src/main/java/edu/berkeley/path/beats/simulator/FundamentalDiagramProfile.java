@@ -151,13 +151,13 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 
 			// sample the profile
 			if(step<n){
-				myLink.setFundamentalDiagramFromProfile( FD.get(step) );
+				myLink.setFDFromProfile( FD.get(step) );
 				return;
 			}
 			
 			// last sample
 			if(step>=n && !isdone){
-				myLink.setFundamentalDiagramFromProfile( FD.get(n) );
+				myLink.setFDFromProfile( FD.get(n) );
 				isdone = true;
 				return;
 			}
