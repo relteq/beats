@@ -239,7 +239,7 @@ public class Event implements Comparable {
 	protected void setLinkFundamentalDiagram(Link link,edu.berkeley.path.beats.jaxb.FundamentalDiagram newFD) throws BeatsException{
 		if(link==null)
 			return;
-		link.activateFundamentalDiagramEvent(newFD);
+		link.activateFDEvent(newFD);
 	}
 	
     protected void revertLinkFundamentalDiagram(Link link) throws BeatsException{

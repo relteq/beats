@@ -87,12 +87,9 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			((Node) node).reset();
 
 		// link list
-		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-			Link _link = (Link) link;
-			_link.resetLanes();		
-			_link.resetState(simulationMode);
-			_link.resetFD();
-		}
+		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
+			((Link) link).reset(simulationMode);
+
 	}
 
 	protected void update() throws BeatsException {

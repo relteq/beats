@@ -120,7 +120,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			return;
 		
 		if(isOrphan)
-			BeatsErrorLog.addError("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
+			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
 		
 		// check dtinseconds
 		if( dtinseconds<=0 && demand_nominal.getnTime()>1 )
@@ -140,6 +140,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 
 	protected void reset() {
+		
+		if(isOrphan)
+			return;
+					
 		isdone = false;
 		
 		// read start time, convert to stepinitial
