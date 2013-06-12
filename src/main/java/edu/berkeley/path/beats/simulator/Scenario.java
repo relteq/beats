@@ -67,11 +67,13 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 */
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
+	public static enum UncertaintyType { uniform, gaussian }
+	public static enum ModeType {  normal, warmupFromZero , warmupFromIC };
+	
 	private static Logger logger = Logger.getLogger(Scenario.class);
 	private Cumulatives cumulatives;
 	private Clock clock;
 	private String configfilename;
-	private SimulationSettings.UncertaintyType uncertaintyModel;
 	private int numVehicleTypes;			// number of vehicle types
 	private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
@@ -84,6 +86,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private boolean started_writing;
 
 	// Model uncertainty
+	private UncertaintyType uncertaintyModel;
 	private double std_dev_flow = 0.0d;	// [veh]
 	private boolean has_flow_unceratinty;
 	
@@ -106,7 +109,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.global_control_on = true;
 		this.global_demand_knob = 1d;
 		this.simdtinseconds = computeCommonSimulationTimeInSeconds(this);
-		this.uncertaintyModel = SimulationSettings.UncertaintyType.uniform;
+		this.uncertaintyModel = UncertaintyType.uniform;
 		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
 
 		this.numVehicleTypes = 1;
@@ -208,7 +211,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return success		A boolean indicating whether the scenario was successfuly reset.
 	 * @throws BeatsException 
 	 */
-	protected boolean reset(SimulationSettings.ModeType simulationMode) throws BeatsException {
+	protected boolean reset(ModeType simulationMode) throws BeatsException {
 		
 		started_writing = false;
 		global_control_on = true;
@@ -300,19 +303,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
 		run_internal(param,numReps,true,outputtype,outputfileprefix);
 	}
-	
-	protected void run(SimulationSettings simsettings) throws BeatsException{
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param,simsettings.getNumReps(),true,simsettings.getOutput_format(),simsettings.getOutputfileprefix());
-	}
 
 	/////////////////////////////////////////////////////////////////////
 	// step-by-step run
 	/////////////////////////////////////////////////////////////////////
-
-
-	// intialization and running ........................................
 	
 	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
 	 * 
@@ -332,12 +326,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.numEnsemble = numEnsemble;
         
 		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-
+		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+        
 		// reset the simulation
 		if(!reset(param.simulationMode))
 			throw new BeatsException("Reset failed.");
-		
+
 		// lock the scenario
         scenariolocked = true;	
         
@@ -363,7 +357,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
 			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
-		return advanceNSteps_internal(SimulationSettings.ModeType.normal,nsteps,false,null,-1d);
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -488,7 +482,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// scalar getters ........................................................
 
-	public SimulationSettings.UncertaintyType getUncertaintyModel() {
+	public UncertaintyType getUncertaintyModel() {
 		return uncertaintyModel;
 	}
 
@@ -987,10 +981,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////	
 
 	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,String outtype,String outprefix) throws BeatsException{
-			
+
+		// lock the scenario
+        scenariolocked = true;	
+        
 		logger.info("Simulation mode: " + param.simulationMode);
-		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
-		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.timeend + "]");
+		logger.info("Simulation period: [" + param.sim_start + ":" + simdtinseconds + ":" + param.sim_end + "]");
+		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
 		
 		// output writer properties
 		Properties owr_props = new Properties();
@@ -1000,10 +997,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			owr_props.setProperty("type",outtype);
 		
 		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-		
-		// lock the scenario
-        scenariolocked = true;	
+		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
         
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
@@ -1029,7 +1023,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = false;
 	}
 	
-	private boolean advanceNSteps_internal(SimulationSettings.ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
+	private boolean advanceNSteps_internal(ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
 		
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -1098,12 +1092,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////	
 	
 	private class RunParameters{
-		public double timestart;			// [sec] start of the simulation
-		public double timeend;				// [sec] end of the simulation
+		public double sim_start;			// [sec] start of the simulation
+		public double sim_end;				// [sec] end of the simulation
 		public double timestartOutput;		// [sec] start outputing data
 		public double outDt;				// [sec] output sampling time
 		public int outsteps;				// [-] number of simulation steps per output step
-		public SimulationSettings.ModeType simulationMode;
+		public ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws BeatsException{
@@ -1126,9 +1120,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if(!Double.isNaN(outdt) && !BeatsMath.isintegermultipleof(outdt,simdtinseconds))
 				throw new BeatsException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
-			this.timestart = tstart;
+			this.sim_start = tstart;
 			this.timestartOutput = tstart;
-			this.timeend = tend;
+			this.sim_end = tend;
 	        this.outsteps = BeatsMath.round(outdt/simdtinseconds);
 			this.outDt = outsteps*simdtinseconds;
 
@@ -1136,26 +1130,26 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	        
 			// Simulation mode is normal <=> start time == initial profile time stamp
 			simulationMode = null;
-			if(BeatsMath.equals(timestart,time_ic)){
-				simulationMode = SimulationSettings.ModeType.normal;
+			if(BeatsMath.equals(sim_start,time_ic)){
+				simulationMode = ModeType.normal;
 			}
 			else{
 				// it is a warmup. we need to decide on start and end times
-				if(time_ic<timestart){	// go from ic to timestart
-					timestart = time_ic;
-					simulationMode = SimulationSettings.ModeType.warmupFromIC;
+				if(time_ic<sim_start){	// go from ic to timestart
+					sim_start = time_ic;
+					simulationMode = ModeType.warmupFromIC;
 				}
 				else{							// start at earliest demand profile
-					timestart = Double.POSITIVE_INFINITY;
+					sim_start = Double.POSITIVE_INFINITY;
 					if(demandProfileSet!=null)
 						for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandProfileSet.getDemandProfile())
-							timestart = Math.min(timestart,D.getStartTime().doubleValue());					
-					if(Double.isInfinite(timestart))
-						timestart = 0d;
-					timestart = Math.min(timestart, timestartOutput);
-					simulationMode = SimulationSettings.ModeType.warmupFromZero;
+							sim_start = Math.min(sim_start,D.getStartTime().doubleValue());					
+					if(Double.isInfinite(sim_start))
+						sim_start = 0d;
+					sim_start = Math.min(sim_start, timestartOutput);
+					simulationMode = ModeType.warmupFromZero;
 					
-					if(BeatsMath.greaterthan(timeend,time_ic))
+					if(BeatsMath.greaterthan(sim_end,time_ic))
 						throw new BeatsException("Simulation period stradles the initial condition time stamp.");
 				}		
 			}

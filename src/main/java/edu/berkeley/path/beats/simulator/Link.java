@@ -360,7 +360,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			BeatsErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
 	}
 
-	protected void resetState(SimulationSettings.ModeType simulationMode) {
+	protected void resetState(Scenario.ModeType simulationMode) {
 		
 		Scenario myScenario = myNetwork.getMyScenario();
 		
