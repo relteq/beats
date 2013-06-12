@@ -32,7 +32,7 @@ public class BrokenScenarioTest {
 													 "_smalltest_multipletypes"
 													 };
 	
-	private static String[] broken_config_names = { "complete_bad", "scenario_twotypes","_smalltest_nocontrol_broken"};
+	private static String[] broken_config_names = { "scenario_twotypes","_smalltest_nocontrol_broken"};
 
 	/**
 	 * Lists working configuration files
