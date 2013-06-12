@@ -53,7 +53,6 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		String str = getContent();
 		if(!str.isEmpty()){
 			capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-			capacity.multiplyscalar(myScenario.getSimdtinseconds() * myLink.get_Lanes());
 		}
 			
 	}
@@ -115,13 +114,13 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 
 			// sample the profile
 			if(step<n){
-				myLink.setCapacityFromVeh(capacity.get(step));
+				myLink.setCapacityFromProfile(capacity.get(step));
 				return;
 			}
 
 			// last sample
 			if(step>=n && !isdone){
-				myLink.setCapacityFromVeh(capacity.get(n));
+				myLink.setCapacityFromProfile(capacity.get(n));
 				isdone = true;
 				return;
 			}

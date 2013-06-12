@@ -44,7 +44,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	private double _length;							// [meters]
 	private double _lanes;							// [-]
-	private FundamentalDiagram [] FDfromProfile;		// profile fundamental diagram
+	private FundamentalDiagram [] FDfromProfile;	// profile fundamental diagram
 	private FundamentalDiagram FDfromEvent;			// event fundamental diagram
 	private FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
 	private boolean activeFDevent;					// true if an FD event is active on this link,
@@ -52,6 +52,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 																			// false means FD points to FDfromprofile
     // flow into the link
 	private Double [][] inflow;    		// [veh]	numEnsemble x numVehTypes
+	
+	// capacity profile
+	private Double capacity_from_profile;
 	
 	// source demand profile
 	private DemandProfile myDemandProfile;    
@@ -204,11 +207,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 		
 	// used by CapacityProfile.update. 
-	protected void setCapacityFromVeh(double c) {
-		for(FundamentalDiagram fd : FDfromProfile)
-			fd.set_capacity( fd._getCapacityInVeh()<c ? fd._getCapacityInVeh() : c );
-		if(FDfromEvent!=null)
-			FDfromEvent.set_capacity( FDfromEvent._getCapacityInVeh()<c ? FDfromEvent._getCapacityInVeh() : c );
+	protected void setCapacityFromProfile(Double c) {
+		capacity_from_profile = c * myNetwork.getMyScenario().getSimdtinseconds() * _lanes;
+//		for(FundamentalDiagram fd : FDfromProfile)
+//			fd.set_capacity( fd._getCapacityInVeh()<c ? fd._getCapacityInVeh() : c );
+//		if(FDfromEvent!=null)
+//			FDfromEvent.set_capacity( FDfromEvent._getCapacityInVeh()<c ? FDfromEvent._getCapacityInVeh() : c );
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -255,6 +259,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
                 	totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
                 }
             }
+            
+            // capacity profile
+            totaloutflow = Math.min( totaloutflow , capacity_from_profile );
 
             // flow controller
             if(myFlowController!=null && myFlowController.isIson()){
@@ -402,6 +409,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	protected void resetFD(){
+		capacity_from_profile = Double.POSITIVE_INFINITY;
 		FDfromProfile = new FundamentalDiagram [myNetwork.getMyScenario().getNumEnsemble()];
 		for(int i=0;i<FDfromProfile.length;i++){
 			FDfromProfile[i] = new FundamentalDiagram(this);
