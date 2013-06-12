@@ -51,7 +51,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	private boolean hasSRprofile;
 	
 	// split ratio from event
-	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
+//	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
 	
 	// actual split ratio
 	private Double3DMatrix splitratio;
@@ -222,16 +222,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
-	// used by Event
-	protected void setSplitratio(Double3DMatrix x) {
-		splitratio.copydata(x);
-		normalizeSplitRatioMatrix(splitratio);
-	}
 	
-	// used by Event.setNodeEventSplitRatio
-    protected Double3DMatrix getSplitratio() {
-		return splitratio;
-	}
     
 	// used by Node and Event
 	protected void resetSplitRatio(){
@@ -280,14 +271,36 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
 	// events ..........................................................
 
+	// used by Event.setNodeEventSplitRatio
+	protected void applyEventSplitRatio(Double3DMatrix x) {
+		splitratio.copydata(x);
+		normalizeSplitRatioMatrix(splitratio);
+		hasactivesplitevent = true;
+	}
+
+	// used by Event.revertNodeEventSplitRatio
+	protected void removeEventSplitRatio() {
+		resetSplitRatio();
+		hasactivesplitevent = false;
+	}
+	
+	// used by Event.revertNodeEventSplitRatio
 	protected boolean isHasActiveSplitEvent() {
 		return hasactivesplitevent;
 	}
 
-	protected void setHasActiveSplitEvent(boolean hasactivesplitevent) {
-		this.hasactivesplitevent = hasactivesplitevent;
+	// used by
+	// used by Event.setNodeEventSplitRatio
+    protected Double3DMatrix getSplitratio() {
+		return splitratio;
 	}
-
+    
+	// used by Event.setNodeEventSplitRatio
+	protected void setSplitratio(Double3DMatrix x) {
+		splitratio.copydata(x);
+		normalizeSplitRatioMatrix(splitratio);
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
