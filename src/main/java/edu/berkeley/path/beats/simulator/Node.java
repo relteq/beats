@@ -47,7 +47,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	private Link [] input_link;
 	
 	// split ratio from profile
-	private Double3DMatrix splitFromProfile;
+	private SplitRatioProfile mySplitRatioProfile;
+//	private Double3DMatrix splitFromProfile;
 	private boolean hasSRprofile;
 	
 	// split ratio from event
@@ -124,7 +125,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		hasSRprofile = false;
 		
 		// initialize the split ratio matrix
-		splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+		//splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio);
 
@@ -189,7 +190,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 			// not actively controlled. Otherwise the mat has already been 
 			// set by the controller.
 			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
-				splitratio.copydata(splitFromProfile);
+				splitratio = this.mySplitRatioProfile.getCurrentSplitRatio();
+//				splitratio.copydata(splitFromProfile);
 			
 	        // compute known output demands ................................
 			for(e=0;e<numEnsemble;e++)
@@ -229,18 +231,27 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	/////////////////////////////////////////////////////////////////////
 	
 	// split ratio profile ..............................................
-	
-	protected void setHasSRprofile(boolean hasSRprofile) {
+
+	protected void setMySplitRatioProfile(SplitRatioProfile mySplitRatioProfile) {
+		this.mySplitRatioProfile = mySplitRatioProfile;
 		if(!istrivialsplit){
-			this.hasSRprofile = hasSRprofile;
-			this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
-			normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+			this.hasSRprofile = true;
+			//this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+			//normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
+	
+//	protected void setHasSRprofile(boolean hasSRprofile) {
+//		if(!istrivialsplit){
+//			this.hasSRprofile = hasSRprofile;
+//			this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+//			normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+//		}
+//	}
 
-	protected void setSampledSRProfile(Double3DMatrix s){
-    	splitFromProfile = s;;
-    }
+//	protected void setSampledSRProfile(Double3DMatrix s){
+//    	splitFromProfile = s;;
+//    }
 	
 	// controllers ......................................................
 

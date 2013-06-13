@@ -97,7 +97,8 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		
 		// inform the node
-		myNode.setHasSRprofile(true);
+		myNode.setMySplitRatioProfile(this);
+//		myNode.setHasSRprofile(true);
 		
 	}
 
@@ -195,13 +196,22 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			
 			// assign
 			myNode.normalizeSplitRatioMatrix(currentSplitRatio);
-			myNode.setSampledSRProfile(currentSplitRatio);
+			//myNode.setSampledSRProfile(currentSplitRatio);
 			
 			// stop sampling after laststep
 			isdone = step>=laststep-1;
 		}		
 	}
 
+
+	/////////////////////////////////////////////////////////////////////
+	// protected getter
+	/////////////////////////////////////////////////////////////////////
+
+	protected Double3DMatrix getCurrentSplitRatio() {
+		return currentSplitRatio;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// private methods
 	/////////////////////////////////////////////////////////////////////
