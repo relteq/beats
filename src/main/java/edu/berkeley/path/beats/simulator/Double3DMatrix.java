@@ -146,7 +146,7 @@ final class Double3DMatrix {
 		
     }
      
-    public Double3DMatrix(double [][][] x){
+    public Double3DMatrix(Double [][][] x){
     	nIn = x.length;
     	if(nIn==0)
     		return;
