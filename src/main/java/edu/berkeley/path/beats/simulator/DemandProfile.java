@@ -250,7 +250,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		// use smallest between multiplicative and additive standard deviations
 		Double [] std_dev_apply = new Double [myScenario.getNumVehicleTypes()];
 		for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-			std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
+			if(std_dev_mult.isInfinite())
+				std_dev_apply[j] = std_dev_add;
+			else
+				std_dev_apply[j] = Math.min( demandvalue[j]*std_dev_mult , std_dev_add );
 		
 		// sample the distribution
 		switch(myScenario.getUncertaintyModel()){
