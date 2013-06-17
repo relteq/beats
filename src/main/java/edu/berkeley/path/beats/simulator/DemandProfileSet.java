@@ -28,9 +28,17 @@ package edu.berkeley.path.beats.simulator;
 
 final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileSet {
 
-	protected Scenario myScenario;
-	protected Integer [] vehicletypeindex; 	// index of vehicle types into global list
+	private Scenario myScenario;
+	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
+	/////////////////////////////////////////////////////////////////////
+	// protected interface
+	/////////////////////////////////////////////////////////////////////
+
+	protected Integer[] getVehicletypeindex() {
+		return vehicletypeindex;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////

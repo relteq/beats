@@ -102,15 +102,16 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 
 	@Override
 	protected void validate() {
-		if(myLink==null)
+		if(getMyLink()==null)
 			BeatsErrorLog.addWarning("Loop sensor with id=" + getId() +" is not attached.");
 	}
 
 	@Override
 	protected void reset() {
-		cumulative_inflow = new Double [myScenario.getNumEnsemble()];
-		cumulative_outflow = new Double [myScenario.getNumEnsemble()];
-		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
+		int numEnsemble = getMyScenario().getNumEnsemble();
+		cumulative_inflow = new Double [numEnsemble];
+		cumulative_outflow = new Double [numEnsemble];
+		for(int i=0;i<numEnsemble;i++){
 			cumulative_inflow[i] = 0d;
 			cumulative_outflow[i] = 0d;
 		}
@@ -119,11 +120,11 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 
 	@Override
 	protected void update() {		
-		if(myLink==null)
+		if(getMyLink()==null)
 			return;
-		for(int i=0;i<this.myScenario.getNumEnsemble();i++){
-			cumulative_inflow[i] += myLink.getTotalInlowInVeh(i);
-			cumulative_outflow[i] += myLink.getTotalOutflowInVeh(i);
+		for(int i=0;i<this.getMyScenario().getNumEnsemble();i++){
+			cumulative_inflow[i] += getMyLink().getTotalInlowInVeh(i);
+			cumulative_outflow[i] += getMyLink().getTotalOutflowInVeh(i);
 		}
 		return;
 	}
@@ -134,17 +135,17 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
-		return BeatsMath.times(myLink.getDensityInVeh(ensemble), 1 / myLink.getLengthInMeters());
+		return BeatsMath.times(getMyLink().getDensityInVeh(ensemble), 1 / getMyLink().getLengthInMeters());
 	}
 
 	@Override
 	public double getTotalDensityInVeh(int ensemble) {
-		return myLink.getTotalDensityInVeh(ensemble);
+		return getMyLink().getTotalDensityInVeh(ensemble);
 	}
 	
 	@Override
 	public double getTotalDensityInVPM(int ensemble) {
-		return myLink.getTotalDensityInVeh(ensemble) / myLink.getLengthInMeters();
+		return getMyLink().getTotalDensityInVeh(ensemble) / getMyLink().getLengthInMeters();
 	}
 
 //	@Override
@@ -154,17 +155,17 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
-		return BeatsMath.times(myLink.getOutflowInVeh(ensemble), 1 / myScenario.getSimDtInSeconds());
+		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().getSimdtinseconds());
 	}
 
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
-		return myLink.getTotalOutflowInVeh(ensemble) / myScenario.getSimDtInSeconds();
+		return getMyLink().getTotalOutflowInVeh(ensemble) / getMyScenario().getSimdtinseconds();
 	}
 
 	@Override
 	public double getSpeedInMPS(int ensemble) {
-		return myLink.computeSpeedInMPS(ensemble);
+		return getMyLink().computeSpeedInMPS(ensemble);
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -176,7 +177,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	public void resetCumulativeInflowInVeh(){
-		for(int i=0;i<myScenario.getNumEnsemble();i++)
+		for(int i=0;i<getMyScenario().getNumEnsemble();i++)
 			cumulative_inflow[i] = 0d;
 	}
 	
@@ -185,7 +186,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	}
 
 	public void resetCumulativeOutflowInVeh(){
-		for(int i=0;i<myScenario.getNumEnsemble();i++)
+		for(int i=0;i<getMyScenario().getNumEnsemble();i++)
 			cumulative_outflow[i] = 0d;
 	}
 	

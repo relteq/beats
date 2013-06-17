@@ -112,7 +112,7 @@ public class Controller_IRM_Alinea extends Controller {
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
 			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
-			onramplink = myScenario.getLinkWithId(s.getId());	
+			onramplink = getMyScenario().getLinkWithId(s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
@@ -125,19 +125,19 @@ public class Controller_IRM_Alinea extends Controller {
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
-					mainlinesensor=myScenario.getSensorWithId(s.getId());
+					mainlinesensor=getMyScenario().getSensorWithId(s.getId());
 					hasmainlinesensor = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
 					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
-					mainlinelink=myScenario.getLinkWithId(s.getId());
+					mainlinelink=getMyScenario().getLinkWithId(s.getId());
 					hasmainlinelink = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
 					s.getType().equalsIgnoreCase("sensor")  && queuesensor==null){
-					queuesensor=myScenario.getSensorWithId(s.getId());
+					queuesensor=getMyScenario().getSensorWithId(s.getId());
 					hasqueuesensor = true;
 				}				
 			}
@@ -181,7 +181,7 @@ public class Controller_IRM_Alinea extends Controller {
 		
 		// normalize the gain
 		if(mainlinelink!=null)
-			gain_normalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlinelink.getLengthInMeters();
+			gain_normalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainlinelink.getLengthInMeters();
 	}
 	
 	@Override
@@ -190,7 +190,7 @@ public class Controller_IRM_Alinea extends Controller {
 		super.validate();
 
 		// must have exactly one target
-		if(targets.size()!=1)
+		if(getTargets().size()!=1)
 			BeatsErrorLog.addError("Numnber of targets for Alinea controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
@@ -238,7 +238,9 @@ public class Controller_IRM_Alinea extends Controller {
 			targetvehicles = mainlinelink.getDensityCriticalInVeh(0);
 		
 		// metering rate
-		control_maxflow[0] = Math.max(Math.min(onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles), 1705),0);
+		double maxflow = Math.max(Math.min(onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles), 1705),0);
+		setControl_maxflow(0, maxflow);
+				
 	}
 
 	/////////////////////////////////////////////////////////////////////

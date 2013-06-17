@@ -28,22 +28,19 @@ package edu.berkeley.path.beats.simulator;
 
 final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioProfile {
 
-	protected Scenario myScenario;
-	protected Node myNode;
+	private Scenario myScenario;
+	private Node myNode;
+	private double dtinseconds;				// not really necessary
+	private int samplesteps;
 	
-	protected double dtinseconds;				// not really necessary
-	protected int samplesteps;
-	
-	protected Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
+	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
 												// input link i, output link j. The first dimension 
 												// of the Double2DMatrix is time, the second in vehicle type.
 	
-	protected Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
-	
-	protected int laststep;
-	
-	protected boolean isdone; 
-	protected int stepinitial;
+	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
+	private int laststep;
+	private boolean isdone; 
+	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -70,7 +67,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		// optional dt
 		if(getDt()!=null){
 			dtinseconds = getDt().floatValue();					// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
 		else{ 	// only allow if it contains only one fd
 			if(getSplitratio().size()==1){
@@ -84,7 +81,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			}
 		}
 		
-		profile = new Double2DMatrix[myNode.nIn][myNode.nOut];
+		profile = new Double2DMatrix[myNode.getnIn()][myNode.getnOut()];
 		int in_index,out_index;
 		laststep = 0;
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
@@ -97,7 +94,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 				laststep = Math.max(laststep,profile[in_index][out_index].getnTime());
 		}
 		
-		currentSplitRatio = new Double3DMatrix(myNode.nIn,myNode.nOut,myScenario.getNumVehicleTypes(),Double.NaN);
+		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
 		
 		// inform the node
 		myNode.setHasSRprofile(true);
@@ -113,7 +110,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		else
 			starttime = 0f;
 		
-		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 	}
 
 	protected void validate() {
@@ -154,8 +151,8 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 				BeatsErrorLog.addError("Invalid time step =" + getDt() +  " in split ratio profile for node id=" + getNodeId());
 
 			// dtinseconds must be multiple of simdt if any profile has >1 element
-			if( !BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
-				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimDtInSeconds() + ")"); 
+			if( !BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
+				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimdtinseconds() + ")"); 
 		}
 		
 		// check split ratio dimensions and values
@@ -186,9 +183,9 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			return;
 		if(isdone)
 			return;
-		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
-			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 
 			// zeroth sample extends to the left
 			step = Math.max(0,step);
@@ -213,17 +210,17 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 	private Double3DMatrix sampleAtTimeStep(int k){
 		if(myNode==null)
 			return null;
-		Double3DMatrix X = new Double3DMatrix(myNode.nIn,myNode.nOut,
+		Double3DMatrix X = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),
 				myScenario.getNumVehicleTypes(),Double.NaN);	// initialize all unknown
 		
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
 		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).vehicletypeindex;
+			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).getVehicletypeindex();
 		
 		int i,j,lastk;
-		for(i=0;i<myNode.nIn;i++){
-			for(j=0;j<myNode.nOut;j++){
+		for(i=0;i<myNode.getnIn();i++){
+			for(j=0;j<myNode.getnOut();j++){
 				if(profile[i][j]==null)						// nan if not defined
 					continue;
 				if(profile[i][j].isEmpty())					// nan if no data

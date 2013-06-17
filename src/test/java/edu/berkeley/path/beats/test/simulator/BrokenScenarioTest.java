@@ -22,17 +22,17 @@ public class BrokenScenarioTest {
 	private static Logger logger = Logger.getLogger(BrokenScenarioTest.class);
 	private File config;
 	
-	private static String[] working_config_names = { "Albany-and-Berkeley",
+	private static String[] working_config_names = { "_scenario_2009_02_12",
+													 "Albany-and-Berkeley",
 													 "testfwy2",
 													 "testfwy_w",
 													 "test_event",
-													 "_scenario_2009_02_12",
 													 "_scenario_constantsplits",
 													 "_smalltest",
 													 "_smalltest_multipletypes"
 													 };
 	
-	private static String[] broken_config_names = { "complete_bad", "scenario_twotypes","_smalltest_nocontrol_broken"};
+	private static String[] broken_config_names = { "scenario_twotypes","_smalltest_nocontrol_broken"};
 
 	/**
 	 * Lists working configuration files

@@ -28,54 +28,73 @@ package edu.berkeley.path.beats.simulator;
 
 final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile {
 
-	protected Scenario myScenario;
-	protected Link myLink;
-	protected double dtinseconds;			// not really necessary
-	protected int samplesteps;
-	protected Double1DVector capacity;		// [veh]
-	protected boolean isdone;
-	protected int stepinitial;
+	private Scenario myScenario;
+	private Double current_sample;
+	private boolean isOrphan;
+	private double dtinseconds;			// not really necessary
+	private int samplesteps;
+	private Double1DVector capacity;	// [veh]
+	private boolean isdone;
+	private int stepinitial;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate(Scenario myScenario) {
-		if(myScenario==null)
-			return;
+
 		this.myScenario = myScenario;
-		myLink = myScenario.getLinkWithId(getLinkId());
-		dtinseconds = getDt().floatValue();					// assume given in seconds
-		samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());
+		
 		isdone = false;
 		
-		// read capacity and convert to vehicle units
-		String str = getContent();
-		if(!str.isEmpty()){
+		// required
+		Link myLink = null;
+		if(getLinkId()!=null)
+			myLink = myScenario.getLinkWithId(getLinkId());
+
+		isOrphan = myLink==null;
+				
+		if(!isOrphan)
+			myLink.setMyCapacityProfile(this);
+		
+		// sample demand distribution, convert to vehicle units
+		if(!isOrphan && getContent()!=null){
 			capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
-			capacity.multiplyscalar(myScenario.getSimDtInSeconds() * myLink.get_Lanes());
+			capacity.multiplyscalar(myScenario.getSimdtinseconds()*myLink.get_Lanes());
+		}
+		
+		// optional dt
+		if(getDt()!=null){
+			dtinseconds = getDt().floatValue();					// assume given in seconds
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+		}
+		else{ 	// allow only if it contains one time step
+			if(capacity.getLength()==1){
+				dtinseconds = Double.POSITIVE_INFINITY;
+				samplesteps = Integer.MAX_VALUE;
+			}
+			else{
+				dtinseconds = -1.0;		// this triggers the validation error
+				samplesteps = -1;
+				return;
+			}
 		}
 			
 	}
 	
 	protected void validate() {
 		
-		if(capacity==null)
+		if(capacity==null || capacity.isEmpty())
 			return;
-		
-		if(capacity.isEmpty())
-			return;
-		
-		if(myLink==null){
-			BeatsErrorLog.addWarning("Unknown link id=" + getLinkId() + " in capacity profile.");
-			return;
-		}
+
+		if(isOrphan)
+			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkId() + " in capacity profile.");
 		
 		// check dtinseconds
 		if( dtinseconds<=0  && capacity.getLength()>1)
 			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()) && capacity.getLength()>1)
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && capacity.getLength()>1)
 			BeatsErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
@@ -84,7 +103,11 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 
 	}
 
-	protected void reset() {
+	protected void reset() {			
+
+		if(isOrphan)
+			return;
+		
 		isdone = false;
 		
 		// read start time, convert to stepinitial
@@ -94,38 +117,55 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		else
 			starttime = 0f;
 
-		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimDtInSeconds());
+		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 
+		current_sample = capacity.get(0);
+		
 	}
 	
 	protected void update() {
-		if(myLink==null)
+
+		if(isOrphan)
 			return;
-		if(capacity==null)
+
+		if(capacity==null || capacity.isEmpty())
 			return;
-		if(isdone || capacity.isEmpty())
+		
+		if(isdone)
 			return;
-		if(myScenario.clock.istimetosample(samplesteps,stepinitial)){
+		
+		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
 			int n = capacity.getLength()-1;
-			int step = myScenario.clock.sampleindex(stepinitial, samplesteps);
+			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 
 			// zeroth sample extends to the left
-			step = Math.max(0,step);
+			if(step<=0){
+				current_sample = capacity.get(0);
+				return;
+			}
 
 			// sample the profile
 			if(step<n){
-				myLink.setCapacityFromVeh(capacity.get(step));
+				current_sample = capacity.get(step);
 				return;
 			}
 
 			// last sample
 			if(step>=n && !isdone){
-				myLink.setCapacityFromVeh(capacity.get(n));
+				current_sample = capacity.get(n);
 				isdone = true;
 				return;
 			}
 		}
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Double getCurrentValue(){
+		return current_sample;
 	}
 
 }

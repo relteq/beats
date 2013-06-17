@@ -270,7 +270,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		if(nextstage==numstages)
 			nextstage=0;
 
-		return thisphase.getMyNEMA().compareTo(movA[nextstage])==0 || thisphase.getMyNEMA().compareTo(movB[nextstage])==0;
+		return thisphase.getNEMA().compareTo(movA[nextstage])==0 || thisphase.getNEMA().compareTo(movB[nextstage])==0;
 		
 	}
 	

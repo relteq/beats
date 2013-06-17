@@ -88,23 +88,23 @@ public class Controller_SIG_Pretimed extends Controller {
 
 		// check all tables
 		for (String table_name : new String[] {"Cycle Length", "Offsets", "Plan List", "Plan Sequence"})
-			if (null == tables.get(table_name)) {
+			if (null == getTables().get(table_name)) {
 				BeatsErrorLog.addError("Controller " + jaxbc.getId() + ": no '" + table_name + "' table");
 				return;
 			}
 
 		// restoring plan list
-		PlanList planlist = new PlanList(tables.get("Cycle Length"), tables.get("Offsets"), tables.get("Plan List"));
+		PlanList planlist = new PlanList(getTables().get("Cycle Length"), getTables().get("Offsets"), getTables().get("Plan List"));
 		// processing plan list
 		plan = new java.util.HashMap<String, Controller_SIG_Pretimed_Plan>();
 		for (Plan plan_raw : planlist.getPlanList()) {
 			Controller_SIG_Pretimed_Plan pretimed_plan = new Controller_SIG_Pretimed_Plan();
-			pretimed_plan.populate(this, myScenario, plan_raw);
+			pretimed_plan.populate(this,getMyScenario(), plan_raw);
 			plan.put(plan_raw.getId(), pretimed_plan);
 		}
 
 		// restoring plan sequence
-		PlanSequence plan_seq = new PlanSequence(tables.get("Plan Sequence"));
+		PlanSequence plan_seq = new PlanSequence(getTables().get("Plan Sequence"));
 		// processing plan sequence
 		final int seq_size = plan_seq.getPlanReference().size();
 		plansequence = new String[seq_size];
@@ -130,7 +130,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	@Override
 	protected void update() {
 
-		double simtime = myScenario.getCurrentTimeInSeconds();
+		double simtime = getMyScenario().getCurrentTimeInSeconds();
 
 		// time to switch plans .....................................
 		if( cperiod < planstarttime.length-1 ){
@@ -178,7 +178,7 @@ public class Controller_SIG_Pretimed extends Controller {
 				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 
 		// all targets are signals
-		for(ScenarioElement se: targets)
+		for(ScenarioElement se: getTargets())
 			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
 				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		

@@ -195,7 +195,7 @@ public class OutputWriterDB extends OutputWriterBase {
 			if (null == db_simulation_run.getVersion()) db_simulation_run.setVersion("");
 			db_simulation_run.setSimStartTime(double2decimal(scenario.getTimeStart()));
 			db_simulation_run.setSimDuration(double2decimal(scenario.getTimeEnd() - scenario.getTimeStart()));
-			db_simulation_run.setSimDt(double2decimal(scenario.getSimDtInSeconds()));
+			db_simulation_run.setSimDt(double2decimal(scenario.getSimdtinseconds()));
 			db_simulation_run.setOutputDt(double2decimal(getOutDtInSeconds()));
 			db_simulation_run.setExecutionStartTime(Calendar.getInstance().getTime());
 			db_simulation_run.setStatus(-1);
@@ -279,7 +279,7 @@ public class OutputWriterDB extends OutputWriterBase {
 			if (density <= 0)
 				db_ldt.setSpeed(double2decimal(ffspeed));
 			else {
-				double speed = link_cum_data.getMeanTotalOutputFlow(0) * link.getLengthInMeters() / (scenario.getSimDtInSeconds() * density);
+				double speed = link_cum_data.getMeanTotalOutputFlow(0) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
 				if (!Double.isNaN(speed)) {
 					if (!Double.isNaN(ffspeed) && speed > ffspeed)
 						db_ldt.setSpeed(double2decimal(ffspeed));
@@ -299,7 +299,7 @@ public class OutputWriterDB extends OutputWriterBase {
 		// jam density, vehicles per meter
 		db_ldt.setJamDensity(double2decimal(link.getDensityJamInVeh(0) / link.getLengthInMeters()));
 		// capacity drop, vehicle per second
-		db_ldt.setCapacityDrop(double2decimal(link.getCapacityDropInVeh(0) / scenario.getSimDtInSeconds()));
+		db_ldt.setCapacityDrop(double2decimal(link.getCapacityDropInVeh(0) / scenario.getSimdtinseconds()));
 		
 		// replace nulls with zeros
 		edu.berkeley.path.beats.processor.LinkDataTotal.removeNulls(db_ldt);
@@ -339,7 +339,7 @@ public class OutputWriterDB extends OutputWriterBase {
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimDtInSeconds() * density);
+					double speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
 					if (!Double.isNaN(speed)) {
 						// free flow speed, m/s
 						double ffspeed = link.getVfInMPS(0);

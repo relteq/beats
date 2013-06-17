@@ -67,50 +67,57 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 */
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-	/** @y.exclude */	public static enum ModeType {  normal, 
-		  warmupFromZero , 
-		  warmupFromIC };
-	/** @y.exclude */	public static enum UncertaintyType { uniform, 
-		  gaussian }
-
-	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
-	/** @y.exclude */	protected Clock clock;
-	/** @y.exclude */	protected String configfilename;
-	/** @y.exclude */	protected Scenario.UncertaintyType uncertaintyModel;
-	/** @y.exclude */	protected int numVehicleTypes;			// number of vehicle types
-	/** @y.exclude */	protected boolean global_control_on;	// global control switch
-	/** @y.exclude */	protected double global_demand_knob;	// scale factor for all demands
-	/** @y.exclude */	protected double simdtinseconds;		// [sec] simulation time step 
-	/** @y.exclude */	protected boolean scenariolocked=false;	// true when the simulation is running
-	/** @y.exclude */	protected edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
-	/** @y.exclude */	protected EventSet eventset = new EventSet();	// holds time sorted list of events	
-	/** @y.exclude */	protected SensorList sensorlist = new SensorList();
-	/** @y.exclude */	protected int numEnsemble;
-	/** @y.exclude */	protected boolean started_writing;
+	public static enum UncertaintyType { uniform, gaussian }
+	public static enum ModeType {  normal, warmupFromZero , warmupFromIC };
+	
+	private static Logger logger = Logger.getLogger(Scenario.class);
+	private Cumulatives cumulatives;
+	private Clock clock;
+	private String configfilename;
+	private int numVehicleTypes;			// number of vehicle types
+	private boolean global_control_on;	// global control switch
+	private double global_demand_knob;	// scale factor for all demands
+	private double simdtinseconds;		// [sec] simulation time step 
+	private boolean scenariolocked=false;	// true when the simulation is running
+	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
+	private EventSet eventset = new EventSet();	// holds time sorted list of events	
+	private SensorList sensorlist = new SensorList();
+	private int numEnsemble;
+	private boolean started_writing;
 
 	// Model uncertainty
-	/** @y.exclude */	protected double std_dev_flow = 0.0d;	// [veh]
-	/** @y.exclude */	protected boolean has_flow_unceratinty;
+	private UncertaintyType uncertaintyModel;
+	private double std_dev_flow = 0.0d;	// [veh]
+	private boolean has_flow_unceratinty;
 	
 	// data
 	private boolean sensor_data_loaded = false;
-
-	protected Cumulatives cumulatives;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Scenario(){}
 		
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected void populate() throws BeatsException {
 		
+	    // initialize scenario attributes ..............................................
+		this.global_control_on = true;
+		this.global_demand_knob = 1d;
+		this.simdtinseconds = computeCommonSimulationTimeInSeconds(this);
+		this.uncertaintyModel = UncertaintyType.uniform;
+		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
+
+		this.numVehicleTypes = 1;
+	    if(getSettings()!=null)
+	        if(getSettings().getVehicleTypes()!=null)
+	            if(getSettings().getVehicleTypes().getVehicleType()!=null) 
+	            	this.numVehicleTypes = getSettings().getVehicleTypes().getVehicleType().size();
+
 		// network list
 		if(networkList!=null)
 			for( edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork() )
@@ -154,7 +161,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		cumulatives = new Cumulatives(this);
 	}
 
-	/** @y.exclude */
 	public static void validate(Scenario S) {
 				
 		// validate network
@@ -204,9 +210,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * open output files
 	 * @return success		A boolean indicating whether the scenario was successfuly reset.
 	 * @throws BeatsException 
-	 * @y.exclude
 	 */
-	protected boolean reset(Scenario.ModeType simulationMode) throws BeatsException {
+	protected boolean reset(ModeType simulationMode) throws BeatsException {
 		
 		started_writing = false;
 		global_control_on = true;
@@ -248,7 +253,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 	}	
 	
-	/** @y.exclude */
 	protected void update() throws BeatsException {	
 
         // sample profiles .............................	
@@ -291,15 +295,95 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// protected interface
+	// start-to-end run
+	/////////////////////////////////////////////////////////////////////
+
+	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
+		this.numEnsemble = 1;
+		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+		run_internal(param,numReps,true,outputtype,outputfileprefix);
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// step-by-step run
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void run(SimulationSettings simsettings,String outtype,String outprefix) throws BeatsException{
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(simsettings.getStartTime(), simsettings.getEndTime(), simsettings.getOutputDt(), simdtinseconds);
-		run_internal(param,simsettings.getNumReps(),true,outtype,outprefix);
+	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
+	 * 
+	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
+	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
+	 * rolling back all profiles and clocks. 
+	 * @param numEnsemble Number of simulations to run in parallel
+	 */
+	public void initialize_run(int numEnsemble,double timestart) throws BeatsException{
+
+		if(numEnsemble<=0)
+			throw new BeatsException("Number of ensemble runs must be at least 1.");
+		
+		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
+
+		this.scenariolocked = false;
+		this.numEnsemble = numEnsemble;
+        
+		// create the clock
+		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+        
+		// reset the simulation
+		if(!reset(param.simulationMode))
+			throw new BeatsException("Reset failed.");
+
+		// lock the scenario
+        scenariolocked = true;	
+        
+        // advance to start of output time        
+        while( getCurrentTimeInSeconds()<param.timestartOutput )
+        	advanceNSeconds(simdtinseconds);
+        
 	}
 	
+	/** Advance the simulation <i>nsec</i> seconds.
+	 * 
+	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
+	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
+	 * if the end of the simulation is reached.
+	 * @param nsec Number of seconds to advance.
+	 * @throws BeatsException 
+	 */
+	public boolean advanceNSeconds(double nsec) throws BeatsException{	
+		
+		if(!scenariolocked)
+			throw new BeatsException("Run not initialized. Use initialize_run() first.");
+		
+		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
+			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
+		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
+		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// protected simple getters and setters
+	/////////////////////////////////////////////////////////////////////
+
+	protected edu.berkeley.path.beats.simulator.ControllerSet getControllerset() {
+		return controllerset;
+	}
+
+	protected void setConfigfilename(String configfilename) {
+		this.configfilename = configfilename;
+	}
+
+	protected void setGlobal_control_on(boolean global_control_on) {
+		this.global_control_on = global_control_on;
+	}
+
+	protected void setGlobal_demand_knob(double global_demand_knob) {
+		this.global_demand_knob = global_demand_knob;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// protected complex getters
+	/////////////////////////////////////////////////////////////////////
+
 	/** Retrieve a network with a given id.
 	 * @param id The string id of the network
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
@@ -322,7 +406,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-	/** @y.exclude */
 	protected Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
 		
 		Integer [] vehicletypeindex;
@@ -371,67 +454,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
+
+	// seriallization .................................................
 	
-	// intialization and running ........................................
-	
-	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
-	 * 
-	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
-	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
-	 * rolling back all profiles and clocks. 
-	 * @param numEnsemble Number of simulations to run in parallel
-	 */
-	public void initialize_run(int numEnsemble,double timestart) throws BeatsException{
-
-		if(numEnsemble<=0)
-			throw new BeatsException("Number of ensemble runs must be at least 1.");
-		
-		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
-
-		this.scenariolocked = false;
-		this.numEnsemble = numEnsemble;
-        
-		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-
-		// reset the simulation
-		if(!reset(param.simulationMode))
-			throw new BeatsException("Reset failed.");
-		
-		// lock the scenario
-        scenariolocked = true;	
-        
-        // advance to start of output time        
-        while( getCurrentTimeInSeconds()<param.timestartOutput )
-        	advanceNSeconds(simdtinseconds);
-        
-	}
-	
-	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
-		run_internal(param,numReps,true,outputtype,outputfileprefix);
-	}
-		
-	/** Advance the simulation <i>nsec</i> seconds.
-	 * 
-	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
-	 * Returns <code>true</code> if the operation completes succesfully. Returns <code>false</code>
-	 * if the end of the simulation is reached.
-	 * @param nsec Number of seconds to advance.
-	 * @throws BeatsException 
-	 */
-	public boolean advanceNSeconds(double nsec) throws BeatsException{	
-		
-		if(!scenariolocked)
-			throw new BeatsException("Run not initialized. Use initialize_run() first.");
-		
-		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
-			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
-		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
-	}
-
 	/** Save the scenario to XML.
 	 * 
 	 * @param filename The name of the configuration file.
@@ -456,7 +481,27 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 	
 	// scalar getters ........................................................
+
+	public UncertaintyType getUncertaintyModel() {
+		return uncertaintyModel;
+	}
+
+	public boolean isGlobal_control_on() {
+		return global_control_on;
+	}
+
+	public double getGlobal_demand_knob() {
+		return global_demand_knob;
+	}
+
+	public double getStd_dev_flow() {
+		return std_dev_flow;
+	}
 	
+	public boolean isHas_flow_unceratinty() {
+		return has_flow_unceratinty;
+	}
+
 	/** Current simulation time in seconds.
 	 * @return Simulation time in seconds after midnight.
 	 */
@@ -465,7 +510,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return Double.NaN;
 		return clock.getT();
 	}
-	
+
 	/** Time elapsed since the beginning of the simulation in seconds.
 	 * @return Simulation time in seconds after start time.
 	 */
@@ -526,7 +571,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 
 	 */
-	public double getSimDtInSeconds() {
+	public double getSimdtinseconds() {
 		return simdtinseconds;
 	}
 
@@ -557,7 +602,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	// array getters ........................................................
-
 	
 	/** Vehicle type names.
 	 * @return	Array of strings with the names of the vehicles types.
@@ -584,7 +628,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
 //		return vehtypeweights;
 //	}
-	
 
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network
@@ -650,6 +693,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	// object getters ........................................................
 
+	public Cumulatives getCumulatives() {
+		return cumulatives;
+	}
+
+	public Clock getClock() {
+		return clock;
+	}
+	
 	/** Get a reference to a link by its composite id.
 	 * 
 	 * @param id String id of the link. 
@@ -711,7 +762,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return null;
 		if(eventset==null)
 			return null;
-		for(Event e : eventset.sortedevents){
+		for(Event e : eventset.getSortedevents()){
 			if(e.getId().equals(id))
 				return e;
 		}
@@ -728,7 +779,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(sensorList==null)
 			return null;
 		id.replaceAll("\\s","");
-		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.sensors){
+		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.getSensors()){
 			if(sensor.getId().equals(id))
 				return sensor;
 		}
@@ -769,8 +820,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
-	
-	// add stuff ........................................................
+		
+	/////////////////////////////////////////////////////////////////////
+	// scenario modification
+	/////////////////////////////////////////////////////////////////////
 
 	/** Add a controller to the scenario.
 	 * 
@@ -778,7 +831,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * b) the controller is valid. 
 	 * @param C The controller
 	 * @return <code>true</code> if the controller was successfully added, <code>false</code> otherwise. 
-	 */
+
 	public boolean addController(Controller C){
 		if(scenariolocked)
 			return false;
@@ -799,6 +852,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		return true;
 	}
+		 */
 
 	/** Add an event to the scenario.
 	 * 
@@ -811,7 +865,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return false;
 		if(E==null)
 			return false;
-		if(E.myType==null)
+		if(E.getMyType()==null)
 			return false;
 		
 		// add event to list
@@ -860,11 +914,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 	
-	// data and calibration .............................................
+	/////////////////////////////////////////////////////////////////////
+	// calibration
+	/////////////////////////////////////////////////////////////////////
 	
 	public void loadSensorData() throws BeatsException {
 
-		if(sensorlist.sensors.isEmpty())
+		if(sensorlist.getSensors().isEmpty())
 			return;
 		
 		if(sensor_data_loaded)
@@ -875,7 +931,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(Sensor sensor : sensorlist.sensors){
+		for(Sensor sensor : sensorlist.getSensors()){
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -901,7 +957,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		P.Read5minData(data,datasources);
 		
 		// distribute data to sensors
-		for(Sensor sensor : sensorlist.sensors){
+		for(Sensor sensor : sensorlist.getSensors()){
 			
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
@@ -925,10 +981,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////	
 
 	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,String outtype,String outprefix) throws BeatsException{
-			
+
+		// lock the scenario
+        scenariolocked = true;	
+        
 		logger.info("Simulation mode: " + param.simulationMode);
-		logger.info("Simulation period: [" + param.timestart + ":" + simdtinseconds + ":" + param.timeend + "]");
-		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.timeend + "]");
+		logger.info("Simulation period: [" + param.sim_start + ":" + simdtinseconds + ":" + param.sim_end + "]");
+		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
 		
 		// output writer properties
 		Properties owr_props = new Properties();
@@ -938,10 +997,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			owr_props.setProperty("type",outtype);
 		
 		// create the clock
-		clock = new Clock(param.timestart,param.timeend,simdtinseconds);
-		
-		// lock the scenario
-        scenariolocked = true;	
+		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
         
 		// loop through simulation runs ............................
 		for(int i=0;i<numRepetitions;i++){
@@ -967,7 +1023,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         scenariolocked = false;
 	}
 	
-	private boolean advanceNSteps_internal(Scenario.ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
+	private boolean advanceNSteps_internal(ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
 		
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -1000,17 +1056,48 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		cumulatives.reset();
 	}
 
+	
+	/////////////////////////////////////////////////////////////////////
+	// public static
+	/////////////////////////////////////////////////////////////////////	
+	
+	// returns greatest common divisor among network time steps.
+	// The time steps are rounded to the nearest decisecond.
+	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
+		
+		if(scenario.getNetworkList()==null)
+			return Double.NaN;
+		
+		if(scenario.getNetworkList().getNetwork().size()==0)
+			return Double.NaN;
+			
+		// loop through networks calling gcd
+		double dt;
+		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
+		int tengcd = 0;		// in deciseconds
+		for(int i=0;i<networkList.size();i++){
+			dt = networkList.get(i).getDt().doubleValue();	// in seconds
+	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
+	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
+				dt *= 3600;
+	        }
+			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
+		}
+    	return ((double)tengcd)/10.0;
+	}
+	
+	
 	/////////////////////////////////////////////////////////////////////
 	// private classes
 	/////////////////////////////////////////////////////////////////////	
 	
 	private class RunParameters{
-		public double timestart;			// [sec] start of the simulation
-		public double timeend;				// [sec] end of the simulation
+		public double sim_start;			// [sec] start of the simulation
+		public double sim_end;				// [sec] end of the simulation
 		public double timestartOutput;		// [sec] start outputing data
 		public double outDt;				// [sec] output sampling time
 		public int outsteps;				// [-] number of simulation steps per output step
-		public Scenario.ModeType simulationMode;
+		public ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws BeatsException{
@@ -1033,9 +1120,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if(!Double.isNaN(outdt) && !BeatsMath.isintegermultipleof(outdt,simdtinseconds))
 				throw new BeatsException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
 			
-			this.timestart = tstart;
+			this.sim_start = tstart;
 			this.timestartOutput = tstart;
-			this.timeend = tend;
+			this.sim_end = tend;
 	        this.outsteps = BeatsMath.round(outdt/simdtinseconds);
 			this.outDt = outsteps*simdtinseconds;
 
@@ -1043,26 +1130,26 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	        
 			// Simulation mode is normal <=> start time == initial profile time stamp
 			simulationMode = null;
-			if(BeatsMath.equals(timestart,time_ic)){
-				simulationMode = Scenario.ModeType.normal;
+			if(BeatsMath.equals(sim_start,time_ic)){
+				simulationMode = ModeType.normal;
 			}
 			else{
 				// it is a warmup. we need to decide on start and end times
-				if(time_ic<timestart){	// go from ic to timestart
-					timestart = time_ic;
-					simulationMode = Scenario.ModeType.warmupFromIC;
+				if(time_ic<sim_start){	// go from ic to timestart
+					sim_start = time_ic;
+					simulationMode = ModeType.warmupFromIC;
 				}
 				else{							// start at earliest demand profile
-					timestart = Double.POSITIVE_INFINITY;
+					sim_start = Double.POSITIVE_INFINITY;
 					if(demandProfileSet!=null)
 						for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandProfileSet.getDemandProfile())
-							timestart = Math.min(timestart,D.getStartTime().doubleValue());					
-					if(Double.isInfinite(timestart))
-						timestart = 0d;
-					timestart = Math.min(timestart, timestartOutput);
-					simulationMode = Scenario.ModeType.warmupFromZero;
+							sim_start = Math.min(sim_start,D.getStartTime().doubleValue());					
+					if(Double.isInfinite(sim_start))
+						sim_start = 0d;
+					sim_start = Math.min(sim_start, timestartOutput);
+					simulationMode = ModeType.warmupFromZero;
 					
-					if(BeatsMath.greaterthan(timeend,time_ic))
+					if(BeatsMath.greaterthan(sim_end,time_ic))
 						throw new BeatsException("Simulation period stradles the initial condition time stamp.");
 				}		
 			}
@@ -1102,7 +1189,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if (null == links) {
 				links = new java.util.HashMap<String, LinkCumulativeData>();
 				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
-					if(((edu.berkeley.path.beats.simulator.Network) network).isempty)
+					if(((edu.berkeley.path.beats.simulator.Network) network).isIsempty())
 						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 						if (links.containsKey(link.getId()))

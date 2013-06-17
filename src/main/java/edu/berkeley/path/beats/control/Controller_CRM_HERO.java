@@ -146,7 +146,7 @@ public class Controller_CRM_HERO extends Controller {
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
 			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
-			onrampLink = myScenario.getLinkWithId(s.getId());	
+			onrampLink = getMyScenario().getLinkWithId(s.getId());	
 		}
 		
 		
@@ -160,19 +160,19 @@ public class Controller_CRM_HERO extends Controller {
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlineSensor==null){
-					mainlineSensor=myScenario.getSensorWithId(s.getId());
+					mainlineSensor=getMyScenario().getSensorWithId(s.getId());
 					hasMainlineSensor = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
 					s.getType().equalsIgnoreCase("link") && mainlineLink==null){
-					mainlineLink=myScenario.getLinkWithId(s.getId());
+					mainlineLink=getMyScenario().getLinkWithId(s.getId());
 					hasMainlineLink = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
 					s.getType().equalsIgnoreCase("sensor")  && queueSensor==null){
-					queueSensor=(SensorLoopStation)myScenario.getSensorWithId(s.getId());
+					queueSensor=(SensorLoopStation)getMyScenario().getSensorWithId(s.getId());
 					hasQueueSensor = true;
 				}				
 			}
@@ -261,19 +261,19 @@ public class Controller_CRM_HERO extends Controller {
 				}
 				
 				if(p.getName().equals("minFlow")){
-					minFlow = Double.parseDouble(p.getValue()) * myScenario.getSimDtInSeconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					minFlow = Double.parseDouble(p.getValue()) * getMyScenario().getSimdtinseconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
 				    minFlow_Given=true;
 				}
 				
 				if(p.getName().equals("maxFlow")){
-					maxFlow = Double.parseDouble(p.getValue()) * myScenario.getSimDtInSeconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
+					maxFlow = Double.parseDouble(p.getValue()) * getMyScenario().getSimdtinseconds() * this.onrampLink.get_Lanes(); //[veh/sim_period/onramp]
 					maxFlow_Given=true;
 				}
 			}	
 		
 		
 		// Normalize ALINEA Gain
-		alineaGainNormalized = gain_in_mps * myScenario.getSimDtInSeconds() / mainlineLink.getLengthInMeters();
+		alineaGainNormalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainlineLink.getLengthInMeters();
 		
 		// Set minFlow equal to zero if not given
 		if(!minFlow_Given)
@@ -303,7 +303,7 @@ public class Controller_CRM_HERO extends Controller {
 		super.validate();
 
 		// must have exactly one target
-		if(targets.size()!=1)
+		if(getTargets().size()!=1)
 			BeatsErrorLog.addError("Numnber of targets for HERO controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
@@ -369,8 +369,8 @@ public class Controller_CRM_HERO extends Controller {
 	protected void update() {
 		
 		//HERO Controllers targetDensity, mainlineVehicles and queueCurrent Update (Only Executes once for the first Updated HERO Controller)
-		if(timeStep!= myScenario.getCurrentTimeStep() ){ 
-			timeStep=myScenario.getCurrentTimeStep();
+		if(timeStep!= getMyScenario().getCurrentTimeStep() ){ 
+			timeStep=getMyScenario().getCurrentTimeStep();
 		
 			//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
 			updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax();
@@ -398,8 +398,7 @@ public class Controller_CRM_HERO extends Controller {
 				controllerList.get(i).flowQueue = ( -controllerList.get(i).queueControllerGainNormalized*
 						                          (controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
 						                          controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/ 
-						                          (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimDtInSeconds());
-				
+						                          (controllerList.get(i).getDtinseconds()/controllerList.get(i).getMyScenario().getSimdtinseconds());
 		        //EQUATION (3) vs EQUATIONS(4) and(5)
 				if(controllerList.get(i).type.equals(status.MASTER)|| controllerList.get(i).type.equals(status.NOT_USED))
 					controllerList.get(i).flowHero=Math.max(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueue);
@@ -407,7 +406,7 @@ public class Controller_CRM_HERO extends Controller {
 					controllerList.get(i).flowQueueMin =(-controllerList.get(i).queueMinControllerGainNormalized*
 							                             (controllerList.get(i).queueMin-controllerList.get(i).queueCurrent)+
 							                             controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/
-							                             (controllerList.get(i).dtinseconds/controllerList.get(i).myScenario.getSimDtInSeconds());
+							                             (controllerList.get(i).getDtinseconds()/controllerList.get(i).getMyScenario().getSimdtinseconds());
 					
 					
 					controllerList.get(i).flowHero = Math.max(Math.min(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueueMin), controllerList.get(i).flowQueue);
@@ -421,7 +420,7 @@ public class Controller_CRM_HERO extends Controller {
 		
 		//DEFINITION OF HERO METERING RATE
 		flowControl_MaxFlow=Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
-		control_maxflow[0] = flowControl_MaxFlow;
+		setControl_maxflow(0, flowControl_MaxFlow);
 		//printFlows(this);
 		//System.out.println(mainlineLink.getDensityJamInVPMPL(0));
 	}	
@@ -452,7 +451,7 @@ public class Controller_CRM_HERO extends Controller {
 		ArrayList<String> controllersOrdered = new ArrayList<String>();
 							
 		//Most Downstream Node	
-		for(edu.berkeley.path.beats.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
+		for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
         	if( ((Link)aLink).getType().equals("freeway")  && ((Link)aLink).getEnd_node().getType().equals("terminal")                ) { 	
         		nodesOrdered.add(((Link)aLink).getEnd_node());
         		if(printMessages)
@@ -464,7 +463,7 @@ public class Controller_CRM_HERO extends Controller {
 		//Freeway Links and Nodes  Arranged from Downstream to Upstream by Id
 		int isTerminalNode=0;	
 		while (isTerminalNode==0) {
-			for(edu.berkeley.path.beats.jaxb.Link aLink: myScenario.getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
+			for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
 	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId().equals(nodesOrdered.get(nodesOrdered.size()-1).getId())  ) { 
 	        		linksOrdered.add(((Link)aLink));
 	        		nodesOrdered.add(((Link)aLink).getBegin_node());	
@@ -486,7 +485,7 @@ public class Controller_CRM_HERO extends Controller {
 					if(printMessages)
 						System.out.println("Node "+ aNode.getId()+": "+ aLink.getType()+ " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
 					
-					for(edu.berkeley.path.beats.jaxb.Controller aController: myScenario.getControllerSet().getController()) {
+					for(edu.berkeley.path.beats.jaxb.Controller aController: getMyScenario().getControllerSet().getController()) {
 						if(aController.getTargetElements().getScenarioElement().get(0).getId().equals(aLink.getId()) && aController.getType().equals("CRM_hero"))   {
 							if(printMessages)
 								System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 
@@ -526,7 +525,7 @@ public class Controller_CRM_HERO extends Controller {
 			
 
 			if(!controllerList.get(i).maxFlow_Given)
-				controllerList.get(i).maxFlow = onrampLink.getCapacityInVPSPL(0) * myScenario.getSimDtInSeconds() * onrampLink.get_Lanes(); //[veh/sim_period/onramp];
+				controllerList.get(i).maxFlow = onrampLink.getCapacityInVPSPL(0) * getMyScenario().getSimdtinseconds() * onrampLink.get_Lanes(); //[veh/sim_period/onramp];
 
 			if(!controllerList.get(i).queueMax_Given)
 				controllerList.get(i).queueMax = controllerList.get(i).onrampLink.getDensityJamInVeh(0); //[veh/onramp]

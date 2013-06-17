@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class ControlAlgorithm {
 	
-	protected String name;
+	private String name;
 
 	public ControlAlgorithm() {
 	}

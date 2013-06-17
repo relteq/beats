@@ -81,7 +81,7 @@ public class Event_Link_Demand_Knob extends Event {
 		super.validate();
 		
 		// check each target is valid
-		for(ScenarioElement s : targets){
+		for(ScenarioElement s : getTargets()){
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
 				BeatsErrorLog.addError("Wrong target type for event id=" +getId() +".");
 			if(!((Link)s.getReference()).isSource())
@@ -91,9 +91,9 @@ public class Event_Link_Demand_Knob extends Event {
 
 	@Override
 	protected void activate() throws BeatsException {
-		for(ScenarioElement s : targets){
-	    	if(myScenario.getDemandProfileSet()!=null){
-	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : myScenario.getDemandProfileSet().getDemandProfile()){
+		for(ScenarioElement s : getTargets()){
+	    	if(getMyScenario().getDemandProfileSet()!=null){
+	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : getMyScenario().getDemandProfileSet().getDemandProfile()){
 	        		if(profile.getLinkIdOrigin().equals(s.getId())){
 	        			if(resetToNominal)
 	        				setDemandProfileEventKnob(profile,profile.getKnob().doubleValue());

@@ -83,8 +83,8 @@ public class Event_Control_Toggle extends Event {
 		super.validate();
 		
 		// check each target is valid
-		if(targets!=null)
-			for(ScenarioElement s : targets)
+		if(getTargets()!=null)
+			for(ScenarioElement s : getTargets())
 				if(s.getMyType().compareTo(ScenarioElement.Type.controller)!=0)
 					BeatsErrorLog.addError("Wrong target type for event id=" +getId() +".");
 
@@ -92,8 +92,8 @@ public class Event_Control_Toggle extends Event {
 
 	@Override
 	protected void activate() throws BeatsException{
-		for(ScenarioElement s : targets){
-			Controller c = myScenario.getControllerWithId(s.getId());
+		for(ScenarioElement s : getTargets()){
+			Controller c = getMyScenario().getControllerWithId(s.getId());
 			setControllerIsOn(c, ison);
 		}			
 	}
