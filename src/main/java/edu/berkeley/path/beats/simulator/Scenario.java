@@ -1271,5 +1271,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			phases.clear();
 		}
 	}
+
+	
+	
+	public void setUncertaintyModel(Scenario.UncertaintyType uncertaintyModel) {
+		this.uncertaintyModel = uncertaintyModel;
+	}
+	
+	
+	
+	
 	
 }
