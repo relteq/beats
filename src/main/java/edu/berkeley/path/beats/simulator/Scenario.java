@@ -67,10 +67,10 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 */
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
-	/** @y.exclude */	protected static enum ModeType {  normal, 
+	/** @y.exclude */	public static enum ModeType {  normal, 
 		  warmupFromZero , 
 		  warmupFromIC };
-	/** @y.exclude */	protected static enum UncertaintyType { uniform, 
+	/** @y.exclude */	public static enum UncertaintyType { uniform, 
 		  gaussian }
 
 	/** @y.exclude */	private static Logger logger = Logger.getLogger(Scenario.class);
@@ -1184,5 +1184,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			phases.clear();
 		}
 	}
+
+	
+	
+	public void setUncertaintyModel(Scenario.UncertaintyType uncertaintyModel) {
+		this.uncertaintyModel = uncertaintyModel;
+	}
+	
+	
+	
+	
 	
 }
