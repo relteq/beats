@@ -345,6 +345,13 @@
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:string" use="required" />
 				  <xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
+					<xs:attribute name="priority" use="optional">
+						<xs:simpleType>
+							<xs:restriction base="xs:decimal">
+								<xs:minInclusive value="0"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
 				</xs:complexType>
 			  </xs:element>
 
