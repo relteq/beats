@@ -479,8 +479,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		        	for(j=0;j<nOut;j++){
 		        		Double sr = splitratio.get(i,j,k);
 		        		if(sr.isNaN()){
-		        			//sr_new[j] = 0f;
-		        			
+		        			sr_new[j] = 0f;
 		        			unknownind.add(j);						// index to unknown output
 		        			unknown_dsratio.add(dsratio[e][j]);		// dsratio for unknown output
 		        		}
