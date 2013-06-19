@@ -215,7 +215,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 			splitratio_applied = resolveUnassignedSplits_A(splitratio_selected);
 		}
 		else
-			splitratio_applied = null;
+			splitratio_applied = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
 		
         // compute node flows ..........................................
         computeLinkFlows(splitratio_applied);
