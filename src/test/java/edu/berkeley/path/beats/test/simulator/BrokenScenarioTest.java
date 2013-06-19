@@ -22,12 +22,12 @@ public class BrokenScenarioTest {
 	private static Logger logger = Logger.getLogger(BrokenScenarioTest.class);
 	private File config;
 	
-	private static String[] working_config_names = { "_scenario_2009_02_12",
+	private static String[] working_config_names = { "_scenario_constantsplits",
+		 											 "_scenario_2009_02_12",
 													 "Albany-and-Berkeley",
 													 "testfwy2",
 													 "testfwy_w",
 													 "test_event",
-													 "_scenario_constantsplits",
 													 "_smalltest",
 													 "_smalltest_multipletypes"
 													 };

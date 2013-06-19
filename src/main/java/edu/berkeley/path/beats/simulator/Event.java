@@ -257,16 +257,14 @@ public class Event implements Comparable {
 			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
 		if(!node.validateSplitRatioMatrix(X))
 			return;
-		node.setSplitratio(X);
-		node.setHasActiveSplitEvent(true);
+		node.applyEventSplitRatio(X);
 	}
 
 	protected void revertNodeEventSplitRatio(Node node) {
 		if(node==null)
 			return;
 		if(node.isHasActiveSplitEvent()){
-			node.resetSplitRatio();
-			node.setHasActiveSplitEvent(false);
+			node.removeEventSplitRatio();
 		}
 	}
 	

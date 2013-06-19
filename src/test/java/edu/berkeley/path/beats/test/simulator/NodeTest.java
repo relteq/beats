@@ -72,10 +72,10 @@ public class NodeTest {
 		assertEquals(node.getnOut(),2);
 	}
 
-	@Test
-	public void test_hasController() {
-		assertFalse(node.hasController());
-	}
+//	@Test
+//	public void test_hasController() {
+//		assertFalse(node.hasController());
+//	}
 
 	@Test
 	public void test_getSplitRatio_a() {
