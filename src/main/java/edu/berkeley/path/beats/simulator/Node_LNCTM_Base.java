@@ -173,9 +173,8 @@ public class Node_LNCTM_Base extends Node {
 	        for(j=0;j<nOut;j++){
 	        	for(k=0;k<numVehicleTypes;k++){
 	        		double val = 0d;
-	            	for(i=0;i<nIn;i++){
-	            		val += demand_supply.getDemand(e,i,k)*sr.get(i,j,k);	            		
-	            	}
+	            	for(i=0;i<nIn;i++)
+	            		val += ioflow.getIn(e,i,k)*sr.get(i,j,k);
 	            	ioflow.setOut(e,j,k,val);
 	        	}
 	        }

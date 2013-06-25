@@ -501,6 +501,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		public Double [] getIn(int nE,int nI){
 			return in[nE][nI];
 		}
+
+		public double getIn(int nE,int nI,int nV){
+			return in[nE][nI][nV];
+		}
 		
 		public Double [] getOut(int nE,int nO){
 			return out[nE][nO];
