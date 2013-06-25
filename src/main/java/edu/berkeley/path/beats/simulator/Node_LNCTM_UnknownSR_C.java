@@ -1,11 +1,9 @@
 package edu.berkeley.path.beats.simulator;
 
-public class Node_ModelC extends Node {
+public class Node_LNCTM_UnknownSR_C extends Node_LNCTM_Base {
 
-
-    
     /*
-    private Float3DMatrix resolveUnassignedSplits_C(SR){
+    private Float3DMatrix resolveUnassignedSplits(SR){
     	for(int i=0;i<nIn;i++){
 	        for(int k=0;k<nTypes;k++){
 	            sr_j = SR(i,:,k);
