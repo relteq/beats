@@ -26,8 +26,6 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.ArrayList;
-
 /** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -48,7 +46,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
 	// split ratio from profile
 	protected SplitRatioProfile mySplitRatioProfile;
-//	private Double3DMatrix splitFromProfile;
 	protected boolean hasSRprofile;
 	
 	// split ratio from event
@@ -57,18 +54,16 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// split ratio from profile or event
 	protected Double3DMatrix splitratio_selected;
 	
-	// split ratio applied, after resolving unknown terms
-//	protected Double3DMatrix splitratio_applied;
-	
 //	private Signal mySignal = null;
 
     // controller
 //	private boolean hascontroller;
 //	private boolean controlleron;
 	
-	// input to node model, copied from link suppy/demand
-	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
-	protected double [][] outSupply;		// [ensemble][nOut]
+//	// input to node model, copied from link suppy/demand
+//	private Double [][][] inDemand;		// [ensemble][nIn][nTypes]
+//	private double [][] outSupply;		// [ensemble][nOut]
+	private SupplyDemand demand_supply;
 	
 	// output from node model (inDemand gets scaled)
 	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
@@ -152,10 +147,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	
 	protected void reset() {	
 		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
-    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();		
-    	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
-		outSupply 		= new double[numEnsemble][nOut];
-		outFlow 		= new Double[numEnsemble][nOut][numVehicleTypes];
+    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+    	demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
+		outFlow = new Double[numEnsemble][nOut][numVehicleTypes];
 	}
 	
 	protected void update() {
@@ -169,76 +163,40 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         // collect input demands and output supplies ...................
         for(e=0;e<numEnsemble;e++){        
     		for(i=0;i<nIn;i++)
-    			inDemand[e][i] = input_link[i].getOutflowDemand(e);
+    			demand_supply.setDemand(e,i, input_link[i].getOutflowDemand(e) );
     		for(j=0;j<nOut;j++)
-    			outSupply[e][j] = output_link[j].getSpaceSupply(e);
+    			demand_supply.setSupply(e,j,output_link[j].getSpaceSupply(e));
         }
 
-        Double3DMatrix splitratio_applied = xxx();
+        // compute applied split ratio matrix
+        Double3DMatrix splitratio_applied = computeAppliedSplitRatio(demand_supply);
         
         // compute node flows ..........................................
-        computeLinkFlows(splitratio_applied);
+        IOFlow IOflow = computeLinkFlows(splitratio_applied,demand_supply);
         
         // assign flow to input links ..................................
 		for(e=0;e<numEnsemble;e++)
 	        for(i=0;i<nIn;i++)
-	            input_link[i].setOutflow(e, inDemand[e][i]);
+	            input_link[i].setOutflow(e,IOflow.getIn(e,i));
         
         // assign flow to output links .................................
 		for(e=0;e<numEnsemble;e++)
 	        for (j=0;j<nOut;j++)
-	            output_link[j].setInflow(e, outFlow[e][j]);
+	            output_link[j].setInflow(e,IOflow.getOut(e,j));
 	}
 
-
-	protected Double3DMatrix xxx(){
-		return null;
-	}
-	
-//	private void xxx(){
-//
-//		int e,j,k;
-//        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-//
-//        
-//		// solve unknown split ratios if they are non-trivial ..............
-//		if(!istrivialsplit){	
-//
-//	        // Take current split ratio from the profile if the node is
-//			// not actively controlled. Otherwise the mat has already been 
-//			// set by the controller.
-//			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
-//				splitratio_selected = this.mySplitRatioProfile.getCurrentSplitRatio();
-////				splitratio.copydata(splitFromProfile);
-//			
-//	        // compute known output demands ................................
-//			for(e=0;e<numEnsemble;e++)
-//		        for(j=0;j<nOut;j++){
-//		        	outDemandKnown[e][j] = 0f;
-//		        	for(i=0;i<nIn;i++)
-//		        		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++)
-//		        			if(!splitratio_selected.get(i,j,k).isNaN())
-//		        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * inDemand[e][i][k];
-//		        }
-//	        
-//	        // compute and sort output demand/supply ratio .................
-//			for(e=0;e<numEnsemble;e++)
-//		        for(j=0;j<nOut;j++)
-//		        	dsratio[e][j] = outDemandKnown[e][j] / outSupply[e][j];
-//	                
-//	        // fill in unassigned split ratios .............................
-//			splitratio_applied = resolveUnassignedSplits_A(splitratio_selected);
-//		}
-//		else
-//			splitratio_applied = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-//		
-//		
-//	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
+	protected Double3DMatrix computeAppliedSplitRatio(final SupplyDemand demand_supply){
+		return null;
+	}
+	
+    protected IOFlow computeLinkFlows(final Double3DMatrix sr,final SupplyDemand demand_supply){
+    	return null;
+    }
+    
 	// split ratio profile ..............................................
 
 	protected void setMySplitRatioProfile(SplitRatioProfile mySplitRatioProfile) {
@@ -390,14 +348,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     }
     
 	/////////////////////////////////////////////////////////////////////
-	// private methods
-	/////////////////////////////////////////////////////////////////////
-	
-    protected void computeLinkFlows(final Double3DMatrix sr){
-    	
-    }
-    
-	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
@@ -499,4 +449,64 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 
+	
+	protected class SupplyDemand {
+		// input to node model, copied from link suppy/demand
+		protected Double [][][] demand;		// [ensemble][nIn][nTypes]
+		protected double [][] supply;		// [ensemble][nOut]
+		
+		public SupplyDemand(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
+			super();
+	    	demand = new Double[numEnsemble][nIn][numVehicleTypes];
+			supply = new double[numEnsemble][nOut];
+		}
+		
+		public void setDemand(int nE,int nI,Double [] val){
+			demand[nE][nI] = val;
+		}
+		
+		public void setSupply(int nE,int nO, double val){
+			supply[nE][nO]=val;
+		}
+		
+		public double getDemand(int nE,int nI,int nK){
+			return demand[nE][nI][nK];
+		}
+		
+		public double getSupply(int nE,int nO){
+			return supply[nE][nO];
+		}
+
+	}
+	
+	protected class IOFlow {
+		// input to node model, copied from link suppy/demand
+		protected Double [][][] in;		// [ensemble][nIn][nTypes]
+		protected Double [][][] out;	// [ensemble][nOut][nTypes]
+		
+		public IOFlow(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
+			super();
+	    	in = new Double[numEnsemble][nIn][numVehicleTypes];
+			out = new Double[numEnsemble][nOut][numVehicleTypes];
+		}
+
+		public void setIn(int nE,int nI,int nV,double val){
+			in[nE][nI][nV] = val;
+		}
+		
+		public void setOut(int nE,int nO,int nV,double val){
+			out[nE][nO][nV]=val;
+		}
+		
+		public Double [] getIn(int nE,int nI){
+			return in[nE][nI];
+		}
+		
+		public Double [] getOut(int nE,int nO){
+			return out[nE][nO];
+		}
+	}
+	
+	
+	
 }

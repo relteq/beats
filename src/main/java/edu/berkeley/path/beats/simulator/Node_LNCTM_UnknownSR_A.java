@@ -1,9 +1,11 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.Node.SupplyDemand;
+
 public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
 
 	@Override
-    protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio){
+    protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
     	
     	int e,i,j,k;
     	int numunknown;	
@@ -70,26 +72,26 @@ public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
 		            		if( BeatsMath.equals(unknown_dsratio.get(z),dsmin) ){
 		            			int index = unknownind.get(z);
 		            			minind_to_nOut.add(index);
-		            			minind_to_unknown.add(z);
-		            			num = dsmax*outSupply[e][index] - outDemandKnown[e][index];
+		            			minind_to_unknown.add(z);		            			
+		            			num = dsmax*demand_supply.getSupply(e,index) - outDemandKnown[e][index];
 		            			sendtoeach.add(num);		            			
 		            			sumsendtoeach += num;
 		            		}
 	
 	                    // total that can be sent
-		            	double sendtotal = Math.min(inDemand[e][i][k]*remainingSplit , sumsendtoeach );
+		            	double sendtotal = Math.min(demand_supply.getDemand(e,i,k)*remainingSplit , sumsendtoeach );
 	                    
 	                    // scale down sendtoeach
 	                    // store split ratio
 	                    for(int z=0;z<minind_to_nOut.size();z++){
 	                    	double send = sendtoeach.get(z)*sendtotal/sumsendtoeach;  
-	                    	double addsplit = send/inDemand[e][i][k];
+	                    	double addsplit = send/demand_supply.getDemand(e,i,k);
 	                    	int ind_nOut = minind_to_nOut.get(z);
 	                    	int ind_unknown = minind_to_unknown.get(z);
 	                    	sr_new[ind_nOut] += addsplit;
 	                    	remainingSplit -= addsplit;
 		                    outDemandKnown[e][ind_nOut] += send;
-		                    unknown_dsratio.set( ind_unknown , outDemandKnown[e][ind_nOut]/outSupply[e][ind_nOut] );
+		                    unknown_dsratio.set( ind_unknown , outDemandKnown[e][ind_nOut]/demand_supply.getSupply(e,ind_nOut) );
 	                    }	                    
 		                
 		            }
@@ -111,11 +113,11 @@ public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
 		            	double totalsupply = 0f;
 		            	double splitforeach;
 	                    for(Integer jj : unknownind)
-	                    	totalsupply += outSupply[e][jj];
+	                    	totalsupply += demand_supply.getSupply(e,jj);
 	                    for(Integer jj : unknownind){
-	                    	splitforeach = remainingSplit*outSupply[e][jj]/totalsupply;
+	                    	splitforeach = remainingSplit*demand_supply.getSupply(e,jj)/totalsupply;
 	                    	sr_new[jj] += splitforeach;
-	                    	outDemandKnown[e][jj] += inDemand[e][i][k]*splitforeach;
+	                    	outDemandKnown[e][jj] += demand_supply.getDemand(e,i,k)*splitforeach;
 	                    }
 	                    remainingSplit = 0;
 		            }
@@ -131,6 +133,5 @@ public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
     
     }
 
-	
     
 }
