@@ -32,33 +32,33 @@ import java.util.ArrayList;
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class Node extends edu.berkeley.path.beats.jaxb.Node {
+public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		   
-	private Network myNetwork;
+	protected Network myNetwork;
 
 	// connectivity
-	private int nIn;
-	private int nOut;
-	private boolean istrivialsplit;
-	private boolean isTerminal;
+	protected int nIn;
+	protected int nOut;
+	protected boolean istrivialsplit;
+	protected boolean isTerminal;
 	
 	// link references
-	private Link [] output_link;
-	private Link [] input_link;
+	protected Link [] output_link;
+	protected Link [] input_link;
 	
 	// split ratio from profile
-	private SplitRatioProfile mySplitRatioProfile;
+	protected SplitRatioProfile mySplitRatioProfile;
 //	private Double3DMatrix splitFromProfile;
-	private boolean hasSRprofile;
+	protected boolean hasSRprofile;
 	
 	// split ratio from event
-	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
+	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 	
 	// split ratio from profile or event
-	private Double3DMatrix splitratio_selected;
+	protected Double3DMatrix splitratio_selected;
 	
 	// split ratio applied, after resolving unknown terms
-	private Double3DMatrix splitratio_applied;
+//	protected Double3DMatrix splitratio_applied;
 	
 //	private Signal mySignal = null;
 
@@ -67,22 +67,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 //	private boolean controlleron;
 	
 	// input to node model, copied from link suppy/demand
-	private Double [][][] inDemand;		// [ensemble][nIn][nTypes]
-	private double [][] outSupply;		// [ensemble][nOut]
+	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
+	protected double [][] outSupply;		// [ensemble][nOut]
 	
 	// output from node model (inDemand gets scaled)
-	private Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
 	
-    // used in update()
-	private double [][] outDemandKnown;	// [ensemble][nOut]
-	private double [][] dsratio;		// [ensemble][nOut]
-	private boolean [][] iscontributor;	// [nIn][nOut]
-	private ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	private ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	private ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	private ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	private ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
-
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -123,7 +113,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
     	if(isTerminal)
     		return;
 
-		iscontributor = new boolean[nIn][nOut];
+//		iscontributor = new boolean[nIn][nOut];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
 		
@@ -159,14 +149,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 			BeatsErrorLog.addError("No outputs from non-terminal node id=" + getId());
 		
 	}
-
+	
 	protected void reset() {	
 		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
     	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();		
     	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
 		outSupply 		= new double[numEnsemble][nOut];
-		outDemandKnown 	= new double[numEnsemble][nOut];
-		dsratio 		= new double[numEnsemble][nOut];
 		outFlow 		= new Double[numEnsemble][nOut][numVehicleTypes];
 	}
 	
@@ -186,37 +174,8 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
     			outSupply[e][j] = output_link[j].getSpaceSupply(e);
         }
 
-		// solve unknown split ratios if they are non-trivial ..............
-		if(!istrivialsplit){	
-
-	        // Take current split ratio from the profile if the node is
-			// not actively controlled. Otherwise the mat has already been 
-			// set by the controller.
-			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
-				splitratio_selected = this.mySplitRatioProfile.getCurrentSplitRatio();
-//				splitratio.copydata(splitFromProfile);
-			
-	        // compute known output demands ................................
-			for(e=0;e<numEnsemble;e++)
-		        for(j=0;j<nOut;j++){
-		        	outDemandKnown[e][j] = 0f;
-		        	for(i=0;i<nIn;i++)
-		        		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++)
-		        			if(!splitratio_selected.get(i,j,k).isNaN())
-		        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * inDemand[e][i][k];
-		        }
-	        
-	        // compute and sort output demand/supply ratio .................
-			for(e=0;e<numEnsemble;e++)
-		        for(j=0;j<nOut;j++)
-		        	dsratio[e][j] = outDemandKnown[e][j] / outSupply[e][j];
-	                
-	        // fill in unassigned split ratios .............................
-			splitratio_applied = resolveUnassignedSplits_A(splitratio_selected);
-		}
-		else
-			splitratio_applied = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-		
+        Double3DMatrix splitratio_applied = xxx();
+        
         // compute node flows ..........................................
         computeLinkFlows(splitratio_applied);
         
@@ -231,6 +190,51 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	            output_link[j].setInflow(e, outFlow[e][j]);
 	}
 
+
+	protected Double3DMatrix xxx(){
+		return null;
+	}
+	
+//	private void xxx(){
+//
+//		int e,j,k;
+//        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+//
+//        
+//		// solve unknown split ratios if they are non-trivial ..............
+//		if(!istrivialsplit){	
+//
+//	        // Take current split ratio from the profile if the node is
+//			// not actively controlled. Otherwise the mat has already been 
+//			// set by the controller.
+//			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
+//				splitratio_selected = this.mySplitRatioProfile.getCurrentSplitRatio();
+////				splitratio.copydata(splitFromProfile);
+//			
+//	        // compute known output demands ................................
+//			for(e=0;e<numEnsemble;e++)
+//		        for(j=0;j<nOut;j++){
+//		        	outDemandKnown[e][j] = 0f;
+//		        	for(i=0;i<nIn;i++)
+//		        		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++)
+//		        			if(!splitratio_selected.get(i,j,k).isNaN())
+//		        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * inDemand[e][i][k];
+//		        }
+//	        
+//	        // compute and sort output demand/supply ratio .................
+//			for(e=0;e<numEnsemble;e++)
+//		        for(j=0;j<nOut;j++)
+//		        	dsratio[e][j] = outDemandKnown[e][j] / outSupply[e][j];
+//	                
+//	        // fill in unassigned split ratios .............................
+//			splitratio_applied = resolveUnassignedSplits_A(splitratio_selected);
+//		}
+//		else
+//			splitratio_applied = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+//		
+//		
+//	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -389,293 +393,9 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// private methods
 	/////////////////////////////////////////////////////////////////////
 	
-	private void computeLinkFlows(final Double3DMatrix sr){
-        
-    	int e,i,j,k;
-    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-    	int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
-
-        // input i contributes to output j .............................
-    	for(i=0;i<sr.getnIn();i++)
-        	for(j=0;j<sr.getnOut();j++)
-        		iscontributor[i][j] = sr.getSumOverTypes(i,j)>0;
-	
-        double [][] applyratio = new double[numEnsemble][nIn];
-
-        for(e=0;e<numEnsemble;e++)
-	        for(i=0;i<nIn;i++)
-	        	applyratio[e][i] = Double.NEGATIVE_INFINITY;
-        
-        for(e=0;e<numEnsemble;e++)
-	        for(j=0;j<nOut;j++){
-	        	
-	        	// re-compute known output demands .........................
-				outDemandKnown[e][j] = 0d;
-	            for(i=0;i<nIn;i++)
-	            	for(k=0;k<numVehicleTypes;k++)
-	            		outDemandKnown[e][j] += inDemand[e][i][k]*sr.get(i,j,k);
-	            
-	            // compute and sort output demand/supply ratio .............
-	            if(BeatsMath.greaterthan(outSupply[e][j],0d))
-	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / outSupply[e][j] , 1d );
-	            else
-	            	dsratio[e][j] = 1d;
-	            
-	            // reflect ratios back on inputs
-	            for(i=0;i<nIn;i++)
-	            	if(iscontributor[i][j])
-	            		applyratio[e][i] = Math.max(dsratio[e][j],applyratio[e][i]);
-	            	
-	        }
-
-        // scale down input demands
-        for(e=0;e<numEnsemble;e++)
-	        for(i=0;i<nIn;i++)
-	            for(k=0;k<numVehicleTypes;k++)
-	                inDemand[e][i][k] /= applyratio[e][i];
-        
-        // compute out flows ...........................................   
-        for(e=0;e<numEnsemble;e++)
-	        for(j=0;j<nOut;j++){
-	        	for(k=0;k<numVehicleTypes;k++){
-	        		outFlow[e][j][k] = 0d;
-	            	for(i=0;i<nIn;i++){
-	            		outFlow[e][j][k] += inDemand[e][i][k]*sr.get(i,j,k);	            		
-	            	}
-	        	}
-	        }
+    protected void computeLinkFlows(final Double3DMatrix sr){
+    	
     }
-
-    private Double3DMatrix resolveUnassignedSplits_A(final Double3DMatrix splitratio){
-    	
-    	int e,i,j,k;
-    	int numunknown;	
-    	double dsmax, dsmin;
-    	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio.getData());
-    	double [] sr_new = new double[nOut];
-    	double remainingSplit;
-    	double num;
-    	
-    	
-    	// SHOULD ONLY BE CALLED WITH numEnsemble=1!!!
-    	
-    	for(e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
-	    	for(i=0;i<nIn;i++){
-		        for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
-		            
-		        	// number of outputs with unknown split ratio
-		        	numunknown = 0;
-		        	for(j=0;j<nOut;j++)
-		        		if(splitratio.get(i,j,k).isNaN())
-		        			numunknown++;
-		        	
-		            if(numunknown==0)
-		                continue;
-		            
-		        	// initialize sr_new, save location of unknown entries, compute remaining split
-		        	unknownind.clear();
-		        	unknown_dsratio.clear();
-		        	remainingSplit = 1f;
-		        	for(j=0;j<nOut;j++){
-		        		Double sr = splitratio.get(i,j,k);
-		        		if(sr.isNaN()){
-		        			sr_new[j] = 0f;
-		        			unknownind.add(j);						// index to unknown output
-		        			unknown_dsratio.add(dsratio[e][j]);		// dsratio for unknown output
-		        		}
-		        		else {
-		        			sr_new[j] = sr;
-		        			remainingSplit -= sr;
-		        		}
-		        	}
-		            
-		        	// distribute remaining split until there is none left or 
-		        	// all dsratios are equalized
-		            while(remainingSplit>0){
-		                
-		            	// find most and least "congested" destinations
-		            	dsmax = Double.NEGATIVE_INFINITY;
-		            	dsmin = Double.POSITIVE_INFINITY;
-		            	for(Double r : unknown_dsratio){
-		            		dsmax = Math.max(dsmax,r);
-		            		dsmin = Math.min(dsmax,r);
-		            	}
-		                
-		                if(BeatsMath.equals(dsmax,dsmin))
-		                    break;
-		                    
-	                	// indices of smallest dsratio
-	                	minind_to_nOut.clear();
-	                	minind_to_unknown.clear();
-		            	sendtoeach.clear();		// flow needed to bring each dsmin up to dsmax
-		            	double sumsendtoeach = 0f;
-		            	for(int z=1;z<numunknown;z++)
-		            		if( BeatsMath.equals(unknown_dsratio.get(z),dsmin) ){
-		            			int index = unknownind.get(z);
-		            			minind_to_nOut.add(index);
-		            			minind_to_unknown.add(z);
-		            			num = dsmax*outSupply[e][index] - outDemandKnown[e][index];
-		            			sendtoeach.add(num);		            			
-		            			sumsendtoeach += num;
-		            		}
-	
-	                    // total that can be sent
-		            	double sendtotal = Math.min(inDemand[e][i][k]*remainingSplit , sumsendtoeach );
-	                    
-	                    // scale down sendtoeach
-	                    // store split ratio
-	                    for(int z=0;z<minind_to_nOut.size();z++){
-	                    	double send = sendtoeach.get(z)*sendtotal/sumsendtoeach;  
-	                    	double addsplit = send/inDemand[e][i][k];
-	                    	int ind_nOut = minind_to_nOut.get(z);
-	                    	int ind_unknown = minind_to_unknown.get(z);
-	                    	sr_new[ind_nOut] += addsplit;
-	                    	remainingSplit -= addsplit;
-		                    outDemandKnown[e][ind_nOut] += send;
-		                    unknown_dsratio.set( ind_unknown , outDemandKnown[e][ind_nOut]/outSupply[e][ind_nOut] );
-	                    }	                    
-		                
-		            }
-		            
-		            // distribute remaining splits proportionally to supplies
-		            if(remainingSplit>0){
-		            	/*
-		            	double totalcapacity = 0f;
-		            	double splitforeach;
-	                    for(Integer jj : unknownind)
-	                    	totalcapacity += output_link[jj].capacity;
-	                    for(Integer jj : unknownind){
-	                    	splitforeach = remainingSplit*output_link[jj].capacity/totalcapacity;
-	                    	sr_new[jj] += splitforeach;
-	                    	outDemandKnown[jj] += inDemand[i][k]*splitforeach;
-	                    }
-	                    remainingSplit = 0;
-	                    */
-		            	double totalsupply = 0f;
-		            	double splitforeach;
-	                    for(Integer jj : unknownind)
-	                    	totalsupply += outSupply[e][jj];
-	                    for(Integer jj : unknownind){
-	                    	splitforeach = remainingSplit*outSupply[e][jj]/totalsupply;
-	                    	sr_new[jj] += splitforeach;
-	                    	outDemandKnown[e][jj] += inDemand[e][i][k]*splitforeach;
-	                    }
-	                    remainingSplit = 0;
-		            }
-		            
-		            // copy to SR
-		            for(j=0;j<nOut;j++)
-		            	splitratio_new.set(i,j,k,sr_new[j]);
-		        }
-	    	}
-    	}
-    	
-    	return splitratio_new;
-    
-    }
-
-    /*
-    private Float3DMatrix resolveUnassignedSplits_B(SR){
-
-        // GCG: take care of case single class
-        
-        for(i=0;i<nIn;i++){
-            for(k=0;k<nTypes;k++){
-                
-                sr_j = SR(i,:,k);                            // 1 x nOut
-                
-                if(~any(sr_j<0))
-                    continue;
-                
-                sr_pos = sr_j;
-                sr_pos(sr_pos<0) = 0;
-                phi = find(sr_j<0);             // possible destinations
-                
-                phi_dsratio = dsratio(phi);
-                
-                // classes are sorted in order of increasing congestion
-                dsratio_class = sort(unique(phi_dsratio),2,'ascend');
-                
-                // class z has members phi(isinclass(z,:))
-                numclasses = length(dsratio_class);
-                isinclass = false(numclasses,length(phi));
-                for(z=0;z<numclasses;z++)
-                    isinclass(z,phi_dsratio==dsratio_class(z)) = true;
-                
-                // for each class compute the demand needed to get to the next class
-                Delta = zeros(numclasses-1,1);
-                for(z=0;z<numclasses-1;z++){
-                    myphi = phi(isinclass(z,:));
-                    Delta(z) = sum( outSupply(myphi)*dsratio_class(z+1) - outDemandKnown(myphi) );
-                }
-                
-                // flow needed to raise classes
-                if(numclasses==1)
-                    flowtolevel = inf;
-                else
-                    flowtolevel = [cumsum(Delta.*(1:numclasses-1)) inf];    // 1xnumclasses
-                
-                // numclassups = n then remainingDemand is sufficient to unite classes 1..n, but not {1..n} and n+1
-                remainingSplit = 1-sum(sr_pos);
-                remainingDemand = inDemand(i,k)*remainingSplit;
-                numclassmerge = find(remainingDemand<flowtolevel,1,'first');
-                
-                // flowtolevel(numclassmerge-1) is flow used to
-                // level off classes. Distribute the remainder
-                // equally among unassigned outputs
-                if(numclassmerge>1)
-                    levelflow = flowtolevel(numclassmerge-1);
-                else
-                    levelflow = 0;
-                
-                leftoverperclass = (remainingDemand-levelflow)/numclassmerge;
-                
-                for(z=0;z<numclasses;z++){
-                    
-                    flowtoclass = 0;
-                    if(numclassmerge>z)
-                        flowtoclass = sum(Delta(z:end));
-                    
-                    if(numclassmerge>=z)
-                        flowtoclass = flowtoclass + leftoverperclass;
-                    
-                    // distribute among class members
-                    myphi = phi(isinclass(z,:));
-                    phishare = outSupply(myphi)/sum(outSupply(myphi));
-                    flowtophi = flowtoclass*phishare;
-                    
-                    // save in SR matrix
-                    if(inDemand(i,k)>0)
-                        SR(i,myphi,k) = flowtophi/inDemand(i,k);
-                    else{
-                        SR(i,myphi,k) = 0;
-                        s = sum(SR(i,:,k));
-                        if(s>0)
-                            SR(i,:,k) = SR(i,:,k)/s;
-                        else
-                            SR(i,1,k) = 1;
-                    }
-                }
-            }
-        }
-    }
-*/
-    
-    /*
-    private Float3DMatrix resolveUnassignedSplits_C(SR){
-    	for(int i=0;i<nIn;i++){
-	        for(int k=0;k<nTypes;k++){
-	            sr_j = SR(i,:,k);
-	            if(~any(sr_j<0))
-	                continue;
-	            phi = find(sr_j<0);
-	            remainingSplit = 1-sum(sr_j(sr_j>=0));
-	            phi_dsratio = dsratio(phi);
-	            SR(i,phi,k) = phi_dsratio/sum(phi_dsratio)*remainingSplit;
-	        }
-    	}
-    }    
-    */
     
 	/////////////////////////////////////////////////////////////////////
 	// public API
