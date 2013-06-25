@@ -163,7 +163,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         if(isTerminal)
             return;
 
-        int e,i,j,k;        
+        int e,i,j;        
         int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         
         // collect input demands and output supplies ...................
