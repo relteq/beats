@@ -214,9 +214,14 @@ public final class BeatsMath {
 			return false;
 		if(a.size()!=b.size())
 			return false;
-		for(int i=0;i<a.size();i++)
+		for(int i=0;i<a.size();i++){
+			if(a.get(i).isNaN() && b.get(i).isNaN())
+				continue;
+			if(a.get(i).isInfinite() && b.get(i).isInfinite())
+				continue;
 			if( !BeatsMath.equals(a.get(i), b.get(i)) )
 				return false;
+		}
 		return true;
 	}
 	

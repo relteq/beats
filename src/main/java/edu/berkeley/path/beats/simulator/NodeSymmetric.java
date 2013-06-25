@@ -9,21 +9,26 @@ import edu.berkeley.path.beats.util.ArraySet;
  * C.M.J. Tampere et al.
  * A generic class of first order node models
  * for dynamic macroscopic simulation of traffic flows.
- * Transportation Research Part B 45 (2011) 289Ð309
+ * Transportation Research Part B 45 (2011) 289-309
  */
 public class NodeSymmetric extends Node {
 
-
-	private double [][] demand; 	// [nIn][nOut] S_{ij}
-	double [] capacity; 			// [ensemble][nIn]
-	private double [][] flow; 		// [ensemble][nIn][nOut] q_{ij}
+	private double [][] demand; // [nIn][nOut] S_{ij}
+	double [] priority_i; // [nIn] C_i
+	private double [][] flow; // [nIn][nOut] q_{ij}
 
 	NodeModel model;
 
-	/////////////////////////////////////////////////////////////////////
-	// populate / reset / validate / update
-	/////////////////////////////////////////////////////////////////////
-    
+	@Override
+	protected void reset() {
+		super.reset();
+		demand = new double[nIn][nOut];
+		priority_i = new double[nIn];
+		flow = new double[nIn][nOut];
+
+		model = new NodeModel(nIn, nOut);
+	}
+
 	@Override
 	protected void validate() {
 		super.validate();
@@ -38,16 +43,6 @@ public class NodeSymmetric extends Node {
 									"vehicle type '" + myNetwork.myScenario.getVehicleTypeNames()[vt] + "'");
 		}
 	}
-	
-	@Override
-	protected void reset() {
-		super.reset();
-		demand = new double[nIn][nOut];
-		capacity = new double[nIn];
-		flow = new double[nIn][nOut];
-
-		model = new NodeModel(nIn, nOut);
-	}
 
 	@Override
 	protected void computeInOutFlows() {
@@ -58,7 +53,7 @@ public class NodeSymmetric extends Node {
 
 		for (int ens = 0; ens < myNetwork.myScenario.numEnsemble; ++ens) {
 			for (int i = 0; i < nIn; ++i) {
-				capacity[i] = input_link[i].getCapacityInVeh(ens);
+				priority_i[i] = input_link[i].getPriority(ens);
 				for (int j = 0; j < nOut; ++j) {
 					demand[i][j] = 0;
 					for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt) {
@@ -73,7 +68,7 @@ public class NodeSymmetric extends Node {
 				}
 			}
 
-			model.solve(demand, outSupply[ens], capacity, flow);
+			model.solve(demand, outSupply[ens], priority_i, flow);
 
 			for (int j = 0; j < nOut; ++j)
 				for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt)
@@ -105,10 +100,6 @@ public class NodeSymmetric extends Node {
 
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	// internal class
-	/////////////////////////////////////////////////////////////////////
-    
 	public static class NodeModel {
 		private int nIn;
 		private int nOut;
@@ -136,11 +127,11 @@ public class NodeSymmetric extends Node {
 		/**
 		 * Solve the node model
 		 * @param demand directed demand
-		 * @param supply
-		 * @param capacity incoming links' capacity
+		 * @param supply outgoing links' supply
+		 * @param priority_i incoming links' priorities
 		 * @param flow an array to store the resulting flow
 		 */
-		public void solve(double [][] demand, double [] supply, double [] capacity, double [][] flow) {
+		public void solve(double [][] demand, double [] supply, double [] priority_i, double [][] flow) {
 			for (int i = 0; i < nIn; ++i) {
 				for (int j = 0; j < nOut; ++j)
 					flow[i][j] = 0;
@@ -150,12 +141,12 @@ public class NodeSymmetric extends Node {
 				for (int j = 0; j < nOut; ++j)
 					demand_i[i] += demand[i][j];
 
-				if (nOut == 1) priority[i][0] = capacity[i];
+				if (nOut == 1) priority[i][0] = priority_i[i];
 				else
 					for (int j = 0; j < nOut; ++j)
 						// C_{ij} = C_i * (S_{ij} / S_i)
-						priority[i][j] = 0 >= demand_i[i] ? capacity[i] / nOut :
-							capacity[i] * demand[i][j] / demand_i[i];
+						priority[i][j] = 0 >= demand_i[i] ? priority_i[i] / nOut :
+							priority_i[i] * demand[i][j] / demand_i[i];
 			}
 			// initialization
 			j_set.clear();
@@ -198,7 +189,7 @@ public class NodeSymmetric extends Node {
 					// i \in U_{\hat j}(k)
 					// S_i <= a_{\hat k}(k) C_i
 					if (uj_set[min_a_ind].contains(i) &&
-							demand_i[i] <= min_a_val * capacity[i]) {
+							demand_i[i] <= min_a_val * priority_i[i]) {
 						demand_constrained = true;
 						for (int j = 0; j < nOut; ++j) {
 							// q_{ij} = S_{ij} for all j
@@ -242,5 +233,5 @@ public class NodeSymmetric extends Node {
 			}
 		}
 	}
-	
+
 }
