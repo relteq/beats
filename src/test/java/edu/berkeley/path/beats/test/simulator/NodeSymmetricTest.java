@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import edu.berkeley.path.beats.simulator.NodeSymmetric;
+import edu.berkeley.path.beats.simulator.Node_FlowSolver_Symmetric;
 
 public class NodeSymmetricTest {
 
@@ -106,7 +106,7 @@ public class NodeSymmetricTest {
 		double [] capacity;
 		double [][] flow;
 
-		NodeSymmetric.NodeModel model;
+		Node_FlowSolver_Symmetric.NodeModel model;
 
 		public Problem(int nIn, int nOut) {
 			demand = new double[nIn][nOut];
@@ -114,7 +114,7 @@ public class NodeSymmetricTest {
 			capacity = new double[nIn];
 			flow = new double[nIn][nOut];
 
-			model = new NodeSymmetric.NodeModel(nIn, nOut);
+			model = new Node_FlowSolver_Symmetric.NodeModel(nIn, nOut);
 		}
 
 		public void solve() {
