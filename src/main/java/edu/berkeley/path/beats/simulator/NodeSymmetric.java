@@ -13,7 +13,7 @@ import edu.berkeley.path.beats.util.ArraySet;
  */
 public class NodeSymmetric extends Node {
 
-	private double [][] demand; // [nIn][nOut] S_{ij}
+	private double [][] directed_demand; // [nIn][nOut] S_{ij}
 	double [] priority_i; // [nIn] C_i
 	private double [][] flow; // [nIn][nOut] q_{ij}
 
@@ -22,82 +22,91 @@ public class NodeSymmetric extends Node {
 	@Override
 	protected void reset() {
 		super.reset();
-		demand = new double[nIn][nOut];
+		directed_demand = new double[nIn][nOut];
 		priority_i = new double[nIn];
 		flow = new double[nIn][nOut];
 
 		model = new NodeModel(nIn, nOut);
 	}
 
-	@Override
-	protected void validate() {
-		super.validate();
-		if (!istrivialsplit) {
-			for (int iind = 0; iind < nIn; ++iind)
-				for (int oind = 0; oind < nOut; ++oind)
-					for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt)
-						if (splitratio.get(iind, oind, vt).isNaN())
-							BeatsErrorLog.addWarning("NaN split ratios: node " + getId() + ", " +
-									"input link " + input_link[iind].getId() + ", " +
-									"output link " + output_link[oind].getId() + ", " +
-									"vehicle type '" + myNetwork.myScenario.getVehicleTypeNames()[vt] + "'");
-		}
-	}
+	/// ***** THIS BELONGS IN SPLIT RATIO VALIDATION *******
+//	@Override
+//	protected void validate() {
+//		super.validate();
+//		if (!istrivialsplit) {
+//			for (int iind = 0; iind < nIn; ++iind)
+//				for (int oind = 0; oind < nOut; ++oind)
+//					for (int vt = 0; vt < myNetwork.getMyScenario().getNumVehicleTypes(); ++vt)
+//						if (splitratio.get(iind, oind, vt).isNaN())
+//							BeatsErrorLog.addWarning("NaN split ratios: node " + getId() + ", " +
+//									"input link " + input_link[iind].getId() + ", " +
+//									"output link " + output_link[oind].getId() + ", " +
+//									"vehicle type '" + myNetwork.getMyScenario().getVehicleTypeNames()[vt] + "'");
+//		}
+//	}
 
 	@Override
-	protected void computeInOutFlows() {
-		if (isTerminal) return;
+    protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
 
-		if (!istrivialsplit && hasSRprofile && !controlleron && !hasactivesplitevent)
-			splitratio.copydata(sampledSRprofile);
-
-		for (int ens = 0; ens < myNetwork.myScenario.numEnsemble; ++ens) {
+//		if (isTerminal) 
+//			return null;
+		
+		int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
+		IOFlow ioflow = new IOFlow(numEnsemble,nIn,nOut,numVehicleTypes);
+		
+		for (int ens = 0; ens < numEnsemble ; ++ens) {
+			
+			// priority_i and demand
 			for (int i = 0; i < nIn; ++i) {
 				priority_i[i] = input_link[i].getPriority(ens);
 				for (int j = 0; j < nOut; ++j) {
-					demand[i][j] = 0;
-					for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt) {
+					directed_demand[i][j] = 0;
+					for (int vt = 0; vt < numVehicleTypes; ++vt) {
 						if (1 < nOut) {
 							// S_{ij} = \sum_{vt} S_i^{vt} * sr_{ij}^{vt}
 							Double sr = splitratio.get(i, j, vt);
 							if (!sr.isNaN())
-								demand[i][j] += inDemand[ens][i][vt] * sr;
+								directed_demand[i][j] += demand_supply.getDemand(ens,i,vt) * sr;
 						} else
-							demand[i][j] += inDemand[ens][i][vt];
+							directed_demand[i][j] += demand_supply.getDemand(ens,i,vt);
 					}
 				}
 			}
 
-			model.solve(demand, outSupply[ens], priority_i, flow);
+			// compute flow from demand, supply and priorities
+			model.solve(directed_demand, demand_supply.getSupply(ens), priority_i, flow);
 
+			// set outFlow to 0
 			for (int j = 0; j < nOut; ++j)
-				for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt)
-					outFlow[ens][j][vt] = .0;
+				for (int vt = 0; vt < numVehicleTypes; ++vt)
+					ioflow.setOut(ens,j,vt,0d);
 
 			for (int i = 0; i < nIn; ++i) {
 				// S_i = \sum_j S_{ij}
 				double demand_i = 0;
 				for (int j = 0; j < nOut; ++j)
-					demand_i += demand[i][j];
+					demand_i += directed_demand[i][j];
 
 				if (0 >= demand_i) {
-					for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt)
-						inFlow[ens][i][vt] = .0;
+					for (int vt = 0; vt <numVehicleTypes; ++vt)
+						ioflow.setIn(ens,i,vt,0d);
 				} else {
 					// q_i = \sum_j q_{ij}
 					double flow_i = 0;
 					for (int j = 0; j < nOut; ++j)
 						flow_i += flow[i][j];
 					final double reduction = flow_i / demand_i;
-					for (int vt = 0; vt < myNetwork.myScenario.numVehicleTypes; ++vt) {
-						inFlow[ens][i][vt] = inDemand[ens][i][vt] * reduction;
-						for (int j = 0; j < nOut; ++j)
-							outFlow[ens][j][vt] += inFlow[ens][i][vt] * splitratio.get(i, j, vt);
+					for (int vt = 0; vt < numVehicleTypes; ++vt) {
+						ioflow.setIn(ens,i,vt,  demand_supply.getDemand(ens,i,vt)*reduction  );
+						for (int j = 0; j < nOut; ++j){
+							ioflow.addOut(ens,j,vt, ioflow.getIn(ens,i,vt) * splitratio.get(i,j,vt) );
+						}
 					}
 				}
 			}
 		}
-
+		return ioflow;
 	}
 
 	public static class NodeModel {
@@ -132,6 +141,7 @@ public class NodeSymmetric extends Node {
 		 * @param flow an array to store the resulting flow
 		 */
 		public void solve(double [][] demand, double [] supply, double [] priority_i, double [][] flow) {
+			
 			for (int i = 0; i < nIn; ++i) {
 				for (int j = 0; j < nOut; ++j)
 					flow[i][j] = 0;
@@ -141,13 +151,15 @@ public class NodeSymmetric extends Node {
 				for (int j = 0; j < nOut; ++j)
 					demand_i[i] += demand[i][j];
 
-				if (nOut == 1) priority[i][0] = priority_i[i];
+				if (nOut == 1) 
+					priority[i][0] = priority_i[i];
 				else
 					for (int j = 0; j < nOut; ++j)
 						// C_{ij} = C_i * (S_{ij} / S_i)
 						priority[i][j] = 0 >= demand_i[i] ? priority_i[i] / nOut :
 							priority_i[i] * demand[i][j] / demand_i[i];
 			}
+			
 			// initialization
 			j_set.clear();
 			for (int j = 0; j < nOut; ++j) {
@@ -164,6 +176,7 @@ public class NodeSymmetric extends Node {
 				// J(0) = {j: S_j > 0}
 				if (demand_j > 0) j_set.add(j);
 			}
+			
 			// main loop
 			while (!j_set.isEmpty()) {
 				int min_a_ind = -1; // \hat j
@@ -181,9 +194,11 @@ public class NodeSymmetric extends Node {
 							min_a_ind = j;
 						}
 					}
+				
 				if (-1 == min_a_ind)
 					// TODO revise the exception type
 					throw new RuntimeException("Internal node model error: min a_j is undefined");
+				
 				boolean demand_constrained = false;
 				for (int i = 0; i < nIn; ++i)
 					// i \in U_{\hat j}(k)
@@ -203,6 +218,7 @@ public class NodeSymmetric extends Node {
 							}
 						}
 					}
+				
 				if (demand_constrained) {
 					for (int j = 0; j < nOut; ++j)
 						if (j_set.contains(j) && uj_set[j].isEmpty())
@@ -225,9 +241,11 @@ public class NodeSymmetric extends Node {
 								}
 							}
 						}
+					
 					for (int j = 0; j < nOut; ++j)
 						if (j != min_a_ind && j_set.contains(j) && uj_set[j].isEmpty())
 							j_set.remove(j);
+					
 					j_set.remove(min_a_ind);
 				}
 			}

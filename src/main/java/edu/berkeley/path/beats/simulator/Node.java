@@ -60,13 +60,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //	private boolean hascontroller;
 //	private boolean controlleron;
 	
-//	// input to node model, copied from link suppy/demand
-//	private Double [][][] inDemand;		// [ensemble][nIn][nTypes]
-//	private double [][] outSupply;		// [ensemble][nOut]
-	private SupplyDemand demand_supply;
-	
 	// output from node model (inDemand gets scaled)
-	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	//protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -145,11 +140,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 	}
 	
-	protected void reset() {	
-		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
-    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-    	demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
-		outFlow = new Double[numEnsemble][nOut][numVehicleTypes];
+	protected void reset() {
+		return;
 	}
 	
 	protected void update() {
@@ -159,8 +151,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 
         int e,i,j;        
         int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+        int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
         
         // collect input demands and output supplies ...................
+        SupplyDemand demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
         for(e=0;e<numEnsemble;e++){        
     		for(i=0;i<nIn;i++)
     			demand_supply.setDemand(e,i, input_link[i].getOutflowDemand(e) );
@@ -449,7 +443,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 	}
 
-	
 	protected class SupplyDemand {
 		// input to node model, copied from link suppy/demand
 		protected Double [][][] demand;		// [ensemble][nIn][nTypes]
@@ -477,6 +470,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			return supply[nE][nO];
 		}
 
+		public double [] getSupply(int nE){
+			return supply[nE];
+		}
 	}
 	
 	protected class IOFlow {
@@ -509,8 +505,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		public Double [] getOut(int nE,int nO){
 			return out[nE][nO];
 		}
+		
+		public void addOut(int nE,int nO,int nV,double val){
+			out[nE][nO][nV] += val;
+		}
+		
 	}
-	
-	
 	
 }
