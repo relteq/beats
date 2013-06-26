@@ -168,6 +168,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         // compute node flows ..........................................
         IOFlow IOflow = computeLinkFlows(splitratio_applied,demand_supply);
         
+        if(IOflow==null)
+        	return;
+        	
         // assign flow to input links ..................................
 		for(e=0;e<numEnsemble;e++)
 	        for(i=0;i<nIn;i++)

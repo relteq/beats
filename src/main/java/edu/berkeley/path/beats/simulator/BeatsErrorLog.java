@@ -28,9 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-/** XXX. 
- * YYY
- *
+/**
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public final class BeatsErrorLog {

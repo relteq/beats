@@ -15,6 +15,7 @@ final class RunnerArguments {
 	private Double duration = null; 			// [sec] output duration
 	private Double outputDt = null; 			// [sec] output period
 	private Integer numReps = null;				// number of sequential runs
+	private String nodemodel;					// name of the node model
 	
 	private RunnerArguments parent = null;
 
@@ -33,13 +34,14 @@ final class RunnerArguments {
 	 * @param outputDt output sample rate, sec
 	 * @param numReps number of runs, sec
 	 */
-	public RunnerArguments(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps) {
+	public RunnerArguments(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps,String nodemodel) {
 		this.outputfileprefix = outputfileprefix;
 		this.output_format = output_format;		
 		this.startTime = startTime;
 		this.duration = duration;
 		this.outputDt = outputDt;
 		this.numReps = numReps;
+		this.nodemodel = nodemodel;
 	}
 
 	public void setConfigfilename(String configfilename) {
@@ -103,6 +105,10 @@ final class RunnerArguments {
 		this.numReps = numReps;
 	}
 	
+	public void setNodeModel(String nodemodel){
+		this.nodemodel = nodemodel;
+	}
+	
 	/**
 	 * @param ss the parent simulation settings
 	 */
@@ -164,6 +170,10 @@ final class RunnerArguments {
 		else return null;
 	}
 
+	public String getNodeModel(){
+		return nodemodel;
+	}
+	
 	/**
 	 * @return the parent simulation settings
 	 */
@@ -207,6 +217,8 @@ final class RunnerArguments {
 			outputDt = round(Double.parseDouble(args[index]));
 		if (++index < args.length) 
 			numReps = Integer.parseInt(args[index]);
+		if (++index < args.length) 
+			nodemodel = args[index];
 	}
 
 	public String toString() {
@@ -220,7 +232,7 @@ final class RunnerArguments {
 	 * @return the default simulation settings
 	 */
 	public static RunnerArguments defaults() {
-		return new RunnerArguments("outputs", "xml", Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
+		return new RunnerArguments("outputs", "xml", Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1,"proportional");
 	}
 
 }

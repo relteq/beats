@@ -72,18 +72,18 @@ public class SimulatorTest {
 		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
 	}
 	
-//	@After
-//	public void clearOutput(){
-//		File file = new File(output_folder);        
-//        String[] myFiles;      
-//        if(file.isDirectory()){  
-//            myFiles = file.list();  
-//            for (int i=0; i<myFiles.length; i++) {  
-//                File myFile = new File(file, myFiles[i]);   
-//                myFile.delete();  
-//            }  
-//         }  
-//	} 
+	@After
+	public void clearOutput(){
+		File file = new File(output_folder);        
+        String[] myFiles;      
+        if(file.isDirectory()){  
+            myFiles = file.list();  
+            for (int i=0; i<myFiles.length; i++) {  
+                File myFile = new File(file, myFiles[i]);   
+                myFile.delete();  
+            }  
+         }  
+	} 
 	
 	@Test
 	public void testSimulator() {

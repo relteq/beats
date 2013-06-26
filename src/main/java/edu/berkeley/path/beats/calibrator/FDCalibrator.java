@@ -408,7 +408,6 @@ public class FDCalibrator {
 		
 		try {
 
-			
 			// read the original network file 
 			scenario = ObjectFactory.createAndLoadScenario(configfilename);
 			if(scenario==null)

@@ -11,7 +11,7 @@ import edu.berkeley.path.beats.util.ArraySet;
  * for dynamic macroscopic simulation of traffic flows.
  * Transportation Research Part B 45 (2011) 289-309
  */
-public class NodeSymmetric extends Node {
+public class NodeSymmetric extends edu.berkeley.path.beats.simulator.Node {
 
 	private double [][] directed_demand; // [nIn][nOut] S_{ij}
 	double [] priority_i; // [nIn] C_i
@@ -19,6 +19,11 @@ public class NodeSymmetric extends Node {
 
 	NodeModel model;
 
+	@Override
+	protected void populate(Network myNetwork) {
+		super.populate(myNetwork);
+	}
+	
 	@Override
 	protected void reset() {
 		super.reset();

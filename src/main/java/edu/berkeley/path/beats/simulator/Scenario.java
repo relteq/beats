@@ -65,10 +65,11 @@ import edu.berkeley.path.beats.sensor.SensorLoopStation;
 *  </ul>
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
+@SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	public static enum UncertaintyType { uniform, gaussian }
-	public static enum ModeType {  normal, warmupFromZero , warmupFromIC };
+	public static enum ModeType {  normal, warmupFromZero , warmupFromIC }
 	
 	private static Logger logger = Logger.getLogger(Scenario.class);
 	private Cumulatives cumulatives;
@@ -535,8 +536,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public int getTotalTimeStepsToSimulate(){
 		if(clock==null)
 			return -1;
-		else
-			return clock.getTotalSteps();
+		return clock.getTotalSteps();
 	}
 	
 	/** Number of vehicle types included in the scenario.
@@ -581,8 +581,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public double getTimeStart() {
 		if(clock==null)
 			return Double.NaN;
-		else
-			return this.clock.getStartTime();
+		return this.clock.getStartTime();
 	}
 
 	/** End time of the simulation.
@@ -592,8 +591,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public double getTimeEnd() {
 		if(clock==null)
 			return Double.NaN;
-		else
-			return this.clock.getEndTime();
+		return this.clock.getEndTime();
 	}
 	
 	/** Get configuration file name */
@@ -628,7 +626,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
 //		return vehtypeweights;
 //	}
-
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network
 	 * @return A two-dimensional array of doubles where the first dimension is the

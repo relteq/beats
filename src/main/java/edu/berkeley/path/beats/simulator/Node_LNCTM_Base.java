@@ -28,9 +28,6 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.simulator.Node.IOFlow;
-import edu.berkeley.path.beats.simulator.Node.SupplyDemand;
-
 public class Node_LNCTM_Base extends Node {
 
     // used in update()

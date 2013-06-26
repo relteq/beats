@@ -55,7 +55,7 @@ public final class Runner {
 				return;
 
 			// load configuration file
-			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename());
+			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename(),runargs.getNodeModel());
 			if (null == scenario)
 				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 			
@@ -65,7 +65,8 @@ public final class Runner {
 					runargs.getOutputDt(),
 					runargs.getOutput_format(),
 					runargs.getOutputfileprefix(),
-					runargs.getNumReps());
+					runargs.getNumReps()
+					);
 			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
 			
@@ -99,6 +100,8 @@ public final class Runner {
 			str += "         Default: 1." + "\n";
 			str += "args[7]: noise model <gaussian,uniform>." + "\n";
 			str += "         Default: uniform." + "\n";
+			str += "args[8]: node model <proportional,symmetric>." + "\n";
+			str += "         Default: proportional." + "\n";
 			str += "\nSimulation modes:" + "\n";
 			str += "----------------\n" + "\n";
 			str += "Normal mode: Simulation runs in normal mode when the start time equals " +
