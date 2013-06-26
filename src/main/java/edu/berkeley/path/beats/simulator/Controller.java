@@ -37,41 +37,41 @@ import org.apache.log4j.Logger;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public class Controller {
-	
+
 	/** Scenario that contains this controller */
-	protected Scenario myScenario;										       								       
+	private Scenario myScenario;										       								       
 	
-	protected edu.berkeley.path.beats.jaxb.Controller jaxbController;
+	private edu.berkeley.path.beats.jaxb.Controller jaxbController;
 										
 	/** Controller type. */
-	protected Controller.Type myType;
+	private Controller.Type myType;
 	
 	/** List of scenario elements affected by this controller */
-	protected ArrayList<ScenarioElement> targets;
+	private ArrayList<ScenarioElement> targets;
 	
 	/** List of scenario elements that provide input to this controller */
-	protected ArrayList<ScenarioElement> feedbacks;
+	private ArrayList<ScenarioElement> feedbacks;
 	
 	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
 	protected Double [] control_maxflow;
 	
 	/** Maximum flow for link targets, in normalized units. Indexed by target.  */
-	protected Double [] control_maxspeed;
+	private Double [] control_maxspeed;
 	
 	/** Controller update period in seconds */
-	protected double dtinseconds;
+	private double dtinseconds;
 	
 	/** Controller update period in number of simulation steps */
-	protected int samplesteps;
+	private int samplesteps;
 	
 	/** On/off switch for this controller */
-	protected boolean ison;
+	private boolean ison;
 	
 	/** Activation times for this controller */
-	protected ArrayList<ActivationTimes> activationTimes;
+	private ArrayList<ActivationTimes> activationTimes;
 	
 	/** Tables of parameters. */
-	protected java.util.Map<String, Table> tables;
+	private java.util.Map<String, Table> tables;
 	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
@@ -82,7 +82,7 @@ public class Controller {
 	 * <li> SIG, signal control (intersections) </li>
 	 * </ul>
 	 */
-	protected static enum Type {  
+	public static enum Type {  
 	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_ALINEA,
 	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
 	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
@@ -94,10 +94,8 @@ public class Controller {
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-  	/** @y.exclude */
     protected Controller(){};
       
-	/** @y.exclude */
 	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType){
 		 
 			this.myScenario = myScenario;
@@ -106,7 +104,7 @@ public class Controller {
 			this.ison = false; //c.isEnabled(); 
 			this.activationTimes=new ArrayList<ActivationTimes>();
 			dtinseconds = jaxbC.getDt().floatValue();		// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimDtInSeconds());		
+			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());		
 			
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
@@ -145,7 +143,6 @@ public class Controller {
 				}
 	 }
 
-//	 /** @y.exclude */
 //	 protected Controller(ArrayList<ScenarioElement> targets){
 //		 this.targets = targets;
 //		 this.control_maxflow  = new Double [targets.size()];
@@ -197,7 +194,7 @@ public class Controller {
 			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimDtInSeconds()))
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
 			BeatsErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
 
 		// check that activation times are valid.
@@ -373,12 +370,36 @@ public class Controller {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+   	public Scenario getMyScenario() {
+		return myScenario;
+	}
+
+	public Double getControl_maxflow(int index) {
+		return control_maxflow[index];
+	}
+
+	public Double getControl_maxspeed(int index) {
+		return control_maxspeed[index];
+	}
+
+	public int getSamplesteps() {
+		return samplesteps;
+	}
+
+	public ArrayList<ActivationTimes> getActivationTimes() {
+		return activationTimes;
+	}
+
+	public java.util.Map<String, Table> getTables() {
+		return tables;
+	}	
+	
    	/** Get the ID of the controller  */
 	public String getId() {
 		return this.jaxbController.getId();
 	}	
 
-   	/** Get the type of the controller.  */
+	/** Get the type of the controller.  */
 	public Controller.Type getMyType() {
 		return myType;
 	}
@@ -405,6 +426,27 @@ public class Controller {
 		return ison;
 	}
 
+
+	/////////////////////////////////////////////////////////////////////
+	// protected getters and setters
+	/////////////////////////////////////////////////////////////////////
+
+	protected edu.berkeley.path.beats.jaxb.Controller getJaxbController() {
+		return jaxbController;
+	}
+
+	protected void setControl_maxflow(int index, Double control_maxflow) {
+		this.control_maxflow[index] = control_maxflow;
+	}
+
+	protected void setControl_maxspeed(int index, Double control_maxspeed) {
+		this.control_maxspeed[index] = control_maxspeed;
+	}
+
+	protected void setIson(boolean ison) {
+		this.ison = ison;
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// internal classes
 	/////////////////////////////////////////////////////////////////////

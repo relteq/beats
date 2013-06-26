@@ -99,11 +99,11 @@ public class Event_Node_Split_Ratio extends Event {
 			return;
 
 		// only accepts single target
-		if(targets.size()!=1)
+		if(getTargets().size()!=1)
 			return;
 
 		this.resetToNominal = reset_to_nominal;
-		this.myNode = (Node) targets.get(0).getReference();
+		this.myNode = (Node) getTargets().get(0).getReference();
 		
 		if(myNode==null)
 			return;
@@ -115,14 +115,14 @@ public class Event_Node_Split_Ratio extends Event {
 		if (srevent != null) {
 			int[] vt_index = null;
 			if (null == srevent.getVehicleTypeOrder()) {
-				vt_index = new int[myScenario.getNumVehicleTypes()];
+				vt_index = new int[getMyScenario().getNumVehicleTypes()];
 				for (int i = 0; i < vt_index.length; ++i)
 					vt_index[i] = i;
 			} else {
 				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleType().size()];
 				int i = 0;
 				for (edu.berkeley.path.beats.jaxb.VehicleType vt : srevent.getVehicleTypeOrder().getVehicleType())
-					vt_index[i++] = myScenario.getVehicleTypeIndex(vt.getName());
+					vt_index[i++] = getMyScenario().getVehicleTypeIndex(vt.getName());
 			}
 			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());
 			for (edu.berkeley.path.beats.jaxb.Splitratio sr : srevent.getSplitratio()) {
@@ -144,11 +144,11 @@ public class Event_Node_Split_Ratio extends Event {
 		
 		super.validate();
 		
-		if(targets.size()!=1)
+		if(getTargets().size()!=1)
 			BeatsErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
 		
 		// check each target is valid
-		if(targets.get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
+		if(getTargets().get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
 			BeatsErrorLog.addError("Wrong target type for event id="+getId()+".");
 		
 		if(myNode==null)
@@ -161,7 +161,7 @@ public class Event_Node_Split_Ratio extends Event {
 					BeatsErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
 				if (sr.getOutputIndex() < 0 || sr.getOutputIndex() >= myNode.getnOut())
 					BeatsErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
-				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= myScenario.getNumVehicleTypes())
+				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= getMyScenario().getNumVehicleTypes())
 					BeatsErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
 			}
 		}

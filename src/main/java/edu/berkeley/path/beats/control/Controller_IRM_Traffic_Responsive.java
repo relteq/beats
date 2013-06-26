@@ -124,7 +124,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
 			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
-			onramplink = myScenario.getLinkWithId(s.getId());	
+			onramplink = getMyScenario().getLinkWithId(s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
@@ -137,19 +137,19 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 				
 				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
 				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
-					mainlinesensor=myScenario.getSensorWithId(s.getId());
+					mainlinesensor=getMyScenario().getSensorWithId(s.getId());
 					hasmainlinesensor = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
 					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
-					mainlinelink=myScenario.getLinkWithId(s.getId());
+					mainlinelink=getMyScenario().getLinkWithId(s.getId());
 					hasmainlinelink = true;
 				}
 
 				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
 					s.getType().equalsIgnoreCase("sensor")  && queuesensor==null){
-					queuesensor=myScenario.getSensorWithId(s.getId());
+					queuesensor=getMyScenario().getSensorWithId(s.getId());
 					hasqueuesensor = true;
 				}				
 			}
@@ -180,7 +180,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		super.validate();
 		
 		// must have exactly one target
-		if(targets.size()!=1)
+		if(getTargets().size()!=1)
 			BeatsErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
@@ -236,7 +236,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
 			}
 			else {
-				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPMeter(0) / myScenario.getSimDtInSeconds();
+				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPMeter(0) / getMyScenario().getSimdtinseconds();
 			}
 		
 		if (hasflowthres)
@@ -244,7 +244,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 				mainlineflow = mainlinesensor.getTotalFlowInVPS(0);
 			}
 			else {
-				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / myScenario.getSimDtInSeconds();
+				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / getMyScenario().getSimdtinseconds();
 			}		
 		
 		// metering rate adjustments
@@ -259,8 +259,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 				|| (hasflowthres && mainlineflow>trFlowThresh[trlevelindex])))
 			trlevelindex++;
 		
-		
-		control_maxflow[0]=trMeteringRates_normalized[trlevelindex];		
+		setControl_maxflow(0, trMeteringRates_normalized[trlevelindex]);
 
 	}
 
@@ -321,7 +320,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		trlevelindex = 0;
 		// extract data from the table and populate
 		for (int i=0;i<table.getNoRows();i++){
-			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * myScenario.getSimDtInSeconds(); // in veh per sim step
+			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
 			if (hasflowthres){
 				trFlowThresh[i]=Double.parseDouble(table.getTableElement(i,flwIndx));			// flow in veh/sec
 			}

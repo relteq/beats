@@ -15,7 +15,7 @@ public class LinkTest {
 	private static Scenario scenario;
 	private static Link link;
 	private static String config_folder = "data/config/";
-	private static String config_file = "_smalltest_nocontrol.xml";
+	private static String config_file = "_smalltest.xml";
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -89,7 +89,7 @@ public class LinkTest {
 	public void test_getDensityInVeh_a() {
 
 		double x = link.getDensityInVeh(0)[0]; 
-		double exp = 4.619603897390897;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -102,7 +102,7 @@ public class LinkTest {
 	public void test_getDensityInVeh_b() {
 
 		double x = link.getDensityInVeh(0,0); 
-		double exp = 4.619603897390897;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 		
@@ -117,7 +117,7 @@ public class LinkTest {
 	public void test_getTotalDensityInVeh() {
 
 		double x = link.getTotalDensityInVeh(0); 
-		double exp = 4.619603897390897;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -130,7 +130,7 @@ public class LinkTest {
 	public void test_getTotalDensityInVPM() {
 
 		double x = link.getTotalDensityInVPMeter(0); 
-		double exp = 0.0054417434187916496;
+		double exp = 0.017679766286842164;
 		
 		assertEquals(x,exp,1e-4);
 		
@@ -143,7 +143,7 @@ public class LinkTest {
 	public void test_getOutflowInVeh() {
 
 		double x = link.getOutflowInVeh(0)[0]; 
-		double exp = 0.7334938248960583;
+		double exp = 0.39459704442691024;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -155,9 +155,8 @@ public class LinkTest {
 	@Test
 	public void test_getTotalOutflowInVeh() {
 
-
 		double x = link.getTotalOutflowInVeh(0); 
-		double exp = 0.7334938248960583;
+		double exp = 0.39459704442691024;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -171,7 +170,7 @@ public class LinkTest {
 	public void test_getInflowInVeh() {
 
 		double x = link.getInflowInVeh(0)[0]; 
-		double exp = 0.7101317456641572;
+		double exp = 0.41666666666666663;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -183,7 +182,7 @@ public class LinkTest {
 	@Test
 	public void test_getTotalInlowInVeh() {
 		double x = link.getTotalInlowInVeh(0); 
-		double exp = 0.7101317456641572;
+		double exp = 0.41666666666666663;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -195,7 +194,7 @@ public class LinkTest {
 	@Test
 	public void test_computeSpeedInMPS() {
 		double x = link.computeSpeedInMPS(0); 
-		double exp = 26.958045186883588;
+		double exp = 4.463826478527397;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -243,7 +242,7 @@ public class LinkTest {
 	@Test
 	public void test_getCapacityInVeh() {
 		double x = link.getCapacityInVeh(0);
-		double exp = 2.5;
+		double exp = 0.41666666666666663;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -291,7 +290,7 @@ public class LinkTest {
 	@Test
 	public void test_getCapacityInVPS() {
 		double x = link.getCapacityInVPS(0);
-		double exp = 0.5;
+		double exp = 0.08333333333333333;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -303,7 +302,7 @@ public class LinkTest {
 	@Test
 	public void test_getCapacityInVPSPL() {
 		double x = link.getCapacityInVPSPL(0);
-		double exp = 0.5;
+		double exp = 0.08333333333333333;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -315,7 +314,7 @@ public class LinkTest {
 	@Test
 	public void test_getNormalizedVf() {
 		double x = link.getNormalizedVf(0);
-		double exp = 0.15797958214408178;
+		double exp = 0.026329930357346962;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -327,7 +326,7 @@ public class LinkTest {
 	@Test
 	public void test_getVfInMPS() {
 		double x = link.getVfInMPS(0);
-		double exp = 26.8224;
+		double exp = 4.4704;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -339,7 +338,7 @@ public class LinkTest {
 	@Test
 	public void test_getCriticalSpeedInMPS() {
 		double x = link.getCriticalSpeedInMPS(0);
-		double exp = 26.8224;
+		double exp = 4.4704;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -351,9 +350,8 @@ public class LinkTest {
 	@Test
 	public void test_getNormalizedW() {
 		double x = link.getNormalizedW(0);
-		double exp = 0.039494895536020445;
+		double exp = 0.006582482589336741;
 		
-
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
@@ -364,7 +362,7 @@ public class LinkTest {
 	@Test
 	public void test_getWInMPS() {
 		double x = link.getWInMPS(0);
-		double exp = 6.7056;
+		double exp = 1.1176;
 
 		assertEquals(x,exp,1e-4);
 		
@@ -388,7 +386,7 @@ public class LinkTest {
 	@Test
 	public void test_getDensity() {
 		double x = link.getDensityInVeh(0)[0];
-		double exp = 4.619603897390897;
+		double exp = 15.008704188738106;
 		
 		assertEquals(x,exp,1e-4);
 
@@ -400,7 +398,7 @@ public class LinkTest {
 	@Test
 	public void test_getInputFlow() {
 		double x = link.getInputFlow(0,0);
-		double exp = 0.7101317456641572;
+		double exp = 0.41666666666666663;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
@@ -413,7 +411,7 @@ public class LinkTest {
 	@Test
 	public void test_getOutputFlow() {
 		double x = link.getOutputFlow(0,0);
-		double exp = 0.7334938248960583;
+		double exp = 0.39459704442691024;
 		assertEquals(x,exp,1e-4);
 
 		// edge cases

@@ -37,21 +37,21 @@ import java.util.ArrayList;
 public class Event implements Comparable {
 
 	/** Scenario that contains this event */
-	protected Scenario myScenario;
+	private Scenario myScenario;
 	
-	protected edu.berkeley.path.beats.jaxb.Event jaxbEvent;
+	private edu.berkeley.path.beats.jaxb.Event jaxbEvent;
 	
 	/** Event type. */
-	protected Event.Type myType;
+	private Event.Type myType;
 	
 	/** Activation time of the event, in number of simulation time steps. */
-	protected int timestampstep;
+	private int timestampstep;
 	
 	/** List of targets for the event. */
-	protected ArrayList<ScenarioElement> targets;
+	private ArrayList<ScenarioElement> targets;
 	
 	/** Type of event. */
-	protected static enum Type	{  
+	public static enum Type	{  
 		/** see {@link ObjectFactory#createEvent_Fundamental_Diagram} 	*/ fundamental_diagram,
 		/** see {@link ObjectFactory#createEvent_Link_Demand_Knob} 		*/ link_demand_knob,
 		/** see {@link ObjectFactory#createEvent_Link_Lanes} 			*/ link_lanes, 
@@ -64,15 +64,13 @@ public class Event implements Comparable {
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Event(){}
 
-	/** @y.exclude */
 	protected Event(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
 		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
+		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimdtinseconds());		// assume in seconds
 		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
@@ -86,12 +84,36 @@ public class Event implements Comparable {
 	public String getId(){
 		return this.jaxbEvent.getId();
 	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////
+	
+	public Scenario getMyScenario() {
+		return myScenario;
+	}
+
+	public edu.berkeley.path.beats.jaxb.Event getJaxbEvent() {
+		return jaxbEvent;
+	}
+
+	public Event.Type getMyType() {
+		return myType;
+	}
+
+	public int getTimestampstep() {
+		return timestampstep;
+	}
+
+	public ArrayList<ScenarioElement> getTargets() {
+		return targets;
+	}
+
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-//	/** @y.exclude */
 //	protected void populateFromJaxbXXX(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
 //		this.id = jaxbE.getId();
 //		this.myScenario = myScenario;
@@ -123,7 +145,7 @@ public class Event implements Comparable {
 		
 		// check each target is valid
 		for(ScenarioElement s : targets)
-			if(s.reference==null)
+			if(s.getReference()==null)
 				BeatsErrorLog.addError("Invalid target id=" + s.getId() + " in event id=" + getId() + ".");
 
 	}
@@ -167,8 +189,8 @@ public class Event implements Comparable {
 		
 		// fourth ordering by target type
 		for(int i=0;i<thisnumtargets;i++){
-			ScenarioElement.Type thistargettype = this.targets.get(i).myType;
-			ScenarioElement.Type thattargettype = that.targets.get(i).myType;
+			ScenarioElement.Type thistargettype = this.targets.get(i).getMyType();
+			ScenarioElement.Type thattargettype = that.targets.get(i).getMyType();
 			compare = thistargettype.compareTo(thattargettype);
 			if(compare!=0)
 				return compare;		
@@ -199,13 +221,13 @@ public class Event implements Comparable {
 	/////////////////////////////////////////////////////////////////////	
 
 	protected void setGlobalControlIsOn(boolean ison){
-		myScenario.global_control_on = ison;
+		myScenario.setGlobal_control_on(ison);
 	}
 	
 	protected void setControllerIsOn(Controller c,boolean ison){
 		if(c==null)
 			return;
-		c.ison = ison;
+		c.setIson(ison);
 	}
 
     protected void setLinkLanes(Link link,double lanes) throws BeatsException{
@@ -217,7 +239,7 @@ public class Event implements Comparable {
 	protected void setLinkFundamentalDiagram(Link link,edu.berkeley.path.beats.jaxb.FundamentalDiagram newFD) throws BeatsException{
 		if(link==null)
 			return;
-		link.activateFundamentalDiagramEvent(newFD);
+		link.activateFDEvent(newFD);
 	}
 	
     protected void revertLinkFundamentalDiagram(Link link) throws BeatsException{
@@ -230,21 +252,19 @@ public class Event implements Comparable {
 		if(node==null)
 			return;
 		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-		X.copydata(node.splitratio);
+		X.copydata(node.getSplitratio());
 		for (SplitRatio sr : splitratios)
 			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
 		if(!node.validateSplitRatioMatrix(X))
 			return;
-		node.setSplitratio(X);
-		node.hasactivesplitevent = true;
+		node.applyEventSplitRatio(X);
 	}
 
 	protected void revertNodeEventSplitRatio(Node node) {
 		if(node==null)
 			return;
-		if(node.hasactivesplitevent){
-			node.resetSplitRatio();
-			node.hasactivesplitevent = false;
+		if(node.isHasActiveSplitEvent()){
+			node.removeEventSplitRatio();
 		}
 	}
 	
@@ -257,14 +277,13 @@ public class Event implements Comparable {
     }
     
     protected void setGlobalDemandEventKnob(Double knob){
-    	myScenario.global_demand_knob = knob;
+    	myScenario.setGlobal_demand_knob(knob);
     }
 	    
 	/////////////////////////////////////////////////////////////////////
 	// internal class
 	/////////////////////////////////////////////////////////////////////	
 
-	/** @y.exclude */
 	protected static class SplitRatio {
 		private int input_index;
 		private int output_index;

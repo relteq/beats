@@ -14,7 +14,7 @@ public class NodeTest {
 
 	private static Node node;
 	private static String config_folder = "data/config/";
-	private static String config_file = "_smalltest_nocontrol.xml";
+	private static String config_file = "_smalltest.xml";
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -72,10 +72,10 @@ public class NodeTest {
 		assertEquals(node.getnOut(),2);
 	}
 
-	@Test
-	public void test_hasController() {
-		assertFalse(node.hasController());
-	}
+//	@Test
+//	public void test_hasController() {
+//		assertFalse(node.hasController());
+//	}
 
 	@Test
 	public void test_getSplitRatio_a() {

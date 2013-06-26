@@ -120,7 +120,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 	@Override
 	public void recordstate(double time, boolean exportflows, int outsteps) throws BeatsException {
 		boolean firststep = 0 == scenario.getCurrentTimeStep();
-		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimDtInSeconds() * outsteps);
+		String dt = String.format(SEC_FORMAT, firststep ? .0d : scenario.getSimdtinseconds() * outsteps);
 		try {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
@@ -151,13 +151,13 @@ public final class OutputWriterXML extends OutputWriterBase {
 								for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind)
 									speed_formatter.add(ffspeed);
 						} else {
-							double mean_speed = link_cum_data.getMeanTotalOutputFlow(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimDtInSeconds());
+							double mean_speed = link_cum_data.getMeanTotalOutputFlow(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimdtinseconds());
 							if (!Double.isNaN(ffspeed) && ffspeed < mean_speed) mean_speed = ffspeed;
 							for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
 								double density = link_cum_data.getMeanDensity(0, vt_ind);
 								double speed = mean_speed;
 								if (0 < density) {
-									speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimDtInSeconds());
+									speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimdtinseconds());
 									if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
 								}
 								speed_formatter.add(speed);

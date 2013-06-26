@@ -34,148 +34,65 @@ import java.util.ArrayList;
 */
 public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		   
-	/** @y.exclude */ 	protected Network myNetwork;
+	private Network myNetwork;
 
-	// network references
-	/** @y.exclude */ 	protected Link [] output_link;
-	/** @y.exclude */ 	protected Link [] input_link;
+	// connectivity
+	private int nIn;
+	private int nOut;
+	private boolean istrivialsplit;
+	private boolean isTerminal;
 	
-	/** @y.exclude */ 	protected Double3DMatrix sampledSRprofile;
-	/** @y.exclude */ 	protected Double3DMatrix splitratio;
-	/** @y.exclude */ 	protected boolean istrivialsplit;
-	/** @y.exclude */ 	protected boolean hasSRprofile;
-	/** @y.exclude */ 	protected int nIn;
-	/** @y.exclude */ 	protected int nOut;
-	/** @y.exclude */ 	protected boolean isTerminal;
+	// link references
+	private Link [] output_link;
+	private Link [] input_link;
 	
-	/** @y.exclude */ 	protected Signal mySignal = null;
+	// split ratio from profile
+	private SplitRatioProfile mySplitRatioProfile;
+//	private Double3DMatrix splitFromProfile;
+	private boolean hasSRprofile;
+	
+	// split ratio from event
+	private boolean hasactivesplitevent;	// split ratios set by events take precedence over
+	
+	// split ratio from profile or event
+	private Double3DMatrix splitratio_selected;
+	
+	// split ratio applied, after resolving unknown terms
+	private Double3DMatrix splitratio_applied;
+	
+//	private Signal mySignal = null;
 
     // controller
-	/** @y.exclude */ 	protected boolean hascontroller;
-	/** @y.exclude */ 	protected boolean controlleron;
+//	private boolean hascontroller;
+//	private boolean controlleron;
 	
-	// split event
-	/** @y.exclude */ 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
-																// controller split ratios
+	// input to node model, copied from link suppy/demand
+	private Double [][][] inDemand;		// [ensemble][nIn][nTypes]
+	private double [][] outSupply;		// [ensemble][nOut]
+	
+	// output from node model (inDemand gets scaled)
+	private Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
+	
     // used in update()
-	/** @y.exclude */ 	protected Double [][][] inDemand;		// [ensemble][nIn][nTypes]
-	/** @y.exclude */ 	protected double [][] outSupply;		// [ensemble][nOut]
-	/** @y.exclude */ 	protected double [][] outDemandKnown;	// [ensemble][nOut]
-	/** @y.exclude */ 	protected double [][] dsratio;			// [ensemble][nOut]
-	/** @y.exclude */ 	protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
-	/** @y.exclude */ 	protected boolean [][] iscontributor;	// [nIn][nOut]
-	/** @y.exclude */ 	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	/** @y.exclude */ 	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	/** @y.exclude */ 	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	/** @y.exclude */ 	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
+	private double [][] outDemandKnown;	// [ensemble][nOut]
+	private double [][] dsratio;		// [ensemble][nOut]
+	private boolean [][] iscontributor;	// [nIn][nOut]
+	private ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
+	private ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
+	private ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
+	private ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
+	private ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Node(){}
 
-	/////////////////////////////////////////////////////////////////////
-	// hide base class setters
-	/////////////////////////////////////////////////////////////////////
-	
-//	@Override
-//	public void setRoadwayMarkers(RoadwayMarkers value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setOutputs(Outputs value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setInputs(Inputs value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setPosition(Position value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setType(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setId(String value) {
-//		System.out.println("This setter is hidden.");
-//	}
-//
-//	@Override
-//	public void setInSync(Boolean value) {
-//		System.out.println("This setter is hidden.");
-//	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-	
-	/** @y.exclude */ 	
-	protected boolean registerController(){
-		if(hascontroller)		// used to detect multiple controllers
-			return false;
-		else{
-			hascontroller = true;
-			controlleron = true;
-			return true;
-		}
-	}
-	
-	/** @y.exclude */ 	
-    protected void setSampledSRProfile(Double3DMatrix s){
-    	sampledSRprofile = s;
-    }
-
-    /** @y.exclude */ 	
-	protected void setHasSRprofile(boolean hasSRprofile) {
-		if(!istrivialsplit){
-			this.hasSRprofile = hasSRprofile;
-			this.sampledSRprofile = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
-			normalizeSplitRatioMatrix(this.sampledSRprofile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
-		}
-	}
-
-	/** @y.exclude */ 	
-	protected void setControllerOn(boolean controlleron) {
-		if(hascontroller){
-			this.controlleron = controlleron;
-			if(!controlleron)
-				resetSplitRatio();
-		}
-	}
-
-	/** @y.exclude */ 	
-    protected void resetSplitRatio(){
-
-		//splitratio = new Float3DMatrix(nIn,nOut,Utils.numVehicleTypes,1f/((double)nOut));
-		
-		//////
-		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.myScenario.getNumVehicleTypes(),0d);
-		normalizeSplitRatioMatrix(splitratio);
-		//////
-    }
-    
-    /** @y.exclude */ 	
-	protected void setSplitratio(Double3DMatrix x) {
-		splitratio.copydata(x);
-		normalizeSplitRatioMatrix(splitratio);
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
     
-	/** @y.exclude */ 	
 	protected void populate(Network myNetwork) {
     	// Note: It is assumed that this comes *before* SplitRatioProfile.populate
 		
@@ -209,16 +126,17 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		iscontributor = new boolean[nIn][nOut];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
-		sampledSRprofile = null;
 		
-		resetSplitRatio();
-		
-		hascontroller = false;
-		controlleron = false;
+		// initialize the split ratio matrix
+		//splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+		normalizeSplitRatioMatrix(splitratio_selected);
+
+//		hascontroller = false;
+//		controlleron = false;
 		hasactivesplitevent = false;
 	}
     
-	/** @y.exclude */ 	
 	protected void validate() {
 				
 		if(isTerminal)
@@ -242,21 +160,30 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		
 	}
 
-	/** @y.exclude */ 	
+	protected void reset() {	
+		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
+    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();		
+    	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
+		outSupply 		= new double[numEnsemble][nOut];
+		outDemandKnown 	= new double[numEnsemble][nOut];
+		dsratio 		= new double[numEnsemble][nOut];
+		outFlow 		= new Double[numEnsemble][nOut][numVehicleTypes];
+	}
+	
 	protected void update() {
 		
         if(isTerminal)
             return;
 
         int e,i,j,k;        
-        int numEnsemble = myNetwork.myScenario.numEnsemble;
+        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         
         // collect input demands and output supplies ...................
         for(e=0;e<numEnsemble;e++){        
     		for(i=0;i<nIn;i++)
-    			inDemand[e][i] = input_link[i].outflowDemand[e];
+    			inDemand[e][i] = input_link[i].getOutflowDemand(e);
     		for(j=0;j<nOut;j++)
-    			outSupply[e][j] = output_link[j].spaceSupply[e];
+    			outSupply[e][j] = output_link[j].getSpaceSupply(e);
         }
 
 		// solve unknown split ratios if they are non-trivial ..............
@@ -265,17 +192,18 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	        // Take current split ratio from the profile if the node is
 			// not actively controlled. Otherwise the mat has already been 
 			// set by the controller.
-			if(hasSRprofile && !controlleron && !hasactivesplitevent)
-				splitratio.copydata(sampledSRprofile);
+			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
+				splitratio_selected = this.mySplitRatioProfile.getCurrentSplitRatio();
+//				splitratio.copydata(splitFromProfile);
 			
 	        // compute known output demands ................................
 			for(e=0;e<numEnsemble;e++)
 		        for(j=0;j<nOut;j++){
 		        	outDemandKnown[e][j] = 0f;
 		        	for(i=0;i<nIn;i++)
-		        		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++)
-		        			if(!splitratio.get(i,j,k).isNaN())
-		        				outDemandKnown[e][j] += splitratio.get(i,j,k) * inDemand[e][i][k];
+		        		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++)
+		        			if(!splitratio_selected.get(i,j,k).isNaN())
+		        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * inDemand[e][i][k];
 		        }
 	        
 	        // compute and sort output demand/supply ratio .................
@@ -284,46 +212,109 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		        	dsratio[e][j] = outDemandKnown[e][j] / outSupply[e][j];
 	                
 	        // fill in unassigned split ratios .............................
-	        resolveUnassignedSplits_A();
+			splitratio_applied = resolveUnassignedSplits_A(splitratio_selected);
 		}
+		else
+			splitratio_applied = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
 		
         // compute node flows ..........................................
-        computeLinkFlows();
+        computeLinkFlows(splitratio_applied);
         
         // assign flow to input links ..................................
 		for(e=0;e<numEnsemble;e++)
 	        for(i=0;i<nIn;i++)
-	            input_link[i].outflow[e]=inDemand[e][i];
+	            input_link[i].setOutflow(e, inDemand[e][i]);
         
         // assign flow to output links .................................
 		for(e=0;e<numEnsemble;e++)
 	        for (j=0;j<nOut;j++)
-	            output_link[j].inflow[e] = outFlow[e][j];
+	            output_link[j].setInflow(e, outFlow[e][j]);
 	}
 
-	/** @y.exclude */ 	
-	protected void reset() {	
-		int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
-    	int numEnsemble = myNetwork.myScenario.numEnsemble;		
-    	inDemand 		= new Double[numEnsemble][nIn][numVehicleTypes];
-		outSupply 		= new double[numEnsemble][nOut];
-		outDemandKnown 	= new double[numEnsemble][nOut];
-		dsratio 		= new double[numEnsemble][nOut];
-		outFlow 		= new Double[numEnsemble][nOut][numVehicleTypes];
+	/////////////////////////////////////////////////////////////////////
+	// protected interface
+	/////////////////////////////////////////////////////////////////////
+	
+	// split ratio profile ..............................................
+
+	protected void setMySplitRatioProfile(SplitRatioProfile mySplitRatioProfile) {
+		this.mySplitRatioProfile = mySplitRatioProfile;
+		if(!istrivialsplit){
+			this.hasSRprofile = true;
+			//this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+			//normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+		}
+	}
+	
+//	protected void setHasSRprofile(boolean hasSRprofile) {
+//		if(!istrivialsplit){
+//			this.hasSRprofile = hasSRprofile;
+//			this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+//			normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
+//		}
+//	}
+
+//	protected void setSampledSRProfile(Double3DMatrix s){
+//    	splitFromProfile = s;;
+//    }
+	
+	// controllers ......................................................
+
+//	protected void setControllerOn(boolean controlleron) {
+//		if(hascontroller){
+//			this.controlleron = controlleron;
+//			if(!controlleron)
+//				resetSplitRatio();
+//		}
+//	}
+//
+//	protected boolean registerController(){
+//		if(hascontroller)		// used to detect multiple controllers
+//			return false;
+//		else{
+//			hascontroller = true;
+//			controlleron = true;
+//			return true;
+//		}
+//	}
+	
+	// events ..........................................................
+
+	// used by Event.setNodeEventSplitRatio
+	protected void applyEventSplitRatio(Double3DMatrix x) {		
+		splitratio_selected.copydata(x);
+		normalizeSplitRatioMatrix(splitratio_selected);
+		hasactivesplitevent = true;
 	}
 
+	// used by Event.revertNodeEventSplitRatio
+	protected void removeEventSplitRatio() {
+//		splitratio = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
+//		normalizeSplitRatioMatrix(splitratio);
+		hasactivesplitevent = false;
+	}
+	
+	// used by Event.revertNodeEventSplitRatio
+	protected boolean isHasActiveSplitEvent() {
+		return hasactivesplitevent;
+	}
+
+	// used by Event.setNodeEventSplitRatio
+    protected Double3DMatrix getSplitratio() {
+		return splitratio_selected;
+	}
+    
 	/////////////////////////////////////////////////////////////////////
 	// operations on split ratio matrices
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */ 	
 	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
 
 		int i,j,k;
 		Double value;
 		
 		// dimension
-		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.myScenario.getNumVehicleTypes()){
+		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().getNumVehicleTypes()){
 			BeatsErrorLog.addError("Split ratio for node " + getId() + " has incorrect dimensions.");
 			return false;
 		}
@@ -343,7 +334,6 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		return true;
 	}
 	
-	/** @y.exclude */ 	
     protected void normalizeSplitRatioMatrix(Double3DMatrix X){
 
     	int i,j,k;
@@ -353,7 +343,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		double sum;
     	
     	for(i=0;i<X.getnIn();i++)
-    		for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
+    		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
 				hasNaN = false;
 				countNaN = 0;
 				idxNegative = -1;
@@ -399,16 +389,16 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// private methods
 	/////////////////////////////////////////////////////////////////////
 	
-	private void computeLinkFlows(){
+	private void computeLinkFlows(final Double3DMatrix sr){
         
     	int e,i,j,k;
-    	int numEnsemble = myNetwork.myScenario.numEnsemble;
-    	int numVehicleTypes = myNetwork.myScenario.getNumVehicleTypes();
+    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
+    	int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
 
         // input i contributes to output j .............................
-    	for(i=0;i<splitratio.getnIn();i++)
-        	for(j=0;j<splitratio.getnOut();j++)
-        		iscontributor[i][j] = splitratio.getSumOverTypes(i,j)>0;
+    	for(i=0;i<sr.getnIn();i++)
+        	for(j=0;j<sr.getnOut();j++)
+        		iscontributor[i][j] = sr.getSumOverTypes(i,j)>0;
 	
         double [][] applyratio = new double[numEnsemble][nIn];
 
@@ -423,7 +413,7 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 				outDemandKnown[e][j] = 0d;
 	            for(i=0;i<nIn;i++)
 	            	for(k=0;k<numVehicleTypes;k++)
-	            		outDemandKnown[e][j] += inDemand[e][i][k]*splitratio.get(i,j,k);
+	            		outDemandKnown[e][j] += inDemand[e][i][k]*sr.get(i,j,k);
 	            
 	            // compute and sort output demand/supply ratio .............
 	            if(BeatsMath.greaterthan(outSupply[e][j],0d))
@@ -450,26 +440,28 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	        	for(k=0;k<numVehicleTypes;k++){
 	        		outFlow[e][j][k] = 0d;
 	            	for(i=0;i<nIn;i++){
-	            		outFlow[e][j][k] += inDemand[e][i][k]*splitratio.get(i,j,k);	            		
+	            		outFlow[e][j][k] += inDemand[e][i][k]*sr.get(i,j,k);	            		
 	            	}
 	        	}
 	        }
     }
 
-    private void resolveUnassignedSplits_A(){
+    private Double3DMatrix resolveUnassignedSplits_A(final Double3DMatrix splitratio){
     	
     	int e,i,j,k;
     	int numunknown;	
     	double dsmax, dsmin;
+    	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio.getData());
     	double [] sr_new = new double[nOut];
     	double remainingSplit;
     	double num;
     	
+    	
     	// SHOULD ONLY BE CALLED WITH numEnsemble=1!!!
     	
-    	for(e=0;e<myNetwork.myScenario.numEnsemble;e++){
+    	for(e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
 	    	for(i=0;i<nIn;i++){
-		        for(k=0;k<myNetwork.myScenario.getNumVehicleTypes();k++){
+		        for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
 		            
 		        	// number of outputs with unknown split ratio
 		        	numunknown = 0;
@@ -573,10 +565,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 		            
 		            // copy to SR
 		            for(j=0;j<nOut;j++)
-		            	splitratio.set(i,j,k,sr_new[j]);
+		            	splitratio_new.set(i,j,k,sr_new[j]);
 		        }
 	    	}
     	}
+    	
+    	return splitratio_new;
     
     }
 
@@ -687,12 +681,16 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+    public boolean isTerminal() {
+		return isTerminal;
+	}
+
 	/** network that containts this node */ 	
 	public Network getMyNetwork() {
 		return myNetwork;
 	}
 	    
-    /** List of links exiting this node */ 
+	/** List of links exiting this node */ 
     public Link[] getOutput_link() {
 		return output_link;
 	}
@@ -737,9 +735,9 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
     
     /** <code>true</code> iff there is a split ratio controller attached to this link */
-	public boolean hasController() {
-		return hascontroller;
-	}
+//	public boolean hasController() {
+//		return hascontroller;
+//	}
 	
 	/** ADDED TEMPORARILY FOR MANUEL'S DTA WORK 
 	 * @throws BeatsException */
@@ -757,12 +755,12 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 //					splitratio.set(i, j, k, x[i][j][k]);
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
-
+	
 	public Double [][][] getSplitRatio(){
-		if(splitratio==null)
+		if(splitratio_selected==null)
 			return null;
 		else{
-			return splitratio.cloneData();
+			return splitratio_selected.cloneData();
 		}
 	}
 
@@ -774,10 +772,10 @@ public final class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @return the split ratio
 	 */
 	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
-		if(splitratio==null)
+		if(splitratio_selected==null)
 			return Double.NaN;
 		else{
-			return splitratio.get(inLinkInd, outLinkInd, vehTypeInd);
+			return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
 		}
 	}
 

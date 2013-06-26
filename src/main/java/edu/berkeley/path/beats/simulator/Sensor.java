@@ -34,14 +34,14 @@ package edu.berkeley.path.beats.simulator;
 public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceSensor {
 	
 	/** The scenario that contains this sensor. */
-	protected Scenario myScenario;	
+	private Scenario myScenario;	
 
-	protected edu.berkeley.path.beats.jaxb.Sensor jaxbSensor;
+	private edu.berkeley.path.beats.jaxb.Sensor jaxbSensor;
 	/** Sensor type. */
-	protected Sensor.Type myType;
+	private Sensor.Type myType;
 	
 	/** Current link where the sensor is located. */
-	protected Link myLink = null;
+	private Link myLink = null;
 
 	/** Type of sensor.
 	 *
@@ -56,7 +56,6 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	protected Sensor(){
 	}		  
 
@@ -73,43 +72,36 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	// InterfaceSensor
 	/////////////////////////////////////////////////////////////////////
 
-	/** @y.exclude */
 	@Override
 	public Double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getOccupancy(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVPM(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public Double[] getFlowInVPS(int ensemble) {
 		return null;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getTotalFlowInVPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getSpeedInMPS(int ensemble) {
 		return Double.NaN;
 	}
 
-	/** @y.exclude */
 	@Override
 	public double getTotalDensityInVeh(int ensemble) {
 		return Double.NaN;
@@ -118,6 +110,10 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
+
+	public Scenario getMyScenario() {
+		return myScenario;
+	}	
 	
 	/** Sensor type. */
 	public Sensor.Type getMyType() {

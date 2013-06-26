@@ -36,59 +36,58 @@ import edu.berkeley.path.beats.simulator.Signal.NEMA;
 final public class SignalPhase {
 	
 	// references ....................................................
-	protected Node myNode;
-	protected Signal mySignal;
-	protected Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
+	private Node myNode;
+	private Signal mySignal;
+	private Link [] targetlinks;	// THIS SHOULD BE TARGET INDICES TO THE SIGNAL PHASE CONTROLLER
 	
 	// properties ....................................................
-	
-	protected boolean protectd		= false;
-	protected boolean isthrough		= false;
-	protected boolean recall		= false;
-	protected boolean permissive	= false;
-	protected boolean lag 			= false;
+	private boolean protectd	= false;
+	private boolean isthrough	= false;
+	private boolean recall		= false;
+	private boolean permissive	= false;
+	private boolean lag 		= false;
 
 	// dual ring structure
-	protected int myRingGroup		= -1;
-	protected SignalPhase opposingPhase;
-	protected Signal.NEMA myNEMA   = Signal.NEMA.NULL;
+	private int myRingGroup		= -1;
+	private SignalPhase opposingPhase;
+	private Signal.NEMA myNEMA   = Signal.NEMA.NULL;
 	
 	// Basic timing parameters
-	protected float mingreen 			= 0f;
-	protected float yellowtime 			= 0f;
-	protected float redcleartime 		= 0f;
-	protected float actualyellowtime 	= 0f;
-	protected float actualredcleartime 	= 0f;
+	private float mingreen 			= 0f;
+	private float yellowtime 			= 0f;
+	private float redcleartime 		= 0f;
+	private float actualyellowtime 	= 0f;
+	private float actualredcleartime 	= 0f;
 
 	// timers
-	protected Clock bulbtimer;
+	private Clock bulbtimer;
 
 	// State
-	protected Signal.BulbColor bulbcolor;
+	private Signal.BulbColor bulbcolor;
 	
-	//protected int [] myControlIndex;
+	//private int [] myControlIndex;
 
 	// Detectors
-	//protected DetectorStation ApproachStation = null;
-	//protected DetectorStation StoplineStation = null;
-	//protected Vector<Integer> ApproachStationIds;
-	//protected Vector<Integer> StoplineStationIds;
+	//private DetectorStation ApproachStation = null;
+	//private DetectorStation StoplineStation = null;
+	//private Vector<Integer> ApproachStationIds;
+	//private Vector<Integer> StoplineStationIds;
 	
 	// Detector memory
-	protected boolean hasstoplinecall		= false;
-	protected boolean hasapproachcall		= false;
-	protected boolean hasconflictingcall	= false;
-	protected float conflictingcalltime		= 0f;
+	private boolean hasstoplinecall		= false;
+	private boolean hasapproachcall		= false;
+	private boolean hasconflictingcall	= false;
+	private float conflictingcalltime	= 0f;
 
 	// Controller memory
-	protected boolean hold_requested 		= false;
-	protected boolean forceoff_requested	= false;
+	private boolean hold_requested 		= false;
+	private boolean forceoff_requested	= false;
 
 	// Safety
-	protected boolean permitopposinghold 	= true;
-	protected boolean permithold			= true;
+	private boolean permitopposinghold 	= true;
+	private boolean permithold			= true;
 
-	protected int numapproachloops = 0;	
+	private int numapproachloops = 0;	
 	
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -211,17 +210,17 @@ final public class SignalPhase {
 
 		// check that there are links attached
 		if(targetlinks==null || targetlinks.length==0)
-			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("No valid target link for phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
 		
 		// target links are valid
 		if(targetlinks!=null)
 			for(int i=0;i<targetlinks.length;i++)
 				if(targetlinks[i]==null)
-					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
+					BeatsErrorLog.addError("Unknown link reference in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
 		
 		// myNEMA is valid
 		if(myNEMA.compareTo(Signal.NEMA.NULL)==0)
-			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getMyNEMA() + " in signal id=" + mySignal.getId());
+			BeatsErrorLog.addError("Invalid NEMA code in phase NEMA=" + getNEMA() + " in signal id=" + mySignal.getId());
 		
 		// numbers are positive
 		if( mingreen<0 )
@@ -265,7 +264,7 @@ final public class SignalPhase {
 
 	protected void update(boolean hold_approved,boolean forceoff_approved)
 	{
-		mySignal.completedPhases.clear();
+		mySignal.getCompletedPhases().clear();
 
 		double bulbt = bulbtimer.getT();
 
@@ -296,7 +295,7 @@ final public class SignalPhase {
 				// Force off 
 				if( forceoff_approved ){ 
 					setPhaseColor(Signal.BulbColor.YELLOW);
-					mySignal.completedPhases.add(mySignal.new PhaseData(myNEMA, mySignal.myScenario.clock.getT() - bulbtimer.getT(), bulbtimer.getT()));
+					mySignal.getCompletedPhases().add(mySignal.new PhaseData(myNEMA, mySignal.getMyScenario().getClock().getT() - bulbtimer.getT(), bulbtimer.getT()));
 					bulbtimer.reset();
 					//FlushAllStationCallsAndConflicts();
 					done = actualyellowtime>0;
@@ -363,14 +362,82 @@ final public class SignalPhase {
 	}
 	
 	protected void setPhaseColor(Signal.BulbColor color){
-		mySignal.myPhaseController.setPhaseColor(myNEMA,color);
+		mySignal.getMyPhaseController().setPhaseColor(myNEMA,color);
 		bulbcolor = color;
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// public
+	// protected interface
 	/////////////////////////////////////////////////////////////////////		
 	
+	public void setActualredcleartime(float actualredcleartime) {
+		if(BeatsMath.lessthan(actualredcleartime,0d))
+			return;
+		this.actualredcleartime = actualredcleartime;
+	}
+	
+	public void setActualyellowtime(float actualyellowtime) {
+		if(BeatsMath.lessthan(actualyellowtime,0d))
+			return;
+		this.actualyellowtime = actualyellowtime;
+	}
+
+	protected void setForceoff_requested(boolean forceoff_requested) {
+		this.forceoff_requested = forceoff_requested;
+	}
+	
+	protected void setHold_requested(boolean hold_requested) {
+		this.hold_requested = hold_requested;
+	}
+	
+	protected void setPermithold(boolean permithold) {
+		this.permithold = permithold;
+	}
+
+	protected Link[] getTargetlinks() {
+		return targetlinks;
+	}
+
+	protected Clock getBulbtimer() {
+		return bulbtimer;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// public interface
+	/////////////////////////////////////////////////////////////////////		
+
+	public boolean isProtected() {
+		return protectd;
+	}
+	
+	public boolean isPermitopposinghold() {
+		return permitopposinghold;
+	}
+
+	public boolean isHold_requested() {
+		return hold_requested;
+	}
+
+	public boolean isForceoff_requested() {
+		return forceoff_requested;
+	}
+
+	public boolean isPermithold() {
+		return permithold;
+	}
+
+	public boolean isIsthrough() {
+		return isthrough;
+	}
+
+	public boolean isPermissive() {
+		return permissive;
+	}
+
+	public SignalPhase getOpposingPhase() {
+		return opposingPhase;
+	}
+
 	public float getYellowtime() {
 		return yellowtime;
 	}
@@ -383,7 +450,7 @@ final public class SignalPhase {
 		return mingreen;
 	}
 
-	public Signal.NEMA getMyNEMA() {
+	public Signal.NEMA getNEMA() {
 		return myNEMA;
 	}
 	
@@ -391,23 +458,11 @@ final public class SignalPhase {
 		return actualyellowtime;
 	}
 
-	public void setActualyellowtime(float actualyellowtime) {
-		if(BeatsMath.lessthan(actualyellowtime,0d))
-			return;
-		this.actualyellowtime = actualyellowtime;
-	}
-	
 	public float getActualredcleartime() {
 		return actualredcleartime;
 	}
 
-	public void setActualredcleartime(float actualredcleartime) {
-		if(BeatsMath.lessthan(actualredcleartime,0d))
-			return;
-		this.actualredcleartime = actualredcleartime;
-	}
-
-	public Signal.BulbColor getBulbcolor() {
+	public Signal.BulbColor getBulbColor() {
 		return bulbcolor;
 	}
 		

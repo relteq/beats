@@ -90,7 +90,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		// There should be only one target element, and it is the onramp
 		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
 			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
-			onramplink = myScenario.getLinkWithId(s.getId());	
+			onramplink = getMyScenario().getLinkWithId(s.getId());	
 		}
 
 		table = findTable(jaxbc, "schedule");
@@ -103,7 +103,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		super.validate();
 		
 		// must have exactly one target
-		if(targets.size()!=1)
+		if(getTargets().size()!=1)
 			BeatsErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
 		
 		// bad queue sensor id
@@ -123,15 +123,15 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	protected void reset() {
 		super.reset();
 		todActivationIndx=0;
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getTimeStart())
+		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=getMyScenario().getTimeStart())
 			todActivationIndx++;
-		control_maxflow[0]=todMeteringRates_normalized[todActivationIndx];
+		setControl_maxflow(0, todMeteringRates_normalized[todActivationIndx]);
 	}
 
 	@Override
 	protected void update() {
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=myScenario.getCurrentTimeInSeconds())
-			control_maxflow[0]=todMeteringRates_normalized[++todActivationIndx];		
+		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=getMyScenario().getCurrentTimeInSeconds())
+			setControl_maxflow(0, todMeteringRates_normalized[++todActivationIndx]);		
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 		todActivationIndx=0;
 		
 		for (int i=0;i<table.getNoRows();i++){
-			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * myScenario.getSimDtInSeconds(); // in veh per sim step
+			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
 			todActivationTimes[i]=Double.parseDouble(table.getTableElement(i,timeIndx)); // in sec
 			// check that table values are valid.			
 			if ((i>0 && todActivationTimes[i]<=todActivationTimes[i-1])||(todMeteringRates_normalized[i]<0))

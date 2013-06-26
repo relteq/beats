@@ -30,8 +30,16 @@ import java.util.ArrayList;
 
 final class SensorList extends edu.berkeley.path.beats.jaxb.SensorList  {
 
-	protected Scenario myScenario;
-	protected ArrayList<Sensor> sensors = new ArrayList<Sensor>();
+	private Scenario myScenario;
+	private ArrayList<Sensor> sensors = new ArrayList<Sensor>();
+
+	/////////////////////////////////////////////////////////////////////
+	// protected interface
+	/////////////////////////////////////////////////////////////////////
+
+	protected ArrayList<Sensor> getSensors() {
+		return sensors;
+	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update

@@ -4,7 +4,7 @@ import java.util.Map;
 
 abstract public class ControlAlgorithm implements PolicyMaker{
 	
-	protected String name;
+	private String name;
 
 	public ControlAlgorithm() {
 	}

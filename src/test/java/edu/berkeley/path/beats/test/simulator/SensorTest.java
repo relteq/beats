@@ -13,7 +13,7 @@ public class SensorTest {
 
 	private static Scenario scenario;
 	private static Sensor sensor;
-	private static String config_folder = "data/config.quarantine/";
+	private static String config_folder = "data/config/";
 	private static String config_file = "complete.xml";
 	
 	@BeforeClass

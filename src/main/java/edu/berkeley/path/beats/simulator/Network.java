@@ -33,8 +33,8 @@ import java.util.List;
 */
 public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
-	protected boolean isempty;
-	protected Scenario myScenario;
+	private boolean isempty;
+	private Scenario myScenario;
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -65,8 +65,8 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		if(isempty)
 			return;
 		
-		if(myScenario.getSimDtInSeconds()<=0)
-			BeatsErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimDtInSeconds() +").");
+		if(myScenario.getSimdtinseconds()<=0)
+			BeatsErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimdtinseconds() +").");
 		
 		// node list
 		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
@@ -87,12 +87,9 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			((Node) node).reset();
 
 		// link list
-		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-			Link _link = (Link) link;
-			_link.resetLanes();		
-			_link.resetState(simulationMode);
-			_link.resetFD();
-		}
+		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
+			((Link) link).reset(simulationMode);
+
 	}
 
 	protected void update() throws BeatsException {
@@ -119,6 +116,14 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
+	public boolean isIsempty() {
+		return isempty;
+	}
+
+	public Scenario getMyScenario() {
+		return myScenario;
+	}
+		
 	/** Get link with given id.
 	 * @param id String id of the link.
 	 * @return Link object.
@@ -133,6 +138,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		}
 		return null;
 	}
+
 
 	/** Get node with given id.
 	 * @param id String id of the node.

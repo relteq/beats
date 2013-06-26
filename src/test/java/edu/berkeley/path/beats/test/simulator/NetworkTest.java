@@ -16,10 +16,11 @@ public class NetworkTest {
 
 	private static Network network;
 	private static String config_folder = "data/config/";
-	private static String config_file = "_smalltest_nocontrol.xml";
+	private static String config_file = "_smalltest.xml";
 		
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		System.out.println(config_folder+config_file);
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");

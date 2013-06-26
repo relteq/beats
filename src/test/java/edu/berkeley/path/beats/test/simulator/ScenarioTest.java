@@ -19,14 +19,14 @@ public class ScenarioTest {
 
 	private static Scenario static_scenario;
 	private static String config_folder = "data/config/";
-	private static String quarantine_folder = "data/config.quarantine/";
+//	private static String quarantine_folder = "data/config.quarantine/";
 	private static String output_folder = "data/test/output/";
 	private static String fixture_folder = "data/test/fixture/";
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		try {
-			String config_file = "_smalltest_nocontrol.xml";
+			String config_file = "_smalltest.xml";
 			static_scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(static_scenario==null)
 				fail("scenario did not load");
@@ -40,7 +40,7 @@ public class ScenarioTest {
 	@Test
 	public void test_initialize_run_advanceNSeconds() {
 		try {
-			String config_file = "_smalltest_nocontrol.xml";
+			String config_file = "_smalltest.xml";
 			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(scenario==null)
 				fail("scenario did not load");
@@ -82,8 +82,8 @@ public class ScenarioTest {
 	@Test
 	public void test_time_getters() {
 		assertEquals(static_scenario.getCurrentTimeInSeconds(),300d,1e-4);
-		assertEquals(static_scenario.getTimeElapsedInSeconds(),0d,1e-4);
-		assertEquals(static_scenario.getCurrentTimeStep(),0,1e-4);
+		assertEquals(static_scenario.getTimeElapsedInSeconds(),300d,1e-4);
+		assertEquals(static_scenario.getCurrentTimeStep(),60,1e-4);
 		assertEquals(static_scenario.getTotalTimeStepsToSimulate(),-1,1e-4);
 	}
 
@@ -108,12 +108,12 @@ public class ScenarioTest {
 	
 	@Test
 	public void test_getSimDtInSeconds() {
-		assertEquals(static_scenario.getSimDtInSeconds(),5,1e-4);
+		assertEquals(static_scenario.getSimdtinseconds(),5,1e-4);
 	}
 
 	@Test
 	public void test_getTimeStart() {
-		assertEquals(static_scenario.getTimeStart(),300,1e-4);
+		assertEquals(static_scenario.getTimeStart(),0d,1e-4);
 	}
 
 	@Test
@@ -123,7 +123,7 @@ public class ScenarioTest {
 
 	@Test
 	public void test_getConfigFilename() {
-		assertEquals(static_scenario.getConfigFilename(),config_folder+"_smalltest_nocontrol.xml");
+		assertEquals(static_scenario.getConfigFilename(),config_folder+"_smalltest.xml");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class ScenarioTest {
 	@Test
 	public void test_getInitialDensityForNetwork() {
 		double x =  static_scenario.getInitialDensityForNetwork("-1")[0][0];
-		double exp = 5.33487385567184;
+		double exp = 0.0;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
@@ -147,7 +147,7 @@ public class ScenarioTest {
 	@Test
 	public void test_getDensityForNetwork() {
 		double x = static_scenario.getDensityForNetwork("-1",0)[0][0];
-		double exp = 5.33487385567184;
+		double exp =0.4445728212287675;
 		assertEquals(x,exp,1e-4);
 
 		x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks
@@ -187,7 +187,7 @@ public class ScenarioTest {
 	public void test_get_Controller_Event_Sensor_WithId() {
 		try {
 			String config_file = "complete.xml";
-			Scenario scenario = ObjectFactory.createAndLoadScenario(quarantine_folder+config_file);
+			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(scenario==null)
 				fail("scenario did not load");
 			

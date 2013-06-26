@@ -113,7 +113,7 @@ public class Event_Fundamental_Diagram extends Event {
 			BeatsErrorLog.addError("Event id=" +getId() +" does not define a fundamental diagram.");
 		
 		// check each target is valid
-		for(ScenarioElement s : targets)
+		for(ScenarioElement s : getTargets())
 			if(s.getMyType().compareTo(ScenarioElement.Type.link)!=0)
 				BeatsErrorLog.addError("Wrong target type for event id=" +getId() +".");
 		
@@ -123,7 +123,7 @@ public class Event_Fundamental_Diagram extends Event {
 
 	@Override
 	protected void activate() throws BeatsException{
-		for(ScenarioElement s : targets){
+		for(ScenarioElement s : getTargets()){
 			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)
 				revertLinkFundamentalDiagram(targetlink);

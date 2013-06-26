@@ -65,7 +65,6 @@ final public class ObjectFactory {
 	// protected create from Jaxb
 	/////////////////////////////////////////////////////////////////////
 	
-	/** @y.exclude */
 	protected static Controller createControllerFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType) {		
 		if(myScenario==null)
 			return null;
@@ -104,7 +103,6 @@ final public class ObjectFactory {
 
 	}
 
-	/** @y.exclude */
 	protected static Event createEventFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType) {	
 		if(myScenario==null)
 			return null;
@@ -146,7 +144,6 @@ final public class ObjectFactory {
 		return E;
 	}
 
-	/** @y.exclude */
 	protected static Sensor createSensorFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Sensor jaxbS,Sensor.Type myType) {	
 		if(myScenario==null)
 			return null;
@@ -164,34 +161,10 @@ final public class ObjectFactory {
 		return S;
 	}
 	
-	/** @y.exclude */
 	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;
-		ScenarioElement S = new ScenarioElement();
-		S.myScenario = myScenario;
-		S.setId(jaxbS.getId().trim());
-		S.myType = ScenarioElement.Type.valueOf(jaxbS.getType());
-		switch(S.myType){
-		case link:
-			S.reference = myScenario.getLinkWithId(S.getId());
-			break;
-		case node:
-			S.reference = myScenario.getNodeWithId(S.getId());
-			break;
-		case sensor:
-			S.reference = myScenario.getSensorWithId(S.getId());
-			break;
-		case signal:
-			S.reference = myScenario.getSignalWithId(S.getId());
-			break;
-		case controller:
-			S.reference = myScenario.getControllerWithId(S.getId());
-			break;
-			
-		default:
-			S.reference = null;	
-		}
+		ScenarioElement S = new ScenarioElement(myScenario, jaxbS);
 		return S;
 	}
 	  
@@ -280,7 +253,7 @@ final public class ObjectFactory {
 		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(S);
 
         // copy in input parameters ..................................................
-        S.configfilename = configfilename;
+        S.setConfigfilename(configfilename);
 
 		return process(S);
 	}
@@ -303,19 +276,6 @@ final public class ObjectFactory {
 			edu.berkeley.path.beats.util.UnitConverter.process(S);
 		}
 
-	    // copy data to static variables ..............................................
-	    S.global_control_on = true;
-	    S.global_demand_knob = 1d;
-	    S.simdtinseconds = computeCommonSimulationTimeInSeconds(S);
-	    S.uncertaintyModel = Scenario.UncertaintyType.uniform;
-	    S.numVehicleTypes = 1;
-	    S.has_flow_unceratinty = BeatsMath.greaterthan(S.std_dev_flow,0.0);
-	    
-	    if(S.getSettings()!=null)
-	        if(S.getSettings().getVehicleTypes()!=null)
-	            if(S.getSettings().getVehicleTypes().getVehicleType()!=null) 
-	        		S.numVehicleTypes = S.getSettings().getVehicleTypes().getVehicleType().size();
-
 	    // populate the scenario ....................................................
 	    S.populate();
 
@@ -328,8 +288,8 @@ final public class ObjectFactory {
 	    	throw new BeatsException("Signal registration failure");
 	    }
 
-	    if(S.controllerset!=null)
-	    	if(!S.controllerset.register()){
+	    if(S.getControllerset()!=null)
+	    	if(!S.getControllerset().register()){
 	    		throw new BeatsException("Controller registration failure");
 		    }
 
@@ -342,8 +302,10 @@ final public class ObjectFactory {
 		// validate scenario ......................................
 	    Scenario.validate(S);
 	    	    
-		if(BeatsErrorLog.haserror())
+		if(BeatsErrorLog.haserror()){
+			BeatsErrorLog.print();
 			throw new ScenarioValidationError();
+		}
 		
 		if(BeatsErrorLog.haswarning()) {
 			BeatsErrorLog.print();
@@ -361,31 +323,6 @@ final public class ObjectFactory {
 		unmrsh.setProperty(propnam, factory);
 	}
 
-	// returns greatest common divisor among network time steps.
-	// The time steps are rounded to the nearest decisecond.
-	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
-		
-		if(scenario.getNetworkList()==null)
-			return Double.NaN;
-		
-		if(scenario.getNetworkList().getNetwork().size()==0)
-			return Double.NaN;
-			
-		// loop through networks calling gcd
-		double dt;
-		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
-		int tengcd = 0;		// in deciseconds
-		for(int i=0;i<networkList.size();i++){
-			dt = networkList.get(i).getDt().doubleValue();	// in seconds
-	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
-	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
-				dt *= 3600;
-	        }
-			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
-		}
-    	return ((double)tengcd)/10.0;
-	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// public: controller
 	/////////////////////////////////////////////////////////////////////

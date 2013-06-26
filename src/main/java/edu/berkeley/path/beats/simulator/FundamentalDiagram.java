@@ -28,15 +28,15 @@ package edu.berkeley.path.beats.simulator;
 
 final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
-	protected Link myLink;
-	protected double lanes;
-	protected Double _densityJam;     		// [veh] 
-	protected Double _capacity;   			// [veh] 
-	protected Double _capacityDrop;     	// [veh] 
-	protected Double _vf;                	// [-]
-	protected Double _w;                	// [-]
-	protected Double std_dev_capacity;		// [veh]
-	protected Double density_critical;		// [veh]
+	private Link myLink;
+	private double lanes;
+	private Double _densityJam;     	// [veh] 
+	private Double _capacity;   		// [veh] 
+	private Double _capacityDrop;     	// [veh] 
+	private Double _vf;                	// [-]
+	private Double _w;                	// [-]
+	private Double std_dev_capacity;	// [veh]
+	private Double density_critical;	// [veh]
 
 	/////////////////////////////////////////////////////////////////////
 	// construction 
@@ -46,7 +46,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	
 	public FundamentalDiagram(Link myLink){
 		this.myLink       = myLink;
-		this.lanes 		  = myLink==null ? Double.NaN : myLink._lanes;
+		this.lanes 		  = myLink==null ? Double.NaN : myLink.get_Lanes();
 		_densityJam 	  = Double.NaN;  
 	    _capacity  		  = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
@@ -59,7 +59,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	// fundamental diagram created from jaxb objects must have all values filled in. 
 	public FundamentalDiagram(Link myLink,edu.berkeley.path.beats.jaxb.FundamentalDiagram jaxbfd){
 		this.myLink       = myLink;
-		this.lanes 		  = myLink==null ? Double.NaN : myLink._lanes;
+		this.lanes 		  = myLink==null ? Double.NaN : myLink.get_Lanes();
 		_densityJam 	  = Double.NaN;  
 	    _capacity  		  = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
@@ -81,7 +81,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	    int nummissing = 0;
 	    boolean missing_capacity, missing_vf, missing_w, missing_densityJam;
 	    double value;
-	    double simDtInSeconds = myLink.myNetwork.myScenario.getSimDtInSeconds();
+	    double simDtInSeconds = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
 	    
 		if(jaxbfd.getCapacity()!=null){
 			value = jaxbfd.getCapacity().doubleValue();			// [veh/second/lane]
@@ -187,7 +187,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		if(myLink==null)
 			return;
 		this.myLink = myLink;
-		this.lanes = myLink._lanes;
+		this.lanes = myLink.get_Lanes();
 		_densityJam 	  = Double.NaN;  
 	    _capacity  = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
@@ -203,6 +203,11 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
+
+	protected void set_capacity(Double _capacity) {
+		this._capacity = _capacity;
+	}	
+	
 	// we do not have to worry about getters returning NaN:
 	// they are only called for fundamental diagrams belonging
 	// to links, these are initialized with default values, and 
@@ -253,7 +258,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
  	protected void settoDefault(){
 		if(myLink==null)
 			return;
-		double simDtInSeconds = myLink.myNetwork.myScenario.getSimDtInSeconds();
+		double simDtInSeconds = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
 		double lengthInMeters = myLink.getLengthInMeters();
 		_densityJam 	  = Defaults.densityJam		* lanes * lengthInMeters;
 		_capacity  		  = Defaults.capacity		* lanes * simDtInSeconds;
@@ -272,7 +277,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			return;
 		
 		double value;
-		double simDtInSeconds = myLink.myNetwork.myScenario.getSimDtInSeconds();
+		double simDtInSeconds = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
 
 		if(fd.getJamDensity()!=null){
 			value = fd.getJamDensity().doubleValue();		// [veh/meter/lane]
@@ -339,7 +344,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		
 		// perturb it
 		if(!std_dev_capacity.isNaN() && std_dev_capacity>0){
-			switch(myLink.myNetwork.myScenario.uncertaintyModel){
+			switch(myLink.getMyNetwork().getMyScenario().getUncertaintyModel()){
 			case uniform:
 				samp._capacity += BeatsMath.sampleZeroMeanUniform(std_dev_capacity);
 				break;
@@ -388,7 +393,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 		
 		if(myLink!=null)
-			for(int e=0;e<myLink.myNetwork.myScenario.numEnsemble;e++)
+			for(int e=0;e<myLink.getMyNetwork().getMyScenario().getNumEnsemble();e++)
 				if(myLink.getTotalDensityInVeh(e)>_densityJam)
 					BeatsErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLink.getId() + " exceeds jam density=" + _densityJam);
 	}

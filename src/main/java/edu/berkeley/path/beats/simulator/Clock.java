@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.simulator;
 
 final class Clock {
+	
 	protected double t;					// [sec]
 	protected double to;				// [sec]
 	protected double dt;				// [sec]
