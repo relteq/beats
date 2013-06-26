@@ -120,8 +120,28 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //		controlleron = false;
 		hasactivesplitevent = false;
 		
-		node_flow_solver = new Node_FlowSolver_LNCTM(this);
-		node_sr_solver = new Node_SplitRatioSolver_A(this);
+		// create node flow solver
+		switch(getMyNetwork().getMyScenario().getNodeFlowSolver()){
+			case proportional:
+				node_flow_solver = new Node_FlowSolver_LNCTM(this);
+				break;
+			case symmetric:
+				node_flow_solver = new Node_FlowSolver_Symmetric(this);
+				break;
+		}
+		
+		// create node split ratio solver
+		switch(getMyNetwork().getMyScenario().getNodeSRSolver()){
+			case A:
+				node_sr_solver = new Node_SplitRatioSolver_A(this);
+				break;
+			case B:
+				node_sr_solver = new Node_SplitRatioSolver_B(this);
+				break;
+			case C:
+				node_sr_solver = new Node_SplitRatioSolver_C(this);
+				break;
+		}
 		
 	}
     

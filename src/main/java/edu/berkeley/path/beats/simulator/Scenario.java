@@ -70,11 +70,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	public static enum UncertaintyType { uniform, gaussian }
 	public static enum ModeType {  normal, warmupFromZero , warmupFromIC }
+	public static enum NodeFlowSolver { proportional , symmetric }
+	public static enum NodeSRSolver { A , B , C }
 	
 	private static Logger logger = Logger.getLogger(Scenario.class);
 	private Cumulatives cumulatives;
 	private Clock clock;
-	private String configfilename;
 	private int numVehicleTypes;			// number of vehicle types
 	private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
@@ -85,6 +86,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private SensorList sensorlist = new SensorList();
 	private int numEnsemble;
 	private boolean started_writing;
+
+	private String configfilename;
+	private NodeFlowSolver nodeflowsolver = NodeFlowSolver.proportional;
+	private NodeSRSolver nodesrsolver = NodeSRSolver.A;
 
 	// Model uncertainty
 	private UncertaintyType uncertaintyModel;
@@ -373,6 +378,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.configfilename = configfilename;
 	}
 
+	protected void setNodeFlowSolver(String nodeflowsolver) {
+		this.nodeflowsolver = NodeFlowSolver.valueOf(nodeflowsolver);
+	}
+
+	protected void setNodeSRSolver(String nodesrsolver) {
+		this.nodesrsolver = NodeSRSolver.valueOf(nodesrsolver);
+	}
+	
 	protected void setGlobal_control_on(boolean global_control_on) {
 		this.global_control_on = global_control_on;
 	}
@@ -598,7 +611,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public String getConfigFilename() {
 		return configfilename;
 	}
+	
+	public NodeFlowSolver getNodeFlowSolver(){
+		return this.nodeflowsolver;
+	}
 
+	public NodeSRSolver getNodeSRSolver(){
+		return this.nodesrsolver;
+	}
+	
 	// array getters ........................................................
 	
 	/** Vehicle type names.
