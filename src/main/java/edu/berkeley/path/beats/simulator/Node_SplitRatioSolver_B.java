@@ -1,6 +1,27 @@
 package edu.berkeley.path.beats.simulator;
 
-public class Node_LNCTM_UnknownSR_B extends Node_LNCTM_Base {
+import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
+
+
+public class Node_SplitRatioSolver_B extends Node_SplitRatioSolver {
+
+	public Node_SplitRatioSolver_B(Node myNode) {
+		super(myNode);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	protected Double3DMatrix computeAppliedSplitRatio(
+			Double3DMatrix splitratio_selected, SupplyDemand demand_supply) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected void reset() {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 
@@ -90,5 +111,5 @@ public class Node_LNCTM_UnknownSR_B extends Node_LNCTM_Base {
         }
     }
 */
-	
+
 }

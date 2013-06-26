@@ -26,99 +26,41 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.util.ArrayList;
-
-public class Node_LNCTM_Base extends Node {
+public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
 
     // used in update()
 	protected double [][] outDemandKnown;	// [ensemble][nOut]
-	protected double [][] dsratio;		// [ensemble][nOut]
+	protected double [][] dsratio;			// [ensemble][nOut]
 	protected boolean [][] iscontributor;	// [nIn][nOut]
-	protected ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
-	protected ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
-	protected ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
-	protected ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
-	protected ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
 
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Node_LNCTM_Base() {
-		super();
+	public Node_FlowSolver_LNCTM(Node myNode) {
+		super(myNode);
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// populate / reset / validate / update
+	// implementation
 	/////////////////////////////////////////////////////////////////////
-    
-	@Override
-	protected void populate(Network myNetwork) {
-		super.populate(myNetwork);
-
-		iscontributor = new boolean[nIn][nOut];
-	}
 
 	@Override
 	protected void reset() {
-		super.reset();
-    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();		
-		dsratio 		= new double[numEnsemble][nOut];
-		outDemandKnown 	= new double[numEnsemble][nOut];
-	}
-
-	/////////////////////////////////////////////////////////////////////
-	// Override Node
-	/////////////////////////////////////////////////////////////////////
-
-	@Override
-	protected Double3DMatrix computeAppliedSplitRatio(final SupplyDemand demand_supply){
-
-		int e,i,j,k;
-        int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-        Double3DMatrix splitratio_applied;
-        
-		// solve unknown split ratios if they are non-trivial ..............
-		if(!istrivialsplit){	
-
-	        // Take current split ratio from the profile if the node is
-			// not actively controlled. Otherwise the mat has already been 
-			// set by the controller.
-			if(hasSRprofile  && !hasactivesplitevent ) //&& !controlleron)
-				splitratio_selected = this.mySplitRatioProfile.getCurrentSplitRatio();
-//				splitratio.copydata(splitFromProfile);
-			
-	        // compute known output demands ................................
-			for(e=0;e<numEnsemble;e++)
-		        for(j=0;j<nOut;j++){
-		        	outDemandKnown[e][j] = 0f;
-		        	for(i=0;i<nIn;i++)
-		        		for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++)
-		        			if(!splitratio_selected.get(i,j,k).isNaN())
-		        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * demand_supply.getDemand(e,i,k);
-		        }
-	        
-	        // compute and sort output demand/supply ratio .................
-			for(e=0;e<numEnsemble;e++)
-		        for(j=0;j<nOut;j++)
-		        	dsratio[e][j] = outDemandKnown[e][j] / demand_supply.getSupply(e,j);
-	                
-	        // fill in unassigned split ratios .............................
-			splitratio_applied = resolveUnassignedSplits(splitratio_selected,demand_supply);
-		}
-		else
-			splitratio_applied = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-		
-		return splitratio_applied;
-		
+    	int numEnsemble = myNode.getMyNetwork().getMyScenario().getNumEnsemble();	
+		iscontributor = new boolean[myNode.nIn][myNode.nOut];	
+		dsratio 		= new double[numEnsemble][myNode.nOut];
+		outDemandKnown 	= new double[numEnsemble][myNode.nOut];
 	}
 	
 	@Override
 	protected IOFlow computeLinkFlows(final Double3DMatrix sr,final SupplyDemand demand_supply){
 
     	int e,i,j,k;
-    	int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-    	int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
+		int nIn = myNode.nIn;
+		int nOut = myNode.nOut;        
+    	int numEnsemble = myNode.myNetwork.getMyScenario().getNumEnsemble();
+    	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
     	    	
         // input i contributes to output j .............................
     	for(i=0;i<sr.getnIn();i++)

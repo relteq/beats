@@ -75,7 +75,7 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 
 	@Override
 	public edu.berkeley.path.beats.jaxb.Node createNode() {
-		return new Node_LNCTM_UnknownSR_A();
+		return new Node();
 	}
 
 	@Override

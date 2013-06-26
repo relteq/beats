@@ -1,31 +1,74 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.Node.SupplyDemand;
+import java.util.ArrayList;
 
-public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
+public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
+
+	protected double [][] outDemandKnown;	// [ensemble][nOut]
+	protected double [][] dsratio;			// [ensemble][nOut]
+
+	public Node_SplitRatioSolver_A(Node myNode) {
+		super(myNode);
+	}
 
 	@Override
-    protected Double3DMatrix resolveUnassignedSplits(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
-    	
+	protected void reset() {
+    	int numEnsemble = myNode.getMyNetwork().getMyScenario().getNumEnsemble();	
+		dsratio 		= new double[numEnsemble][myNode.nOut];
+		outDemandKnown 	= new double[numEnsemble][myNode.nOut];
+	}
+	
+	@Override
+	protected Double3DMatrix computeAppliedSplitRatio(final Double3DMatrix splitratio_selected,final Node_FlowSolver.SupplyDemand demand_supply) {
+
     	int e,i,j,k;
     	int numunknown;	
     	double dsmax, dsmin;
-    	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio.getData());
-    	double [] sr_new = new double[nOut];
+		int nIn = myNode.nIn;
+		int nOut = myNode.nOut;        
+    	int numEnsemble = myNode.myNetwork.getMyScenario().getNumEnsemble();
+    	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
+    	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
+    	double [] sr_new = new double[myNode.nOut];
     	double remainingSplit;
     	double num;
     	
-    	
-    	// SHOULD ONLY BE CALLED WITH numEnsemble=1!!!
-    	
-    	for(e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
+        if(myNode.istrivialsplit)
+        	return new Double3DMatrix(nIn,nOut,numVehicleTypes,1d);
+
+    	ArrayList<Integer> unknownind = new ArrayList<Integer>();		// [unknown splits]
+    	ArrayList<Double> unknown_dsratio = new ArrayList<Double>();	// [unknown splits]	
+    	ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
+    	ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
+    	ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
+        
+		// solve unknown split ratios if they are non-trivial ..............
+
+        // compute known output demands ................................
+		for(e=0;e<numEnsemble;e++)
+	        for(j=0;j<nOut;j++){
+	        	outDemandKnown[e][j] = 0f;
+	        	for(i=0;i<nIn;i++)
+	        		for(k=0;k<numVehicleTypes;k++)
+	        			if(!splitratio_selected.get(i,j,k).isNaN())
+	        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * demand_supply.getDemand(e,i,k);
+	        }
+        
+        // compute and sort output demand/supply ratio .................
+		for(e=0;e<numEnsemble;e++)
+	        for(j=0;j<nOut;j++)
+	        	dsratio[e][j] = outDemandKnown[e][j] / demand_supply.getSupply(e,j);
+                
+        // fill in unassigned split ratios .............................
+
+    	for(e=0;e<numEnsemble;e++){
 	    	for(i=0;i<nIn;i++){
-		        for(k=0;k<myNetwork.getMyScenario().getNumVehicleTypes();k++){
+		        for(k=0;k<numVehicleTypes;k++){
 		            
 		        	// number of outputs with unknown split ratio
 		        	numunknown = 0;
 		        	for(j=0;j<nOut;j++)
-		        		if(splitratio.get(i,j,k).isNaN())
+		        		if(splitratio_selected.get(i,j,k).isNaN())
 		        			numunknown++;
 		        	
 		            if(numunknown==0)
@@ -36,7 +79,7 @@ public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
 		        	unknown_dsratio.clear();
 		        	remainingSplit = 1f;
 		        	for(j=0;j<nOut;j++){
-		        		Double sr = splitratio.get(i,j,k);
+		        		Double sr = splitratio_selected.get(i,j,k);
 		        		if(sr.isNaN()){
 		        			sr_new[j] = 0f;
 		        			unknownind.add(j);						// index to unknown output
@@ -130,8 +173,8 @@ public class Node_LNCTM_UnknownSR_A extends Node_LNCTM_Base {
     	}
     	
     	return splitratio_new;
-    
-    }
 
-    
+	}
+
+
 }

@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
+
 /** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -52,7 +54,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 	
 	// split ratio from profile or event
-	protected Double3DMatrix splitratio_selected;
+	private Double3DMatrix splitratio_selected;
+	
+	// node behavior
+	protected Node_SplitRatioSolver node_sr_solver;
+	protected Node_FlowSolver node_flow_solver;
 	
 //	private Signal mySignal = null;
 
@@ -103,18 +109,20 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     	if(isTerminal)
     		return;
 
-//		iscontributor = new boolean[nIn][nOut];
 		istrivialsplit = nOut==1;
 		hasSRprofile = false;
 		
 		// initialize the split ratio matrix
-		//splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio_selected);
 
 //		hascontroller = false;
 //		controlleron = false;
 		hasactivesplitevent = false;
+		
+		node_flow_solver = new Node_FlowSolver_LNCTM(this);
+		node_sr_solver = new Node_SplitRatioSolver_A(this);
+		
 	}
     
 	protected void validate() {
@@ -141,7 +149,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
 	
 	protected void reset() {
-		return;
+    	if(isTerminal)
+    		return;
+		node_flow_solver.reset();
+		node_sr_solver.reset();
 	}
 	
 	protected void update() {
@@ -154,19 +165,27 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
         
         // collect input demands and output supplies ...................
-        SupplyDemand demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
+        Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
         for(e=0;e<numEnsemble;e++){        
     		for(i=0;i<nIn;i++)
     			demand_supply.setDemand(e,i, input_link[i].getOutflowDemand(e) );
     		for(j=0;j<nOut;j++)
     			demand_supply.setSupply(e,j,output_link[j].getSpaceSupply(e));
         }
-
+        
+        // Select a split ratio from profile, event, or controller
+		if(!istrivialsplit){
+			if(hasSRprofile && !hasactivesplitevent) // && !controlleron
+				splitratio_selected = mySplitRatioProfile.getCurrentSplitRatio();
+		}
+		else
+			splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+		
         // compute applied split ratio matrix
-        Double3DMatrix splitratio_applied = computeAppliedSplitRatio(demand_supply);
+        Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply);
         
         // compute node flows ..........................................
-        IOFlow IOflow = computeLinkFlows(splitratio_applied,demand_supply);
+        Node_FlowSolver.IOFlow IOflow = node_flow_solver.computeLinkFlows(splitratio_applied,demand_supply);
         
         if(IOflow==null)
         	return;
@@ -186,13 +205,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	protected Double3DMatrix computeAppliedSplitRatio(final SupplyDemand demand_supply){
-		return null;
-	}
-	
-    protected IOFlow computeLinkFlows(final Double3DMatrix sr,final SupplyDemand demand_supply){
-    	return null;
-    }
     
 	// split ratio profile ..............................................
 
@@ -445,74 +457,74 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
 		}
 	}
-
-	protected class SupplyDemand {
-		// input to node model, copied from link suppy/demand
-		protected Double [][][] demand;		// [ensemble][nIn][nTypes]
-		protected double [][] supply;		// [ensemble][nOut]
-		
-		public SupplyDemand(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
-			super();
-	    	demand = new Double[numEnsemble][nIn][numVehicleTypes];
-			supply = new double[numEnsemble][nOut];
-		}
-		
-		public void setDemand(int nE,int nI,Double [] val){
-			demand[nE][nI] = val;
-		}
-		
-		public void setSupply(int nE,int nO, double val){
-			supply[nE][nO]=val;
-		}
-		
-		public double getDemand(int nE,int nI,int nK){
-			return demand[nE][nI][nK];
-		}
-		
-		public double getSupply(int nE,int nO){
-			return supply[nE][nO];
-		}
-
-		public double [] getSupply(int nE){
-			return supply[nE];
-		}
-	}
+//
+//	protected class SupplyDemand {
+//		// input to node model, copied from link suppy/demand
+//		protected Double [][][] demand;		// [ensemble][nIn][nTypes]
+//		protected double [][] supply;		// [ensemble][nOut]
+//		
+//		public SupplyDemand(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
+//			super();
+//	    	demand = new Double[numEnsemble][nIn][numVehicleTypes];
+//			supply = new double[numEnsemble][nOut];
+//		}
+//		
+//		public void setDemand(int nE,int nI,Double [] val){
+//			demand[nE][nI] = val;
+//		}
+//		
+//		public void setSupply(int nE,int nO, double val){
+//			supply[nE][nO]=val;
+//		}
+//		
+//		public double getDemand(int nE,int nI,int nK){
+//			return demand[nE][nI][nK];
+//		}
+//		
+//		public double getSupply(int nE,int nO){
+//			return supply[nE][nO];
+//		}
+//
+//		public double [] getSupply(int nE){
+//			return supply[nE];
+//		}
+//	}
 	
-	protected class IOFlow {
-		// input to node model, copied from link suppy/demand
-		protected Double [][][] in;		// [ensemble][nIn][nTypes]
-		protected Double [][][] out;	// [ensemble][nOut][nTypes]
-		
-		public IOFlow(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
-			super();
-	    	in = new Double[numEnsemble][nIn][numVehicleTypes];
-			out = new Double[numEnsemble][nOut][numVehicleTypes];
-		}
-
-		public void setIn(int nE,int nI,int nV,double val){
-			in[nE][nI][nV] = val;
-		}
-		
-		public void setOut(int nE,int nO,int nV,double val){
-			out[nE][nO][nV]=val;
-		}
-		
-		public Double [] getIn(int nE,int nI){
-			return in[nE][nI];
-		}
-
-		public double getIn(int nE,int nI,int nV){
-			return in[nE][nI][nV];
-		}
-		
-		public Double [] getOut(int nE,int nO){
-			return out[nE][nO];
-		}
-		
-		public void addOut(int nE,int nO,int nV,double val){
-			out[nE][nO][nV] += val;
-		}
-		
-	}
+//	protected class IOFlow {
+//		// input to node model, copied from link suppy/demand
+//		protected Double [][][] in;		// [ensemble][nIn][nTypes]
+//		protected Double [][][] out;	// [ensemble][nOut][nTypes]
+//		
+//		public IOFlow(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
+//			super();
+//	    	in = new Double[numEnsemble][nIn][numVehicleTypes];
+//			out = new Double[numEnsemble][nOut][numVehicleTypes];
+//		}
+//
+//		public void setIn(int nE,int nI,int nV,double val){
+//			in[nE][nI][nV] = val;
+//		}
+//		
+//		public void setOut(int nE,int nO,int nV,double val){
+//			out[nE][nO][nV]=val;
+//		}
+//		
+//		public Double [] getIn(int nE,int nI){
+//			return in[nE][nI];
+//		}
+//
+//		public double getIn(int nE,int nI,int nV){
+//			return in[nE][nI][nV];
+//		}
+//		
+//		public Double [] getOut(int nE,int nO){
+//			return out[nE][nO];
+//		}
+//		
+//		public void addOut(int nE,int nO,int nV,double val){
+//			out[nE][nO][nV] += val;
+//		}
+//		
+//	}
 	
 }

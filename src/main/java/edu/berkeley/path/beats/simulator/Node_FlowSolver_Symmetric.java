@@ -11,7 +11,8 @@ import edu.berkeley.path.beats.util.ArraySet;
  * for dynamic macroscopic simulation of traffic flows.
  * Transportation Research Part B 45 (2011) 289-309
  */
-public class NodeSymmetric extends edu.berkeley.path.beats.simulator.Node {
+public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
+
 
 	private double [][] directed_demand; // [nIn][nOut] S_{ij}
 	double [] priority_i; // [nIn] C_i
@@ -19,18 +20,25 @@ public class NodeSymmetric extends edu.berkeley.path.beats.simulator.Node {
 
 	NodeModel model;
 
-	@Override
-	protected void populate(Network myNetwork) {
-		super.populate(myNetwork);
+	/////////////////////////////////////////////////////////////////////
+	// construction
+	/////////////////////////////////////////////////////////////////////
+
+	public Node_FlowSolver_Symmetric(Node myNode) {
+		super(myNode);
 	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// implementation
+	/////////////////////////////////////////////////////////////////////
 	
 	@Override
 	protected void reset() {
-		super.reset();
+		int nIn = myNode.nIn;
+		int nOut = myNode.nOut;
 		directed_demand = new double[nIn][nOut];
 		priority_i = new double[nIn];
 		flow = new double[nIn][nOut];
-
 		model = new NodeModel(nIn, nOut);
 	}
 
@@ -53,18 +61,17 @@ public class NodeSymmetric extends edu.berkeley.path.beats.simulator.Node {
 	@Override
     protected IOFlow computeLinkFlows(final Double3DMatrix splitratio,final SupplyDemand demand_supply){
 
-//		if (isTerminal) 
-//			return null;
-		
-		int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
-		int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
+		int nIn = myNode.nIn;
+		int nOut = myNode.nOut; 
+    	int numEnsemble = myNode.myNetwork.getMyScenario().getNumEnsemble();
+    	int numVehicleTypes = myNode.myNetwork.getMyScenario().getNumVehicleTypes();
 		IOFlow ioflow = new IOFlow(numEnsemble,nIn,nOut,numVehicleTypes);
 		
 		for (int ens = 0; ens < numEnsemble ; ++ens) {
 			
 			// priority_i and demand
 			for (int i = 0; i < nIn; ++i) {
-				priority_i[i] = input_link[i].getPriority(ens);
+				priority_i[i] = myNode.input_link[i].getPriority(ens);
 				for (int j = 0; j < nOut; ++j) {
 					directed_demand[i][j] = 0;
 					for (int vt = 0; vt < numVehicleTypes; ++vt) {
