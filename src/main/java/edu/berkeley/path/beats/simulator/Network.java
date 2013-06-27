@@ -48,9 +48,11 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		if(isempty)
 			return;
 	
+		// nodes
 		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
 			((Node) node).populate(this);
-	
+
+		// links
 		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
 			((Link) link).populate(this);
 		
@@ -70,7 +72,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		
 		// node list
 		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-			((Node)node).validate();
+			((Node) node).validate();
 
 		// link list
 		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
@@ -104,8 +106,8 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
         }
         
         // update nodes: compute flows on links .........
-        for(edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
-            ((Node)node).update();
+		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
+			((Node) node).update();
         
         // update links: compute densities .............
         for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
@@ -138,7 +140,6 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		}
 		return null;
 	}
-
 
 	/** Get node with given id.
 	 * @param id String id of the node.

@@ -15,6 +15,8 @@ final class RunnerArguments {
 	private Double duration = null; 			// [sec] output duration
 	private Double outputDt = null; 			// [sec] output period
 	private Integer numReps = null;				// number of sequential runs
+	private String nodeflowsolver;				// name of the node flow solver
+	private String nodesrsolver;				// name of the node split ratio solver
 	
 	private RunnerArguments parent = null;
 
@@ -33,13 +35,15 @@ final class RunnerArguments {
 	 * @param outputDt output sample rate, sec
 	 * @param numReps number of runs, sec
 	 */
-	public RunnerArguments(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps) {
+	public RunnerArguments(String outputfileprefix,String output_format,Double startTime, Double duration, Double outputDt, Integer numReps,String nodeflowsolver,String nodesrsolver) {
 		this.outputfileprefix = outputfileprefix;
 		this.output_format = output_format;		
 		this.startTime = startTime;
 		this.duration = duration;
 		this.outputDt = outputDt;
 		this.numReps = numReps;
+		this.nodeflowsolver = nodeflowsolver;
+		this.nodesrsolver = nodesrsolver;
 	}
 
 	public void setConfigfilename(String configfilename) {
@@ -103,6 +107,14 @@ final class RunnerArguments {
 		this.numReps = numReps;
 	}
 	
+	public void setNodeFlowSolver(String nodeflowsolver){
+		this.nodeflowsolver = nodeflowsolver;
+	}
+
+	public void setNodeSRSolver(String nodesrsolver){
+		this.nodesrsolver = nodesrsolver;
+	}
+	
 	/**
 	 * @param ss the parent simulation settings
 	 */
@@ -164,6 +176,18 @@ final class RunnerArguments {
 		else return null;
 	}
 
+	public String getNodeFlowSolver(){
+		if (null != nodeflowsolver) return nodeflowsolver;
+		else if (null != parent) return parent.getNodeFlowSolver();
+		else return null;
+	}
+
+	public String getNodeSRSolver(){
+		if (null != nodesrsolver) return nodesrsolver;
+		else if (null != parent) return parent.getNodeSRSolver();
+		else return null;
+	}
+	
 	/**
 	 * @return the parent simulation settings
 	 */
@@ -207,6 +231,10 @@ final class RunnerArguments {
 			outputDt = round(Double.parseDouble(args[index]));
 		if (++index < args.length) 
 			numReps = Integer.parseInt(args[index]);
+		if (++index < args.length) 
+			nodeflowsolver = args[index];
+		if (++index < args.length) 
+			nodesrsolver = args[index];
 	}
 
 	public String toString() {
@@ -220,7 +248,14 @@ final class RunnerArguments {
 	 * @return the default simulation settings
 	 */
 	public static RunnerArguments defaults() {
-		return new RunnerArguments("outputs", "xml", Double.valueOf(Defaults.TIME_INIT), Double.valueOf(Defaults.DURATION), Double.valueOf(Defaults.OUT_DT), 1);
+		return new RunnerArguments( "outputs", 
+									"xml", 
+									Double.valueOf(Defaults.TIME_INIT), 
+									Double.valueOf(Defaults.DURATION), 
+									Double.valueOf(Defaults.OUT_DT), 
+									1,
+									"proportional",
+									"A");
 	}
 
 }

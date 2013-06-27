@@ -28,7 +28,6 @@ package edu.berkeley.path.beats.simulator;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -51,6 +50,7 @@ import edu.berkeley.path.beats.sensor.*;
  * 
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
+@SuppressWarnings("restriction")
 final public class ObjectFactory {
 
 	private static Logger logger = Logger.getLogger(ObjectFactory.class);
@@ -171,7 +171,12 @@ final public class ObjectFactory {
 	/////////////////////////////////////////////////////////////////////
 	// Scenario 
 	/////////////////////////////////////////////////////////////////////
-
+	
+	// TEMPORARY WHILE NODE MODE IS UNRESOLVED
+	public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
+		return createAndLoadScenario(configfilename,"proportional","A");
+	}
+	
 	/** Loads and validates scenarios from XML. 
 	 * <p>
 	 * This method does the following,
@@ -202,7 +207,7 @@ final public class ObjectFactory {
 	 * @return scenario				Scenario object.
 	 * @throws BeatsException
 	 */
-	public static Scenario createAndLoadScenario(String configfilename) throws BeatsException {
+	public static Scenario createAndLoadScenario(String configfilename,String nodeflowsolver,String nodesrsolver) throws BeatsException {
 
 		JAXBContext context;
 		Unmarshaller u;
@@ -254,6 +259,8 @@ final public class ObjectFactory {
 
         // copy in input parameters ..................................................
         S.setConfigfilename(configfilename);
+        S.setNodeFlowSolver(nodeflowsolver);
+        S.setNodeSRSolver(nodesrsolver);
 
 		return process(S);
 	}

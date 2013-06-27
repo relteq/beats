@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.math.BigDecimal;
+
 /** Link class.
  * 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
@@ -510,6 +512,13 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		return issink;
 	}
 
+	// Link weaving and merging behavior
+	
+	public double getPriority(int ensemble) {
+		BigDecimal priority = getPriority();
+		return null != priority ? priority.doubleValue() : getCapacityInVeh(ensemble);
+	}
+	
 	// Link state .......................
 
 	/** Density of vehicles per vehicle type in normalized units (vehicles/link/type). 
