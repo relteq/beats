@@ -177,11 +177,15 @@ final class RunnerArguments {
 	}
 
 	public String getNodeFlowSolver(){
-		return nodeflowsolver;
+		if (null != nodeflowsolver) return nodeflowsolver;
+		else if (null != parent) return parent.getNodeFlowSolver();
+		else return null;
 	}
 
 	public String getNodeSRSolver(){
-		return nodesrsolver;
+		if (null != nodesrsolver) return nodesrsolver;
+		else if (null != parent) return parent.getNodeSRSolver();
+		else return null;
 	}
 	
 	/**
