@@ -58,7 +58,7 @@ public class Event implements Comparable {
 		/** see {@link ObjectFactory#createEvent_Node_Split_Ratio} 		*/ node_split_ratio,
 		/** see {@link ObjectFactory#createEvent_Control_Toggle} 		*/ control_toggle,
 		/** see {@link ObjectFactory#createEvent_Global_Control_Toggle} */ global_control_toggle,
-		/** see {@link ObjectFactory#createEvent_Global_Demand_Knob} 	*/ global_demand_knob };
+		/** see {@link ObjectFactory#createEvent_Global_Demand_Knob} 	*/ global_demand_knob }
 		   
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -212,8 +212,7 @@ public class Event implements Comparable {
 	public boolean equals(Object obj) {
 		if(obj==null)
 			return false;
-		else
-			return this.compareTo((Event) obj)==0;
+		return this.compareTo((Event) obj)==0;
 	}
 
 	/////////////////////////////////////////////////////////////////////

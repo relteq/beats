@@ -45,7 +45,7 @@ final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileS
 	
 	protected void populate(Scenario myScenario) {
 		
-		this.myScenario = myScenario;;
+		this.myScenario = myScenario;
 
 		if(getDemandProfile().isEmpty())
 			return;

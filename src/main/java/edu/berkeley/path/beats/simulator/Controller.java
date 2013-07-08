@@ -88,13 +88,13 @@ public class Controller {
 	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
       /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
       /** see {@link ObjectFactory#createController_CRM_MPC}				*/ 	CRM_MPC,
-      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed };
+      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed }
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
-    protected Controller(){};
+    protected Controller(){}
       
 	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType){
 		 
@@ -262,8 +262,7 @@ public class Controller {
 	protected boolean registerFlowController(Link link,int index){
 		if(link==null)
 			return true;
-		else
-			return link.registerFlowController(this,index);
+		return link.registerFlowController(this,index);
 	}
 
    	/** Use this method within {@link InterfaceController#deregister} to deregister
@@ -275,8 +274,7 @@ public class Controller {
 	protected boolean deregisterSpeedController(Link link){
 		if(link!=null)			
 			return link.deregisterSpeedController(this);
-		else
-			return false;
+		return false;
 	}
 	
 	/** Use this method within {@link InterfaceController#deregister} to deregister
@@ -288,8 +286,7 @@ public class Controller {
 	protected boolean deregisterFlowController(Link link){
 		if(link==null)
 			return false;
-		else
-			return link.deregisterFlowController(this);
+		return link.deregisterFlowController(this);
 	}
 
    	/** Use this method within {@link InterfaceController#register} to register
@@ -302,8 +299,7 @@ public class Controller {
 	protected boolean registerSpeedController(Link link,int index){
 		if(link==null)
 			return true;
-		else
-			return link.registerSpeedController(this,index);
+		return link.registerSpeedController(this,index);
 	}
 	
 //   	/** DESCRIPTION

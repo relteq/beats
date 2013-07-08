@@ -201,14 +201,12 @@ final class Double3DMatrix {
 	public Double get(int i,int j,int k){
     	if(isempty)
     		return Double.NaN;
-    	else{
-			try{
-	    		return data[i][j][k];
-			}
-			catch(ArrayIndexOutOfBoundsException e){
-				return null;
-			}
-    	}
+		try{
+    		return data[i][j][k];
+		}
+		catch(ArrayIndexOutOfBoundsException e){
+			return null;
+		}
     }
 	
 	public Double getSumOverTypes(int i,int j){

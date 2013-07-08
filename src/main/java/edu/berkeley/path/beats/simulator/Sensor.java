@@ -50,7 +50,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	 * employed by INRIX, Navteq, etc.
 	 */
 	public static enum Type	{  
-	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop };
+	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop }
 				   	   	       
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor

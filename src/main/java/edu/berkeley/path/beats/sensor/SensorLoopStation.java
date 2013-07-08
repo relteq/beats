@@ -94,7 +94,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 					}
 				if (!colnotfound)
 					for (int i = 0; i < table.getNoRows(); ++i)
-						this._datasources.add(new DataSource(table.getTableElement(i, colnum[0]), table.getTableElement(i, colnum[1])));;
+						this._datasources.add(new DataSource(table.getTableElement(i, colnum[0]), table.getTableElement(i, colnum[1])));
 			} else
 				logger.warn("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
 		}

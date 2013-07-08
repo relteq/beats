@@ -64,8 +64,7 @@ final public class LinkCumulativeData {
 	public Double[] getMeanDensity(int ensemble) {
 		if (0 == nsteps)
 			return new Double[nvehtype];
-		else
-			return BeatsMath.times(density[ensemble], 1.0d / nsteps);
+		return BeatsMath.times(density[ensemble], 1.0d / nsteps);
 	}
 
 	public Double getCumulativeInputFlow(int ensemble, int vehtypenum) {
@@ -83,8 +82,7 @@ final public class LinkCumulativeData {
 	public Double[] getMeanInputFlow(int ensemble) {
 		if (0 == nsteps)
 			return new Double[nvehtype];
-		else
-			return BeatsMath.times(iflow[ensemble], 1.0d / nsteps);
+		return BeatsMath.times(iflow[ensemble], 1.0d / nsteps);
 	}
 	
 	public Double getMeanInputFlow(int ensemble, int vt_ind) {
@@ -114,8 +112,7 @@ final public class LinkCumulativeData {
 	public Double[] getMeanOutputFlow(int ensemble) {
 		if (0 == nsteps)
 			return new Double[nvehtype];
-		else
-			return BeatsMath.times(oflow[ensemble], 1.0d / nsteps);
+		return BeatsMath.times(oflow[ensemble], 1.0d / nsteps);
 	}
 
 	/////////////////////////////////////////////////////////////////////

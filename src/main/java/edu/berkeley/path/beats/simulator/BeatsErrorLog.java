@@ -35,7 +35,7 @@ public final class BeatsErrorLog {
 	
 	private static boolean haserror;
 	private static boolean haswarning;
-	private static enum level {Warning,Error};
+	private static enum level {Warning,Error}
 	private static ArrayList<BeatsError> error = new ArrayList<BeatsError>();
 
 	public static void clearErrorMessage(){

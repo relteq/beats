@@ -42,7 +42,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private Link.Type myType;
 
 	/** Type of link. */
-	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll};
+	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
 
 	// link geometry
 	private double _length;							// [meters]
@@ -415,39 +415,31 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	protected boolean registerFlowController(Controller c,int index){
 		if(myFlowController!=null)
 			return false;
-		else{
-			myFlowController = c;
-			control_maxflow_index = index;
-			return true;
-		}
+		myFlowController = c;
+		control_maxflow_index = index;
+		return true;
 	}
 
 	protected boolean registerSpeedController(Controller c,int index){
 		if(mySpeedController!=null)
 			return false;
-		else{
-			mySpeedController = c;
-			control_maxspeed_index = index;
-			return true;
-		}
+		mySpeedController = c;
+		control_maxspeed_index = index;
+		return true;
 	}
 
 	protected boolean deregisterFlowController(Controller c){
 		if(myFlowController!=c)
 			return false;
-		else{
-			myFlowController = null;			
-			return true;
-		}
+		myFlowController = null;			
+		return true;
 	}
 
 	protected boolean deregisterSpeedController(Controller c){
 		if(mySpeedController!=c)
 			return false;
-		else{
-			mySpeedController = null;			
-			return true;
-		}
+		mySpeedController = null;			
+		return true;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -554,8 +546,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		try{
 			if(density!=null)
 				return BeatsMath.sum(density[ensemble]);
-			else
-				return 0d;
+			return 0d;
 		} catch(Exception e){
 			return 0d;
 		}
@@ -655,8 +646,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getDensityJamInVeh();
+			return FD._getDensityJamInVeh();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -668,8 +658,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else		
-				return FD.getDensityCriticalInVeh();
+			return FD.getDensityCriticalInVeh();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -681,8 +670,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getCapacityDropInVeh();
+			return FD._getCapacityDropInVeh();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -694,8 +682,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getCapacityInVeh();
+			return FD._getCapacityInVeh();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -707,8 +694,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getDensityJamInVeh() / getLengthInMeters() / _lanes;
+			return FD._getDensityJamInVeh() / getLengthInMeters() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -720,8 +706,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD.getDensityCriticalInVeh() / getLengthInMeters() / _lanes;
+			return FD.getDensityCriticalInVeh() / getLengthInMeters() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -733,8 +718,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getCapacityDropInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+			return FD._getCapacityDropInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -746,8 +730,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -759,8 +742,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
+			return FD._getCapacityInVeh() / myNetwork.getMyScenario().getSimdtinseconds() / _lanes;
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -772,8 +754,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD.getVfNormalized();
+			return FD.getVfNormalized();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -785,8 +766,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD.getVfNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD.getVfNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -813,8 +793,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD.getWNormalized();
+			return FD.getWNormalized();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -826,8 +805,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FundamentalDiagram FD = currentFD(ensemble);
 			if(FD==null)
 				return Double.NaN;
-			else
-				return FD.getWNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
+			return FD.getWNormalized() * getLengthInMeters() / myNetwork.getMyScenario().getSimdtinseconds();
 		} catch (Exception e) {
 			return Double.NaN;
 		}
@@ -875,8 +853,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		try{
 			if(inflow==null)
 				return Double.NaN;
-			else
-				return inflow[ensemble][vt_ind];
+			return inflow[ensemble][vt_ind];
 		} catch(Exception e){
 			return Double.NaN;
 		}
@@ -892,8 +869,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		try{
 			if(outflow==null)
 				return Double.NaN;
-			else
-				return outflow[ensemble][vt_ind];
+			return outflow[ensemble][vt_ind];
 		} catch(Exception e){
 			return Double.NaN;
 		}
@@ -912,8 +888,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private FundamentalDiagram currentFD(int ensemble){
 		if(activeFDevent)
 			return FDfromEvent;
-		else
-			return FDfromProfile==null ? null : FDfromProfile[ensemble];
+		return FDfromProfile==null ? null : FDfromProfile[ensemble];
 	}
 
 

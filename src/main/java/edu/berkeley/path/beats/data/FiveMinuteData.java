@@ -72,8 +72,7 @@ public class FiveMinuteData {
 		try{
 			if(isaggregate)
 				return flw.get(0).get(i);
-			else
-				return Float.NaN;
+			return Float.NaN;
 		}
 		catch(Exception e){
 			return Float.NaN;
@@ -96,8 +95,7 @@ public class FiveMinuteData {
 		try{
 			if(isaggregate)
 				return spd.get(0).get(i);
-			else
-				return Float.NaN;
+			return Float.NaN;
 		}
 		catch(Exception e){
 			return Float.NaN;
@@ -112,8 +110,7 @@ public class FiveMinuteData {
 		try{
 			if(isaggregate)
 				return flw.get(0).get(i)/spd.get(0).get(i);
-			else
-				return Float.NaN;
+			return Float.NaN;
 		}
 		catch(Exception e){
 			return Float.NaN;

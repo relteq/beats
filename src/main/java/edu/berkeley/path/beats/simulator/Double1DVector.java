@@ -92,8 +92,7 @@ final class Double1DVector {
     public Double get(int i){
     	if(data.length==0)
     		return Double.NaN;
-    	else
-    		return data[i];
+   		return data[i];
     }
 
 	/////////////////////////////////////////////////////////////////////

@@ -33,7 +33,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 
 	private Scenario myScenario;
 	private ArrayList<Controller> controllers = new ArrayList<Controller>();
-	private enum OperationType {Deactivate,Activate}; 
+	private enum OperationType {Deactivate,Activate}
 	private ArrayList<ActivationCommand> activations;
 	private ArrayList<Integer> activeControllerIndex;
 	private int activationindex;

@@ -3,16 +3,15 @@ package edu.berkeley.path.beats.control;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.BeatsMath;
-import edu.berkeley.path.beats.simulator.ControlAlgorithm;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandProfile;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Network;
+import edu.berkeley.path.beats.simulator.ControlPolicyMaker;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class Controller_CRM_MPC extends Controller {
@@ -33,10 +32,10 @@ public class Controller_CRM_MPC extends Controller {
 	private double time_last_opt;			// [sec] time of last optimization call
 	private Map<String,Double[]> metering_rate;	// target link id to control profile in [veh/hr]
 	
-	private ControlAlgorithm control_algorithm;
+	private ControlPolicyMaker control_algorithm;
 	//private Scenario opt_scenario;
 	
-	private static enum Type { adjoint , actm_lp , NULL};
+	private static enum Type { adjoint , actm_lp , NULL}
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -75,9 +74,7 @@ public class Controller_CRM_MPC extends Controller {
 					break;
 				case NULL:
 					break;
-			}	
-			if(control_algorithm!=null)
-				control_algorithm.setName(control_algorithm.getClass().getSimpleName());
+			}
 		}
 		
 		// read timing parameters

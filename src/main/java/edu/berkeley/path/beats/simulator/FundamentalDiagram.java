@@ -42,7 +42,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	// construction 
 	/////////////////////////////////////////////////////////////////////
 
-	public FundamentalDiagram(){};
+	public FundamentalDiagram(){}
 	
 	public FundamentalDiagram(Link myLink){
 		this.myLink       = myLink;

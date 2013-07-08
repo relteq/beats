@@ -36,7 +36,7 @@ public class DataSource {
 	public static enum Format { NULL, 
 								PeMSDataClearinghouse,
 								CaltransDBX,
-								BHL };
+								BHL }
 	
 	public DataSource(String urlname,String formatstr) {
 		this.urlname = urlname;

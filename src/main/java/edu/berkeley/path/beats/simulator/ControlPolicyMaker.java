@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 
-public interface PolicyMaker {
+public interface ControlPolicyMaker {
     public Map<String,Double[]> compute(
             Map<String, Double> initialDensity,
             Map<String,Double[]> splitRatios,

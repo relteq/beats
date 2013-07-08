@@ -45,7 +45,7 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 	/** see {@link Controller} */ controller,
 	/** see {@link Sensor} 	*/ sensor,
 	/** see {@link Event} 		*/ event,
-	/** see {@link Signal} 	*/ signal };
+	/** see {@link Signal} 	*/ signal }
 			
 
 	/////////////////////////////////////////////////////////////////////

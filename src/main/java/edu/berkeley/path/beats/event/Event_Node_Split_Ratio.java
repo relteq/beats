@@ -28,7 +28,6 @@ package edu.berkeley.path.beats.event;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;

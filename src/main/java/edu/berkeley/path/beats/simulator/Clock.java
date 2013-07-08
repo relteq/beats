@@ -64,8 +64,7 @@ final class Clock {
 	protected int getTotalSteps(){
 		if(Double.isInfinite(maxt))
 			return -1;
-		else
-			return (int) Math.ceil((maxt-to)/dt);
+		return (int) Math.ceil((maxt-to)/dt);
 	}
 	
 	protected void advance(){
@@ -86,11 +85,9 @@ final class Clock {
 	}
 	
 	protected int sampleindex(int stepinitial,int samplesteps){
-		if(samplesteps>0){
+		if(samplesteps>0)
 			return BeatsMath.floor((currentstep-stepinitial)/((float)samplesteps));
-		}
-		else
-			return 0;
+		return 0;
 	}
 	
 	public double getStartTime(){

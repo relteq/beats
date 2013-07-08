@@ -458,9 +458,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	public Double [][][] getSplitRatio(){
 		if(splitratio_selected==null)
 			return null;
-		else{
-			return splitratio_selected.cloneData();
-		}
+		return splitratio_selected.cloneData();
 	}
 
 	/**
@@ -473,9 +471,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
 		if(splitratio_selected==null)
 			return Double.NaN;
-		else{
-			return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
-		}
+		return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
 //
 //	protected class SupplyDemand {
