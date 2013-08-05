@@ -229,7 +229,7 @@ final public class ObjectFactory {
         try{
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             ClassLoader classLoader = ObjectFactory.class.getClassLoader();            
-        	Schema schema = factory.newSchema(classLoader.getResource("sirius.xsd"));
+        	Schema schema = factory.newSchema(classLoader.getResource("beats_v0.xsd"));
         	u.setSchema(schema);
         } catch(SAXException e){
         	throw new BeatsException("Schema not found", e);
