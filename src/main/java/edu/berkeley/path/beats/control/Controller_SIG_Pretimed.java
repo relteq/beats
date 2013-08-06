@@ -232,7 +232,7 @@ public class Controller_SIG_Pretimed extends Controller {
 		private void process_stages(Table tbl) {
 			for (int row = 0; row < tbl.getNoRows(); ++row) {
 				String plan_id = tbl.getTableElement(row, "Plan ID");
-				String node_id = tbl.getTableElement(row, "Intersection");
+				long node_id = Long.parseLong(tbl.getTableElement(row, "Intersection"));
 				Plan plan = getPlan(plan_id);
 				if (null == plan)
 					logger.error("Plan '" + plan_id + "' not found");
@@ -313,9 +313,9 @@ public class Controller_SIG_Pretimed extends Controller {
 		 * @param node_id the node ID
 		 * @return null, if an intersection was not found
 		 */
-		Intersection getIntersection(String node_id) {
+		Intersection getIntersection(long node_id) {
 			for (Intersection ip : ip_l)
-				if (node_id.equals(ip.getNodeId()))
+				if (node_id==ip.getNodeId())
 					return ip;
 			return null;
 		}
