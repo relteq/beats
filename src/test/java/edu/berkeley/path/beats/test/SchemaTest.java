@@ -25,7 +25,7 @@ public class SchemaTest {
 	public void compareSchemas() throws ParserConfigurationException, SAXException, IOException {
 		ClassLoader classLoader = SchemaTest.class.getClassLoader();
 		logger.info("Loading XML schema");
-		XMLSchema xmlschema = new XMLSchema(classLoader.getResourceAsStream("beats_v0.xsd"));
+		XMLSchema xmlschema = new XMLSchema(classLoader.getResourceAsStream("beats.xsd"));
 		logger.info("Loading DB schema");
 		DBSchema dbschema = new DBSchema(new FileInputStream("data" + File.separator + "sirius-db-schema.xml"));
 		logger.info("Loading matching file");

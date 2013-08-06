@@ -42,7 +42,7 @@ public class ScenarioUtil {
 	 * @throws BeatsException
 	 */
 	public static javax.xml.validation.Schema getSchema() throws BeatsException {
-		return getSchema("beats_v0.xsd");
+		return getSchema("beats.xsd");
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class ScenarioUtil {
 	 * @throws BeatsException
 	 */
 	public static String getSchemaVersion() throws BeatsException {
-		return getSchemaVersion("beats_v0.xsd");
+		return getSchemaVersion("beats.xsd");
 	}
 
 	/**

@@ -1,40 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0.2">
 
-  <!-- generic ................................................................... -->
 
-  <xs:element name="position">
-    <xs:complexType>
-      <xs:sequence>
-          <xs:element ref="point" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+  <!-- position .................................................................. -->
 
-  <xs:element name="display_position">
-    <xs:complexType>
-      <xs:sequence>
-          <xs:element ref="point" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="point">
-    <xs:complexType>
-      <xs:attribute name="lat" type="xs:decimal" use="required" />
-      <xs:attribute name="lng" type="xs:decimal" use="required" />
-      <xs:attribute name="elevation" type="xs:decimal" use="optional" default="0" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="position">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="point" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
+	<xs:element name="display_position">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="point" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+		<xs:element name="point">
+			<xs:complexType>
+				<xs:attribute name="lat" type="xs:double" use="required" />
+				<xs:attribute name="lng" type="xs:double" use="required" />
+				<xs:attribute name="elevation" type="xs:double" use="optional" default="0" />
+			</xs:complexType>
+		</xs:element>
+
+		
+		
+  <!-- OLD -->
   <xs:element name="description" type="xs:string" />  <!-- used by scenario, network, node, link, sensor, event, and all profiles and sets. -->
   
+  <!-- OLD -->
   <xs:element name="begin"> 												<!-- used by link, od -->
     <xs:complexType>
       <xs:attribute name="node_id" type="xs:string" use="required" />
     </xs:complexType>
   </xs:element>
 
+  <!-- OLD -->
   <xs:element name="end"> 													<!-- used by link, od -->
     <xs:complexType>
       <xs:attribute name="node_id" type="xs:string" use="required" />
@@ -49,6 +55,7 @@
     </xs:complexType>
   </xs:element>  
   
+  <!-- OLD -->
 	<xs:element name="parameter">
 		<xs:complexType>
 		  <xs:attribute name="name" type="xs:string" use="required" />
@@ -56,6 +63,7 @@
 		</xs:complexType>
 	</xs:element>
 
+  <!-- OLD -->
   <xs:element name="table">
 	<xs:complexType>
 		<xs:sequence>
@@ -66,6 +74,7 @@
 	</xs:complexType>
   </xs:element>
 
+  <!-- OLD -->
 	<xs:element name="column_names">
 		<xs:complexType>
 			<xs:sequence>
@@ -74,6 +83,7 @@
 		</xs:complexType>
 	</xs:element>
 
+  <!-- OLD -->
 		<xs:element name="column_name">
 			<xs:complexType>
 				<xs:attribute name="name" type="xs:string" use="required" />
@@ -81,6 +91,7 @@
 			</xs:complexType>
 		</xs:element>
 
+  <!-- OLD -->
 	<xs:element name="row">
 		<xs:complexType>
 			<xs:sequence>
@@ -89,17 +100,14 @@
 		</xs:complexType>
 	</xs:element>
 
+  <!-- OLD -->
 		<xs:element name="column">
 			<xs:simpleType>
 				  <xs:restriction base="xs:string"/>
 			</xs:simpleType>
 		</xs:element>
 
-		
-		
-		
-		
-		
+  <!-- OLD -->
   <xs:element name="targetElements">										<!-- used by event, controller -->
     <xs:complexType>
       <xs:sequence>
@@ -108,6 +116,7 @@
     </xs:complexType>
   </xs:element>
   
+  <!-- OLD -->
   <xs:element name="feedbackElements">										<!-- used by controller -->
     <xs:complexType>
       <xs:sequence>
@@ -116,6 +125,7 @@
     </xs:complexType>
   </xs:element>
 
+  <!-- OLD -->
 	  <xs:element name="scenarioElement"> 
 		<xs:complexType>
 		  <xs:attribute name="type" use="required">
@@ -130,6 +140,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
    <xs:element name="link_references">
     <xs:complexType>
       <xs:sequence>
@@ -138,12 +149,14 @@
     </xs:complexType>
   </xs:element>
   
+  <!-- OLD -->
 	  <xs:element name="link_reference"> 
 		<xs:complexType>
 		  <xs:attribute name="id" type="xs:string" use="required" />
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
   <xs:element name="VehicleTypeOrder">
     <xs:complexType>
       <xs:sequence>
@@ -154,6 +167,7 @@
 	  
   <!-- scenario .................................................................. -->
   
+  <!-- OLD -->
   <xs:element name="scenario">
     <xs:complexType>
       <xs:all>
@@ -182,6 +196,7 @@
 
   <!-- settings .................................................................. -->
   
+  <!-- OLD -->
 	  <xs:element name="settings">
 		<xs:complexType>
 		  <xs:all>
@@ -191,6 +206,7 @@
 		</xs:complexType>
 	  </xs:element>
 		  
+  <!-- OLD -->
 		  <!-- [SI] ... 	length in meters, 	time in seconds
 			   US ... 		length in miles,	time in hours
 			   Metric ... 	length in km,		time in hours
@@ -203,6 +219,7 @@
 			</xs:simpleType>
 		  </xs:element>
 		  
+  <!-- OLD -->
 		  <xs:element name="VehicleTypes">
 			<xs:complexType>
 			  <xs:sequence>
@@ -211,6 +228,7 @@
 			</xs:complexType>
 		  </xs:element>
 
+  <!-- OLD -->
 			  <xs:element name="vehicle_type">
 				<xs:complexType>
 				  <xs:attribute name="name" type="xs:string" use="required" />
@@ -221,6 +239,7 @@
 		
   <!-- NetworkList ............................................................... -->
 
+  <!-- OLD -->
 	  <xs:element name="NetworkList">
 		<xs:complexType>
 		  <xs:sequence>
@@ -231,6 +250,7 @@
 	  
   <!-- network ................................................................... -->
 	  
+  <!-- OLD -->
 		  <xs:element name="network">
 			<xs:complexType>
 			  <xs:all>
@@ -249,6 +269,7 @@
 		  
   <!-- NodeList .................................................................. -->
   
+  <!-- OLD -->
 		  <xs:element name="NodeList">
 			<xs:complexType>
 			  <xs:sequence>
@@ -257,6 +278,7 @@
 			</xs:complexType>
 		  </xs:element>
 		  
+  <!-- OLD -->
 			  <xs:element name="node">
 				<xs:complexType>
 				  <xs:all>
@@ -277,6 +299,7 @@
 				</xs:complexType>
 			  </xs:element>
 			  
+  <!-- OLD -->
 				  <xs:element name="roadway_markers">
 				  	<xs:complexType>
 					  <xs:sequence>
@@ -285,6 +308,7 @@
 					</xs:complexType>
 			  	  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="marker">
 				  	<xs:complexType>
 				  		<xs:attribute name="name" type="xs:string" use="required" />
@@ -292,6 +316,7 @@
 					</xs:complexType>
 			  	  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="outputs">
 					<xs:complexType>
 					  <xs:sequence>
@@ -300,12 +325,14 @@
 					</xs:complexType>
 				  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="output">
 					<xs:complexType>
 					  <xs:attribute name="link_id" type="xs:string" use="required" />
 					</xs:complexType>
 				  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="inputs">
 					<xs:complexType>
 					  <xs:sequence>
@@ -314,6 +341,7 @@
 					</xs:complexType>
 				  </xs:element>
 				  
+  <!-- OLD -->
 				  <xs:element name="input">
 					<xs:complexType>
 					  <xs:attribute name="link_id" type="xs:string" use="required" />
@@ -322,6 +350,7 @@
 		  
   <!-- LinkList .................................................................. -->
 
+  <!-- OLD -->
 		  <xs:element name="LinkList">
 			<xs:complexType>
 			  <xs:sequence>
@@ -330,6 +359,7 @@
 			</xs:complexType>
 		  </xs:element>
 		  
+  <!-- OLD -->
 			  <xs:element name="link">
 				<xs:complexType>
 				  <xs:all>
@@ -361,6 +391,7 @@
 				</xs:complexType>
 			  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="roads">
 				  	<xs:complexType>
 					  <xs:sequence>
@@ -369,12 +400,14 @@
 					</xs:complexType>
 			  	  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="road">
 				  	<xs:complexType>
 				  		<xs:attribute name="name" type="xs:string" use="required" />
 					</xs:complexType>
 			  	  </xs:element>
 
+  <!-- OLD -->
 				  <xs:element name="dynamics">
 					<xs:complexType>
 					  <xs:attribute name="type" use="required">
@@ -387,10 +420,12 @@
 					</xs:complexType>
 				  </xs:element>
 
+  <!-- OLD -->
 	<xs:element name="shape" type="xs:string"/>
 
   <!-- IntersectionCache ......................................................... -->
 
+  <!-- OLD -->
 		  <xs:element name="IntersectionCache">
 			<xs:complexType>
 			  <xs:sequence>
@@ -400,6 +435,7 @@
 			</xs:complexType>
 		  </xs:element>
 
+  <!-- OLD -->
 			  <xs:element name="IntersectionCacheEntry">
 				<xs:complexType>
 				  <xs:attribute name="qlat" type="xs:decimal" use="required" />
@@ -413,6 +449,7 @@
 			  
   <!-- SignalList ................................................................ -->
 
+  <!-- OLD -->
 	  <xs:element name="SignalList">
 		<xs:complexType>
 		  <xs:sequence>
@@ -423,6 +460,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
 		  <xs:element name="signal">
 			<xs:complexType>
 			  <xs:sequence>
@@ -433,6 +471,7 @@
 			</xs:complexType>
 		  </xs:element>
 		  
+  <!-- OLD -->
 			  <xs:element name="phase">
 				<xs:complexType>
 				  <xs:all>
@@ -461,6 +500,7 @@
 						format (value in {PeMS&#x20;Data&#x20;Clearinghouse|Caltrans&#x20;DBX|BHL})
   -->
 			  
+  <!-- OLD -->
 	  <xs:element name="SensorList">
 		<xs:complexType>
 		  <xs:sequence>
@@ -469,6 +509,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
 		  <!-- 
 		    sensor parameters used in beats:
 		      vds - used to assign a VDS station id to a loop sensor
@@ -508,6 +549,7 @@
 
   <!-- InitialDensitySet ..................................................... -->
 
+  <!-- OLD -->
 	  <xs:element name="InitialDensitySet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -521,6 +563,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
 		  <xs:element name="density">													<!-- content in veh/distance unit -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
@@ -530,6 +573,7 @@
 
   <!-- WeavingFactorSet ..................................................... -->
 	
+  <!-- OLD -->
 	  <xs:element name="WeavingFactorSet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -542,6 +586,7 @@
 		</xs:complexType>
 	  </xs:element>
 
+  <!-- OLD -->
 		  <xs:element name="weavingfactors">
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_in" type="xs:string" use="required" />
@@ -551,6 +596,7 @@
 
   <!-- SplitRatioProfileSet ...................................................... -->
 
+  <!-- OLD -->
 	  <xs:element name="SplitRatioProfileSet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -563,6 +609,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
 		  <xs:element name="splitratioProfile">
 			<xs:complexType>
 			  <xs:sequence>
@@ -575,6 +622,7 @@
 			</xs:complexType>
 		  </xs:element>		  
 
+  <!-- OLD -->
 			  <xs:element name="splitratio">
 				<xs:complexType mixed="true">
 				  <xs:attribute name="link_in" type="xs:string" use="required" />
@@ -584,6 +632,7 @@
   
   <!-- DownstreamBoundaryCapacityProfileSet ............................................. -->  
   
+  <!-- OLD -->
 	  <xs:element name="DownstreamBoundaryCapacityProfileSet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -595,6 +644,7 @@
 		</xs:complexType>
 	  </xs:element>
 
+  <!-- OLD -->
 		  <xs:element name="capacityProfile">									       <!-- content in [veh/time unit/lane] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="link_id" type="xs:string" use="required" />
@@ -628,6 +678,7 @@
 
   -->
   
+  <!-- OLD -->
 	  <xs:element name="EventSet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -639,6 +690,7 @@
 		</xs:complexType>
 	  </xs:element>
 
+  <!-- OLD -->
 		  <xs:element name="event">
 			<xs:complexType>
 			  <xs:all>
@@ -662,6 +714,7 @@
 			</xs:complexType>
 		  </xs:element>			 
 
+  <!-- OLD -->
 			  <xs:element name="splitratioEvent">		<!-- split ratio matrix for one time instant, one input link, one vehicle type -->
 			    <xs:complexType>
 				  <xs:sequence>
@@ -673,6 +726,7 @@
 
   <!-- DemandProfileSet .......................................................... -->
   
+  <!-- OLD -->
 	  <xs:element name="DemandProfileSet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -685,6 +739,7 @@
 		</xs:complexType>
 	  </xs:element>
 			  
+  <!-- OLD -->
 		  <xs:element name="demandProfile">									<!-- content in [veh/time unit/vehicle type] -->
 			<xs:complexType mixed="true">
 			  <xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
@@ -732,6 +787,7 @@
 
   -->
 		  
+  <!-- OLD -->
 	  <xs:element name="ControllerSet">
 		<xs:complexType>
 		  <xs:sequence>
@@ -743,6 +799,7 @@
 		</xs:complexType>
 	  </xs:element>
 	  
+  <!-- OLD -->
 		<xs:element name="controller">
 		  <xs:complexType>
 			<xs:sequence>
