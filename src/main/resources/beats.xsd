@@ -510,7 +510,7 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="density" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		  <xs:attribute name="tstamp" type="xs:decimal" use="optional" default="0.0"/>		<!-- time, to which this initial condition corresponds, in time units after midnight. default=midnight -->
 		</xs:complexType>
@@ -532,7 +532,7 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="weavingfactors" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -553,7 +553,7 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="splitratioProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -585,7 +585,7 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="capacityProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:string" use="long" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -629,7 +629,7 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="event" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -675,7 +675,7 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="demandProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -733,7 +733,7 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="controller" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -803,7 +803,7 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="fundamentalDiagramProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
@@ -843,7 +843,7 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="networkpair" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" default="" />
+		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>  
