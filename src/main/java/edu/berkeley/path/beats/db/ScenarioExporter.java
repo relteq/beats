@@ -91,7 +91,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.Scenario restoreScenario(Scenarios db_scenario) throws BeatsException {
 		if (null == db_scenario) return null;
 		edu.berkeley.path.beats.jaxb.Scenario scenario = factory.createScenario();
-		scenario.setId(id2str(db_scenario.getId()));
+		scenario.setId(db_scenario.getId());
 		scenario.setName(db_scenario.getName());
 		scenario.setDescription(db_scenario.getDescription());
 		try{
@@ -169,7 +169,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Network restoreNetwork(Networks db_net) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Network net = factory.createNetwork();
-		net.setId(id2str(db_net.getId()));
+		net.setId(db_net.getId());
 		net.setName(db_net.getName());
 		net.setDescription(db_net.getDescription());
 		// TODO net.setPosition();
@@ -192,7 +192,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Node restoreNode(Nodes db_node) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Node node = factory.createNode();
-		node.setId(id2str(db_node.getId()));
+		node.setId(db_node.getId());
 		node.setInSync(db_node.getInSync());
 
 		@SuppressWarnings("unchecked")
@@ -247,7 +247,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Input restoreInput(Links db_link) {
 		edu.berkeley.path.beats.jaxb.Input input = factory.createInput();
-		input.setLinkId(id2str(db_link.getId()));
+		input.setLinkId(db_link.getId());
 		return input;
 	}
 
@@ -265,7 +265,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Output restoreOutput(Links db_link) {
 		edu.berkeley.path.beats.jaxb.Output output = factory.createOutput();
-		output.setLinkId(id2str(db_link.getId()));
+		output.setLinkId(db_link.getId());
 		return output;
 	}
 
@@ -281,16 +281,16 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Link restoreLink(Links db_link) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Link link = factory.createLink();
-		link.setId(id2str(db_link.getId()));
+		link.setId(db_link.getId());
 
 		// begin node
 		edu.berkeley.path.beats.jaxb.Begin begin = factory.createBegin();
-		begin.setNodeId(id2str(db_link.getBegNodeId()));
+		begin.setNodeId(db_link.getBegNodeId());
 		link.setBegin(begin);
 
 		// end node
 		edu.berkeley.path.beats.jaxb.End end = factory.createEnd();
-		end.setNodeId(id2str(db_link.getEndNodeId()));
+		end.setNodeId(db_link.getEndNodeId());
 		link.setEnd(end);
 
 		link.setRoads(restoreRoads(db_link));
@@ -333,7 +333,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.InitialDensitySet restoreInitialDensitySet(InitialDensitySets db_idset) throws TorqueException {
 		if (null == db_idset) return null;
 		edu.berkeley.path.beats.jaxb.InitialDensitySet idset = factory.createInitialDensitySet();
-		idset.setId(id2str(db_idset.getId()));
+		idset.setId(db_idset.getId());
 		idset.setName(db_idset.getName());
 		idset.setDescription(db_idset.getDescription());
 		idset.setTstamp(db_idset.getActionTime());
@@ -346,15 +346,15 @@ public class ScenarioExporter {
 		edu.berkeley.path.beats.jaxb.Density density = null;
 		StringBuilder sb = new StringBuilder();
 		for (InitialDensities db_id : db_idl) {
-			if (null != density && !density.getLinkId().equals(id2str(db_id.getLinkId()))) {
+			if (null != density && density.getLinkId()!=db_id.getLinkId()) {
 				density.setContent(sb.toString());
 				idset.getDensity().add(density);
 				density = null;
 			}
 			if (null == density) { // new link
 				density = factory.createDensity();
-				density.setLinkId(id2str(db_id.getLinkId()));
-				density.setDestinationNetworkId(id2str(db_id.getDestinationNetworkId()));
+				density.setLinkId(db_id.getLinkId());
+				density.setDestinationNetworkId(db_id.getDestinationNetworkId());
 				sb.setLength(0);
 			} else { // same link, different vehicle type
 				sb.append(":");
@@ -372,7 +372,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.WeavingFactorSet restoreWeavingFactorSet(WeavingFactorSets db_wfset) throws TorqueException {
 		if (null == db_wfset) return null;
 		edu.berkeley.path.beats.jaxb.WeavingFactorSet wfset = factory.createWeavingFactorSet();
-		wfset.setId(id2str(db_wfset.getId()));
+		wfset.setId(db_wfset.getId());
 		wfset.setName(db_wfset.getName());
 		wfset.setDescription(db_wfset.getDescription());
 
@@ -385,15 +385,15 @@ public class ScenarioExporter {
 		edu.berkeley.path.beats.jaxb.Weavingfactors wf = null;
 		StringBuilder sb = new StringBuilder();
 		for (WeavingFactors db_wf : db_wf_l) {
-			if (null != wf && !(wf.getLinkIn().equals(id2str(db_wf.getInLinkId())) && wf.getLinkOut().equals(id2str(db_wf.getOutLinkId())))) {
+			if (null != wf && !(wf.getLinkIn()==db_wf.getInLinkId() && wf.getLinkOut()==db_wf.getOutLinkId())) {
 				wf.setContent(sb.toString());
 				wfset.getWeavingfactors().add(wf);
 				wf = null;
 			}
 			if (null == wf) { // new weaving factor
 				wf = factory.createWeavingfactors();
-				wf.setLinkIn(id2str(db_wf.getInLinkId()));
-				wf.setLinkOut(id2str(db_wf.getOutLinkId()));
+				wf.setLinkIn(db_wf.getInLinkId());
+				wf.setLinkOut(db_wf.getOutLinkId());
 				sb.setLength(0);
 			} else { // same weaving factor, different vehicle type
 				sb.append(':');
@@ -410,7 +410,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.SplitRatioProfileSet restoreSplitRatioProfileSet(SplitRatioProfileSets db_srps) throws TorqueException {
 		if (null == db_srps) return null;
 		edu.berkeley.path.beats.jaxb.SplitRatioProfileSet srps = factory.createSplitRatioProfileSet();
-		srps.setId(id2str(db_srps.getId()));
+		srps.setId(db_srps.getId());
 		srps.setName(db_srps.getName());
 		srps.setDescription(db_srps.getDescription());
 		@SuppressWarnings("unchecked")
@@ -422,10 +422,10 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.SplitratioProfile restoreSplitRatioProfile(SplitRatioProfiles db_srp) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.SplitratioProfile srp = factory.createSplitratioProfile();
-		srp.setNodeId(id2str(db_srp.getNodeId()));
+		srp.setNodeId(db_srp.getNodeId());
 		srp.setDt(db_srp.getSampleRate());
 		srp.setStartTime(db_srp.getStartTime());
-		srp.setDestinationNetworkId(id2str(db_srp.getDestinationNetworkId()));
+		srp.setDestinationNetworkId(db_srp.getDestinationNetworkId());
 
 		Criteria crit = new Criteria();
 		crit.addAscendingOrderByColumn(SplitRatiosPeer.IN_LINK_ID);
@@ -438,15 +438,15 @@ public class ScenarioExporter {
 		Integer ordinal = null;
 		StringBuilder sb = new StringBuilder();
 		for (SplitRatios db_sr : db_sr_l) {
-			if (null != sr && !(sr.getLinkIn().equals(id2str(db_sr.getInLinkId())) && sr.getLinkOut().equals(id2str(db_sr.getOutLinkId())))) {
+			if (null != sr && !( sr.getLinkIn()==db_sr.getInLinkId() && sr.getLinkOut()==db_sr.getOutLinkId())) {
 				sr.setContent(sb.toString());
 				srp.getSplitratio().add(sr);
 				sr = null;
 			}
 			if (null == sr) { // new split ratio
 				sr = factory.createSplitratio();
-				sr.setLinkIn(id2str(db_sr.getInLinkId()));
-				sr.setLinkOut(id2str(db_sr.getOutLinkId()));
+				sr.setLinkIn(db_sr.getInLinkId());
+				sr.setLinkOut(db_sr.getOutLinkId());
 				sb.setLength(0);
 			} else { // same split ratio, different time stamp (',') or vehicle type (':')
 				sb.append(db_sr.getOrdinal().equals(ordinal) ? ':' : ',');
@@ -464,7 +464,7 @@ public class ScenarioExporter {
 	edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet restoreFundamentalDiagramProfileSet(FundamentalDiagramProfileSets db_fdps) throws TorqueException {
 		if (null == db_fdps) return null;
 		edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet fdps = factory.createFundamentalDiagramProfileSet();
-		fdps.setId(id2str(db_fdps.getId()));
+		fdps.setId(db_fdps.getId());
 		fdps.setName(db_fdps.getName());
 		fdps.setDescription(db_fdps.getDescription());
 		@SuppressWarnings("unchecked")
@@ -476,7 +476,7 @@ public class ScenarioExporter {
 
 	edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile restoreFundamentalDiagramProfile(FundamentalDiagramProfiles db_fdprofile) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdprofile = factory.createFundamentalDiagramProfile();
-		fdprofile.setLinkId(id2str(db_fdprofile.getLinkId()));
+		fdprofile.setLinkId(db_fdprofile.getLinkId());
 		fdprofile.setDt(db_fdprofile.getSampleRate());
 		fdprofile.setStartTime(db_fdprofile.getStartTime());
 
@@ -506,7 +506,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.DemandProfileSet restoreDemandProfileSet(DemandProfileSets db_dpset) throws TorqueException {
 		if (null == db_dpset) return null;
 		edu.berkeley.path.beats.jaxb.DemandProfileSet dpset = factory.createDemandProfileSet();
-		dpset.setId(id2str(db_dpset.getId()));
+		dpset.setId(db_dpset.getId());
 		dpset.setName(db_dpset.getName());
 		dpset.setDescription(db_dpset.getDescription());
 		@SuppressWarnings("unchecked")
@@ -521,8 +521,8 @@ public class ScenarioExporter {
 		dp.setKnob(db_dp.getKnob());
 		dp.setStartTime(db_dp.getStartTime());
 		dp.setDt(db_dp.getSampleRate());
-		dp.setLinkIdOrigin(id2str(db_dp.getOriginLinkId()));
-		dp.setDestinationNetworkId(id2str(db_dp.getDestinationNetworkId()));
+		dp.setLinkIdOrigin(db_dp.getOriginLinkId());
+		dp.setDestinationNetworkId(db_dp.getDestinationNetworkId());
 		dp.setStdDevAdd(db_dp.getStdDeviationAdditive());
 		dp.setStdDevMult(db_dp.getStdDeviationMultiplicative());
 
@@ -546,7 +546,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.NetworkConnections restoreNetworkConnections(NetworkConnectionSets db_ncs) throws TorqueException {
 		if (null == db_ncs) return null;
 		edu.berkeley.path.beats.jaxb.NetworkConnections nc = factory.createNetworkConnections();
-		nc.setId(id2str(db_ncs.getId()));
+		nc.setId(db_ncs.getId());
 		nc.setName(db_ncs.getName());
 		nc.setDescription(db_ncs.getDescription());
 		Criteria crit = new Criteria();
@@ -556,18 +556,18 @@ public class ScenarioExporter {
 		List<NetworkConnections> db_nc_l = db_ncs.getNetworkConnectionss(crit);
 		edu.berkeley.path.beats.jaxb.Networkpair np = null;
 		for (NetworkConnections db_nc : db_nc_l) {
-			if (null != np && (!np.getNetworkA().equals(id2str(db_nc.getFromNetworkId())) || !np.getNetworkB().equals(id2str(db_nc.getToNetworkId())))) {
+			if (null != np && (np.getNetworkA()!=db_nc.getFromNetworkId() || np.getNetworkB()!=db_nc.getToNetworkId())) {
 				nc.getNetworkpair().add(np);
 				np = null;
 			}
 			if (null == np) {
 				np = factory.createNetworkpair();
-				np.setNetworkA(id2str(db_nc.getFromNetworkId()));
-				np.setNetworkB(id2str(db_nc.getToNetworkId()));
+				np.setNetworkA(db_nc.getFromNetworkId());
+				np.setNetworkB(db_nc.getToNetworkId());
 			}
 			edu.berkeley.path.beats.jaxb.Linkpair lp = factory.createLinkpair();
-			lp.setLinkA(id2str(db_nc.getFromLinkId()));
-			lp.setLinkB(id2str(db_nc.getToLinkId()));
+			lp.setLinkA(db_nc.getFromLinkId());
+			lp.setLinkB(db_nc.getToLinkId());
 			np.getLinkpair().add(lp);
 		}
 		if (null != np) nc.getNetworkpair().add(np);
@@ -588,8 +588,8 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Signal restoreSignal(Signals db_signal) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Signal signal = factory.createSignal();
-		signal.setId(id2str(db_signal.getId()));
-		signal.setNodeId(id2str(db_signal.getNodeId()));
+		signal.setId(db_signal.getId());
+		signal.setNodeId(db_signal.getNodeId());
 		@SuppressWarnings("unchecked")
 		List<Phases> db_ph_l = db_signal.getPhasess();
 		for (Phases db_ph : db_ph_l)
@@ -618,7 +618,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.LinkReference restorePhaseLink(PhaseLinks db_phl) {
 		edu.berkeley.path.beats.jaxb.LinkReference lr = factory.createLinkReference();
-		lr.setId(id2str(db_phl.getLinkId()));
+		lr.setId(db_phl.getLinkId());
 		return lr;
 	}
 
@@ -634,7 +634,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Sensor restoreSensor(Sensors db_sensor) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Sensor sensor = factory.createSensor();
-		sensor.setId(id2str(db_sensor.getId()));
+		sensor.setId(db_sensor.getId());
 		sensor.setLinkPosition(db_sensor.getLinkPosition());
 		sensor.setType(db_sensor.getSensorTypes().getName());
 		sensor.setSensorIdOriginal(db_sensor.getOriginalId());
@@ -644,7 +644,7 @@ public class ScenarioExporter {
 		sensor.setDisplayPosition(restoreDisplayPosition(db_sensor.getDisplayGeometry()));
 		if (null != db_sensor.getLinkId()) {
 			edu.berkeley.path.beats.jaxb.LinkReference lr = factory.createLinkReference();
-			lr.setId(id2str(db_sensor.getLinkId()));
+			lr.setId(db_sensor.getLinkId());
 			sensor.setLinkReference(lr);
 		}
 		sensor.setParameters(restoreParameters(db_sensor));
@@ -660,7 +660,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfileSet restoreDownstreamBoundaryCapacity(DownstreamBoundaryCapacityProfileSets db_dbcps) throws TorqueException {
 		if (null == db_dbcps) return null;
 		edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfileSet dbcps = factory.createDownstreamBoundaryCapacityProfileSet();
-		dbcps.setId(id2str(db_dbcps.getId()));
+		dbcps.setId(db_dbcps.getId());
 		dbcps.setName(db_dbcps.getName());
 		dbcps.setDescription(db_dbcps.getDescription());
 		@SuppressWarnings("unchecked")
@@ -672,7 +672,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.CapacityProfile restoreCapacityProfile(DownstreamBoundaryCapacityProfiles db_dbcp) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.CapacityProfile cprofile = factory.createCapacityProfile();
-		cprofile.setLinkId(id2str(db_dbcp.getLinkId()));
+		cprofile.setLinkId(db_dbcp.getLinkId());
 		cprofile.setDt(db_dbcp.getSampleRate());
 		cprofile.setStartTime(db_dbcp.getStartTime());
 
@@ -693,7 +693,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.ControllerSet restoreControllerSet(ControllerSets db_cs) throws TorqueException {
 		if (null == db_cs) return null;
 		edu.berkeley.path.beats.jaxb.ControllerSet cset = factory.createControllerSet();
-		cset.setId(id2str(db_cs.getId()));
+		cset.setId(db_cs.getId());
 		cset.setName(db_cs.getName());
 		cset.setDescription(db_cs.getDescription());
 
@@ -707,7 +707,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Controller restoreController(Controllers db_cntr) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Controller cntr = factory.createController();
-		cntr.setId(id2str(db_cntr.getId()));
+		cntr.setId(db_cntr.getId());
 		// TODO cntr.setName();
 		cntr.setType(db_cntr.getControllerTypes().getName());
 		cntr.setDt(db_cntr.getDt());
@@ -760,7 +760,7 @@ public class ScenarioExporter {
 	private edu.berkeley.path.beats.jaxb.EventSet restoreEventSet(EventSets db_eset) throws TorqueException {
 		if (null == db_eset) return null;
 		edu.berkeley.path.beats.jaxb.EventSet eset = factory.createEventSet();
-		eset.setId(id2str(db_eset.getId()));
+		eset.setId(db_eset.getId());
 		eset.setName(db_eset.getName());
 		eset.setDescription(db_eset.getDescription());
 
@@ -774,7 +774,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Event restoreEvent(Events db_event) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Event event = factory.createEvent();
-		event.setId(id2str(db_event.getId()));
+		event.setId(db_event.getId());
 		event.setTstamp(db_event.getActionTime());
 		event.setEnabled(db_event.getEnabled());
 		event.setType(db_event.getEventTypes().getName());
@@ -795,7 +795,7 @@ public class ScenarioExporter {
 			edu.berkeley.path.beats.jaxb.Splitratio sr = null;
 			StringBuilder sb = new StringBuilder();
 			for (EventSplitRatios db_esr : db_esr_l) {
-				if (null != sr && !(sr.getLinkIn().equals(id2str(db_esr.getInLinkId())) && sr.getLinkOut().equals(id2str(db_esr.getOutLinkId())))) {
+				if (null != sr && !(sr.getLinkIn()==db_esr.getInLinkId() && sr.getLinkOut()==db_esr.getOutLinkId())) {
 					sr.setContent(sb.toString());
 					sb.setLength(0);
 					srevent.getSplitratio().add(sr);
@@ -803,8 +803,8 @@ public class ScenarioExporter {
 				}
 				if (null == sr) {
 					sr = factory.createSplitratio();
-					sr.setLinkIn(id2str(db_esr.getInLinkId()));
-					sr.setLinkOut(id2str(db_esr.getOutLinkId()));
+					sr.setLinkIn(db_esr.getInLinkId());
+					sr.setLinkOut(db_esr.getOutLinkId());
 				} else
 					sb.append(':');
 				// TODO revise: check if there are missing vehicle types
@@ -832,8 +832,8 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.DestinationNetwork restoreDestinationNetwork(DestinationNetworks db_destnet) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.DestinationNetwork destnet = factory.createDestinationNetwork();
-		destnet.setId(id2str(db_destnet.getId()));
-		destnet.setLinkIdDestination(id2str(db_destnet.getDestinationLinkId()));
+		destnet.setId(db_destnet.getId());
+		destnet.setLinkIdDestination(db_destnet.getDestinationLinkId());
 		edu.berkeley.path.beats.jaxb.LinkReferences linkrefs = factory.createLinkReferences();
 		@SuppressWarnings("unchecked")
 		List<DestinationNetworkLinks> db_dnl_l = db_destnet.getDestinationNetworkLinkss();
@@ -845,7 +845,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.LinkReference restoreDestinationNetworkLinks(DestinationNetworkLinks db_dnl) {
 		edu.berkeley.path.beats.jaxb.LinkReference linkref = factory.createLinkReference();
-		linkref.setId(id2str(db_dnl.getLinkId()));
+		linkref.setId(db_dnl.getLinkId());
 		return linkref;
 	}
 
@@ -861,7 +861,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.Route restoreRoute(Routes db_route) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.Route route = factory.createRoute();
-		route.setId(id2str(db_route.getId()));
+		route.setId(db_route.getId());
 		route.setName(db_route.getName());
 		edu.berkeley.path.beats.jaxb.LinkReferences lrs = factory.createLinkReferences();
 		Criteria crit = new Criteria();
@@ -870,7 +870,7 @@ public class ScenarioExporter {
 		List<RouteLinks> db_rl_l = db_route.getRouteLinkss(crit);
 		for (RouteLinks db_rl : db_rl_l) {
 			edu.berkeley.path.beats.jaxb.LinkReference lr = factory.createLinkReference();
-			lr.setId(id2str(db_rl.getLinkId()));
+			lr.setId(db_rl.getLinkId());
 			lrs.getLinkReference().add(lr);
 		}
 		route.setLinkReferences(lrs);
@@ -994,7 +994,7 @@ public class ScenarioExporter {
 
 	private edu.berkeley.path.beats.jaxb.ScenarioElement restoreScenarioElement(ReferencedScenarioElements db_elem) throws TorqueException {
 		edu.berkeley.path.beats.jaxb.ScenarioElement elem = factory.createScenarioElement();
-		elem.setId(id2str(db_elem.getElementId()));
+		elem.setId(db_elem.getElementId());
 		elem.setType(db_elem.getScenarioElementTypesRelatedByElementTypeId().getName());
 		elem.setUsage(db_elem.getUsage());
 		return elem;

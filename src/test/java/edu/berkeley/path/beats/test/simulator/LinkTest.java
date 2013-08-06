@@ -22,7 +22,7 @@ public class LinkTest {
 		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		link = scenario.getLinkWithId("-4");
+		link = scenario.getLinkWithId(-4);
 		try {
 			scenario.initialize_run(1, 300d);
 			scenario.advanceNSeconds(300d);
@@ -73,14 +73,14 @@ public class LinkTest {
 	
 	@Test
 	public void test_isSource() {
-		Link linksource = scenario.getLinkWithId("-6");
+		Link linksource = scenario.getLinkWithId(-6);
 		assertFalse(link.isSource());
 		assertTrue(linksource.isSource());
 	}
 
 	@Test
 	public void test_isSink() {
-		Link linksink = scenario.getLinkWithId("-7");
+		Link linksink = scenario.getLinkWithId(-7);
 		assertFalse(link.isSink());
 		assertTrue(linksink.isSink());
 	}

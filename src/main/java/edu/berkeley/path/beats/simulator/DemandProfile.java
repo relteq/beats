@@ -64,9 +64,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		isdone = false;
 		
 		// required
-		Link myLink = null;
-		if(getLinkIdOrigin()!=null)
-			myLink = myScenario.getLinkWithId(getLinkIdOrigin());
+		Link myLink = myScenario.getLinkWithId(getLinkIdOrigin());
 
 		isOrphan = myLink==null;
 				

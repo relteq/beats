@@ -134,53 +134,51 @@ public class ScenarioTest {
 
 	@Test
 	public void test_getInitialDensityForNetwork() {
-		double x =  static_scenario.getInitialDensityForNetwork("-1")[0][0];
+		double x =  static_scenario.getInitialDensityForNetwork(-1)[0][0];
 		double exp = 0.0;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getInitialDensityForNetwork("xxx"));
-		x =  static_scenario.getInitialDensityForNetwork(null)[0][0];	// null works for single networks
-		assertEquals(x,exp,1e-4);
+		assertNull(static_scenario.getInitialDensityForNetwork(-100000));
+		//x =  static_scenario.getInitialDensityForNetwork(null)[0][0];	// null works for single networks
+		//assertEquals(x,exp,1e-4);
 	}
 
 	@Test
 	public void test_getDensityForNetwork() {
-		double x = static_scenario.getDensityForNetwork("-1",0)[0][0];
+		double x = static_scenario.getDensityForNetwork(-1,0)[0][0];
 		double exp =0.4445728212287675;
 		assertEquals(x,exp,1e-4);
 
-		x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks
-		assertEquals(x,exp,1e-4);
+		//x = static_scenario.getDensityForNetwork(null,0)[0][0];	// null works for single networks
+		//assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getDensityForNetwork("xxx",0));
-		assertNull(static_scenario.getDensityForNetwork("-1",-1));
-		assertNull(static_scenario.getDensityForNetwork("-1",100));
+		assertNull(static_scenario.getDensityForNetwork(-100000,0));
+		assertNull(static_scenario.getDensityForNetwork(-1,-1));
+		assertNull(static_scenario.getDensityForNetwork(-1,100));
 	}
 
 	@Test
 	public void test_getLinkWithId() {
-		Link link = static_scenario.getLinkWithId("-1");
+		Link link = static_scenario.getLinkWithId(-1);
 		double x = link.getLengthInMeters();
 		double exp = 429.2823615191171;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getLinkWithId("xxx"));
-		assertNull(static_scenario.getLinkWithId(null));
+		assertNull(static_scenario.getLinkWithId(-100000));
 	}
 	
 	@Test
 	public void test_getNodeWithId() {
-		Node node =  static_scenario.getNodeWithId("-2");
+		Node node =  static_scenario.getNodeWithId(-2);
 		double x = node.getPosition().getPoint().get(0).getLat().doubleValue();
 		double exp  =37.8437831193107;
 		assertEquals(x,exp,1e-4);
 		
 		// edge cases
-		assertNull(static_scenario.getNodeWithId("xxx"));
-		assertNull(static_scenario.getNodeWithId(null));
+		assertNull(static_scenario.getNodeWithId(-100000));
 	}
 
 	@Test
@@ -191,18 +189,13 @@ public class ScenarioTest {
 			if(scenario==null)
 				fail("scenario did not load");
 			
-			assertNotNull(scenario.getControllerWithId("1"));
-			assertNotNull(scenario.getEventWithId("1"));
-			assertNotNull(scenario.getSensorWithId("1"));
+			assertNotNull(scenario.getControllerWithId(1));
+			assertNotNull(scenario.getEventWithId(1));
+			assertNotNull(scenario.getSensorWithId(1));
 
-			assertNull(scenario.getControllerWithId("xxx"));
-			assertNull(scenario.getEventWithId("xxx"));
-			assertNull(scenario.getSensorWithId("xxx"));
-			
-			// edge cases
-			assertNull(scenario.getControllerWithId(null));
-			assertNull(scenario.getEventWithId(null));
-			assertNull(scenario.getSensorWithId(null));
+			assertNull(scenario.getControllerWithId(-100000));
+			assertNull(scenario.getEventWithId(-100000));
+			assertNull(scenario.getSensorWithId(-100000L));
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
@@ -217,15 +210,11 @@ public class ScenarioTest {
 			if(scenario==null)
 				fail("scenario did not load");
 			
-			assertNotNull(scenario.getSignalWithId("-12"));
-			assertNull(scenario.getSignalWithId("xxx"));
+			assertNotNull(scenario.getSignalWithId(-12));
+			assertNull(scenario.getSignalWithId(-100000));
 
-			assertNotNull(scenario.getSignalWithNodeId("-62"));
-			assertNull(scenario.getSignalWithNodeId("xxx"));
-			
-			// edge cases
-			assertNull(scenario.getSignalWithId(null));
-			assertNull(scenario.getSignalWithNodeId(null));
+			assertNotNull(scenario.getSignalWithNodeId(-62));
+			assertNull(scenario.getSignalWithNodeId(-100000));
 			
 		} catch (BeatsException e) {
 			fail("initialization failure.");

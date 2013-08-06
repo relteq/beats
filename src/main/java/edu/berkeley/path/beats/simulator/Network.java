@@ -130,12 +130,11 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * @param id String id of the link.
 	 * @return Link object.
 	 */
-	public Link getLinkWithId(String id){
+	public Link getLinkWithId(long id){
 		if(isempty)
 			return null;
-		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
-			if(link.getId().equals(id))
+			if(link.getId()==id)
 				return (Link) link;
 		}
 		return null;
@@ -145,12 +144,11 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * @param id String id of the node.
 	 * @return Node object.
 	 */
-	public Node getNodeWithId(String id){
+	public Node getNodeWithId(long id){
 		if(isempty)
 			return null;
-		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode()){
-			if(node.getId().equals(id))
+			if(node.getId()==id)
 				return (Node) node;
 		}
 		return null;

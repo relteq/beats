@@ -54,7 +54,7 @@ public class Controller_CRM_HERO extends Controller {
 	boolean hasMainlineSensor; 		// true if config file contains entry for mainlinesensor
 	boolean hasQueueSensor; 		// true if config file contains entry for queuesensor
 	
-	private static ArrayList<String> controllersOrdered = new ArrayList<String>();                          // Controller's IDs arranged from Downstream to Upstream
+	private static ArrayList<Long> controllersOrdered = new ArrayList<Long>();                          // Controller's IDs arranged from Downstream to Upstream
 	private static ArrayList<Controller_CRM_HERO> controllerList = new ArrayList<Controller_CRM_HERO>();    // Hero Controller List Arranged from Downstream to Upstream
 	
 	private double mainlineVehiclesCurrent;	
@@ -195,7 +195,7 @@ public class Controller_CRM_HERO extends Controller {
 					
 		// HERO controllersList Initialization (done When First Hero Controller in the list of controllers is populated)
 		if(controllersOrdered.size()==0){
-			controllersOrdered =orderHeroControllers();  	
+			controllersOrdered = orderHeroControllers();  	
 			for(int i=0; i< controllersOrdered.size(); i++){
 				controllerList.add(null);
 			}
@@ -290,7 +290,7 @@ public class Controller_CRM_HERO extends Controller {
 		
 		// Add HERO controller to controllerLists in its corresponding Downstream to Upstream Order
 		for(int i=0; i< controllersOrdered.size(); i++){
-			if(this.getId().equals(controllersOrdered.get(i))){
+			if(this.getId()==controllersOrdered.get(i)){
 				controllerList.set(i, this);
 				break;
 			}
@@ -339,7 +339,7 @@ public class Controller_CRM_HERO extends Controller {
 			BeatsErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller id=" + getId()+ ".");
 		
 		// queueSensor link_reference is not the same as onrampLink id
-		if(queueSensor!=null && (!queueSensor.getMyLink().getId().equals(onrampLink.getId()) || !queueSensor.getMyLink().getType().equals("onramp")))
+		if(queueSensor!=null && (queueSensor.getMyLink().getId()!=onrampLink.getId() || !queueSensor.getMyLink().getType().equals("onramp")))
 			BeatsErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller id=" + getId()+ " ");		
 				
 		// negative gain
@@ -347,7 +347,7 @@ public class Controller_CRM_HERO extends Controller {
 			BeatsErrorLog.addError("Non-positive gainAlinea for HERO controller id=" + getId()+ ".");
 		
 		//Controller Ids not unique
-		Set<String> s = new HashSet<String>(controllersOrdered);  
+		Set<Long> s = new HashSet<Long>(controllersOrdered);  
 		if(controllersOrdered.size()!=s.size())
 			BeatsErrorLog.addError("Controller ID's are not Unique");
 		
@@ -444,11 +444,11 @@ public class Controller_CRM_HERO extends Controller {
 	/////////////////////////////////////////////////////////////////////	
 	
 	//Added by RS
-	protected ArrayList<String> orderHeroControllers() {
+	protected ArrayList<Long> orderHeroControllers() {
 		
 		ArrayList<Link> linksOrdered = new ArrayList<Link>();
 		ArrayList<Node> nodesOrdered = new ArrayList<Node>();
-		ArrayList<String> controllersOrdered = new ArrayList<String>();
+		ArrayList<Long> controllersOrdered = new ArrayList<Long>();
 							
 		//Most Downstream Node	
 		for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
@@ -464,7 +464,7 @@ public class Controller_CRM_HERO extends Controller {
 		int isTerminalNode=0;	
 		while (isTerminalNode==0) {
 			for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
-	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId().equals(nodesOrdered.get(nodesOrdered.size()-1).getId())  ) { 
+	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId()==nodesOrdered.get(nodesOrdered.size()-1).getId() ) { 
 	        		linksOrdered.add(((Link)aLink));
 	        		nodesOrdered.add(((Link)aLink).getBegin_node());	
 	        		if(printMessages)
@@ -486,7 +486,7 @@ public class Controller_CRM_HERO extends Controller {
 						System.out.println("Node "+ aNode.getId()+": "+ aLink.getType()+ " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
 					
 					for(edu.berkeley.path.beats.jaxb.Controller aController: getMyScenario().getControllerSet().getController()) {
-						if(aController.getTargetElements().getScenarioElement().get(0).getId().equals(aLink.getId()) && aController.getType().equals("CRM_hero"))   {
+						if(aController.getTargetElements().getScenarioElement().get(0).getId()==aLink.getId() && aController.getType().equals("CRM_hero"))   {
 							if(printMessages)
 								System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 
 							controllersOrdered.add(aController.getId());

@@ -403,18 +403,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return The corresponding network if it exists, <code>null</code> otherwise.
 	 * 
 	 */
-	protected Network getNetworkWithId(String id){
+	protected Network getNetworkWithId(long id){
 		if(networkList==null)
 			return null;
 		if(networkList.getNetwork()==null)
 			return null;
-		if(id==null && networkList.getNetwork().size()>1)
+		if(networkList.getNetwork().size()>1)
 			return null;
-		if(id==null && networkList.getNetwork().size()==1)
+		if(networkList.getNetwork().size()==1)
 			return (Network) networkList.getNetwork().get(0);
-		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
-			if(network.getId().equals(id))
+			if(network.getId()==id)
 				return (Network) network;
 		}
 		return null;
@@ -653,7 +652,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})
 	 */
-	public double [][] getInitialDensityForNetwork(String network_id){
+	public double [][] getInitialDensityForNetwork(long network_id){
 
 		Network network = getNetworkWithId(network_id);
 		if(network==null)
@@ -670,7 +669,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			}
 			else{
 				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
-				Double [] init_density = initprofile.getDensityForLinkIdInVeh(link.getId(),network.getId());
+				Double [] init_density = initprofile.getDensityForLinkIdInVeh(network.getId(),link.getId());
 				for(j=0;j<numVehicleTypes;j++)
 					density[i][j] = init_density[j];
 			}
@@ -684,7 +683,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
 	 * (ordered as in {@link Scenario#getVehicleTypeNames})
 	 */
-	public double [][] getDensityForNetwork(String network_id,int ensemble){
+	public double [][] getDensityForNetwork(long network_id,int ensemble){
 		
 		if(ensemble<0 || ensemble>=numEnsemble)
 			return null;
@@ -724,9 +723,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the link. 
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
-	public Link getLinkWithId(String id){
-		if(id==null)
-			return null;
+	public Link getLinkWithId(long id){
 		if(networkList==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
@@ -742,9 +739,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the node. 
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
-	public Node getNodeWithId(String id){
-		if(id==null)
-			return null;
+	public Node getNodeWithId(long id){
 		if(networkList==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
@@ -759,13 +754,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id Id of the controller.
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
-	public Controller getControllerWithId(String id){
-		if(id==null)
-			return null;
+	public Controller getControllerWithId(long id){
 		if(controllerset==null)
 			return null;
 		for(Controller c : controllerset.get_Controllers()){
-			if(c.getId().equals(id))
+			if(c.getId()==id)
 				return c;
 		}
 		return null;
@@ -775,13 +768,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id Id of the event.
 	 * @return A reference to the event if it exists, <code>null</code> otherwise.
 	 */
-	public Event getEventWithId(String id){
-		if(id==null)
-			return null;
+	public Event getEventWithId(long id){
 		if(eventset==null)
 			return null;
 		for(Event e : eventset.getSortedevents()){
-			if(e.getId().equals(id))
+			if(e.getId()==id)
 				return e;
 		}
 		return null;
@@ -791,14 +782,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the sensor.
 	 * @return Sensor object.
 	 */
-	public Sensor getSensorWithId(String id){
-		if(id==null)
-			return null;
+	public Sensor getSensorWithId(long id){
 		if(sensorList==null)
 			return null;
-		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.getSensors()){
-			if(sensor.getId().equals(id))
+			if(sensor.getId()==id)
 				return sensor;
 		}
 		return null;
@@ -808,14 +796,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the signal.
 	 * @return Signal object.
 	 */
-	public Signal getSignalWithId(String id){
-		if(id==null)
-			return null;
+	public Signal getSignalWithId(long id){
 		if(signalList==null)
 			return null;
-		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getId().equals(id))
+			if(signal.getId()==id)
 				return (Signal) signal;
 		}
 		return null;
@@ -826,14 +811,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param node_id String id of the node. 
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
-	public Signal getSignalWithNodeId(String node_id){
-		if(node_id==null)
-			return null;
+	public Signal getSignalWithNodeId(long node_id){
 		if(signalList==null)
 			return null;
-		id.replaceAll("\\s","");
 		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
-			if(signal.getNodeId().equals(node_id))
+			if(signal.getNodeId()==node_id)
 				return (Signal)signal;
 		}
 		return null;
@@ -919,7 +901,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		boolean foundit = false;
 		for(int i=0;i<demandProfileSet.getDemandProfile().size();i++){
 			edu.berkeley.path.beats.jaxb.DemandProfile d = demandProfileSet.getDemandProfile().get(i);
-			if(d.getLinkIdOrigin().equals(dem.getLinkIdOrigin())){
+			if(d.getLinkIdOrigin()==dem.getLinkIdOrigin()){
 				demandProfileSet.getDemandProfile().set(i,dem);
 				foundit = true;
 				break;
@@ -1192,10 +1174,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		private Scenario scenario;
 
 		/** link id -> cumulative data */
-		java.util.Map<String, LinkCumulativeData> links = null;
+		java.util.Map<Long, LinkCumulativeData> links = null;
 
 		/** signal id -> completed phases */
-		java.util.Map<String, SignalPhases> phases = null;
+		java.util.Map<Long, SignalPhases> phases = null;
 
 		private static Logger logger = Logger.getLogger(Cumulatives.class);
 
@@ -1205,7 +1187,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		public void storeLinks() {
 			if (null == links) {
-				links = new java.util.HashMap<String, LinkCumulativeData>();
+				links = new java.util.HashMap<Long, LinkCumulativeData>();
 				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
 					if(((edu.berkeley.path.beats.simulator.Network) network).isIsempty())
 						continue;
@@ -1221,7 +1203,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		public void storeSignalPhases() {
 			if (null == phases) {
-				phases = new HashMap<String, SignalPhases>();
+				phases = new HashMap<Long, SignalPhases>();
 				if (null != scenario.getSignalList())
 					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalList().getSignal()) {
 						if (phases.containsKey(signal.getId()))

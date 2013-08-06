@@ -55,7 +55,7 @@ public final class ScenarioElement extends edu.berkeley.path.beats.jaxb.Scenario
 
 	protected ScenarioElement(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		this.myScenario = myScenario;
-		this.setId(jaxbS.getId().trim());
+		this.setId(jaxbS.getId());
 		this.myType = ScenarioElement.Type.valueOf(jaxbS.getType());
 		
 		switch(myType){

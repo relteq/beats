@@ -48,9 +48,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		isdone = false;
 		
 		// required
-		Link myLink = null;
-		if(getLinkId()!=null)
-			myLink = myScenario.getLinkWithId(getLinkId());
+		Link myLink = myScenario.getLinkWithId(getLinkId());
 
 		isOrphan = myLink==null;
 				

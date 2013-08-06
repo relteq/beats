@@ -21,7 +21,7 @@ public class SensorTest {
 		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		sensor = scenario.getSensorWithId("1");
+		sensor = scenario.getSensorWithId(1);
 	}
 
 	@Test

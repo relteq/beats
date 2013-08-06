@@ -223,9 +223,10 @@ public class Controller_SIG_Pretimed extends Controller {
 				Plan plan = getPlan(plan_id);
 				if (null == plan)
 					logger.error("Plan '" + plan_id + "' not found");
-				else
-					plan.addIntersection(new Intersection(tbl.getTableElement(row, "Intersection"),
-							Double.parseDouble(tbl.getTableElement(row, "Offset"))));
+				else{
+					long int_id = Long.parseLong(tbl.getTableElement(row, "Intersection"));
+					plan.addIntersection(new Intersection(int_id,Double.parseDouble(tbl.getTableElement(row, "Offset"))));
+				}
 			}
 		}
 		private void process_stages(Table tbl) {
@@ -321,7 +322,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	}
 
 	static class Intersection {
-		private String node_id;
+		private long node_id;
 		private Double offset;
 		private List<Stage> stage_l;
 		/**
@@ -329,7 +330,7 @@ public class Controller_SIG_Pretimed extends Controller {
 		 * @param node_id
 		 * @param offset
 		 */
-		public Intersection(String node_id, Double offset) {
+		public Intersection(long node_id, Double offset) {
 			this.node_id = node_id;
 			this.offset = offset;
 			stage_l = new ArrayList<Controller_SIG_Pretimed.Stage>();
@@ -337,7 +338,7 @@ public class Controller_SIG_Pretimed extends Controller {
 		/**
 		 * @return the node id
 		 */
-		public String getNodeId() {
+		public long getNodeId() {
 			return node_id;
 		}
 		/**

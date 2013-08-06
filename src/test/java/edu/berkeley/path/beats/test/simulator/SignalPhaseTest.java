@@ -21,7 +21,7 @@ public class SignalPhaseTest {
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		signalphase = scenario.getSignalWithId("-12").getPhaseByNEMA(NEMA._2);
+		signalphase = scenario.getSignalWithId(-12).getPhaseByNEMA(NEMA._2);
 	}
 	
 	@Test

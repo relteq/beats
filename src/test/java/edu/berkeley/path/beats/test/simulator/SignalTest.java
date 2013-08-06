@@ -25,7 +25,7 @@ public class SignalTest {
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		signal = (Signal) scenario.getSignalWithId("-12");
+		signal = (Signal) scenario.getSignalWithId(-12);
 	}
 
 	@Test

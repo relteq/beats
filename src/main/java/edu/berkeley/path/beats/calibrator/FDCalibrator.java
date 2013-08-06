@@ -189,7 +189,7 @@ public class FDCalibrator {
 							
 		// populate the grow network with freeway links
 		ArrayList<GrowLink> arraygrownetwork = new ArrayList<GrowLink>();
-		HashMap<String,GrowLink> hashgrownetwork = new HashMap<String,GrowLink>();
+		HashMap<Long,GrowLink> hashgrownetwork = new HashMap<Long,GrowLink>();
 			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
 				for(edu.berkeley.path.beats.jaxb.Link jlink : network.getLinkList().getLink()){
 					Link link = (Link) jlink;
@@ -205,7 +205,7 @@ public class FDCalibrator {
 		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			if(S.getVDS()!=0 && S.getMyLink()!=null && Link.isFreewayType(S.getMyLink())){
-				String linkid = S.getMyLink().getId();
+				long linkid = S.getMyLink().getId();
 				GrowLink G = hashgrownetwork.get(linkid);
 				G.sensor = S;
 				G.isassigned = true;
@@ -314,7 +314,7 @@ public class FDCalibrator {
 			return values.get(z);
 	}
 
-	private static void growout(String upordn,GrowLink G,HashMap<String,GrowLink> H){
+	private static void growout(String upordn,GrowLink G,HashMap<Long,GrowLink> H){
 		Node node;
 		Link [] newlinks = null;
 		if(upordn.equals("up")){			// grow in upstream direction

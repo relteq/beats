@@ -12,7 +12,7 @@ public class ControllerAlgorithm_CRM_ACTM_LP implements ControlPolicyMaker {
 	}
 
     @Override
-    public Map<String, Double[]> compute(Map<String, Double> initialDensity, Map<String, Double[]> splitRatios, Map<String, Double[]> rampDemands, Scenario scenario) {
+    public Map<Long, Double[]> compute(Map<Long, Double> initialDensity, Map<Long, Double[]> splitRatios, Map<Long, Double[]> rampDemands, Scenario scenario) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

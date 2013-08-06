@@ -71,9 +71,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 					continue;
 				boolean haveit = false;
 				for(ScenarioElement se : myController.getTargets()){
-					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 &&
-						//se.getNetworkId().compareTo(jaxbi.getNetworkId())==0 && 
-						se.getId().compareTo(mySignal.getId())==0 ){
+					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 && se.getId()==mySignal.getId() ){
 						haveit=true;
 					}
 				}
@@ -106,7 +104,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 			for(ScenarioElement se : myController.getTargets()){
 				foundit = false;
 				for(int i=0;i<intersplan.length;i++){
-					if(se.getId().equals(intersplan[i].mySignal.getId())){
+					if(se.getId()==intersplan[i].mySignal.getId()){
 						foundit=true;
 						break;
 					}

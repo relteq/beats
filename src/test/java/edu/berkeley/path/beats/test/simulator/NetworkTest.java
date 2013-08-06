@@ -29,12 +29,12 @@ public class NetworkTest {
 
 	@Test
 	public void test_getLinkWithId() {
-		assertEquals(network.getLinkWithId("-2").getLengthInMeters(),976.0244598117758,1E-4);
+		assertEquals(network.getLinkWithId(-2).getLengthInMeters(),976.0244598117758,1E-4);
 	}
 
 	@Test
 	public void test_getNodeWithId() {
-		Node node = network.getNodeWithId("-2");
+		Node node = network.getNodeWithId(-2);
 		assertEquals(node.getPosition().getPoint().get(0).getLat().doubleValue(),37.8437831193107,1E-4);
 	}
 

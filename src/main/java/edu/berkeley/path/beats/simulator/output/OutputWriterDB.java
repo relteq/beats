@@ -57,13 +57,13 @@ public class OutputWriterDB extends OutputWriterBase {
 	public OutputWriterDB(Scenario scenario,double outDt,int outsteps) {
 		super(scenario,outDt,outsteps);
 		try {
-			db_scenario = ScenariosPeer.retrieveByPK(str2id(scenario.getId()));
+			db_scenario = ScenariosPeer.retrieveByPK(scenario.getId());
 		} catch (NoRowsException exc) {
-			logger.error("Scenario " + str2id(scenario.getId()) + " was not found in the database");
+			logger.error("Scenario " + scenario.getId() + " was not found in the database");
 		} catch (TooManyRowsException exc) {
 			logger.error("Data integrity violation", exc);
 		} catch (TorqueException exc) {
-			logger.error("Could not load scenario " + str2id(scenario.getId()), exc);
+			logger.error("Could not load scenario " + scenario.getId(), exc);
 		}
 		db_vehicle_type = new VehicleTypes[scenario.getNumVehicleTypes()];
 		if (null != db_scenario) {
@@ -254,8 +254,8 @@ public class OutputWriterDB extends OutputWriterBase {
 	 */
 	private LinkDataTotal fill_total(Link link, boolean exportflows) throws Exception {
 		LinkDataTotal db_ldt = new LinkDataTotal();
-		db_ldt.setLinkId(str2id(link.getId()));
-		db_ldt.setNetworkId(str2id(link.getMyNetwork().getId()));
+		db_ldt.setLinkId(link.getId());
+		db_ldt.setNetworkId(link.getMyNetwork().getId());
 		db_ldt.setAppRunId(db_simulation_run.getId());
 		db_ldt.setApplicationTypes(db_application_type);
 		db_ldt.setTs(date);
@@ -318,8 +318,8 @@ public class OutputWriterDB extends OutputWriterBase {
 		LinkCumulativeData link_cum_data = getCumulatives(link);
 		for (int vt_ind = 0; vt_ind < db_vehicle_type.length; ++vt_ind) {
 			LinkDataDetailed db_ldd = new LinkDataDetailed();
-			db_ldd.setLinkId(str2id(link.getId()));
-			db_ldd.setNetworkId(str2id(link.getMyNetwork().getId()));
+			db_ldd.setLinkId(link.getId());
+			db_ldd.setNetworkId(link.getMyNetwork().getId());
 			db_ldd.setAppRunId(db_simulation_run.getId());
 			db_ldd.setApplicationTypes(db_application_type);
 			db_ldd.setDestNetworkId(Long.valueOf(0));
@@ -362,8 +362,8 @@ public class OutputWriterDB extends OutputWriterBase {
 		List<Signal.PhaseData> phdata = getCompletedPhases(signal).getPhaseList();
 		for (Signal.PhaseData ph : phdata) {
 			SignalData db_sd = new SignalData();
-			db_sd.setNetworkId(str2id(network.getId()));
-			db_sd.setSignalId(str2id(signal.getId()));
+			db_sd.setNetworkId(network.getId());
+			db_sd.setSignalId(signal.getId());
 			db_sd.setAppRunId(db_simulation_run.getId());
 			db_sd.setApplicationTypes(db_application_type);
 			db_sd.setPhase(ph.nema.ordinal());

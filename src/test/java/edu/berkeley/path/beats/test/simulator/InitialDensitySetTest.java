@@ -29,8 +29,8 @@ public class InitialDensitySetTest {
 
 	@Test
 	public void test_getDensityForLinkIdInVeh() {
-		double link_length_in_miles = scenario.getLinkWithId("1").getLengthInMeters()*0.621371/1000d;
-		Double [] X = BeatsMath.times( ids.getDensityForLinkIdInVeh("1","1"),1/link_length_in_miles);
+		double link_length_in_miles = scenario.getLinkWithId(1).getLengthInMeters()*0.621371/1000d;
+		Double [] X = BeatsMath.times( ids.getDensityForLinkIdInVeh(1,1),1/link_length_in_miles);
 		Double [] expected = {2d,1d};
 		assertTrue(X.length==expected.length);
 		for(int i=0;i<expected.length;i++)

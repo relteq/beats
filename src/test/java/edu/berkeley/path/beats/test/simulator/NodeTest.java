@@ -21,7 +21,7 @@ public class NodeTest {
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		node = scenario.getNodeWithId("-4");
+		node = scenario.getNodeWithId(-4);
 	}
 
 	@Test
@@ -45,21 +45,19 @@ public class NodeTest {
 
 	@Test
 	public void test_getInputLinkIndex() {
-		assertEquals(node.getInputLinkIndex("-3"),0);
-		assertEquals(node.getInputLinkIndex("xx"),-1);
+		assertEquals(node.getInputLinkIndex(-3),0);
+		assertEquals(node.getInputLinkIndex(100000),-1);
 
-		// edge case
-		assertEquals(node.getInputLinkIndex(null),-1);
 	}
 
 	@Test
 	public void test_getOutputLinkIndex() {
-		assertEquals(node.getOutputLinkIndex("-4"),0);		
-		assertEquals(node.getOutputLinkIndex("-7"),1);
-		assertEquals(node.getOutputLinkIndex("xx"),-1);
+		assertEquals(node.getOutputLinkIndex(-4),0);		
+		assertEquals(node.getOutputLinkIndex(-7),1);
+		assertEquals(node.getOutputLinkIndex(100000),-1);
 
 		// edge case
-		assertEquals(node.getOutputLinkIndex(null),-1);
+//		assertEquals(node.getOutputLinkIndex(null),-1);
 	}
 
 	@Test

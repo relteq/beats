@@ -24,13 +24,13 @@ public class Controller_CRM_MPC extends Controller {
 	private int opt_horizon_int;	// [-] optimization period as multiple of controller dt
 
 	// data for control algorithm
-	private Map<String,Double> initialDensity;	private Map<String,Double[]> splitRatios;
-	private Map<String,Double[]> rampDemands;	
+	private Map<Long,Double> initialDensity;	private Map<Long,Double[]> splitRatios;
+	private Map<Long,Double[]> rampDemands;	
 	private Network network;
 	
 	// variables
 	private double time_last_opt;			// [sec] time of last optimization call
-	private Map<String,Double[]> metering_rate;	// target link id to control profile in [veh/hr]
+	private Map<Long,Double[]> metering_rate;	// target link id to control profile in [veh/hr]
 	
 	private ControlPolicyMaker control_algorithm;
 	//private Scenario opt_scenario;
@@ -112,18 +112,18 @@ public class Controller_CRM_MPC extends Controller {
 		network = (Network) getMyScenario().getNetworkList().getNetwork().get(0);
 		
 		// populate initialDensity
-		initialDensity = new HashMap<String,Double>();
+		initialDensity = new HashMap<Long,Double>();
 		for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
 			initialDensity.put(link.getId(), null);
 
 		// populate splitRatios
-		splitRatios = new HashMap<String,Double[]>();
+		splitRatios = new HashMap<Long,Double[]>();
 		for(edu.berkeley.path.beats.jaxb.Node node : network.getListOfNodes())
 			splitRatios.put(node.getId(), null);
 		
 		// populate rampDemands and metering_rate
-		rampDemands = new HashMap<String,Double[]>();
-		metering_rate = new HashMap<String,Double[]>();
+		rampDemands = new HashMap<Long,Double[]>();
+		metering_rate = new HashMap<Long,Double[]>();
 		for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
 			if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0) {
 				rampDemands.put(link.getId(), null);
@@ -165,7 +165,7 @@ public class Controller_CRM_MPC extends Controller {
 		super.reset();
 
 		// initialize to positive infinity
-		Iterator<Map.Entry<String, Double[]>> it = metering_rate.entrySet().iterator();
+		Iterator<Map.Entry<Long, Double[]>> it = metering_rate.entrySet().iterator();
 		while(it.hasNext()) {
 			Double [] val = new Double [opt_period_int];
 			for(int i=0;i<opt_period_int;i++)
@@ -219,7 +219,7 @@ public class Controller_CRM_MPC extends Controller {
 				throw new BeatsException("Control algorithm returned null.");
 
 			// check lengths are correct
-			Iterator<Map.Entry<String,Double[]>> it = metering_rate.entrySet().iterator();
+			Iterator<Map.Entry<Long,Double[]>> it = metering_rate.entrySet().iterator();
 			while(it.hasNext())
 				if(it.next().getValue().length<opt_period_int)
 					throw new BeatsException("Control algorithm returned policy with incorrect number of targets.");

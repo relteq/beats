@@ -145,10 +145,10 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 * @param linkid String id of the link
 	 * @return array of intitial densities in [veh/link]
 	 */
-	public Double [] getDensityForLinkIdInVeh(String network_id,String linkid){
+	public Double [] getDensityForLinkIdInVeh(long network_id,long linkid){
 		Double [] d = BeatsMath.zeros(myScenario.getNumVehicleTypes());
 		for(int i=0;i<link.length;i++){
-			if(link[i].getId().equals(linkid) && link[i].getMyNetwork().getId().equals(network_id)){
+			if(link[i].getId()==linkid && link[i].getMyNetwork().getId()==network_id){
 				for(int j=0;j<vehicletypeindex.length;j++)
 					d[vehicletypeindex[j]] = initial_density[i][j] * link[i].getLengthInMeters();
 				return d;

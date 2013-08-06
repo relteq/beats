@@ -81,7 +81,7 @@ public class Event implements Comparable {
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public String getId(){
+	public long getId(){
 		return this.jaxbEvent.getId();
 	}
 
@@ -198,8 +198,8 @@ public class Event implements Comparable {
 
 		// fifth ordering by target id
 		for(int i=0;i<thisnumtargets;i++){
-			String thistargetId = this.targets.get(i).getId();
-			String thattargetId = that.targets.get(i).getId();
+			Long thistargetId = this.targets.get(i).getId();
+			Long thattargetId = that.targets.get(i).getId();
 			compare = thistargetId.compareTo(thattargetId);
 			if(compare!=0)
 				return compare;

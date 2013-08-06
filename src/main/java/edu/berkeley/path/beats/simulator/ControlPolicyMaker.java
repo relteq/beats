@@ -10,14 +10,11 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 
-
-
-
 public interface ControlPolicyMaker {
-    public Map<String,Double[]> compute(
-            Map<String, Double> initialDensity,
-            Map<String,Double[]> splitRatios,
-            Map<String,Double[]> rampDemands,
+    public Map<Long,Double[]> compute(
+            Map<Long, Double> initialDensity,
+            Map<Long,Double[]> splitRatios,
+            Map<Long,Double[]> rampDemands,
             Scenario scenario
     );
 }

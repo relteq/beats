@@ -539,8 +539,8 @@
 
 		  <xs:element name="weavingfactors">
 			<xs:complexType mixed="true">
-			  <xs:attribute name="link_in" type="xs:string" use="required" />
-			  <xs:attribute name="link_out" type="xs:string" use="required" />
+			  <xs:attribute name="link_in" type="xs:long" use="required" />
+			  <xs:attribute name="link_out" type="xs:long" use="required" />
 			</xs:complexType>
 		  </xs:element>
 
@@ -572,8 +572,8 @@
 
 			  <xs:element name="splitratio">
 				<xs:complexType mixed="true">
-				  <xs:attribute name="link_in" type="xs:string" use="required" />
-				  <xs:attribute name="link_out" type="xs:string" use="required" />
+				  <xs:attribute name="link_in" type="xs:long" use="required" />
+				  <xs:attribute name="link_out" type="xs:long" use="required" />
 				</xs:complexType>
 			  </xs:element>  
   
@@ -853,15 +853,15 @@
 			  <xs:sequence>
 				<xs:element ref="linkpair" minOccurs="0" maxOccurs="unbounded" />
 			  </xs:sequence>
-			  <xs:attribute name="network_a" type="xs:string" use="required" />
-			  <xs:attribute name="network_b" type="xs:string" use="required" />
+			  <xs:attribute name="network_a" type="xs:long" use="required" />
+			  <xs:attribute name="network_b" type="xs:long" use="required" />
 			</xs:complexType>
 		  </xs:element>
 		  
 			  <xs:element name="linkpair">
 				<xs:complexType>
-				  <xs:attribute name="link_a" type="xs:string" use="required" />
-				  <xs:attribute name="link_b" type="xs:string" use="required" />
+				  <xs:attribute name="link_a" type="xs:long" use="required" />
+				  <xs:attribute name="link_b" type="xs:long" use="required" />
 				</xs:complexType>
 			  </xs:element>  
 

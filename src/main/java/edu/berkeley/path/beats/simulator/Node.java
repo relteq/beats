@@ -400,24 +400,20 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	}
 
     /** Index of link with given id in the list of input links of this node */ 
-	public int getInputLinkIndex(String id){
-		if(id==null)
-			return -1;
+	public int getInputLinkIndex(long id){
 		for(int i=0;i<getnIn();i++){
 			if(input_link[i]!=null)
-				if(input_link[i].getId().equals(id))
+				if(input_link[i].getId()==id)
 					return i;
 		}
 		return -1;
 	}
 	
     /** Index of link with given id in the list of output links of this node */ 
-	public int getOutputLinkIndex(String id){
-		if(id==null)
-			return -1;
+	public int getOutputLinkIndex(long id){
 		for(int i=0;i<getnOut();i++){
 			if(output_link[i]!=null)
-				if(output_link[i].getId().equals(id))
+				if(output_link[i].getId()==id)
 					return i;
 		}
 		return -1;

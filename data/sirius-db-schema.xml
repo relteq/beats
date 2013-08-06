@@ -857,7 +857,7 @@
 		<column name="sensor_set_id" required="true" domain="ID"/>
 		<column name="sensor_type_id" required="true" domain="ID"/>
 		<column name="java_class" domain="NAME_BUF" description="Column for user-defined sensors."/>
-		<column name="entity_id" javaName="originalId" domain="NAME_BUF" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
+		<column name="entity_id" javaName="originalId" domain="ID" description="How this sensor is identified in the field. In reality, this can be a group of sensors - VDS."/>
 		<column name="measurement_source_id" domain="ID" description="Which data feed does this sensor belong to."/>
 		<column name="display_geometry" required="false" domain="GEOMETRY" description="SRID 4326"/>
 		<column name="link_id" domain="ID" description="If link ID is not present, the sensor is not assigned."/>

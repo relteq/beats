@@ -57,16 +57,16 @@ public class ScenarioImporter {
 	}
 
 	private VehicleTypes [] vehicle_type = null;
-	private Map<String, Long> network_id = null;
-	private Map<String, Nodes> nodes = null;
-	private Map<String, Links> links = null;
-	private Map<String, Controllers> controllers = null;
-	private Map<String, Sensors> sensors = null;
-	private Map<String, Events> events = null;
-	private Map<String, Signals> signals = null;
-	private Map<String, DestinationNetworks> destnets = null;
+	private Map<Long, Long> network_id = null;
+	private Map<Long, Nodes> nodes = null;
+	private Map<Long, Links> links = null;
+	private Map<Long, Controllers> controllers = null;
+	private Map<Long, Sensors> sensors = null;
+	private Map<Long, Events> events = null;
+	private Map<Long, Signals> signals = null;
+	private Map<Long, DestinationNetworks> destnets = null;
 
-	private Long getDBNodeId(String id) {
+	private Long getDBNodeId(long id) {
 		Nodes db_node = nodes.get(id);
 		if (null == db_node) {
 			logger.warn("Node " + id + " does not exist");
@@ -75,7 +75,7 @@ public class ScenarioImporter {
 		return db_node.getId();
 	}
 
-	private Long getDBLinkId(String id) {
+	private Long getDBLinkId(long id) {
 		Links db_link = links.get(id);
 		if (null == db_link) {
 			logger.warn("Link " + id + " does not exist");
@@ -253,9 +253,9 @@ public class ScenarioImporter {
 	 * @throws BeatsException
 	 */
 	private void save(edu.berkeley.path.beats.jaxb.NetworkList nl, Scenarios db_scenario) throws TorqueException, BeatsException {
-		network_id = new HashMap<String, Long>(nl.getNetwork().size());
-		nodes = new HashMap<String, Nodes>();
-		links = new HashMap<String, Links>();
+		network_id = new HashMap<Long, Long>(nl.getNetwork().size());
+		nodes = new HashMap<Long, Nodes>();
+		links = new HashMap<Long, Links>();
 		for (edu.berkeley.path.beats.jaxb.Network network : nl.getNetwork()) {
 			NetworkSets db_ns = new NetworkSets();
 			db_ns.setScenarios(db_scenario);
@@ -464,7 +464,7 @@ public class ScenarioImporter {
 		db_ss.setName(sl.getName());
 		db_ss.setDescription(sl.getDescription());
 		db_ss.save(conn);
-		signals = new HashMap<String, Signals>(sl.getSignal().size());
+		signals = new HashMap<Long, Signals>(sl.getSignal().size());
 		for (edu.berkeley.path.beats.jaxb.Signal signal : sl.getSignal())
 			signals.put(signal.getId(), save(signal, db_ss));
 		return db_ss;
@@ -537,7 +537,7 @@ public class ScenarioImporter {
 		// TODO db_ss.setName();
 		// TODO db_ss.setDescription();
 		db_ss.save(conn);
-		sensors = new HashMap<String, Sensors>(sl.getSensor().size());
+		sensors = new HashMap<Long, Sensors>(sl.getSensor().size());
 		for (edu.berkeley.path.beats.jaxb.Sensor sensor : sl.getSensor())
 			sensors.put(sensor.getId(), save(sensor, db_ss));
 		return db_ss;
@@ -973,7 +973,7 @@ public class ScenarioImporter {
 		db_cset.setName(cset.getName());
 		db_cset.setDescription(cset.getDescription());
 		db_cset.save(conn);
-		controllers = new HashMap<String, Controllers>(cset.getController().size());
+		controllers = new HashMap<Long, Controllers>(cset.getController().size());
 		for (edu.berkeley.path.beats.jaxb.Controller controller : cset.getController())
 			controllers.put(controller.getId(), save(controller, db_cset));
 		return db_cset;
@@ -1081,7 +1081,7 @@ public class ScenarioImporter {
 		db_eset.setDescription(eset.getDescription());
 		db_eset.save(conn);
 
-		events = new HashMap<String, Events>(eset.getEvent().size());
+		events = new HashMap<Long, Events>(eset.getEvent().size());
 		for (edu.berkeley.path.beats.jaxb.Event event : eset.getEvent())
 			events.put(event.getId(), save(event, db_eset));
 
@@ -1169,7 +1169,7 @@ public class ScenarioImporter {
 	 */
 	private void save(edu.berkeley.path.beats.jaxb.DestinationNetworks destnets, Scenarios db_scenario) throws TorqueException {
 		if (null == destnets) return;
-		this.destnets = new HashMap<String, DestinationNetworks>(destnets.getDestinationNetwork().size());
+		this.destnets = new HashMap<Long, DestinationNetworks>(destnets.getDestinationNetwork().size());
 		for (edu.berkeley.path.beats.jaxb.DestinationNetwork destnet : destnets.getDestinationNetwork()) {
 			DestinationNetworkSets db_destnetset = new DestinationNetworkSets();
 			db_destnetset.setScenarios(db_scenario);
@@ -1312,8 +1312,9 @@ public class ScenarioImporter {
 			for (String elem : row.getColumn()) {
 				String column_name = citer.next().getName();
 				if ("Intersection".equals(column_name)) {
-					logger.debug("Column `" + table.getName() + "`.`" + column_name + "`: " + elem + " -> " + getDBNodeId(elem));
-					elem = ScenarioExporter.id2str(getDBNodeId(elem));
+					long longelem = Long.parseLong(elem);
+					logger.debug("Column `" + table.getName() + "`.`" + column_name + "`: " + elem + " -> " + getDBNodeId(longelem));
+					elem = ScenarioExporter.id2str(getDBNodeId(longelem));
 				}
 				TabularData db_td = new TabularData();
 				db_td.setTables(db_table);

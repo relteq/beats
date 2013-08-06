@@ -391,7 +391,7 @@ public class Controller {
 	}	
 	
    	/** Get the ID of the controller  */
-	public String getId() {
+	public long getId() {
 		return this.jaxbController.getId();
 	}	
 
