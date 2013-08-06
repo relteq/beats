@@ -410,8 +410,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return null;
 		if(networkList.getNetwork().size()>1)
 			return null;
-		if(networkList.getNetwork().size()==1)
-			return (Network) networkList.getNetwork().get(0);
 		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
 			if(network.getId()==id)
 				return (Network) network;

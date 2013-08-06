@@ -46,17 +46,17 @@ public class LinkTest {
 
 	@Test
 	public void test_getMyNetwork() {
-		assertEquals(link.getMyNetwork().getId(),"-1");
+		assertEquals(link.getMyNetwork().getId(),-1);
 	}
 
 	@Test
 	public void test_getBegin_node() {
-		assertEquals(link.getBegin_node().getId(),"-4");
+		assertEquals(link.getBegin_node().getId(),-4);
 	}
 
 	@Test
 	public void test_getEnd_node() {
-		assertEquals(link.getEnd_node().getId(),"-5");
+		assertEquals(link.getEnd_node().getId(),-5);
 	}
 
 	@Test

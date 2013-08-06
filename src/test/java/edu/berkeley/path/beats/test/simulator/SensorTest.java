@@ -31,7 +31,7 @@ public class SensorTest {
 
 	@Test
 	public void test_getMyLink() {
-		assertEquals(sensor.getMyLink().getId(),"1");
+		assertEquals(sensor.getMyLink().getId(),1);
 	}
 
 }

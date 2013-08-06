@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario id="null" name="null" schemaVersion="2.0.2">
+<scenario id="0" name="null" schemaVersion="2.0.2">
   <settings>
     <units>US</units>
     <VehicleTypes>

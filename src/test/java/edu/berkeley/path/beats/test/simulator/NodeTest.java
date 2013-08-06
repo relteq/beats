@@ -26,21 +26,21 @@ public class NodeTest {
 
 	@Test
 	public void test_getMyNetwork() {
-		assertEquals(node.getMyNetwork().getId(),"-1");
+		assertEquals(node.getMyNetwork().getId(),-1);
 	}
 
 	@Test
 	public void test_getOutput_link() {
 		Link[] links = node.getOutput_link();
-		assertEquals(links[0].getId(),"-4");
-		assertEquals(links[1].getId(),"-7");
+		assertEquals(links[0].getId(),-4);
+		assertEquals(links[1].getId(),-7);
 	}
 
 	@Test
 	public void test_getInput_link() {
 		Link[] links = node.getInput_link();
 		System.out.println(links[0].getId());
-		assertEquals(links[0].getId(),"-3");
+		assertEquals(links[0].getId(),-3);
 	}
 
 	@Test
