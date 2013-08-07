@@ -337,7 +337,7 @@ public class FDCalibrator {
 				continue;
 			
 			// propagate if nG is unassigned and of the same type as G
-			if( !nG.isassigned & nG.link.getType().compareTo(G.link.getType())==0 ){
+			if( !nG.isassigned & nG.link.getMyType().compareTo(G.link.getMyType())==0 ){
 				nG.sensor = G.sensor;
 				nG.isassigned = true;
 				nG.isgrowable = true;

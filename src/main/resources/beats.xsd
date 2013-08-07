@@ -147,25 +147,20 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="node" minOccurs="0" maxOccurs="unbounded" />
-			  </xs:sequence>
-			</xs:complexType>
-		  </xs:element>
-		  
-			  <xs:element name="node">
-				<xs:complexType>
-				  <xs:all>
-					<xs:element ref="roadway_markers" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="outputs" />
-					<xs:element ref="inputs" />
-					<xs:element ref="position" minOccurs="0" />
-				  </xs:all>
-				  <xs:attribute name="type" use="required">
-					<xs:simpleType>
-					  <xs:restriction base="xs:string">
-						<xs:pattern value="simple|onramp|offramp|signalized_intersection|unsignalized_intersection|terminal|highway|stop_intersection|other"/>
-					  </xs:restriction>
-					</xs:simpleType>
-				  </xs:attribute>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+		<xs:element name="node">
+			<xs:complexType>
+        <xs:all>
+          <xs:element ref="roadway_markers" minOccurs="0" maxOccurs="1"/>
+          <xs:element ref="outputs" />
+          <xs:element ref="inputs" />
+          <xs:element ref="position" minOccurs="0" />
+          <xs:element ref="node_type" minOccurs="0" />
+        </xs:all>
+				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				  <xs:attribute name="id" type="xs:long" use="required" />
 				<xs:attribute name="node_name" type="xs:string" use="optional" />
 				<xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
@@ -235,28 +230,32 @@
 		</xs:complexType>
 	</xs:element>
 
+	
+	
+	
 		<xs:element name="link">
 			<xs:complexType>
-        <xs:all>
-          <xs:element ref="begin" minOccurs="0" maxOccurs="1" />
-          <xs:element ref="end" minOccurs="0" maxOccurs="1" />
-          <xs:element ref="roads" minOccurs="0" maxOccurs="1" />
-          <xs:element ref="dynamics" minOccurs="0" maxOccurs="1" />
-          <xs:element ref="position" minOccurs="0" />
-          <xs:element ref="shape" minOccurs="0" />
-          <xs:element ref="link_type" minOccurs="0" />
-        </xs:all>
+				<xs:all>
+				  <xs:element ref="begin" minOccurs="0" maxOccurs="1" />
+				  <xs:element ref="end" minOccurs="0" maxOccurs="1" />
+				  <xs:element ref="roads" minOccurs="0" maxOccurs="1" />
+				  <xs:element ref="dynamics" minOccurs="0" maxOccurs="1" />
+				  <xs:element ref="position" minOccurs="0" />
+				  <xs:element ref="shape" minOccurs="0" />
+				  <xs:element ref="link_type" minOccurs="0" />
+				</xs:all>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				  <xs:attribute name="lanes" type="xs:decimal" use="required" />
 				  <xs:attribute name="lane_offset" type="xs:decimal" use="optional" default="0" />
 				  <xs:attribute name="length" type="xs:decimal" use="required" /> 							<!-- in length units -->
+				  <!--
 				  <xs:attribute name="type" use="required">
 					<xs:simpleType>
 					  <xs:restriction base="xs:string">
 						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_approach|heavy_vehicle|electric_toll"/>
 					  </xs:restriction>
 					</xs:simpleType>
-				  </xs:attribute>
+				  </xs:attribute> -->
 				  <xs:attribute name="id" type="xs:long" use="required" />
 				  <xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
 				  <xs:attribute name="priority" use="optional">

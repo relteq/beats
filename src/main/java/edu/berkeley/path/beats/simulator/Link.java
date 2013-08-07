@@ -98,7 +98,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		this.myNetwork = myNetwork;
 
 		// link type
-		this.myType = Link.Type.valueOf(getType());
+		this.myType = Link.Type.valueOf(getLinkType().getName());
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());

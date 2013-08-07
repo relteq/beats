@@ -89,7 +89,7 @@
         <point lat="37.857985471963" lng="-122.300827883184"/>
       </position>
       <NodeList>
-        <node id="-1" type="terminal">
+        <node id="-1" >
           <roadway_markers>
             <marker id="0" name="1"/>
           </roadway_markers>
@@ -99,7 +99,7 @@
             <point lat="37.8399873791942" lng="-122.296725511551"/>
           </position>
         </node>
-        <node id="-2" type="simple">
+        <node id="-2">
           <roadway_markers>
             <marker id="0" name="2"/>
           </roadway_markers>
@@ -113,7 +113,7 @@
             <point lat="37.8437831193107" lng="-122.297605276108"/>
           </position>
         </node>
-        <node id="-3" type="simple">
+        <node id="-3">
           <roadway_markers>
             <marker id="0" name="3"/>
           </roadway_markers>
@@ -128,7 +128,7 @@
             <point lat="37.8524075346173" lng="-122.299579381943"/>
           </position>
         </node>
-        <node id="-4" type="simple">
+        <node id="-4">
           <roadway_markers>
             <marker id="0" name="4"/>
           </roadway_markers>
@@ -143,7 +143,7 @@
             <point lat="37.8639002449351" lng="-122.302840411663"/>
           </position>
         </node>
-        <node id="-5" type="simple">
+        <node id="-5">
           <roadway_markers>
             <marker id="0" name="5"/>
           </roadway_markers>
@@ -157,7 +157,7 @@
             <point lat="37.8713302695572" lng="-122.305008172989"/>
           </position>
         </node>
-        <node id="-6" type="terminal">
+        <node id="-6" >
           <roadway_markers>
             <marker id="0" name="6"/>
           </roadway_markers>
@@ -167,7 +167,7 @@
             <point lat="37.8764455192813" lng="-122.306660413742"/>
           </position>
         </node>
-        <node id="-7" type="terminal">
+        <node id="-7" >
           <roadway_markers>
             <marker id="0" name="7"/>
           </roadway_markers>
@@ -177,7 +177,7 @@
             <point lat="37.8490527738834" lng="-122.296017408371"/>
           </position>
         </node>
-        <node id="-8" type="terminal">
+        <node id="-8" >
           <roadway_markers>
             <marker id="0" name="8"/>
           </roadway_markers>
@@ -189,7 +189,8 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="-1" lanes="1" length="0.266743692783592" type="freeway">
+        <link id="-1" lanes="1" length="0.266743692783592">
+		  <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -197,7 +198,8 @@
           <end node_id="-2"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-2" lanes="1" length="0.606473482246043" type="freeway">
+        <link id="-2" lanes="1" length="0.606473482246043">
+		  <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -205,7 +207,8 @@
           <end node_id="-3"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-3" lanes="1" length="0.814669238313652" type="freeway">
+        <link id="-3" lanes="1" length="0.814669238313652">
+		  <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -213,7 +216,8 @@
           <end node_id="-4"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-4" lanes="1" length="0.527494326813265" type="freeway">
+        <link id="-4" lanes="1" length="0.527494326813265">
+		  <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -221,7 +225,8 @@
           <end node_id="-5"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-5" lanes="1" length="0.364901146966108" type="freeway">
+        <link id="-5" lanes="1" length="0.364901146966108">
+		  <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -229,7 +234,8 @@
           <end node_id="-6"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-6" lanes="1" length="0.372088439716414" type="onramp">
+        <link id="-6" lanes="1" length="0.372088439716414">
+		  <link_type id="-1" name="onramp"/>
           <roads>
             <road id="0" name="null"/>
           </roads>
@@ -237,7 +243,8 @@
           <end node_id="-3"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-7" lanes="1" length="0.239126877222358" type="offramp">
+        <link id="-7" lanes="1" length="0.239126877222358" >
+		  <link_type id="-1" name="offramp"/>
           <roads>
             <road id="0" name="University Ave"/>
           </roads>

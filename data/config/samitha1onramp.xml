@@ -60,7 +60,7 @@
   <NetworkSet project_id="-1" id="-1">
     <network dt="5" id="-1" name="New Network">
       <NodeList>
-        <node id="-1" type="terminal">
+        <node id="-1" >
           <outputs>
             <output link_id="-1"/>
           </outputs>
@@ -68,7 +68,7 @@
           </inputs>
         </node>
 
-        <node id="-2" type="terminal">
+        <node id="-2" >
           <outputs>
             <output link_id="-2"/>
           </outputs>
@@ -76,7 +76,7 @@
           </inputs>
         </node>
 
-        <node id="-3" type="terminal">
+        <node id="-3" >
           <outputs>
           </outputs>
           <inputs>
@@ -84,7 +84,7 @@
           </inputs>
         </node>
 
-        <node id="1" type="simple">
+        <node id="1">
           <outputs>
             <output link_id="1"/>            
           </outputs>
@@ -93,7 +93,7 @@
           </inputs>
         </node>
 
-        <node id="2" type="simple">
+        <node id="2">
           <outputs>
             <output link_id="2"/>            
           </outputs>
@@ -104,24 +104,28 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="-1" lanes="1" length="5" type="onramp">
+        <link id="-1" lanes="1" length="5" >
+          <link_type id="-1" name="onramp"/>
           <begin node_id="-1"/>
           <end node_id="1"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-2" lanes="1" length="5" type="onramp">
+        <link id="-2" lanes="1" length="5" >
+          <link_type id="-1" name="onramp"/>
           <begin node_id="-2"/>
           <end node_id="2"/>
           <dynamics type="CTM"/>
         </link>
 
-        <link id="1" lanes="1" length="5" type="freeway">
+        <link id="1" lanes="1" length="5" >
+          <link_type id="-1" name="freeway"/>
           <begin node_id="1"/>
           <end node_id="2"/>
           <dynamics type="CTM"/>
         </link>
 
-        <link id="2" lanes="1" length="5" type="freeway">
+        <link id="2" lanes="1" length="5" >
+          <link_type id="-1" name="freeway"/>
           <begin node_id="2"/>
           <end node_id="-3"/>
           <dynamics type="CTM"/>
