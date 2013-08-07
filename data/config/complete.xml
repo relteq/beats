@@ -6,7 +6,7 @@
       <vehicle_type name="car" weight="1.0"/>
     </VehicleTypes>
   </settings>
-  <NetworkSet>
+  <NetworkSet project_id="-1" id="-1">
     <network dt="5" id="1" name="New Network">
       <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
       <position>
@@ -261,13 +261,13 @@
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
     </VehicleTypeOrder>
-    <splitratioProfile dt="300" node_id="2">
+    <splitratioProfile id="-1" dt="300" node_id="2">
       <splitratio link_in="1" link_out="2">1</splitratio>
     </splitratioProfile>
-    <splitratioProfile dt="300" node_id="4">
+    <splitratioProfile id="-1" dt="300" node_id="4">
       <splitratio link_in="3" link_out="4">0.8</splitratio>
     </splitratioProfile>
-    <splitratioProfile dt="300" node_id="500">
+    <splitratioProfile id="-1" dt="300" node_id="500">
       <splitratio link_in="4" link_out="5">1</splitratio>
     </splitratioProfile>
   </SplitRatioSet>
@@ -292,7 +292,7 @@
     <demandProfile dt="300" knob="1" link_id_origin="6">400</demandProfile>
     <demandProfile dt="300" knob="1" link_id_origin="1">100</demandProfile>
   </DemandSet>
-  <ControllerSet>
+  <ControllerSet project_id="-1">
     <controller dt="5" type="IRM_ALINEA" id="1" enabled="true">
       <parameters>
         <parameter name="gain" value="50"/>
@@ -306,25 +306,25 @@
     </controller>
   </ControllerSet>
   <FundamentalDiagramSet>
-    <fundamentalDiagramProfile link_id="1">
+    <fundamentalDiagramProfile id="-1" link_id="1">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="2">
+    <fundamentalDiagramProfile id="-1" link_id="2">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="3">
+    <fundamentalDiagramProfile id="-1" link_id="3">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="4">
+    <fundamentalDiagramProfile id="-1" link_id="4">
       <fundamentalDiagram capacity="300" capacity_drop="0" congestion_speed="2.5" jam_density="150" free_flow_speed="10" critical_speed="10"/>
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="5">
+    <fundamentalDiagramProfile id="-1" link_id="5">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="6">
+    <fundamentalDiagramProfile id="-1" link_id="6">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="7">
+    <fundamentalDiagramProfile id="-1" link_id="7">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>

@@ -20,7 +20,7 @@
     <demandProfile dt="5" link_id_origin="-2">0.0</demandProfile>
   </DemandSet>
 
-  <ControllerSet>
+  <ControllerSet project_id="-1">
     <controller dt="5" id="0" name="MPC" type="CRM_MPC" enabled="true">
       <parameters>
         <parameter name="policy" value="adjoint"/>
@@ -42,22 +42,22 @@
 
   <FundamentalDiagramSet>
 
-    <fundamentalDiagramProfile link_id="-1">
+    <fundamentalDiagramProfile id="-1" link_id="-1">
       <fundamentalDiagram capacity=".2" congestion_speed="1" jam_density="100" free_flow_speed=".2" />
     </fundamentalDiagramProfile>
     
-    <fundamentalDiagramProfile link_id="-2">
+    <fundamentalDiagramProfile id="-1" link_id="-2">
       <fundamentalDiagram capacity=".2" congestion_speed="1" jam_density="100" free_flow_speed=".2"/>
     </fundamentalDiagramProfile>
 
-    <fundamentalDiagramProfile link_id="1">
+    <fundamentalDiagramProfile id="-1" link_id="1">
       <fundamentalDiagram capacity=".18" congestion_speed="1" jam_density=".36" free_flow_speed="1" />
     </fundamentalDiagramProfile>
-    <fundamentalDiagramProfile link_id="2">
+    <fundamentalDiagramProfile id="-1" link_id="2">
       <fundamentalDiagram capacity=".2" congestion_speed="1" jam_density=".4" free_flow_speed="1" />
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>
-  <NetworkSet>
+  <NetworkSet project_id="-1" id="-1">
     <network dt="5" id="-1" name="New Network">
       <NodeList>
         <node id="-1" type="terminal">
