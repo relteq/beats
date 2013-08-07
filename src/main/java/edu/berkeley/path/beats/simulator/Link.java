@@ -42,7 +42,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private Link.Type myType;
 
 	/** Type of link. */
-	public static enum Type	{freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
+	public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
 
 	// link geometry
 	private double _length;							// [meters]
@@ -98,7 +98,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		this.myNetwork = myNetwork;
 
 		// link type
-		this.myType = Link.Type.valueOf(getLinkType().getName());
+		if(getLinkType()==null)
+			this.myType = Link.Type.unspecified;
+		else
+			this.myType = Link.Type.valueOf(getLinkType().getName());
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
