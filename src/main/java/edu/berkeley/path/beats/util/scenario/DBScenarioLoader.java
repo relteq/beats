@@ -5,20 +5,31 @@ import edu.berkeley.path.beats.simulator.BeatsException;
 
 class DBScenarioLoader implements ScenarioLoaderIF {
 
-	private Long id;
-
-	public DBScenarioLoader(Long id) {
-		this.id = id;
-	}
-
+//	private Long id;
+//
+//	public DBScenarioLoader(Long id) {
+//		this.id = id;
+//	}
+//
+//	@Override
+//	public edu.berkeley.path.beats.jaxb.Scenario loadRaw() throws BeatsException {
+//		return edu.berkeley.path.beats.db.ScenarioExporter.doExport(id);
+//	}
+//
+//	@Override
+//	public edu.berkeley.path.beats.simulator.Scenario load() throws BeatsException {
+//		return ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) loadRaw());
+//	}
+	
+	// TEMP ============================================================ 
 	@Override
 	public edu.berkeley.path.beats.jaxb.Scenario loadRaw() throws BeatsException {
-		return edu.berkeley.path.beats.db.ScenarioExporter.doExport(id);
+		return null;
 	}
-
 	@Override
 	public edu.berkeley.path.beats.simulator.Scenario load() throws BeatsException {
-		return ObjectFactory.process((edu.berkeley.path.beats.simulator.Scenario) loadRaw());
+		return null;
 	}
+	// TEMP ============================================================ 
 
 }
