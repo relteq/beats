@@ -167,7 +167,7 @@
 					</xs:simpleType>
 				  </xs:attribute>
 				  <xs:attribute name="id" type="xs:long" use="required" />
-				<xs:attribute name="node_name" type="xs:string" use="required" />
+				<xs:attribute name="node_name" type="xs:string" use="optional" />
 				<xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
 				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />
 			</xs:complexType>
@@ -181,14 +181,14 @@
 				</xs:complexType>
 			</xs:element>
 
-				  <xs:element name="marker">
-				  	<xs:complexType>
+			<xs:element name="marker">
+				<xs:complexType>
 					<xs:attribute name="id" type="xs:long" use="required" />
 					<xs:attribute name="name" type="xs:string" use="required" />
-				  		<xs:attribute name="postmile" type="xs:decimal" use="optional" />
+					<xs:attribute name="postmile" type="xs:double" use="optional" />
           <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 				</xs:complexType>
-			  	  </xs:element>
+			</xs:element>
 
 			<xs:element name="outputs">
 				<xs:complexType>
@@ -217,6 +217,13 @@
 					<xs:attribute name="link_id" type="xs:long" use="required" />
 				</xs:complexType>
 			</xs:element>	
+
+			<xs:element name="node_type">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element> 
 
   <!-- LinkList .................................................................. -->
 
@@ -302,8 +309,17 @@
 				</xs:complexType>
 			</xs:element>
 
-	<xs:element name="shape" type="xs:string"/>
-
+			<xs:element name="shape" type="xs:string"/>
+  
+			<xs:element name="link_type">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element> 
+  
+  
+  
   <!-- common .................................................................. -->
   
 	<!-- used by event, controller -->
@@ -375,7 +391,7 @@
         <xs:element ref="FundamentalDiagramProfileSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="NetworkConnections" minOccurs="0" maxOccurs="1" />
         <xs:element ref="DestinationNetworks" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="Routes" minOccurs="0" />
+        <xs:element ref="RouteSet" minOccurs="0" />
       </xs:all>
 			<xs:attribute name="project_id" type="xs:long" use="optional" default="0" />
 			<xs:attribute name="id" type="xs:long" use="required"/>
@@ -906,27 +922,42 @@
 			</xs:complexType>
 		  </xs:element>
   
-	 <!-- Routes ...................................................  -->
-
-	  <xs:element name="Routes">
+	 <!-- RouteSet ...................................................  -->
+	
+	<xs:element name="RouteSet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="route" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
+      <xs:sequence>
+        <xs:element ref="route" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" />
+      <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 		</xs:complexType>
-	  </xs:element>
+	</xs:element>
 
-		  <xs:element name="route">
+		<xs:element name="route">
 			<xs:complexType>
-			  <xs:all>
-				<xs:element ref="link_references" minOccurs="1" maxOccurs="1" />
-			  </xs:all>
-			  <xs:attribute name="id" type="xs:long" use="required" />
-			  <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:sequence>
+          <xs:element ref="route_link" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+				<xs:attribute name="id" type="xs:long" use="required" />
+				<xs:attribute name="name" type="xs:string" use="optional" />
+        <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+        <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 			</xs:complexType>
-		  </xs:element>
-
-		  
+		</xs:element>
+			
+			<xs:element name="route_link">
+				<xs:complexType>
+          <xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="link_id" type="xs:long" use="required" />
+					<xs:attribute name="link_order" type="xs:int" use="required" />
+          <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+          <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			
 		  
   <xs:element name="VehicleTypeOrder">
     <xs:complexType>

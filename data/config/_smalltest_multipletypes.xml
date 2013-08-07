@@ -100,7 +100,7 @@
       <NodeList>
         <node id="-1" type="terminal">
           <roadway_markers>
-            <marker name="1"/>
+            <marker id="0" name="1"/>
           </roadway_markers>
           <outputs/>
           <inputs/>
@@ -110,7 +110,7 @@
         </node>
         <node id="-2" type="simple">
           <roadway_markers>
-            <marker name="2"/>
+            <marker id="0" name="2"/>
           </roadway_markers>
           <outputs>
             <output link_id="-2"/>
@@ -124,7 +124,7 @@
         </node>
         <node id="-3" type="simple">
           <roadway_markers>
-            <marker name="3"/>
+            <marker id="0" name="3"/>
           </roadway_markers>
           <outputs>
             <output link_id="-3"/>
@@ -139,7 +139,7 @@
         </node>
         <node id="-4" type="simple">
           <roadway_markers>
-            <marker name="4"/>
+            <marker id="0" name="4"/>
           </roadway_markers>
           <outputs>
             <output link_id="-4"/>
@@ -154,7 +154,7 @@
         </node>
         <node id="-5" type="simple">
           <roadway_markers>
-            <marker name="5"/>
+            <marker id="0" name="5"/>
           </roadway_markers>
           <outputs>
             <output link_id="-5"/>
@@ -168,7 +168,7 @@
         </node>
         <node id="-6" type="terminal">
           <roadway_markers>
-            <marker name="6"/>
+            <marker id="0" name="6"/>
           </roadway_markers>
           <outputs/>
           <inputs/>
@@ -178,7 +178,7 @@
         </node>
         <node id="-7" type="terminal">
           <roadway_markers>
-            <marker name="7"/>
+            <marker id="0" name="7"/>
           </roadway_markers>
           <outputs/>
           <inputs/>
@@ -188,7 +188,7 @@
         </node>
         <node id="-8" type="terminal">
           <roadway_markers>
-            <marker name="8"/>
+            <marker id="0" name="8"/>
           </roadway_markers>
           <outputs/>
           <inputs/>
@@ -200,7 +200,7 @@
       <LinkList>
         <link id="-1" lanes="1" length="0.266743692783592" type="freeway">
           <roads>
-            <road name="I-80 E"/>
+            <road id="0" name="I-80 E"/>
           </roads>
           <begin node_id="-1"/>
           <end node_id="-2"/>
@@ -208,7 +208,7 @@
         </link>
         <link id="-2" lanes="1" length="0.606473482246043" type="freeway">
           <roads>
-            <road name="I-80 E"/>
+            <road id="0" name="I-80 E"/>
           </roads>
           <begin node_id="-2"/>
           <end node_id="-3"/>
@@ -216,7 +216,7 @@
         </link>
         <link id="-3" lanes="1" length="0.814669238313652" type="freeway">
           <roads>
-            <road name="I-80 E"/>
+            <road id="0" name="I-80 E"/>
           </roads>
           <begin node_id="-3"/>
           <end node_id="-4"/>
@@ -224,7 +224,7 @@
         </link>
         <link id="-4" lanes="1" length="0.527494326813265" type="freeway">
           <roads>
-            <road name="I-80 E"/>
+            <road id="0" name="I-80 E"/>
           </roads>
           <begin node_id="-4"/>
           <end node_id="-5"/>
@@ -232,7 +232,7 @@
         </link>
         <link id="-5" lanes="1" length="0.364901146966108" type="freeway">
           <roads>
-            <road name="I-80 E"/>
+            <road id="0" name="I-80 E"/>
           </roads>
           <begin node_id="-5"/>
           <end node_id="-6"/>
@@ -240,7 +240,7 @@
         </link>
         <link id="-6" lanes="1" length="0.372088439716414" type="onramp">
           <roads>
-            <road name="null"/>
+            <road id="0" name="null"/>
           </roads>
           <begin node_id="-7"/>
           <end node_id="-3"/>
@@ -248,7 +248,7 @@
         </link>
         <link id="-7" lanes="1" length="0.239126877222358" type="offramp">
           <roads>
-            <road name="University Ave"/>
+            <road id="0" name="University Ave"/>
           </roads>
           <begin node_id="-4"/>
           <end node_id="-8"/>
