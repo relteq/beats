@@ -275,7 +275,7 @@ public class ScenarioImporter {
 		Networks db_network = new Networks();
 		db_network.setName(network.getName());
 		db_network.setDescription(network.getDescription());
-		db_network.setLocked(network.isLocked());
+		//db_network.setLocked(network.isLocked());
 		db_network.save(conn);
 		network_id.put(network.getId(), Long.valueOf(db_network.getId()));
 		for (edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())

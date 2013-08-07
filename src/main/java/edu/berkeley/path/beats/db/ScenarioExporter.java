@@ -174,7 +174,7 @@ public class ScenarioExporter {
 		net.setDescription(db_net.getDescription());
 		// TODO net.setPosition();
 		net.setDt(new BigDecimal(1)); // TODO change this when the DB schema is updated
-		net.setLocked(db_net.getLocked());
+		//net.setLocked(db_net.getLocked());
 		net.setNodeList(restoreNodeList(db_net));
 		net.setLinkList(restoreLinkList(db_net));
 		return net;
