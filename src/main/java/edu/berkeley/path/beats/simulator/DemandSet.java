@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class DemandProfileSet extends edu.berkeley.path.beats.jaxb.DemandProfileSet {
+final class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 
 	private Scenario myScenario;
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list

@@ -29,7 +29,7 @@ package edu.berkeley.path.beats.calibrator;
 import java.math.BigDecimal;
 import java.util.*;
 
-import edu.berkeley.path.beats.jaxb.FundamentalDiagramProfileSet;
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 import edu.berkeley.path.beats.simulator.*;
 
@@ -56,7 +56,7 @@ public class FDCalibrator {
 		scenario.loadSensorData();
 		
 		// run calibration routine
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
+		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorSet().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			if(S.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
@@ -185,12 +185,12 @@ public class FDCalibrator {
 		boolean done;
 		
 		// create new fd profile set
-		FundamentalDiagramProfileSet FDprofileset = new FundamentalDiagramProfileSet();
+		FundamentalDiagramSet FDprofileset = new FundamentalDiagramSet();
 							
 		// populate the grow network with freeway links
 		ArrayList<GrowLink> arraygrownetwork = new ArrayList<GrowLink>();
 		HashMap<Long,GrowLink> hashgrownetwork = new HashMap<Long,GrowLink>();
-			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
 				for(edu.berkeley.path.beats.jaxb.Link jlink : network.getLinkList().getLink()){
 					Link link = (Link) jlink;
 					if(Link.isFreewayType(link)){
@@ -202,7 +202,7 @@ public class FDCalibrator {
 		}
 
 		// initialize the grow network with sensored links 
-		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorList().getSensor()){
+		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorSet().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
 			if(S.getVDS()!=0 && S.getMyLink()!=null && Link.isFreewayType(S.getMyLink())){
 				long linkid = S.getMyLink().getId();
@@ -283,7 +283,7 @@ public class FDCalibrator {
 			}
 		}
 		
-		scenario.setFundamentalDiagramProfileSet(FDprofileset);
+		scenario.setFundamentalDiagramSet(FDprofileset);
 	}
 
 	// compute the p'th percentile qty (p in [0,1])

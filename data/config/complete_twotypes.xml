@@ -7,7 +7,7 @@
       <vehicle_type name="truck" weight="2.0"/>
     </VehicleTypes>
   </settings>
-  <NetworkList>
+  <NetworkSet>
     <network dt="5" id="1" name="New Network">
       <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
       <position>
@@ -172,7 +172,7 @@
         </link>
       </LinkList>
     </network>
-  </NetworkList>
+  </NetworkSet>
   <InitialDensitySet>
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
@@ -187,7 +187,7 @@
     <density link_id="7">2.0:1.0</density>
     <density link_id="100">2.0:1.0</density>
   </InitialDensitySet>
-  <SplitRatioProfileSet>
+  <SplitRatioSet>
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
       <vehicle_type name="truck"/>
@@ -201,16 +201,16 @@
     <splitratioProfile dt="300" node_id="5">
       <splitratio link_in="4" link_out="5">1:1</splitratio>
     </splitratioProfile>
-  </SplitRatioProfileSet>
-  <DemandProfileSet>
+  </SplitRatioSet>
+  <DemandSet>
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
       <vehicle_type name="truck"/>
     </VehicleTypeOrder>
     <demandProfile dt="300" knob="1" link_id_origin="6">400:100</demandProfile>
     <demandProfile dt="300" knob="1" link_id_origin="1">100:50</demandProfile>
-  </DemandProfileSet>
-  <FundamentalDiagramProfileSet>
+  </DemandSet>
+  <FundamentalDiagramSet>
     <fundamentalDiagramProfile link_id="1">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
@@ -232,5 +232,5 @@
     <fundamentalDiagramProfile link_id="7">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-  </FundamentalDiagramProfileSet>
+  </FundamentalDiagramSet>
 </scenario>

@@ -225,8 +225,8 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
-		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((SplitRatioProfileSet)myScenario.getSplitRatioProfileSet()).getVehicletypeindex();
+		if(myScenario.getSplitRatioSet()!=null)
+			vehicletypeindex = ((SplitRatioSet)myScenario.getSplitRatioSet()).getVehicletypeindex();
 		
 		int i,j,lastk;
 		for(i=0;i<myNode.getnIn();i++){

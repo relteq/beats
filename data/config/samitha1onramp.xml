@@ -15,10 +15,10 @@
     <density link_id="2">0.00</density>
   </InitialDensitySet>
 
-  <DemandProfileSet>
+  <DemandSet>
     <demandProfile dt="5" link_id_origin="-1">0.18, 0</demandProfile>
     <demandProfile dt="5" link_id_origin="-2">0.0</demandProfile>
-  </DemandProfileSet>
+  </DemandSet>
 
   <ControllerSet>
     <controller dt="5" id="0" name="MPC" type="CRM_MPC" enabled="true">
@@ -40,7 +40,7 @@
     </controller>
   </ControllerSet>
 
-  <FundamentalDiagramProfileSet>
+  <FundamentalDiagramSet>
 
     <fundamentalDiagramProfile link_id="-1">
       <fundamentalDiagram capacity=".2" congestion_speed="1" jam_density="100" free_flow_speed=".2" />
@@ -56,8 +56,8 @@
     <fundamentalDiagramProfile link_id="2">
       <fundamentalDiagram capacity=".2" congestion_speed="1" jam_density=".4" free_flow_speed="1" />
     </fundamentalDiagramProfile>
-  </FundamentalDiagramProfileSet>
-  <NetworkList>
+  </FundamentalDiagramSet>
+  <NetworkSet>
     <network dt="5" id="-1" name="New Network">
       <NodeList>
         <node id="-1" type="terminal">
@@ -128,5 +128,5 @@
         </link>
 	  </LinkList>
     </network>
-  </NetworkList>
+  </NetworkSet>
 </scenario>

@@ -6,7 +6,7 @@
     </VehicleTypes>
     <units>US</units>
   </settings>
-  <SplitRatioProfileSet>
+  <SplitRatioSet>
     <VehicleTypeOrder>
       <vehicle_type name="General vehicle"/>
     </VehicleTypeOrder>
@@ -772,8 +772,8 @@
       <splitratio link_in="-2113401" link_out="-6660">0.000000</splitratio>
       <splitratio link_in="-2113401" link_out="-2113402">0.000000</splitratio>
     </splitratioProfile>
-  </SplitRatioProfileSet>
-  <DemandProfileSet>
+  </SplitRatioSet>
+  <DemandSet>
     <VehicleTypeOrder>
       <vehicle_type name="General vehicle"/>
     </VehicleTypeOrder>
@@ -812,7 +812,7 @@
     <demandProfile dt="900" knob="1" link_id_origin="-2113401">64.000000,0.000000,0.000000,0.000000,0.000000,16.000000,0.000000,0.000000,0.000000</demandProfile>
     <demandProfile dt="900" knob="1" link_id_origin="-5160">760.000000,960.000000,1196.000000,1164.000000,1204.000000,1160.000000,1092.000000,1180.000000,0.000000</demandProfile>
     <demandProfile dt="900" knob="1" link_id_origin="-6620">396.000000,444.000000,644.000000,752.000000,836.000000,908.000000,860.000000,796.000000,0.000000</demandProfile>
-  </DemandProfileSet>
+  </DemandSet>
   <ControllerSet>
     <controller dt="1" id="-1" name="" type="SIG_Pretimed" enabled="true">
       <parameters>
@@ -905,7 +905,7 @@
       </table>
     </controller>
   </ControllerSet>
-  <FundamentalDiagramProfileSet>
+  <FundamentalDiagramSet>
     <fundamentalDiagramProfile link_id="-5121">
       <fundamentalDiagram capacity="3000" capacity_drop="0" congestion_speed="10" jam_density="400" free_flow_speed="30" critical_speed="30"/>
     </fundamentalDiagramProfile>
@@ -1596,8 +1596,8 @@
     <fundamentalDiagramProfile link_id="-6620">
       <fundamentalDiagram capacity="3000" capacity_drop="0" congestion_speed="10" jam_density="400" free_flow_speed="30" critical_speed="30"/>
     </fundamentalDiagramProfile>
-  </FundamentalDiagramProfileSet>
-  <NetworkList>
+  </FundamentalDiagramSet>
+  <NetworkSet>
     <network dt="1" id="-1" name="San Pablo Ave.">
       <description>San Pablo Avenue constructed with the TOPL Arterial Masterscript.</description>
       <position>
@@ -5510,8 +5510,8 @@
         </link>
       </LinkList>
     </network>
-  </NetworkList>
-  <SignalList id="-1" project_id="-1">
+  </NetworkSet>
+  <SignalSet id="-1" project_id="-1">
     <signal id="-12" node_id="-62">
       <phase lag="false" min_green_time="0" nema="1" permissive="false" protected="false" recall="false" red_clear_time="0" yellow_time="0">
         <link_references/>
@@ -5548,5 +5548,5 @@
         <link_references/>
       </phase>
     </signal>
-  </SignalList>
+  </SignalSet>
 </scenario>

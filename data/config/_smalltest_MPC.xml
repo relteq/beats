@@ -6,7 +6,7 @@
       <vehicle_type name="car" weight="1.0"/>
     </VehicleTypes>
   </settings>
-  <SplitRatioProfileSet>
+  <SplitRatioSet>
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
     </VehicleTypeOrder>
@@ -14,7 +14,7 @@
       <splitratio link_in="-3" link_out="-4">1.000000</splitratio>
       <splitratio link_in="-3" link_out="-7">0.000000</splitratio>
     </splitratioProfile>
-  </SplitRatioProfileSet>
+  </SplitRatioSet>
   <EventSet>
     <event enabled="true" id="0" tstamp="10980" type="link_lanes">
       <description/>
@@ -30,13 +30,13 @@
       </parameters>
     </event>
   </EventSet>
-  <DemandProfileSet>
+  <DemandSet>
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
     </VehicleTypeOrder>
     <demandProfile dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>
     <demandProfile dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
-  </DemandProfileSet>
+  </DemandSet>
     <ControllerSet>
         <controller dt="300" id="0" name="MPC" type="CRM_MPC" enabled="true">
             <parameters>
@@ -56,7 +56,7 @@
             </feedbackElements>
         </controller>
     </ControllerSet>
-  <FundamentalDiagramProfileSet>
+  <FundamentalDiagramSet>
     <fundamentalDiagramProfile link_id="-1">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
@@ -78,8 +78,8 @@
     <fundamentalDiagramProfile link_id="-7">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>
     </fundamentalDiagramProfile>
-  </FundamentalDiagramProfileSet>
-  <NetworkList>
+  </FundamentalDiagramSet>
+  <NetworkSet>
     <network dt="5" id="-1" name="New Network">
       <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
       <position>
@@ -246,5 +246,5 @@
         </link>
       </LinkList>
     </network>
-  </NetworkList>
+  </NetworkSet>
 </scenario>

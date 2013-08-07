@@ -192,9 +192,9 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * @return a list of signals or null if the scenario's signal list is null
 	 */
 	public List<edu.berkeley.path.beats.jaxb.Signal> getListOfSignals() {
-		if (null == myScenario.getSignalList()) return null;
+		if (null == myScenario.getSignalSet()) return null;
 		List<edu.berkeley.path.beats.jaxb.Signal> sigl = new java.util.ArrayList<edu.berkeley.path.beats.jaxb.Signal>();
-		for (edu.berkeley.path.beats.jaxb.Signal sig : myScenario.getSignalList().getSignal()) {
+		for (edu.berkeley.path.beats.jaxb.Signal sig : myScenario.getSignalSet().getSignal()) {
 			if (null != getNodeWithId(sig.getNodeId()))
 				sigl.add(sig);
 		}

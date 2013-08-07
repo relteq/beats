@@ -44,8 +44,8 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 	}
 
 	@Override
-	public edu.berkeley.path.beats.jaxb.DemandProfileSet createDemandProfileSet() {
-		return new DemandProfileSet();
+	public edu.berkeley.path.beats.jaxb.DemandSet createDemandSet() {
+		return new DemandSet();
 	}
 	
 	@Override
@@ -99,8 +99,8 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 	}
 
 	@Override
-	public edu.berkeley.path.beats.jaxb.SplitRatioProfileSet createSplitRatioProfileSet() {
-		return new SplitRatioProfileSet();
+	public edu.berkeley.path.beats.jaxb.SplitRatioSet createSplitRatioSet() {
+		return new SplitRatioSet();
 	}
 
 	@Override

@@ -244,19 +244,19 @@ public class UnitConverter {
 
 	private void process() throws BeatsException {
 		// settings: nothing to process
-		process(scenario.getNetworkList());
+		process(scenario.getNetworkSet());
 		// signal list, sensor list: nothing to process
 		process(scenario.getInitialDensitySet());
 		// weaving factors, split ratios: nothing to process
-		process(scenario.getDownstreamBoundaryCapacityProfileSet());
+		process(scenario.getDownstreamBoundaryCapacitySet());
 		process(scenario.getEventSet());
-		process(scenario.getDemandProfileSet());
+		process(scenario.getDemandSet());
 		process(scenario.getControllerSet());
-		process(scenario.getFundamentalDiagramProfileSet());
+		process(scenario.getFundamentalDiagramSet());
 		// network connections, destination networks, routes: nothing to process
 	}
 
-	private void process(NetworkList netlist) {
+	private void process(NetworkSet netlist) {
 		if (null == netlist) return;
 		for (Network network : netlist.getNetwork()) {
 			// node list: nothing to process
@@ -282,7 +282,7 @@ public class UnitConverter {
 		}
 	}
 
-	private void process(DownstreamBoundaryCapacityProfileSet dbcpset) {
+	private void process(DownstreamBoundaryCapacitySet dbcpset) {
 		if (null == dbcpset) return;
 		for (CapacityProfile cp : dbcpset.getCapacityProfile()) {
 			// TODO delimiter = ':' or ','?
@@ -348,7 +348,7 @@ public class UnitConverter {
 		}
 	}
 
-	private void process(DemandProfileSet dpset) {
+	private void process(DemandSet dpset) {
 		if (null == dpset) return;
 		for (DemandProfile dp : dpset.getDemandProfile())
 			process(dp);
@@ -387,7 +387,7 @@ public class UnitConverter {
 		process(qcontroller.getParameters());
 	}
 
-	private void process(FundamentalDiagramProfileSet fdpset) {
+	private void process(FundamentalDiagramSet fdpset) {
 		if (null == fdpset) return;
 		for (FundamentalDiagramProfile fdprofile : fdpset.getFundamentalDiagramProfile())
 			for (FundamentalDiagram fd : fdprofile.getFundamentalDiagram())

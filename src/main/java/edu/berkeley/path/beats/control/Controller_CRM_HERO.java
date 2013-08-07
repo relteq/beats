@@ -451,7 +451,7 @@ public class Controller_CRM_HERO extends Controller {
 		ArrayList<Long> controllersOrdered = new ArrayList<Long>();
 							
 		//Most Downstream Node	
-		for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
+		for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkSet().getNetwork().get(0).getLinkList().getLink()) {
         	if( ((Link)aLink).getType().equals("freeway")  && ((Link)aLink).getEnd_node().getType().equals("terminal")                ) { 	
         		nodesOrdered.add(((Link)aLink).getEnd_node());
         		if(printMessages)
@@ -463,7 +463,7 @@ public class Controller_CRM_HERO extends Controller {
 		//Freeway Links and Nodes  Arranged from Downstream to Upstream by Id
 		int isTerminalNode=0;	
 		while (isTerminalNode==0) {
-			for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkList().getNetwork().get(0).getLinkList().getLink()) {
+			for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkSet().getNetwork().get(0).getLinkList().getLink()) {
 	        	if( ((Link)aLink).getType().equals("freeway") &&  ((Link)aLink).getEnd_node().getId()==nodesOrdered.get(nodesOrdered.size()-1).getId() ) { 
 	        		linksOrdered.add(((Link)aLink));
 	        		nodesOrdered.add(((Link)aLink).getBegin_node());	

@@ -237,8 +237,8 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
 		// get vehicle type order from SplitRatioProfileSet
 		Integer [] vehicletypeindex = null;
-		if(myScenario.getSplitRatioProfileSet()!=null)
-			vehicletypeindex = ((DemandProfileSet)myScenario.getDemandProfileSet()).getVehicletypeindex();
+		if(myScenario.getDemandSet()!=null)
+			vehicletypeindex = ((DemandSet)myScenario.getDemandSet()).getVehicletypeindex();
 		
 		return demand_nominal.sampleAtTime(k,vehicletypeindex);
 	}

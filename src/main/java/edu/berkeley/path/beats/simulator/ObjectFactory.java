@@ -288,8 +288,8 @@ final public class ObjectFactory {
 
 	    // register signals with their targets ..................................
 	    boolean registersuccess = true;
-		if(S.getSignalList()!=null)
-	    	for(edu.berkeley.path.beats.jaxb.Signal signal:S.getSignalList().getSignal())
+		if(S.getSignalSet()!=null)
+	    	for(edu.berkeley.path.beats.jaxb.Signal signal:S.getSignalSet().getSignal())
 	    		registersuccess &= ((Signal)signal).register();
 	    if(!registersuccess){
 	    	throw new BeatsException("Signal registration failure");

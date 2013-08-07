@@ -24,7 +24,7 @@ public class NetworkTest {
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		network = (Network) scenario.getNetworkList().getNetwork().get(0);
+		network = (Network) scenario.getNetworkSet().getNetwork().get(0);
 	}
 
 	@Test

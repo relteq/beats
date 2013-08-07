@@ -81,7 +81,7 @@ class XMLOutputReader {
 							int nvehtypes = res.scenario.getNumVehicleTypes();
 							if (nvehtypes <= 0) nvehtypes = 1;
 							int nlinks = 0;
-							for (edu.berkeley.path.beats.jaxb.Network network : res.scenario.getNetworkList().getNetwork())
+							for (edu.berkeley.path.beats.jaxb.Network network : res.scenario.getNetworkSet().getNetwork())
 								nlinks += network.getLinkList().getLink().size();
 							int t_incr = 30;
 							int d_incr = t_incr * nvehtypes * nlinks;
@@ -157,7 +157,7 @@ class XMLOutputReader {
 		public Vector<edu.berkeley.path.beats.jaxb.Link> getLinks() {
 			Vector<edu.berkeley.path.beats.jaxb.Link> res = new Vector<edu.berkeley.path.beats.jaxb.Link>();
 			if (null != scenario){
-				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork())
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork())
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
 						res.add(link);
 			}

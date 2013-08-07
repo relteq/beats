@@ -125,7 +125,7 @@ public final class OutputWriterXML extends OutputWriterBase {
 			xmlsw.writeStartElement("ts");
 			xmlsw.writeAttribute("sec", String.format(SEC_FORMAT, time));
 			xmlsw.writeStartElement("netl");
-			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
+			for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()) {
 				xmlsw.writeStartElement("net");
 				xmlsw.writeAttribute("id", Long.toString(network.getId()) );
 				// dt = time interval of reporting, sec

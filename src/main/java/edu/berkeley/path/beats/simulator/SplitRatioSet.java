@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class SplitRatioProfileSet extends edu.berkeley.path.beats.jaxb.SplitRatioProfileSet {
+final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 
 	private Scenario myScenario;
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list

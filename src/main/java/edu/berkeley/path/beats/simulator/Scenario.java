@@ -125,33 +125,33 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	            	this.numVehicleTypes = getSettings().getVehicleTypes().getVehicleType().size();
 
 		// network list
-		if(networkList!=null)
-			for( edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork() )
+		if(networkSet!=null)
+			for( edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork() )
 				((Network) network).populate(this);
 
 		// sensors
 		sensorlist.populate(this);
 		
 		// signals
-		if(signalList!=null)
-			for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
+		if(signalSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 				((Signal) signal).populate(this);
 		
 		// split ratio profile set (must follow network)
-		if(splitRatioProfileSet!=null)
-			((SplitRatioProfileSet) splitRatioProfileSet).populate(this);
+		if(splitRatioSet!=null)
+			((SplitRatioSet) splitRatioSet).populate(this);
 		
 		// boundary capacities (must follow network)
-		if(downstreamBoundaryCapacityProfileSet!=null)
-			for( edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacityProfileSet.getCapacityProfile() )
+		if(downstreamBoundaryCapacitySet!=null)
+			for( edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getCapacityProfile() )
 				((CapacityProfile) capacityProfile).populate(this);
 
-		if(demandProfileSet!=null)
-			((DemandProfileSet) demandProfileSet).populate(this);
+		if(demandSet!=null)
+			((DemandSet) demandSet).populate(this);
 		
 		// fundamental diagram profiles 
-		if(fundamentalDiagramProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
+		if(fundamentalDiagramSet!=null)
+			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile) fd).populate(this);
 		
 		// initial density profile 
@@ -170,16 +170,16 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public static void validate(Scenario S) {
 				
 		// validate network
-		if( S.networkList!=null)
-			for(edu.berkeley.path.beats.jaxb.Network network : S.networkList.getNetwork())
+		if( S.networkSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Network network : S.networkSet.getNetwork())
 				((Network)network).validate();
 
 		// sensor list
 		S.sensorlist.validate();
 		
 		// signal list
-		if(S.signalList!=null)
-			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalList.getSignal())
+		if(S.signalSet!=null)
+			for (edu.berkeley.path.beats.jaxb.Signal signal : S.signalSet.getSignal())
 				((Signal) signal).validate();
 		
 		// NOTE: DO THIS ONLY IF IT IS USED. IE DO IT IN THE RUN WITH CORRECT FUNDAMENTAL DIAGRAMS
@@ -188,21 +188,21 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //			((_InitialDensityProfile) getInitialDensityProfile()).validate();
 
 		// validate capacity profiles	
-		if(S.downstreamBoundaryCapacityProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : S.downstreamBoundaryCapacityProfileSet.getCapacityProfile())
+		if(S.downstreamBoundaryCapacitySet!=null)
+			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getCapacityProfile())
 				((CapacityProfile)capacityProfile).validate();
 		
 		// validate demand profiles
-		if(S.demandProfileSet!=null)
-			((DemandProfileSet)S.demandProfileSet).validate();
+		if(S.demandSet!=null)
+			((DemandSet)S.demandSet).validate();
 
 		// validate split ratio profiles
-		if(S.splitRatioProfileSet!=null)
-			((SplitRatioProfileSet)S.splitRatioProfileSet).validate();
+		if(S.splitRatioSet!=null)
+			((SplitRatioSet)S.splitRatioSet).validate();
 		
 		// validate fundamental diagram profiles
-		if(S.fundamentalDiagramProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : S.fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
+		if(S.fundamentalDiagramSet!=null)
+			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : S.fundamentalDiagramSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile)fd).validate();
 		
 		// validate controllers
@@ -227,24 +227,24 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		clock.reset();
 		
 		// reset network
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
+		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 			((Network)network).reset(simulationMode);
 		
 		// sensor list
 		sensorlist.reset();
 		
 		// signal list
-		if(signalList!=null)
-			for (edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
+		if(signalSet!=null)
+			for (edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 				((Signal) signal).reset();
 						
 		// reset demand profiles
-		if(demandProfileSet!=null)
-			((DemandProfileSet)demandProfileSet).reset();
+		if(demandSet!=null)
+			((DemandSet)demandSet).reset();
 
 		// reset fundamental diagrams
-		if(fundamentalDiagramProfileSet!=null)
-			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
+		if(fundamentalDiagramSet!=null)
+			for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fd : fundamentalDiagramSet.getFundamentalDiagramProfile())
 				((FundamentalDiagramProfile)fd).reset();
 		
 		// reset controllers
@@ -262,18 +262,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected void update() throws BeatsException {	
 
         // sample profiles .............................	
-    	if(downstreamBoundaryCapacityProfileSet!=null)
-        	for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacityProfileSet.getCapacityProfile())
+    	if(downstreamBoundaryCapacitySet!=null)
+        	for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getCapacityProfile())
         		((CapacityProfile) capacityProfile).update();
 
-    	if(demandProfileSet!=null)
-    		((DemandProfileSet)demandProfileSet).update();
+    	if(demandSet!=null)
+    		((DemandSet)demandSet).update();
 
-    	if(splitRatioProfileSet!=null)
-    		((SplitRatioProfileSet) splitRatioProfileSet).update();        		
+    	if(splitRatioSet!=null)
+    		((SplitRatioSet) splitRatioSet).update();        		
 
-    	if(fundamentalDiagramProfileSet!=null)
-        	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramProfileSet.getFundamentalDiagramProfile())
+    	if(fundamentalDiagramSet!=null)
+        	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
         		((FundamentalDiagramProfile) fdProfile).update();
     	
         // update sensor readings .......................
@@ -282,8 +282,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
 		// to pretimed control, but would make a differnece for feedback control. 
-		if(signalList!=null)
-			for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal())
+		if(signalSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
 				((Signal)signal).update();
 
         // update controllers
@@ -294,7 +294,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     	eventset.update();
     	
         // update the network state......................
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork())
+		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
 			((Network) network).update();
 
 		cumulatives.update();
@@ -404,13 +404,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * 
 	 */
 	protected Network getNetworkWithId(long id){
-		if(networkList==null)
+		if(networkSet==null)
 			return null;
-		if(networkList.getNetwork()==null)
+		if(networkSet.getNetwork()==null)
 			return null;
-		if(networkList.getNetwork().size()>1)
+		if(networkSet.getNetwork().size()>1)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
 			if(network.getId()==id)
 				return (Network) network;
 		}
@@ -722,9 +722,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
 	public Link getLinkWithId(long id){
-		if(networkList==null)
+		if(networkSet==null)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
 			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
 			if(link!=null)
 				return link;
@@ -738,9 +738,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
 	public Node getNodeWithId(long id){
-		if(networkList==null)
+		if(networkSet==null)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkList.getNetwork()){
+		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
 			Node node = ((edu.berkeley.path.beats.simulator.Network) network).getNodeWithId(id);
 			if(node!=null)
 				return node;
@@ -781,7 +781,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(long id){
-		if(sensorList==null)
+		if(sensorSet==null)
 			return null;
 		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.getSensors()){
 			if(sensor.getId()==id)
@@ -795,9 +795,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Signal object.
 	 */
 	public Signal getSignalWithId(long id){
-		if(signalList==null)
+		if(signalSet==null)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
+		for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal()){
 			if(signal.getId()==id)
 				return (Signal) signal;
 		}
@@ -810,9 +810,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Reference to the signal if it exists, <code>null</code> otherwise
 	 */
 	public Signal getSignalWithNodeId(long node_id){
-		if(signalList==null)
+		if(signalSet==null)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalList.getSignal()){
+		for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal()){
 			if(signal.getNodeId()==node_id)
 				return (Signal)signal;
 		}
@@ -883,10 +883,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(scenariolocked)
 			throw new BeatsException("Cannot modify the scenario while it is locked.");
 
-		if(demandProfileSet==null){
-			demandProfileSet = new edu.berkeley.path.beats.jaxb.DemandProfileSet();
+		if(demandSet==null){
+			demandSet = new edu.berkeley.path.beats.jaxb.DemandSet();
 			@SuppressWarnings("unused")
-			List<DemandProfile> temp = demandProfileSet.getDemandProfile(); // artifficially initialize the profile			
+			List<DemandProfile> temp = demandSet.getDemandProfile(); // artifficially initialize the profile			
 		}
 		
 		// validate the profile
@@ -897,10 +897,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// replace an existing profile
 		boolean foundit = false;
-		for(int i=0;i<demandProfileSet.getDemandProfile().size();i++){
-			edu.berkeley.path.beats.jaxb.DemandProfile d = demandProfileSet.getDemandProfile().get(i);
+		for(int i=0;i<demandSet.getDemandProfile().size();i++){
+			edu.berkeley.path.beats.jaxb.DemandProfile d = demandSet.getDemandProfile().get(i);
 			if(d.getLinkIdOrigin()==dem.getLinkIdOrigin()){
-				demandProfileSet.getDemandProfile().set(i,dem);
+				demandSet.getDemandProfile().set(i,dem);
 				foundit = true;
 				break;
 			}
@@ -908,7 +908,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// or add a new one
 		if(!foundit)
-			demandProfileSet.getDemandProfile().add(dem);
+			demandSet.getDemandProfile().add(dem);
 
 	}
 	
@@ -1063,18 +1063,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// The time steps are rounded to the nearest decisecond.
 	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
 		
-		if(scenario.getNetworkList()==null)
+		if(scenario.getNetworkSet()==null)
 			return Double.NaN;
 		
-		if(scenario.getNetworkList().getNetwork().size()==0)
+		if(scenario.getNetworkSet().getNetwork().size()==0)
 			return Double.NaN;
 			
 		// loop through networks calling gcd
 		double dt;
-		List<edu.berkeley.path.beats.jaxb.Network> networkList = scenario.getNetworkList().getNetwork();
+		List<edu.berkeley.path.beats.jaxb.Network> networkSet = scenario.getNetworkSet().getNetwork();
 		int tengcd = 0;		// in deciseconds
-		for(int i=0;i<networkList.size();i++){
-			dt = networkList.get(i).getDt().doubleValue();	// in seconds
+		for(int i=0;i<networkSet.size();i++){
+			dt = networkSet.get(i).getDt().doubleValue();	// in seconds
 	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
 	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
 				dt *= 3600;
@@ -1083,7 +1083,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
     	return ((double)tengcd)/10.0;
 	}
-	
 	
 	/////////////////////////////////////////////////////////////////////
 	// private classes
@@ -1139,8 +1138,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				}
 				else{							// start at earliest demand profile
 					sim_start = Double.POSITIVE_INFINITY;
-					if(demandProfileSet!=null)
-						for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandProfileSet.getDemandProfile())
+					if(demandSet!=null)
+						for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandSet.getDemandProfile())
 							sim_start = Math.min(sim_start,D.getStartTime().doubleValue());					
 					if(Double.isInfinite(sim_start))
 						sim_start = 0d;
@@ -1186,7 +1185,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public void storeLinks() {
 			if (null == links) {
 				links = new java.util.HashMap<Long, LinkCumulativeData>();
-				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
 					if(((edu.berkeley.path.beats.simulator.Network) network).isIsempty())
 						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
@@ -1202,8 +1201,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public void storeSignalPhases() {
 			if (null == phases) {
 				phases = new HashMap<Long, SignalPhases>();
-				if (null != scenario.getSignalList())
-					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalList().getSignal()) {
+				if (null != scenario.getSignalSet())
+					for (edu.berkeley.path.beats.jaxb.Signal signal : scenario.getSignalSet().getSignal()) {
 						if (phases.containsKey(signal.getId()))
 							logger.warn("Duplicate signal: id=" + signal.getId());
 						phases.put(signal.getId(), new SignalPhases(signal));

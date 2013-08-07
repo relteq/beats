@@ -222,7 +222,7 @@ public class OutputWriterDB extends OutputWriterBase {
 		success = false;
 		date = sec2date(time);
 
-		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()) {
+		for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()) {
 			for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 				Link _link = (Link) link;
 				try {

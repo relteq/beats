@@ -87,7 +87,7 @@ public final class OutputWriterTXT extends OutputWriterBase {
 			out_time.write(String.format("%f\n",time));
 
 			for(j=0;j<numVT;j++){	
-				for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkList().getNetwork()){
+				for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
 					if(((edu.berkeley.path.beats.simulator.Network) network).isEmpty())
 						continue;
 					List<edu.berkeley.path.beats.jaxb.Link> links = network.getLinkList().getLink();

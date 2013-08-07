@@ -109,7 +109,7 @@ public class Controller_CRM_MPC extends Controller {
 		// initialize data for control algorithm
 		
 		// TEMPORARY: the network is a reference to the scenario network (dangerous)
-		network = (Network) getMyScenario().getNetworkList().getNetwork().get(0);
+		network = (Network) getMyScenario().getNetworkSet().getNetwork().get(0);
 		
 		// populate initialDensity
 		initialDensity = new HashMap<Long,Double>();

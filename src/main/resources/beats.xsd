@@ -378,17 +378,17 @@
       <xs:all>
         <xs:element ref="description" minOccurs="0" maxOccurs="1" />
         <xs:element ref="settings" minOccurs="0"  maxOccurs="1" />
-        <xs:element ref="NetworkList" minOccurs="0" maxOccurs="1" />
-		<xs:element ref="SignalList" minOccurs="0" maxOccurs="1"  />
-		<xs:element ref="SensorList" minOccurs="0" maxOccurs="1"  />
+        <xs:element ref="NetworkSet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="SignalSet" minOccurs="0" maxOccurs="1"  />
+        <xs:element ref="SensorSet" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorSet" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="SplitRatioProfileSet" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="DownstreamBoundaryCapacityProfileSet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="SplitRatioSet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="DownstreamBoundaryCapacitySet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="EventSet" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="DemandProfileSet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="DemandSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="ControllerSet" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="FundamentalDiagramProfileSet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="FundamentalDiagramSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="NetworkConnections" minOccurs="0" maxOccurs="1" />
         <xs:element ref="DestinationNetworks" minOccurs="0" maxOccurs="1" />
         <xs:element ref="RouteSet" minOccurs="0" />
@@ -404,7 +404,7 @@
 
   <!-- NetworkSet ............................................................... -->
 
-	  <xs:element name="NetworkList">
+	<xs:element name="NetworkSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="network" minOccurs="0" maxOccurs="unbounded" />
@@ -414,7 +414,7 @@
 	  
   <!-- SignalSet ................................................................ -->
 
-	  <xs:element name="SignalList">
+	<xs:element name="SignalSet">
 		<xs:complexType>
       <xs:sequence>
         <xs:element ref="description" minOccurs="0" />
@@ -464,7 +464,7 @@
 						format (value in {PeMS&#x20;Data&#x20;Clearinghouse|Caltrans&#x20;DBX|BHL})
   -->
 			  
-	  <xs:element name="SensorList">
+	<xs:element name="SensorSet">
 		<xs:complexType>
       <xs:sequence>
         <xs:element ref="sensor" minOccurs="0" maxOccurs="unbounded" />
@@ -540,7 +540,7 @@
 
   <!-- WeavingFactorSet ..................................................... -->
 	
-	  <xs:element name="WeavingFactorSet">
+	<xs:element name="WeavingFactorSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -561,7 +561,7 @@
 
   <!-- SplitRatioSet ...................................................... -->
 
-	  <xs:element name="SplitRatioProfileSet">
+	<xs:element name="SplitRatioSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -592,9 +592,9 @@
 				</xs:complexType>
 			  </xs:element>  
   
-  <!-- DownstreamBoundaryCapacityProfileSet ............................................. -->  
-  
-	  <xs:element name="DownstreamBoundaryCapacityProfileSet">
+  <!-- DownstreamBoundaryCapacitySet ............................................. -->  
+	  
+	<xs:element name="DownstreamBoundaryCapacitySet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -681,9 +681,9 @@
 			    </xs:complexType>
 			  </xs:element>	 
 
-  <!-- DemandProfileSet .......................................................... -->
+  <!-- DemandSet .......................................................... -->
   
-	  <xs:element name="DemandProfileSet">
+	<xs:element name="DemandSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -832,9 +832,9 @@
 		</xs:complexType>
 	  </xs:element>
 	  			  
-  <!-- FundamentalDiagramProfileSet .............................................. -->
+  <!-- FundamentalDiagramSet .............................................. -->
 
-	  <xs:element name="FundamentalDiagramProfileSet">
+	<xs:element name="FundamentalDiagramSet">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />
@@ -874,7 +874,7 @@
   
   <!-- NetworkConnections ........................................................ -->
 
-	  <xs:element name="NetworkConnections">
+	<xs:element name="NetworkConnections">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element ref="description" minOccurs="0" />

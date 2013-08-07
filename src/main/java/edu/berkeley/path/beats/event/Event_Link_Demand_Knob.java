@@ -92,8 +92,8 @@ public class Event_Link_Demand_Knob extends Event {
 	@Override
 	protected void activate() throws BeatsException {
 		for(ScenarioElement s : getTargets()){
-	    	if(getMyScenario().getDemandProfileSet()!=null){
-	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : getMyScenario().getDemandProfileSet().getDemandProfile()){
+	    	if(getMyScenario().getDemandSet()!=null){
+	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : getMyScenario().getDemandSet().getDemandProfile()){
 	        		if(profile.getLinkIdOrigin()==s.getId()){
 	        			if(resetToNominal)
 	        				setDemandProfileEventKnob(profile,profile.getKnob().doubleValue());
