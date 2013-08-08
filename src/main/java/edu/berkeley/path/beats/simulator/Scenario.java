@@ -566,14 +566,31 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Vehicle type index from name
 	 * @return integer index of the vehicle type.
 	 */
-	public int getVehicleTypeIndex(String name){
+	public int getVehicleTypeIndexForName(String name){
 		if(name==null)
 			return -1;
-		String [] vehicleTypeNames = getVehicleTypeNames();
-		if(vehicleTypeNames==null)
+		if(getVehicleTypeSet()==null)
 			return 0;
-		for(int i=0;i<vehicleTypeNames.length;i++)
-			if(vehicleTypeNames[i].equals(name))
+		if(getVehicleTypeSet().getVehicleType()==null)
+			return 0;
+		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
+			if(getVehicleTypeSet().getVehicleType().get(i).getName().equals(name))
+				return i;
+		return -1;
+	}
+
+	/** Vehicle type index from id
+	 * @return integer index of the vehicle type.
+	 */
+	public int getVehicleTypeIndexForId(long id){
+		if(name==null)
+			return -1;
+		if(getVehicleTypeSet()==null)
+			return 0;
+		if(getVehicleTypeSet().getVehicleType()==null)
+			return 0;
+		for(int i=0;i<getVehicleTypeSet().getVehicleType().size();i++)
+			if(getVehicleTypeSet().getVehicleType().get(i).getId()==id)
 				return i;
 		return -1;
 	}
@@ -632,18 +649,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return vehtypenames;
 	}
 	
-//	/** Vehicle type weights.
-//	 * @return	Array of doubles with the weights of the vehicles types.
-//	 */
-//	public Double [] getVehicleTypeWeights(){
-//		Double [] vehtypeweights = new Double [numVehicleTypes];
-//		if(getSettings()==null || getSettings().getVehicleTypes()==null)
-//			vehtypeweights[0] = 1d;
-//		else
-//			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-//				vehtypeweights[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getWeight().doubleValue();
-//		return vehtypeweights;
-//	}
 	/** Get the initial density state for the network with given id.
 	 * @param network_id String id of the network
 	 * @return A two-dimensional array of doubles where the first dimension is the

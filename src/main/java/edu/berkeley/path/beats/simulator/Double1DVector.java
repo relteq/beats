@@ -73,6 +73,79 @@ final class Double1DVector {
 			data = null;
     }
          
+    // initialize a 1D vector from comma separated string of positive numbers
+    // negative numbers get replaced with nan.
+//    public Double1DVector(String str) {
+//
+//    	int numtokens,i,j;
+//		boolean issquare = true;
+//    	nTime = 0;
+//    	nVTypes = 0;
+//    	
+//    	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
+//    		isempty = true;
+//			return;
+//    	}
+//    	
+//    	str.replaceAll("\\s","");
+//    	
+//    	// populate data
+//		StringTokenizer slicesX = new StringTokenizer(str, ",");
+//		nTime = slicesX.countTokens();
+//		i=0;
+//		boolean allnan = true;
+//		while (slicesX.hasMoreTokens() && issquare) {
+//			String sliceX = slicesX.nextToken();
+//			StringTokenizer slicesXY = new StringTokenizer(sliceX, ":");
+//			
+//			// evaluate nVTypes, check squareness
+//			numtokens = slicesXY.countTokens();
+//			if(nVTypes==0){ // first time here
+//				nVTypes = numtokens;
+//				data = new Double[nTime][nVTypes];
+//			}
+//			else{
+//				if(nVTypes!=numtokens){
+//					issquare = false;
+//					break;
+//				}
+//			}
+//			
+//			j=0;
+//			while (slicesXY.hasMoreTokens() && issquare) {				
+//				try {
+//					Double value = Double.parseDouble(slicesXY.nextToken());
+//					if(value>=0){
+//						data[i][j] = value;
+//						allnan = false;
+//					}
+//					else
+//						data[i][j] = Double.NaN;
+//				} catch (NumberFormatException e) {
+//					data[i][j] = Double.NaN;
+//				}
+//				j++;
+//			}
+//			i++;
+//		}
+//		
+//		if(allnan){
+//			data = null;
+//	    	isempty = true;
+//			return;
+//		}
+//		
+//		if(!issquare){
+//			BeatsErrorLog.addError("Data is not square.");
+//			data = null;
+//	    	isempty = true;
+//			return;
+//		}
+//		
+//    	isempty = nTime==0 && nVTypes==0;
+//		
+//    }    
+    
 	/////////////////////////////////////////////////////////////////////
 	// public interface
 	/////////////////////////////////////////////////////////////////////  

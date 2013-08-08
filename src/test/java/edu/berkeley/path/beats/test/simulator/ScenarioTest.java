@@ -99,11 +99,11 @@ public class ScenarioTest {
 
 	@Test
 	public void test_getVehicleTypeIndex() {
-		assertEquals(static_scenario.getVehicleTypeIndex("car"),0);
-		assertEquals(static_scenario.getVehicleTypeIndex("xxx"),-1);
+		assertEquals(static_scenario.getVehicleTypeIndexForName("car"),0);
+		assertEquals(static_scenario.getVehicleTypeIndexForName("xxx"),-1);
 		
 		// edge case
-		assertEquals(static_scenario.getVehicleTypeIndex(null),-1);
+		assertEquals(static_scenario.getVehicleTypeIndexForName(null),-1);
 	}
 	
 	@Test

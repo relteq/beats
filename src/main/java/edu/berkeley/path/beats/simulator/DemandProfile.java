@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.simulator;
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	private Scenario myScenario;
+	private int vehicle_type_index;
 	private Double [] current_sample;
 	private boolean isOrphan;
 	private double dtinseconds;				// not really necessary
@@ -60,6 +61,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
+		this.vehicle_type_index = myScenario.getVehicleTypeIndexForId(this.getVehicleTypeId());
 		
 		isdone = false;
 		

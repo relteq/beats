@@ -69,10 +69,6 @@ final class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 		if(getDemandProfile().isEmpty())
 			return;
 		
-		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
-			BeatsErrorLog.addError("List of vehicle types in demand profile id=" + this.getId() + " does not match that of settings.");
-		
 		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile)dp).validate();		
 	}
