@@ -118,9 +118,9 @@ public class Event_Node_Split_Ratio extends Event {
 				for (int i = 0; i < vt_index.length; ++i)
 					vt_index[i] = i;
 			} else {
-				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleType().size()];
+				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleTypeX().size()];
 				int i = 0;
-				for (edu.berkeley.path.beats.jaxb.VehicleType vt : srevent.getVehicleTypeOrder().getVehicleType())
+				for (edu.berkeley.path.beats.jaxb.VehicleTypeX vt : srevent.getVehicleTypeOrder().getVehicleTypeX())
 					vt_index[i++] = getMyScenario().getVehicleTypeIndex(vt.getName());
 			}
 			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());

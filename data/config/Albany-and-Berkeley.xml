@@ -2,13 +2,18 @@
 <scenario xmlns:aurora="http://path.berkeley.edu/aurora" id="-1" name="" schemaVersion="2.0.2">
   <settings>
     <VehicleTypes>
-      <vehicle_type name="General vehicle" weight="1"/>
+      <vehicle_type_x name="General vehicle" weight="1"/>
     </VehicleTypes>
     <units>US</units>
   </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="General vehicle" size_factor="1.0"/>					
+   </VehicleTypeSet>  
+   
   <SplitRatioSet project_id="-1" id="-1">
     <VehicleTypeOrder>
-      <vehicle_type name="General vehicle"/>
+      <vehicle_type_x name="General vehicle"/>
     </VehicleTypeOrder>
     <splitratioProfile id="-1" dt="900" node_id="-51">
       <splitratio vehicle_type_id="0" link_in="-5121" link_out="-5123">0.930000</splitratio>
@@ -775,43 +780,43 @@
   </SplitRatioSet>
   <DemandSet>
     <VehicleTypeOrder>
-      <vehicle_type name="General vehicle"/>
+      <vehicle_type_x name="General vehicle"/>
     </VehicleTypeOrder>
-    <demandProfile dt="900" knob="1" link_id_origin="-5180">108.000000,184.000000,224.000000,288.000000,212.000000,148.000000,180.000000,156.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5240">24.000000,28.000000,20.000000,60.000000,56.000000,56.000000,28.000000,40.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5380">0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5440">200.000000,276.000000,356.000000,364.000000,324.000000,316.000000,452.000000,372.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5480">264.000000,316.000000,396.000000,464.000000,436.000000,392.000000,408.000000,348.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5540">124.000000,140.000000,120.000000,160.000000,208.000000,148.000000,140.000000,128.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5640">524.000000,812.000000,712.000000,824.000000,796.000000,888.000000,788.000000,804.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5680">468.000000,568.000000,852.000000,884.000000,1000.000000,948.000000,652.000000,696.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5740">100.000000,176.000000,128.000000,176.000000,264.000000,148.000000,72.000000,52.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5840">216.000000,260.000000,452.000000,312.000000,304.000000,320.000000,256.000000,336.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5880">172.000000,376.000000,500.000000,436.000000,440.000000,416.000000,400.000000,376.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5940">256.000000,336.000000,360.000000,372.000000,424.000000,356.000000,368.000000,288.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5980">320.000000,324.000000,520.000000,620.000000,736.000000,620.000000,604.000000,596.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6040">92.000000,56.000000,96.000000,132.000000,104.000000,116.000000,52.000000,68.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6080">240.000000,204.000000,168.000000,284.000000,324.000000,388.000000,292.000000,228.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6140">644.000000,804.000000,952.000000,1016.000000,1008.000000,932.000000,1008.000000,1024.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6180">632.000000,784.000000,904.000000,1016.000000,904.000000,880.000000,832.000000,824.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6240">32.000000,40.000000,48.000000,36.000000,56.000000,44.000000,56.000000,0.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6340">64.000000,80.000000,52.000000,64.000000,100.000000,92.000000,120.000000,128.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6380">32.000000,44.000000,44.000000,32.000000,176.000000,132.000000,108.000000,76.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6440">224.000000,212.000000,224.000000,268.000000,356.000000,332.000000,260.000000,284.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6480">240.000000,280.000000,408.000000,396.000000,428.000000,460.000000,472.000000,484.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6540">140.000000,144.000000,144.000000,148.000000,132.000000,164.000000,208.000000,184.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6640">604.000000,612.000000,688.000000,756.000000,740.000000,640.000000,776.000000,732.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6680">376.000000,392.000000,588.000000,636.000000,644.000000,676.000000,664.000000,600.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2112701">188.000000,228.000000,92.000000,32.000000,0.000000,152.000000,104.000000,44.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2112801">148.000000,88.000000,84.000000,44.000000,24.000000,0.000000,268.000000,0.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2112901">4.000000,148.000000,4.000000,0.000000,0.000000,40.000000,0.000000,124.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2113001">116.000000,12.000000,32.000000,120.000000,12.000000,0.000000,0.000000,0.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2113101">0.000000,0.000000,16.000000,0.000000,0.000000,220.000000,88.000000,112.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2113201">84.000000,136.000000,84.000000,280.000000,100.000000,36.000000,288.000000,204.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2113301">0.000000,0.000000,28.000000,36.000000,100.000000,88.000000,60.000000,60.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-2113401">64.000000,0.000000,0.000000,0.000000,0.000000,16.000000,0.000000,0.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-5160">760.000000,960.000000,1196.000000,1164.000000,1204.000000,1160.000000,1092.000000,1180.000000,0.000000</demandProfile>
-    <demandProfile dt="900" knob="1" link_id_origin="-6620">396.000000,444.000000,644.000000,752.000000,836.000000,908.000000,860.000000,796.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5180">108.000000,184.000000,224.000000,288.000000,212.000000,148.000000,180.000000,156.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5240">24.000000,28.000000,20.000000,60.000000,56.000000,56.000000,28.000000,40.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5380">0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5440">200.000000,276.000000,356.000000,364.000000,324.000000,316.000000,452.000000,372.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5480">264.000000,316.000000,396.000000,464.000000,436.000000,392.000000,408.000000,348.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5540">124.000000,140.000000,120.000000,160.000000,208.000000,148.000000,140.000000,128.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5640">524.000000,812.000000,712.000000,824.000000,796.000000,888.000000,788.000000,804.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5680">468.000000,568.000000,852.000000,884.000000,1000.000000,948.000000,652.000000,696.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5740">100.000000,176.000000,128.000000,176.000000,264.000000,148.000000,72.000000,52.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5840">216.000000,260.000000,452.000000,312.000000,304.000000,320.000000,256.000000,336.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5880">172.000000,376.000000,500.000000,436.000000,440.000000,416.000000,400.000000,376.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5940">256.000000,336.000000,360.000000,372.000000,424.000000,356.000000,368.000000,288.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5980">320.000000,324.000000,520.000000,620.000000,736.000000,620.000000,604.000000,596.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6040">92.000000,56.000000,96.000000,132.000000,104.000000,116.000000,52.000000,68.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6080">240.000000,204.000000,168.000000,284.000000,324.000000,388.000000,292.000000,228.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6140">644.000000,804.000000,952.000000,1016.000000,1008.000000,932.000000,1008.000000,1024.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6180">632.000000,784.000000,904.000000,1016.000000,904.000000,880.000000,832.000000,824.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6240">32.000000,40.000000,48.000000,36.000000,56.000000,44.000000,56.000000,0.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6340">64.000000,80.000000,52.000000,64.000000,100.000000,92.000000,120.000000,128.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6380">32.000000,44.000000,44.000000,32.000000,176.000000,132.000000,108.000000,76.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6440">224.000000,212.000000,224.000000,268.000000,356.000000,332.000000,260.000000,284.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6480">240.000000,280.000000,408.000000,396.000000,428.000000,460.000000,472.000000,484.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6540">140.000000,144.000000,144.000000,148.000000,132.000000,164.000000,208.000000,184.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6640">604.000000,612.000000,688.000000,756.000000,740.000000,640.000000,776.000000,732.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6680">376.000000,392.000000,588.000000,636.000000,644.000000,676.000000,664.000000,600.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2112701">188.000000,228.000000,92.000000,32.000000,0.000000,152.000000,104.000000,44.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2112801">148.000000,88.000000,84.000000,44.000000,24.000000,0.000000,268.000000,0.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2112901">4.000000,148.000000,4.000000,0.000000,0.000000,40.000000,0.000000,124.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2113001">116.000000,12.000000,32.000000,120.000000,12.000000,0.000000,0.000000,0.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2113101">0.000000,0.000000,16.000000,0.000000,0.000000,220.000000,88.000000,112.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2113201">84.000000,136.000000,84.000000,280.000000,100.000000,36.000000,288.000000,204.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2113301">0.000000,0.000000,28.000000,36.000000,100.000000,88.000000,60.000000,60.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-2113401">64.000000,0.000000,0.000000,0.000000,0.000000,16.000000,0.000000,0.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-5160">760.000000,960.000000,1196.000000,1164.000000,1204.000000,1160.000000,1092.000000,1180.000000,0.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="900" knob="1" link_id_origin="-6620">396.000000,444.000000,644.000000,752.000000,836.000000,908.000000,860.000000,796.000000,0.000000</demandProfile>
   </DemandSet>
   <ControllerSet project_id="-1">
     <controller dt="1" id="-1" name="" type="SIG_Pretimed" enabled="true">

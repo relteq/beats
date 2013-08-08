@@ -2,10 +2,15 @@
 <scenario id="-1" name="" schemaVersion="2.0.2">
   <settings>
     <VehicleTypes>
-      <vehicle_type name="SOV" weight="1"/>
+      <vehicle_type_x name="SOV" weight="1"/>
     </VehicleTypes>
     <units>US</units>
   </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="SOV" size_factor="1.0"/>					
+   </VehicleTypeSet>  
+   
   <ControllerSet project_id="-1">
     <controller dt="300" type="IRM_ALINEA" id="-1" enabled="true">
       <parameters>
@@ -21,7 +26,7 @@
   </ControllerSet>
   <InitialDensitySet project_id="-1" id="-1" >
     <VehicleTypeOrder>
-      <vehicle_type name="SOV"/>
+      <vehicle_type_x name="SOV"/>
     </VehicleTypeOrder>
     <density id="-1" vehicle_type_id="0" link_id="-1">1.151128343</density>
     <density id="-1" vehicle_type_id="0" link_id="-2">2.323622691</density>
@@ -372,7 +377,7 @@
   </InitialDensitySet>
   <SplitRatioSet project_id="-1" id="-1">
     <VehicleTypeOrder>
-      <vehicle_type name="SOV"/>
+      <vehicle_type_x name="SOV"/>
     </VehicleTypeOrder>
     <splitratioProfile id="-1" dt="300" node_id="-67">
       <splitratio vehicle_type_id="0" link_in="-8" link_out="-9">-1.000000</splitratio>
@@ -554,41 +559,41 @@
   </SplitRatioSet>
   <DemandSet>
     <VehicleTypeOrder>
-      <vehicle_type name="SOV"/>
+      <vehicle_type_x name="SOV"/>
     </VehicleTypeOrder>
-    <demandProfile dt="300" knob="1" link_id_origin="-289">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-340">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-290">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-292">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-294">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-295">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-298">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-301">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-302">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-303">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-305">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-307">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-309">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-310">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-312">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-314">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-315">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-317">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-318">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-319">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-320">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-322">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-323">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-325">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-326">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-328">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-329">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-332">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-333">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-335">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-337">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-339">400.000000</demandProfile>
-    <demandProfile dt="300" knob="1" link_id_origin="-344">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-289">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-340">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-290">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-292">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-294">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-295">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-298">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-301">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-302">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-303">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-305">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-307">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-309">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-310">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-312">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-314">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-315">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-317">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-318">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-319">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-320">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-322">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-323">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-325">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-326">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-328">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-329">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-332">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-333">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-335">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-337">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-339">400.000000</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-344">400.000000</demandProfile>
   </DemandSet>
   <FundamentalDiagramSet>
     <fundamentalDiagramProfile id="-1" link_id="-1">

@@ -4,13 +4,17 @@
   <settings>
     <units>US</units>
     <VehicleTypes>
-      <vehicle_type name="car" weight="1.0"/>
+      <vehicle_type_x name="car" weight="1.0"/>
     </VehicleTypes>
   </settings>
   
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="car" size_factor="1.0"/>					
+   </VehicleTypeSet>  
+  
   <SplitRatioSet project_id="-1" id="-1">
     <VehicleTypeOrder>
-      <vehicle_type name="car"/>
+      <vehicle_type_x name="car"/>
     </VehicleTypeOrder>
     <splitratioProfile id="-1" dt="300" node_id="-4">
       <splitratio vehicle_type_id="0" link_in="-3" link_out="-40">1</splitratio>
@@ -20,10 +24,10 @@
   
   <DemandSet>
     <VehicleTypeOrder>
-      <vehicle_type name="car"/>
+      <vehicle_type_x name="car"/>
     </VehicleTypeOrder>
-    <demandProfile dt="300" start_time="100" knob="1" link_id_origin="-6">400</demandProfile>
-    <demandProfile dt="300" start_time="100" knob="1" link_id_origin="-1">100</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" start_time="100" knob="1" link_id_origin="-6">400</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" start_time="100" knob="1" link_id_origin="-1">100</demandProfile>
   </DemandSet>
   
   <FundamentalDiagramSet>

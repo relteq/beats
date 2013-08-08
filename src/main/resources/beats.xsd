@@ -351,12 +351,12 @@
 		  <xs:element name="VehicleTypes">
 			<xs:complexType>
 			  <xs:sequence>
-				<xs:element ref="vehicle_type" minOccurs="1" maxOccurs="unbounded" />
+				<xs:element ref="vehicle_type_x" minOccurs="1" maxOccurs="unbounded" />
 			  </xs:sequence>
 			</xs:complexType>
 		  </xs:element>
 
-			  <xs:element name="vehicle_type">
+			  <xs:element name="vehicle_type_x">
 				<xs:complexType>
 				  <xs:attribute name="name" type="xs:string" use="required" />
 				  <xs:attribute name="weight" type="xs:decimal" use="optional" />		<!-- default is 1, not used if part if VehicleTypeOrder -->
@@ -393,6 +393,7 @@
         <xs:element ref="description" minOccurs="0" maxOccurs="1" />
         <xs:element ref="settings" minOccurs="0"  maxOccurs="1" />
         <xs:element ref="NetworkSet" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="VehicleTypeSet" minOccurs="1" />
         <xs:element ref="SignalSet" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="SensorSet" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
@@ -765,6 +766,7 @@
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
 			  <xs:attribute name="link_id_origin" type="xs:long" use="required" />
+			  <xs:attribute name="vehicle_type_id" type="xs:long" use="required" />
 			  <xs:attribute name="destination_network_id" type="xs:long" use="optional" />
 			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/time unit/vehicle type] -->
 			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
@@ -1058,7 +1060,7 @@
   <xs:element name="VehicleTypeOrder">
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="vehicle_type" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="vehicle_type_x" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>  

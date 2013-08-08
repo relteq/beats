@@ -121,8 +121,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.numVehicleTypes = 1;
 	    if(getSettings()!=null)
 	        if(getSettings().getVehicleTypes()!=null)
-	            if(getSettings().getVehicleTypes().getVehicleType()!=null) 
-	            	this.numVehicleTypes = getSettings().getVehicleTypes().getVehicleType().size();
+	            if(getSettings().getVehicleTypes().getVehicleTypeX()!=null) 
+	            	this.numVehicleTypes = getSettings().getVehicleTypes().getVehicleTypeX().size();
 
 		// network list
 		if(networkSet!=null)
@@ -437,7 +437,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		
 		// vtypeorder is not null
-		int numTypesInOrder = vtypeorder.getVehicleType().size();
+		int numTypesInOrder = vtypeorder.getVehicleTypeX().size();
 		int i,j;
 		vehicletypeindex = new Integer[numTypesInOrder];
 		for(i=0;i<numTypesInOrder;i++)
@@ -450,8 +450,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return vehicletypeindex;
 		
 		for(i=0;i<numTypesInOrder;i++){
-			String vtordername = vtypeorder.getVehicleType().get(i).getName();
-			List<edu.berkeley.path.beats.jaxb.VehicleType> settingsname = getSettings().getVehicleTypes().getVehicleType();
+			String vtordername = vtypeorder.getVehicleTypeX().get(i).getName();
+			List<edu.berkeley.path.beats.jaxb.VehicleTypeX> settingsname = getSettings().getVehicleTypes().getVehicleTypeX();
 			for(j=0;j<settingsname.size();j++){
 				if(settingsname.get(j).getName().equals(vtordername)){
 					vehicletypeindex[i] =  j;
@@ -627,8 +627,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(getSettings()==null || getSettings().getVehicleTypes()==null)
 			vehtypenames[0] = Defaults.vehicleType;
 		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleType().size();i++)
-				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleType().get(i).getName();
+			for(int i=0;i<getSettings().getVehicleTypes().getVehicleTypeX().size();i++)
+				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleTypeX().get(i).getName();
 		return vehtypenames;
 	}
 	

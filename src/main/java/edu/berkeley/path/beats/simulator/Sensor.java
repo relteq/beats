@@ -64,8 +64,8 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 		this.jaxbSensor = jaxbS;
 		this.myType = myType;
 		this.id = jaxbS.getId();
-		if(jaxbS.getLinkReference()!=null)
-			myLink = myScenario.getLinkWithId(jaxbS.getLinkReference().getId());
+		if(jaxbS.getLinkId()!=null)
+			myLink = myScenario.getLinkWithId(jaxbS.getLinkId());
 	}
 	
 	/////////////////////////////////////////////////////////////////////

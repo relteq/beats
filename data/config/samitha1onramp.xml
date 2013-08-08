@@ -4,9 +4,13 @@
   <settings>
     <units>SI</units>
     <VehicleTypes>
-      <vehicle_type name="car" weight="1.0"/>
+      <vehicle_type_x name="car" weight="1.0"/>
     </VehicleTypes>
   </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="car" size_factor="1.0"/>					
+   </VehicleTypeSet>  
 
   <InitialDensitySet project_id="-1" id="-1" >
     <density id="-1" vehicle_type_id="0" link_id="-1">0.18</density>
@@ -16,8 +20,8 @@
   </InitialDensitySet>
 
   <DemandSet>
-    <demandProfile dt="5" link_id_origin="-1">0.18, 0</demandProfile>
-    <demandProfile dt="5" link_id_origin="-2">0.0</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="5" link_id_origin="-1">0.18, 0</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="5" link_id_origin="-2">0.0</demandProfile>
   </DemandSet>
 
   <ControllerSet project_id="-1">

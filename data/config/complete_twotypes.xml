@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario id="0" name="null" schemaVersion="2.0.2">
   <settings>
-    <units>US</units>
     <VehicleTypes>
       <vehicle_type_x name="car" weight="1.0"/>
+      <vehicle_type_x name="truck" weight="2.0"/>
     </VehicleTypes>
+    <units>US</units>
   </settings>
   
    <VehicleTypeSet project_id="-1" id="-1">
-		<vehicleType id="0" name="car" size_factor="1.0"/>					
+		<vehicleType id="0" name="car" size_factor="1.0"/>	
+		<vehicleType id="1" name="truck" size_factor="2.0"/>					
    </VehicleTypeSet>  
    
   <NetworkSet project_id="-1" id="-1">
@@ -118,8 +120,7 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="1" lanes="1" length="0.266743692783592" >
-          <link_type id="-1" name="freeway"/>
+        <link id="1" lanes="1" length="0.266743692783592">
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -127,8 +128,7 @@
           <end node_id="2"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="2" lanes="1" length="0.606473482246043" >
-          <link_type id="-1" name="freeway"/>
+        <link id="2" lanes="1" length="0.606473482246043">
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -136,8 +136,7 @@
           <end node_id="3"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="3" lanes="1" length="0.814669238313652" >
-          <link_type id="-1" name="freeway"/>
+        <link id="3" lanes="1" length="0.814669238313652">
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -145,8 +144,7 @@
           <end node_id="4"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="4" lanes="1" length="0.527494326813265" >
-          <link_type id="-1" name="freeway"/>
+        <link id="4" lanes="1" length="0.527494326813265">
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -154,8 +152,7 @@
           <end node_id="5"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="5" lanes="1" length="0.364901146966108" >
-          <link_type id="-1" name="freeway"/>
+        <link id="5" lanes="1" length="0.364901146966108">
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -164,7 +161,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="6" lanes="1" length="0.372088439716414" >
-          <link_type id="-1" name="onramp"/>
+		  <link_type id="-1" name="onramp"/>
           <roads>
             <road id="0" name="null"/>
           </roads>
@@ -173,7 +170,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="7" lanes="1" length="0.239126877222358" >
-          <link_type id="-1" name="offramp"/>
+		  <link_type id="-1" name="offramp"/>
           <roads>
             <road id="0" name="University Ave"/>
           </roads>
@@ -184,137 +181,42 @@
       </LinkList>
     </network>
   </NetworkSet>
-  <SensorSet id="-1" project_id="-1">
-    <sensor id="1" type="loop" link_id="1">
-      <display_position>
-        <point elevation="0" lat="34.1215" lng="-117.6967"/>
-      </display_position>
-      <parameters>
-        <parameter name="length" value="0"/>
-        <parameter name="vds" value="768041"/>
-        <parameter name="offset_in_link" value="0"/>
-        <parameter name="lanes" value="4"/>
-        <parameter name="hwy_name" value="210"/>
-        <parameter name="hwy_dir" value="E"/>
-        <parameter name="start_time" value="0"/>
-        <parameter name="postmile" value="52.139"/>
-        <parameter name="data_id" value="768041"/>
-        <parameter name="link_type" value="other"/>
-      </parameters>
-      <table name="data_sources">
-        <column_names>
-          <column_name name="url" key="false"/>
-          <column_name name="dt" key="false"/>
-          <column_name name="format" key="false"/>
-        </column_names>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
-      </table>
-    </sensor>
-    <sensor id="2" type="loop" link_id="100">
-      <display_position>
-        <point elevation="0" lat="34.1215" lng="-117.6967"/>
-      </display_position>
-      <parameters>
-        <parameter name="length" value="0"/>
-        <parameter name="vds" value="768041"/>
-        <parameter name="offset_in_link" value="0"/>
-        <parameter name="lanes" value="4"/>
-        <parameter name="hwy_name" value="210"/>
-        <parameter name="hwy_dir" value="E"/>
-        <parameter name="start_time" value="0"/>
-        <parameter name="postmile" value="52.139"/>
-        <parameter name="data_id" value="768041"/>
-        <parameter name="link_type" value="other"/>
-      </parameters>
-      <table name="data_sources">
-        <column_names>
-          <column_name name="url" key="false"/>
-          <column_name name="dt" key="false"/>
-          <column_name name="format" key="false"/>
-        </column_names>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
-      </table>
-    </sensor>
-  </SensorSet>
   <InitialDensitySet project_id="-1" id="-1" >
-    <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
     <density id="-1" vehicle_type_id="0" link_id="1">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="1">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="2">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="2">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="3">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="3">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="4">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="4">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="5">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="5">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="6">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="6">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="7">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="7">1.0</density>
     <density id="-1" vehicle_type_id="0" link_id="100">2.0</density>
+    <density id="-1" vehicle_type_id="1" link_id="100">1.0</density>
   </InitialDensitySet>
   <SplitRatioSet project_id="-1" id="-1">
-    <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
     <splitratioProfile id="-1" dt="300" node_id="2">
       <splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="1" link_out="2">1</splitratio>
     </splitratioProfile>
     <splitratioProfile id="-1" dt="300" node_id="4">
       <splitratio vehicle_type_id="0" link_in="3" link_out="4">0.8</splitratio>
+      <splitratio vehicle_type_id="1" link_in="3" link_out="4">0.8</splitratio>
     </splitratioProfile>
-    <splitratioProfile id="-1" dt="300" node_id="500">
+    <splitratioProfile id="-1" dt="300" node_id="5">
       <splitratio vehicle_type_id="0" link_in="4" link_out="5">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="4" link_out="5">1</splitratio>
     </splitratioProfile>
   </SplitRatioSet>
-  <EventSet project_id="-1" id="-1">
-    <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">
-      <targetElements>
-        <scenarioElement id="2" type="link"/>
-      </targetElements>
-      <parameters>
-        <parameter name="capacity" value="1800"/>
-        <parameter name="capacity_drop" value="0"/>
-        <parameter name="congestion_speed" value="13.8461538461538"/>
-        <parameter name="jam_density" value="150"/>
-        <parameter name="free_flow_speed" value="90"/>
-      </parameters>
-    </event>
-  </EventSet>
   <DemandSet>
-    <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
-    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="6">400</demandProfile>
-    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="1">100</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="6">400:100</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="1">100:50</demandProfile>
   </DemandSet>
-  <ControllerSet project_id="-1">
-    <controller dt="5" type="IRM_ALINEA" id="1" enabled="true">
-      <parameters>
-        <parameter name="gain" value="50"/>
-      </parameters>
-      <targetElements>
-        <scenarioElement id="6" type="link"/>
-      </targetElements>
-      <feedbackElements>
-        <scenarioElement id="2" type="link" usage="mainlinelink"/>
-      </feedbackElements>
-    </controller>
-  </ControllerSet>
   <FundamentalDiagramSet>
     <fundamentalDiagramProfile id="-1" link_id="1">
       <fundamentalDiagram capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>

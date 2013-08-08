@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario id="0" name="null" schemaVersion="2.0.2">
   <settings>
+  
     <VehicleTypes>
-      <vehicle_type_x name="SOV" weight="1"/>
+      <vehicle_type_x name="car" weight="1.0"/>
+      <vehicle_type_x name="truck" weight="2.5"/>
     </VehicleTypes>
+	
     <units>US</units>
   </settings>
   
    <VehicleTypeSet project_id="-1" id="-1">
-		<vehicleType id="0" name="SOV" size_factor="1.0"/>					
+		<vehicleType id="0" name="car" size_factor="1.0"/>	
+		<vehicleType id="1" name="truck" size_factor="2.5"/>				
    </VehicleTypeSet>  
    
   <SplitRatioSet project_id="-1" id="-1">
-    <VehicleTypeOrder>
-      <vehicle_type_x name="SOV"/>
-    </VehicleTypeOrder>
     <splitratioProfile id="-1" dt="300" node_id="-2">
-      <splitratio vehicle_type_id="0" link_in="-1" link_out="-2">1.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-1" link_out="-2">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="-1" link_out="-2">.1</splitratio>
     </splitratioProfile>
     <splitratioProfile id="-1" dt="300" node_id="-3">
-      <splitratio vehicle_type_id="0" link_in="-2" link_out="-3">1.000000</splitratio>
-      <splitratio vehicle_type_id="0" link_in="-6" link_out="-3">1.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-2" link_out="-3">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="-2" link_out="-3">.1</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-6" link_out="-3">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="-6" link_out="-3">.1</splitratio>
     </splitratioProfile>
     <splitratioProfile id="-1" dt="300" node_id="-4">
-      <splitratio vehicle_type_id="0" link_in="-3" link_out="-4">1.000000</splitratio>
-      <splitratio vehicle_type_id="0" link_in="-3" link_out="-7">0.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-3" link_out="-4">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="-3" link_out="-4">.1</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-3" link_out="-7">0</splitratio>
+      <splitratio vehicle_type_id="1" link_in="-3" link_out="-7">0</splitratio>
     </splitratioProfile>
     <splitratioProfile id="-1" dt="300" node_id="-5">
-      <splitratio vehicle_type_id="0" link_in="-4" link_out="-5">1.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-4" link_out="-5">1</splitratio>
+      <splitratio vehicle_type_id="1" link_in="-4" link_out="-5">.1</splitratio>
     </splitratioProfile>
   </SplitRatioSet>
   <EventSet project_id="-1" id="-1">
@@ -36,20 +43,25 @@
         <scenarioElement id="-2" type="link"/>
       </targetElements>
       <parameters>
-        <parameter name="capacity" value="1800"/>
+        <parameter name="capacity" value="900"/>
         <parameter name="capacity_drop" value="0"/>
-        <parameter name="congestion_speed" value="13.8461538461538"/>
-        <parameter name="jam_density" value="150"/>
-        <parameter name="free_flow_speed" value="90"/>
+        <parameter name="congestion_speed" value="15"/>
+        <parameter name="jam_density" value="75"/>
+        <parameter name="free_flow_speed" value="60"/>
       </parameters>
+    </event>
+    <event enabled="true" tstamp="20" type="fundamental_diagram" id="-2">
+      <targetElements>
+        <scenarioElement id="-3" type="link"/>
+      </targetElements>
+      <parameters/>
     </event>
   </EventSet>
   <DemandSet>
-    <VehicleTypeOrder>
-      <vehicle_type_x name="SOV"/>
-    </VehicleTypeOrder>
-    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>
-    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-1">100.000000</demandProfile>
+    <demandProfile vehicle_type_id="1" dt="300" knob="1" link_id_origin="-6">400</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-6">200</demandProfile>
+    <demandProfile vehicle_type_id="1" dt="300" knob="1" link_id_origin="-1">100</demandProfile>
+    <demandProfile vehicle_type_id="0" dt="300" knob="1" link_id_origin="-1">50</demandProfile>
   </DemandSet>
   <ControllerSet project_id="-1">
     <controller dt="5" type="IRM_ALINEA" id="-1" enabled="true">
@@ -194,8 +206,8 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="-1" lanes="1" length="0.266743692783592">
-		  <link_type id="-1" name="freeway"/>
+        <link id="-1" lanes="1" length="0.266743692783592" >
+          <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -203,8 +215,8 @@
           <end node_id="-2"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-2" lanes="1" length="0.606473482246043">
-		  <link_type id="-1" name="freeway"/>
+        <link id="-2" lanes="1" length="0.606473482246043" >
+          <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -212,8 +224,8 @@
           <end node_id="-3"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-3" lanes="1" length="0.814669238313652">
-		  <link_type id="-1" name="freeway"/>
+        <link id="-3" lanes="1" length="0.814669238313652" >
+          <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -221,8 +233,8 @@
           <end node_id="-4"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-4" lanes="1" length="0.527494326813265">
-		  <link_type id="-1" name="freeway"/>
+        <link id="-4" lanes="1" length="0.527494326813265" >
+          <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -230,8 +242,8 @@
           <end node_id="-5"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-5" lanes="1" length="0.364901146966108">
-		  <link_type id="-1" name="freeway"/>
+        <link id="-5" lanes="1" length="0.364901146966108" >
+          <link_type id="-1" name="freeway"/>
           <roads>
             <road id="0" name="I-80 E"/>
           </roads>
@@ -239,8 +251,8 @@
           <end node_id="-6"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-6" lanes="1" length="0.372088439716414">
-		  <link_type id="-1" name="onramp"/>
+        <link id="-6" lanes="1" length="0.372088439716414" >
+          <link_type id="-1" name="onramp"/>
           <roads>
             <road id="0" name="null"/>
           </roads>
@@ -249,7 +261,7 @@
           <dynamics type="CTM"/>
         </link>
         <link id="-7" lanes="1" length="0.239126877222358" >
-		  <link_type id="-1" name="offramp"/>
+          <link_type id="-1" name="offramp"/>
           <roads>
             <road id="0" name="University Ave"/>
           </roads>
