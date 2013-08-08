@@ -180,8 +180,7 @@
     </network>
   </NetworkSet>
   <SensorSet id="-1" project_id="-1">
-    <sensor id="1" type="loop">
-      <link_reference id="1"/>
+    <sensor id="1" type="loop" link_id="1">
       <display_position>
         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
@@ -215,8 +214,7 @@
         </row>
       </table>
     </sensor>
-    <sensor id="2" type="loop">
-      <link_reference id="100"/>
+    <sensor id="2" type="loop" link_id="100">
       <display_position>
         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
