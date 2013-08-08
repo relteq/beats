@@ -346,8 +346,8 @@
 					<xs:pattern value="US|Metric|SI" />
 				</xs:restriction>
 			</xs:simpleType>
-		  </xs:element>
-		  
+		</xs:element>
+		
 		  <xs:element name="VehicleTypes">
 			<xs:complexType>
 			  <xs:sequence>
@@ -362,8 +362,29 @@
 				  <xs:attribute name="weight" type="xs:decimal" use="optional" />		<!-- default is 1, not used if part if VehicleTypeOrder -->
 				</xs:complexType>
 			  </xs:element>
-
+			  
+  <!-- VehicleTypeSet .................................................................. -->
   
+	<xs:element name="VehicleTypeSet">
+		<xs:complexType>
+      <xs:sequence>
+        <xs:element ref="vehicleType" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="required"/>
+			<xs:attribute name="project_id" type="xs:long" use="optional" default="0" />
+		</xs:complexType>
+	</xs:element>
+
+		<xs:element name="vehicleType">
+			<xs:complexType>
+				<xs:attribute name="id" type="xs:long" use="required" />
+				<xs:attribute name="name" type="xs:string" use="required" />
+				<xs:attribute name="size_factor" type="xs:double" use="optional" default="1" />
+				<xs:attribute name="is_standard" type="xs:int" use="optional" />
+				<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+			</xs:complexType>
+		</xs:element>
+		  
   <!-- scenario .................................................................. -->
   
 	<xs:element name="scenario">
@@ -733,6 +754,7 @@
 			  
 		  <xs:element name="demandProfile">									<!-- content in [veh/time unit/vehicle type] -->
 			<xs:complexType mixed="true">
+			  <!-- <xs:attribute name="vehicle_type_id" type="xs:long" use="required" /> -->
 			  <xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
 			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
 			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
@@ -1026,8 +1048,7 @@
           <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				</xs:complexType>
 			</xs:element>
-			
-		  
+
   <xs:element name="VehicleTypeOrder">
     <xs:complexType>
       <xs:sequence>
@@ -1036,6 +1057,7 @@
     </xs:complexType>
   </xs:element>  
 
+			
 			
 </xs:schema>
 
