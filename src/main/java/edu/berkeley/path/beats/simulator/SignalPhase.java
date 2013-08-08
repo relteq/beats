@@ -53,11 +53,11 @@ final public class SignalPhase {
 	private Signal.NEMA myNEMA   = Signal.NEMA.NULL;
 	
 	// Basic timing parameters
-	private float mingreen 			= 0f;
-	private float yellowtime 			= 0f;
-	private float redcleartime 		= 0f;
-	private float actualyellowtime 	= 0f;
-	private float actualredcleartime 	= 0f;
+	private double mingreen 			= 0.0;
+	private double yellowtime 			= 0.0;
+	private double redcleartime 		= 0.0;
+	private double actualyellowtime 	= 0.0;
+	private double actualredcleartime 	= 0.0;
 
 	// timers
 	private Clock bulbtimer;
@@ -117,18 +117,18 @@ final public class SignalPhase {
 		else
 			myNEMA = Signal.NEMA.NULL;
 		
-		if(jaxbPhase.getMinGreenTime()!=null)
-			this.mingreen = jaxbPhase.getMinGreenTime().floatValue();
+		if(!Double.isNaN(jaxbPhase.getMinGreenTime()))
+			this.mingreen = jaxbPhase.getMinGreenTime();
 		else
 			this.mingreen = Defaults.mingreen;
 		
-		if(jaxbPhase.getRedClearTime()!=null)
-			this.redcleartime = jaxbPhase.getRedClearTime().floatValue();
+		if(!Double.isNaN(jaxbPhase.getRedClearTime()))
+			this.redcleartime = jaxbPhase.getRedClearTime();
 		else
 			this.redcleartime = Defaults.redcleartime;
 
-		if(jaxbPhase.getYellowTime()!=null)
-			this.yellowtime = jaxbPhase.getYellowTime().floatValue();
+		if(!Double.isNaN(jaxbPhase.getYellowTime()))
+			this.yellowtime = jaxbPhase.getYellowTime();
 		else
 			this.yellowtime = Defaults.yellowtime;
 
@@ -370,13 +370,13 @@ final public class SignalPhase {
 	// protected interface
 	/////////////////////////////////////////////////////////////////////		
 	
-	public void setActualredcleartime(float actualredcleartime) {
+	public void setActualredcleartime(double actualredcleartime) {
 		if(BeatsMath.lessthan(actualredcleartime,0d))
 			return;
 		this.actualredcleartime = actualredcleartime;
 	}
 	
-	public void setActualyellowtime(float actualyellowtime) {
+	public void setActualyellowtime(double actualyellowtime) {
 		if(BeatsMath.lessthan(actualyellowtime,0d))
 			return;
 		this.actualyellowtime = actualyellowtime;
@@ -438,15 +438,15 @@ final public class SignalPhase {
 		return opposingPhase;
 	}
 
-	public float getYellowtime() {
+	public double getYellowtime() {
 		return yellowtime;
 	}
 
-	public float getRedcleartime() {
+	public double getRedcleartime() {
 		return redcleartime;
 	}
 
-	public float getMingreen() {
+	public double getMingreen() {
 		return mingreen;
 	}
 
@@ -454,11 +454,11 @@ final public class SignalPhase {
 		return myNEMA;
 	}
 	
-	public float getActualyellowtime() {
+	public double getActualyellowtime() {
 		return actualyellowtime;
 	}
 
-	public float getActualredcleartime() {
+	public double getActualredcleartime() {
 		return actualredcleartime;
 	}
 

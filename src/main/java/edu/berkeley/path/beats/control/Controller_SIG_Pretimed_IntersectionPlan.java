@@ -56,11 +56,11 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 	// list of holds and force-off points 
 	protected ArrayList<Signal.Command> command = new ArrayList<Signal.Command>();
 	int nextcommand;
-	float lastcommandtime;
+	double lastcommandtime;
 		
 	private int numstages;
-	private Float [] greentime;
-	private Float[] stagelength;
+	private double [] greentime;
+	private double[] stagelength;
 	private Signal.NEMA [] movA;
 	private Signal.NEMA [] movB;
 
@@ -89,7 +89,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		if(numstages<=1)
 			return;		
 		
-		greentime = new Float[numstages];
+		greentime = new double[numstages];
 		movA = new Signal.NEMA[numstages];
 		movB = new Signal.NEMA[numstages];
 	
@@ -98,7 +98,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			if (null != stage.getGreenTime())
 				greentime[i] = stage.getGreenTime().floatValue();
 			else
-				greentime[i] = null;
+				greentime[i] = Double.NaN;
 
 			movA[i] = Signal.String2NEMA(stage.getMovA());
 			movB[i] = Signal.String2NEMA(stage.getMovB());
@@ -110,9 +110,9 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		int k;
 		SignalPhase pA;
 		SignalPhase pB;
-		float y,r,yA,yB,rA,rB;
+		double y,r,yA,yB,rA,rB;
 		float totphaselength = 0;
-		stagelength = new Float[numstages];
+		stagelength = new double[numstages];
 		for(k=0;k<numstages;k++){
 	
 			pA = mySignal.getPhaseByNEMA(movA[k]);
@@ -121,10 +121,10 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 			if(pA==null && pB==null)
 				return;
 			
-			yA = pA==null ? 0f : pA.getYellowtime();
-			rA = pA==null ? 0f : pA.getRedcleartime();
-			yB = pB==null ? 0f : pB.getYellowtime();
-			rB = pB==null ? 0f : pB.getRedcleartime();
+			yA = pA==null ? 0.0 : pA.getYellowtime();
+			rA = pA==null ? 0.0 : pA.getRedcleartime();
+			yB = pB==null ? 0.0 : pB.getYellowtime();
+			rB = pB==null ? 0.0 : pB.getRedcleartime();
 			
 			y = Math.max(yA,yB);
 			r = Math.max(rA,rB);
@@ -154,7 +154,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		}
 		
 		// compute hold and forceoff points ............................................
-		float stime, etime;
+		double stime, etime;
 		int nextstage;
 		stime=0;
 		for(k=0;k<numstages;k++){
@@ -223,7 +223,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		
 		//  greentime, movA, movB
 		for(int k=0;k<numstages;k++){
-			if(greentime[k]==null || greentime[k]<=0)
+			if(Double.isNaN(greentime[k]) || greentime[k]<=0)
 				BeatsErrorLog.addError("Invalid green time in stage for signal id=" + mySignal.getId());
 			if(movA[k]==null && movB[k]==null)
 				BeatsErrorLog.addError("Invalid phase in stage for signal id=" + mySignal.getId());
@@ -283,7 +283,7 @@ public class Controller_SIG_Pretimed_IntersectionPlan {
 		if(reltime>lastcommandtime)
 			return;
 		
-		float nexttime = command.get(nextcommand).time;
+		double nexttime = command.get(nextcommand).time;
 		
 		if(nexttime<=reltime){
 			while(nexttime<=reltime){

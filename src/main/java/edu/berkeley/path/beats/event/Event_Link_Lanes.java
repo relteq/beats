@@ -95,7 +95,7 @@ public class Event_Link_Lanes extends Event {
 		for(ScenarioElement s : getTargets()){
 			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)
-				newlanes = ((edu.berkeley.path.beats.jaxb.Link)targetlink).getLanes().doubleValue();
+				newlanes = ((edu.berkeley.path.beats.jaxb.Link)targetlink).getLanes();
 			else
 				newlanes =  targetlink.get_Lanes();
 			newlanes += deltalanes;

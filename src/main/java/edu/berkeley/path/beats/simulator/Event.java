@@ -70,7 +70,7 @@ public class Event implements Comparable {
 		this.jaxbEvent = jaxbE;
 		this.myScenario = myScenario;
 		this.myType = myType;
-		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimdtinseconds());		// assume in seconds
+		this.timestampstep = BeatsMath.round(jaxbE.getTstamp()/myScenario.getSimdtinseconds());		// assume in seconds
 		this.targets = new ArrayList<ScenarioElement>();
 		if(jaxbE.getTargetElements()!=null)
 			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )

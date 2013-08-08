@@ -106,10 +106,10 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		
 		// read start time, convert to stepinitial
 		double starttime;
-		if( getStartTime()!=null)
-			starttime = getStartTime().floatValue();	// assume given in seconds
+		if( Double.isInfinite(getStartTime()))
+			starttime = 0d;
 		else
-			starttime = 0f;
+			starttime = getStartTime();	// assume given in seconds
 		
 		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 	}

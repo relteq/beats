@@ -226,7 +226,11 @@ public class UnitConverter {
 		return null == value ? null : BigDecimal.valueOf(converter.convert(value.doubleValue()));
 	}
 
-	private BigDecimal convertLength(BigDecimal value) {
+	private double convert(double value, javax.measure.converter.UnitConverter converter) {
+		return converter.convert(value);
+	}
+	
+	private double convertLength(double value) {
 		return convert(value, lconv);
 	}
 

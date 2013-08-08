@@ -8,11 +8,11 @@
     </VehicleTypes>
   </settings>
 
-  <InitialDensitySet>
-    <density link_id="-1">0.18</density>
-    <density link_id="-2">0.04</density>
-    <density link_id="1">0.18</density>
-    <density link_id="2">0.00</density>
+  <InitialDensitySet project_id="-1" id="-1" >
+    <density id="-1" vehicle_type_id="0" link_id="-1">0.18</density>
+    <density id="-1" vehicle_type_id="0" link_id="-2">0.04</density>
+    <density id="-1" vehicle_type_id="0" link_id="1">0.18</density>
+    <density id="-1" vehicle_type_id="0" link_id="2">0.00</density>
   </InitialDensitySet>
 
   <DemandSet>

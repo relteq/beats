@@ -134,7 +134,7 @@
 			</xs:all>
       <xs:attribute name="name" type="xs:string" use="required" />
 			  <xs:attribute name="dt" type="xs:decimal" use="required" />			<!-- in time units -->
-			  <xs:attribute name="id" type="xs:long" use="required" />
+      <xs:attribute name="id" type="xs:long" use="required" />
       <xs:attribute name="mod_stamp" type="xs:string" use="optional" />
       <xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
       <xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
@@ -161,7 +161,7 @@
           <xs:element ref="node_type" minOccurs="0" />
         </xs:all>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
-				  <xs:attribute name="id" type="xs:long" use="required" />
+				<xs:attribute name="id" type="xs:long" use="required" />
 				<xs:attribute name="node_name" type="xs:string" use="optional" />
 				<xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
 				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />
@@ -230,34 +230,27 @@
 		</xs:complexType>
 	</xs:element>
 
-	
-	
-	
 		<xs:element name="link">
 			<xs:complexType>
-				<xs:all>
-				  <xs:element ref="begin" minOccurs="0" maxOccurs="1" />
-				  <xs:element ref="end" minOccurs="0" maxOccurs="1" />
-				  <xs:element ref="roads" minOccurs="0" maxOccurs="1" />
-				  <xs:element ref="dynamics" minOccurs="0" maxOccurs="1" />
-				  <xs:element ref="position" minOccurs="0" />
-				  <xs:element ref="shape" minOccurs="0" />
-				  <xs:element ref="link_type" minOccurs="0" />
-				</xs:all>
+        <xs:all>
+          <xs:element ref="begin" minOccurs="0" maxOccurs="1" />
+          <xs:element ref="end" minOccurs="0" maxOccurs="1" />
+          <xs:element ref="roads" minOccurs="0" maxOccurs="1" />
+          <xs:element ref="dynamics" minOccurs="0" maxOccurs="1" />
+          <xs:element ref="position" minOccurs="0" />
+          <xs:element ref="shape" minOccurs="0" />
+          <xs:element ref="link_type" minOccurs="0" />
+        </xs:all>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
-				  <xs:attribute name="lanes" type="xs:decimal" use="required" />
-				  <xs:attribute name="lane_offset" type="xs:decimal" use="optional" default="0" />
-				  <xs:attribute name="length" type="xs:decimal" use="required" /> 							<!-- in length units -->
-				  <!--
-				  <xs:attribute name="type" use="required">
-					<xs:simpleType>
-					  <xs:restriction base="xs:string">
-						<xs:pattern value="freeway|HOV|HOT|onramp|offramp|freeway_connector|street|intersection_approach|heavy_vehicle|electric_toll"/>
-					  </xs:restriction>
-					</xs:simpleType>
-				  </xs:attribute> -->
-				  <xs:attribute name="id" type="xs:long" use="required" />
-				  <xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
+				<xs:attribute name="lanes" type="xs:double" use="required" />
+				<xs:attribute name="lane_offset" type="xs:double" use="optional" default="0" />
+				<!-- in length units, as specified in settings.units -->
+				<xs:attribute name="length" type="xs:double" use="required" /> 
+				<xs:attribute name="speed_limit" type="xs:double" use="optional"/>
+				<xs:attribute name="link_name" type="xs:string" use="optional" />
+				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />
+				<xs:attribute name="id" type="xs:long" use="required" />
+				<xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
 				  <xs:attribute name="priority" use="optional">
 					  <xs:simpleType>
 						  <xs:restriction base="xs:decimal">
@@ -440,19 +433,23 @@
 
 			<xs:element name="phase">
 				<xs:complexType>
-				  <xs:all>
-					<xs:element ref="link_references" minOccurs="0" />
-				  </xs:all>
-				  <xs:attribute name="nema" type="xs:integer" use="required" />
-				  <xs:attribute name="protected" type="xs:boolean" use="required" />
-				  <xs:attribute name="permissive" type="xs:boolean" use="required" />
-				  <xs:attribute name="yellow_time" type="xs:decimal" use="required" />			<!-- in time units -->
-				  <xs:attribute name="red_clear_time" type="xs:decimal" use="required" />		<!-- in time units -->
-				  <xs:attribute name="min_green_time" type="xs:decimal" use="required" />		<!-- in time units -->
-				  <xs:attribute name="lag" type="xs:boolean" use="required" />
-				  <xs:attribute name="recall" type="xs:boolean" use="required" />
+          <xs:all>
+            <xs:element ref="link_references" minOccurs="0" />
+          </xs:all>
+					<!-- NEMA convention for phase numbering (1-8). For right hand turns,
+					use the negative of the adjacent through movement (e.g. nema="-2" moves with nema="2" -->
+					<xs:attribute name="nema" type="xs:integer" use="required" />
+					<xs:attribute name="protected" type="xs:boolean" use="required" />
+					<xs:attribute name="permissive" type="xs:boolean" use="required" />
+					<xs:attribute name="lag" type="xs:boolean" use="required" />
+					<xs:attribute name="recall" type="xs:boolean" use="required" />
+					
+					<!-- the following are in units of time as set in settings.units -->
+					<xs:attribute name="yellow_time" type="xs:double" use="required" />
+					<xs:attribute name="red_clear_time" type="xs:double" use="required" />
+					<xs:attribute name="min_green_time" type="xs:double" use="required" />
 				</xs:complexType>
-			  </xs:element>
+			</xs:element>
   
   <!-- SensorSet ................................................................
   
@@ -536,16 +533,23 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="density" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
-		  <xs:attribute name="tstamp" type="xs:decimal" use="optional" default="0.0"/>		<!-- time, to which this initial condition corresponds, in time units after midnight. default=midnight -->
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<!-- time stamp in [units of time] after midnight -->
+			<xs:attribute name="tstamp" type="xs:double" use="optional" default="0.0"/>		
+			<xs:attribute name="modStamp" type="xs:string" use="optional" />
 		</xs:complexType>
-	  </xs:element>
-	  
-		  <xs:element name="density">													<!-- content in veh/distance unit -->
-			<xs:complexType mixed="true">
-			  <xs:attribute name="link_id" type="xs:long" use="required" />
-			  <xs:attribute name="destination_network_id" type="xs:long" use="optional" />
+	</xs:element>
+
+		<xs:element name="density">			
+			<xs:complexType mixed="true">    <!-- text in vehicles/[unit of length] -->
+				<xs:attribute name="vehicle_type_id" type="xs:long" use="required" />
+				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+				<xs:attribute name="id" type="xs:long" use="required"/>
+				<xs:attribute name="link_id" type="xs:long" use="required" />
+				<xs:attribute name="destination_network_id" type="xs:long" use="optional" />
+				<xs:attribute name="modStamp" type="xs:string" use="optional" />
 			</xs:complexType>
 		</xs:element>
 
@@ -553,20 +557,22 @@
 	
 	<xs:element name="WeavingFactorSet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
-			<xs:element ref="weavingfactors" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+        <xs:element ref="weavingfactors" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="required"/>
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
-	  </xs:element>
+	</xs:element>
 
-		  <xs:element name="weavingfactors">
-			<xs:complexType mixed="true">
-			  <xs:attribute name="link_in" type="xs:long" use="required" />
-			  <xs:attribute name="link_out" type="xs:long" use="required" />
+		<xs:element name="weavingfactors">
+			<xs:complexType mixed="true">       <!-- text in normalized units -->
+				<xs:attribute name="vehicle_type_id" type="xs:long" use="required" />
+				<xs:attribute name="link_in" type="xs:long" use="required" />
+				<xs:attribute name="link_out" type="xs:long" use="required" />
 			</xs:complexType>
 		</xs:element>
 
@@ -579,8 +585,9 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="splitratioProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<xs:attribute name="id" type="xs:long" use="required"/>
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 			<xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
 			<xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
@@ -594,19 +601,27 @@
 			  </xs:sequence>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				<xs:attribute name="id" type="xs:long" use="required" />
-			  <xs:attribute name="node_id" type="xs:long" use="required" />
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
-			  <xs:attribute name="destination_network_id" type="xs:long" use="optional" />
+				<xs:attribute name="node_id" type="xs:long" use="required" />
+				<!-- time stamp in [units of time] after midnight -->
+				<xs:attribute name="start_time" type="xs:double" use="optional" default="0" />	
+				<!-- time step in [units of time] -->				
+				<xs:attribute name="dt" type="xs:double" use="optional" />
+				<xs:attribute name="network_id" type="xs:long" use="optional" />
+				<xs:attribute name="destination_network_id" type="xs:long" use="optional" />
+				<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 			</xs:complexType>
 		</xs:element>		  
 
-			  <xs:element name="splitratio">
-				<xs:complexType mixed="true">
-				  <xs:attribute name="link_in" type="xs:long" use="required" />
-				  <xs:attribute name="link_out" type="xs:long" use="required" />
+			<xs:element name="splitratio">
+				<xs:complexType mixed="true">	     <!-- text in normalized units -->
+					<xs:attribute name="link_in" type="xs:long" use="required" />
+					<xs:attribute name="link_out" type="xs:long" use="required" />
+					<xs:attribute name="vehicle_type_id" type="xs:long" use="required" />
+          <xs:attribute name="ids" type="xs:string" use="optional"/>
+          <xs:attribute name="crudFlags" type="xs:string" use="optional"/>
+					<xs:attribute name="mod_stamps" type="xs:string" use="optional" />
 				</xs:complexType>
-			  </xs:element>  
+			</xs:element>  
   
   <!-- DownstreamBoundaryCapacitySet ............................................. -->  
 	  
@@ -616,16 +631,19 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="capacityProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<xs:attribute name="id" type="xs:long" use="required"/>
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	  </xs:element>
 
 		  <xs:element name="capacityProfile">									       <!-- content in [veh/time unit/lane] -->
 			<xs:complexType mixed="true">
-			  <xs:attribute name="link_id" type="xs:long" use="required" />
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
+				<xs:attribute name="link_id" type="xs:long" use="required" />
+				<!-- time stamp in [units of time] after midnight -->
+				<xs:attribute name="start_time" type="xs:double" use="optional" default="0" />	
+				<!-- time step in [units of time] -->	
+				<xs:attribute name="dt" type="xs:double" use="optional" />
 			</xs:complexType>
 		  </xs:element>
 
@@ -656,16 +674,17 @@
   
 	<xs:element name="EventSet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
-			<xs:element ref="event" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
+        <xs:element ref="event" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="required"/>
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
-	  </xs:element>
+	</xs:element>
 
-		  <xs:element name="event">
+		<xs:element name="event">
 			<xs:complexType>
         <xs:all>
           <xs:element ref="description" minOccurs="0" />
@@ -676,7 +695,7 @@
         </xs:all>
 				<xs:attribute name="id" type="xs:long" use="required" />
 				<!-- time stamp in [units of time] after midnight -->
-			  <xs:attribute name="tstamp" type="xs:decimal" use="required" />		<!-- in time units -->
+				<xs:attribute name="tstamp" type="xs:double" use="required" />
 				<xs:attribute name="enabled" type="xs:boolean" use="required" />
 				<xs:attribute name="type" use="required">
 					<xs:simpleType>

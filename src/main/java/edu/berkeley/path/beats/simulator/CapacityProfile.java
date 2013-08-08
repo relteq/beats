@@ -110,8 +110,8 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		
 		// read start time, convert to stepinitial
 		double starttime;
-		if( getStartTime()!=null)
-			starttime = getStartTime().floatValue();
+		if( !Double.isNaN(getStartTime()) )
+			starttime = getStartTime();
 		else
 			starttime = 0f;
 

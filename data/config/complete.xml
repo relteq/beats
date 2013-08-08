@@ -251,34 +251,34 @@
       </table>
     </sensor>
   </SensorSet>
-  <InitialDensitySet>
+  <InitialDensitySet project_id="-1" id="-1" >
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
     </VehicleTypeOrder>
-    <density link_id="1">2.0</density>
-    <density link_id="2">2.0</density>
-    <density link_id="3">2.0</density>
-    <density link_id="4">2.0</density>
-    <density link_id="5">2.0</density>
-    <density link_id="6">2.0</density>
-    <density link_id="7">2.0</density>
-    <density link_id="100">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="1">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="2">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="3">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="4">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="5">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="6">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="7">2.0</density>
+    <density id="-1" vehicle_type_id="0" link_id="100">2.0</density>
   </InitialDensitySet>
-  <SplitRatioSet>
+  <SplitRatioSet project_id="-1" id="-1">
     <VehicleTypeOrder>
       <vehicle_type name="car"/>
     </VehicleTypeOrder>
     <splitratioProfile id="-1" dt="300" node_id="2">
-      <splitratio link_in="1" link_out="2">1</splitratio>
+      <splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
     </splitratioProfile>
     <splitratioProfile id="-1" dt="300" node_id="4">
-      <splitratio link_in="3" link_out="4">0.8</splitratio>
+      <splitratio vehicle_type_id="0" link_in="3" link_out="4">0.8</splitratio>
     </splitratioProfile>
     <splitratioProfile id="-1" dt="300" node_id="500">
-      <splitratio link_in="4" link_out="5">1</splitratio>
+      <splitratio vehicle_type_id="0" link_in="4" link_out="5">1</splitratio>
     </splitratioProfile>
   </SplitRatioSet>
-  <EventSet>
+  <EventSet project_id="-1" id="-1">
     <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">
       <targetElements>
         <scenarioElement id="2" type="link"/>

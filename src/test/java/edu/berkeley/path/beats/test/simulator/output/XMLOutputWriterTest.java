@@ -164,7 +164,7 @@ public class XMLOutputWriterTest {
 		// simulation settings
 		double timestart = 0d;
 		if (null != scenario.getInitialDensitySet())
-			timestart = scenario.getInitialDensitySet().getTstamp().doubleValue();
+			timestart = scenario.getInitialDensitySet().getTstamp();
 		double duration = 3600d;
 		double outDt = 600d;
 		int numReps = 1;

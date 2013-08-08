@@ -434,11 +434,11 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 	public static class Command implements Comparable {
 		public Signal.CommandType type;
 		public Signal.NEMA nema;
-		public float time;
-		public float yellowtime;
-		public float redcleartime;
+		public double time;
+		public double yellowtime;
+		public double redcleartime;
 
-		public Command(Signal.CommandType type,Signal.NEMA phase,float time){
+		public Command(Signal.CommandType type,Signal.NEMA phase,double time){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -446,7 +446,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			this.redcleartime = -1f;
 		}
 		
-		public Command(Signal.CommandType type,Signal.NEMA phase,float time,float yellowtime,float redcleartime){
+		public Command(Signal.CommandType type,Signal.NEMA phase,double time,double yellowtime,double redcleartime){
 			this.type = type;
 			this.nema = phase;
 			this.time = time;
@@ -464,8 +464,8 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 			Command that = (Command) arg0;
 			
 			// first ordering by time stamp
-			Float thiststamp = this.time;
-			Float thattstamp = that.time;
+			Double thiststamp = this.time;
+			Double thattstamp = that.time;
 			compare = thiststamp.compareTo(thattstamp);
 			if(compare!=0)
 				return compare;
@@ -485,15 +485,15 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 				return compare;
 
 			// fourth ordering by yellowtime
-			Float thistyellowtime = this.yellowtime;
-			Float thattyellowtime = that.yellowtime;
+			Double thistyellowtime = this.yellowtime;
+			Double thattyellowtime = that.yellowtime;
 			compare = thistyellowtime.compareTo(thattyellowtime);
 			if(compare!=0)
 				return compare;
 
 			// fifth ordering by redcleartime
-			Float thistredcleartime = this.redcleartime;
-			Float thattredcleartime = that.redcleartime;
+			Double thistredcleartime = this.redcleartime;
+			Double thattredcleartime = that.redcleartime;
 			compare = thistredcleartime.compareTo(thattredcleartime);
 			if(compare!=0)
 				return compare;

@@ -114,10 +114,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			issink = end_node.isTerminal();
 
 		// lanes and length
-		if(getLanes()!=null)
-			_lanes = getLanes().doubleValue();
-		if(getLength()!=null)
-			_length = getLength().doubleValue();
+		_lanes = getLanes();
+		_length = getLength();
 	}
 
 	protected void validate() {
@@ -179,7 +177,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	private void resetLanes(){
-		_lanes = getLanes().doubleValue();
+		_lanes = getLanes();
 	}
 
 	private void resetFD(){
