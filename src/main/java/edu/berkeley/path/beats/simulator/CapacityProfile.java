@@ -67,7 +67,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
 		else{ 	// allow only if it contains one time step
-			if(capacity.getLength()==1){
+			if(capacity.getNumTime()==1){
 				dtinseconds = Double.POSITIVE_INFINITY;
 				samplesteps = Integer.MAX_VALUE;
 			}
@@ -89,10 +89,10 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkId() + " in capacity profile.");
 		
 		// check dtinseconds
-		if( dtinseconds<=0  && capacity.getLength()>1)
+		if( dtinseconds<=0  && capacity.getNumTime()>1)
 			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
 
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && capacity.getLength()>1)
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && capacity.getNumTime()>1)
 			BeatsErrorLog.addError("Time step for capacity profile of link id=" + getLinkId() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
@@ -134,7 +134,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		
 		if(myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
-			int n = capacity.getLength()-1;
+			int n = capacity.getNumTime()-1;
 			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
 
 			// zeroth sample extends to the left

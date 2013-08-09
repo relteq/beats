@@ -9,6 +9,7 @@ import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandProfile;
+import edu.berkeley.path.beats.simulator.DemandSet;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.ControlPolicyMaker;
@@ -186,13 +187,10 @@ public class Controller_CRM_MPC extends Controller {
 		
 		double time_current = getMyScenario().getCurrentTimeInSeconds();
 		double time_since_last_opt = time_current-time_last_opt;
-		
-		
+
 		// if it is time to optimize, update metering rate profile
 		if(BeatsMath.greaterorequalthan(time_since_last_opt,opt_period)){
 
-
-			
 			// copy initial density
 			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
 				initialDensity.put(link.getId(), ((Link)link).getTotalDensityInVeh(0));
@@ -202,10 +200,10 @@ public class Controller_CRM_MPC extends Controller {
 				splitRatios.put(node.getId(),null);
 	
 			// copy ramp demands
+			DemandSet demand_set = (DemandSet) getMyScenario().getDemandSet();
 			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
 				if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0){
-					DemandProfile dem_prof = ((Link)link).getMyDemandProfile();
-					Double [] future_demands = dem_prof.getFutureTotalDemandInVeh_NoNoise(opt_dt,opt_horizon_int);
+					Double [] future_demands = demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int);
 					rampDemands.put(link.getId(),future_demands);
 				}
 			
