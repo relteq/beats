@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /** XXX. 
  * YYY
@@ -70,6 +71,42 @@ final public class BeatsFormatter {
 		return str;
 	}
 
+	public static double [] readCSVstring(String str,String delim) {
+
+		double [] data = null;
+		
+      	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
+			return data;
+    	}
+    	
+    	str.replaceAll("\\s","");
+    	
+    	// populate data
+		StringTokenizer slicesX = new StringTokenizer(str,delim);
+		int i=0;
+		boolean allnan = true;
+		data = new double[slicesX.countTokens()];
+		while (slicesX.hasMoreTokens()) {			
+			try {
+				Double value = Double.parseDouble(slicesX.nextToken());
+				if(value>=0){
+					data[i] = value;
+					allnan = false;
+				}
+				else
+					data[i] = Double.NaN;
+			} catch (NumberFormatException e) {
+				data[i] = Double.NaN;
+			}
+			i++;
+		}
+		if(allnan)
+			data = null;
+		return data;
+	}
+	
+	
+	
 	public static ArrayList<ArrayList<Double>> readCSV(String filename,String delim) {
 		if(filename==null)
 			return null;

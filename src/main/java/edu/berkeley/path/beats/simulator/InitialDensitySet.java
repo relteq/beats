@@ -34,7 +34,7 @@ package edu.berkeley.path.beats.simulator;
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
-	private Double [][] initial_density; 	// [veh/meter] indexed by link and type
+	private double [][] initial_density; 	// [veh/meter] indexed by link and type
 	private Link [] link;					// ordered array of references
 	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
@@ -60,7 +60,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		}
 		
 		// allocate
-		initial_density = new Double [numLinks_exist][];
+		initial_density = new double [numLinks_exist][];
 		link = new Link [numLinks_exist];
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 
@@ -70,8 +70,9 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 			if(templink[i]!=null){
 				edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
 				link[c] = templink[i];
-				Double1DVector D = new Double1DVector(density.getContent(),":");
-				initial_density[c] = D.getData();
+				initial_density[c] = BeatsFormatter.readCSVstring(density.getContent(),":");
+//				Double1DVector D = new Double1DVector(density.getContent(),":");
+//				initial_density[c] = D.getData();
 				c++;
 			}
 		}
@@ -161,7 +162,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 * 
 	 * @return 2D array of doubles indexed by link and vehicle type
 	 */
-	public Double[][] get_initial_density_in_vehpermeter() {
+	public double[][] get_initial_density_in_vehpermeter() {
 		return initial_density;
 	}
 

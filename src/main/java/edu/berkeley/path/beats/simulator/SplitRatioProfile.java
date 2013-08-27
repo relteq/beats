@@ -36,7 +36,7 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
 												// input link i, output link j. The first dimension 
 												// of the Double2DMatrix is time, the second in vehicle type.
-	
+		
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
 	private int laststep;
 	private boolean isdone; 

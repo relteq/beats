@@ -33,7 +33,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 	private boolean isOrphan;
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
-	private Double1DVector capacity;	// [veh]
+	private BeatsTimeProfile capacity;	// [veh]
 	private boolean isdone;
 	private int stepinitial;
 
@@ -57,7 +57,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.CapacityProfile
 		
 		// sample demand distribution, convert to vehicle units
 		if(!isOrphan && getContent()!=null){
-			capacity = new Double1DVector(getContent(),",");	// true=> reshape to vector along k, define length
+			capacity = new BeatsTimeProfile(getContent(),",");	// true=> reshape to vector along k, define length
 			capacity.multiplyscalar(myScenario.getSimdtinseconds()*myLink.get_Lanes());
 		}
 		

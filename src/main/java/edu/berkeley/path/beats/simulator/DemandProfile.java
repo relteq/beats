@@ -33,7 +33,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	private boolean isOrphan;
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;				// [sim steps] profile sample period
-	private Double1DVector demand_nominal;	// [veh]
+	private BeatsTimeProfile demand_nominal;	// [veh]
 	private boolean isdone; 
 	private int stepinitial;
 	private int vehicle_type_index;
@@ -74,7 +74,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		// sample demand distribution, convert to vehicle units
 		if(!isOrphan && getContent()!=null){
-			demand_nominal = new Double1DVector(getContent());
+			demand_nominal = new BeatsTimeProfile(getContent());
 			demand_nominal.multiplyscalar(myScenario.getSimdtinseconds());
 		}
 		
@@ -241,7 +241,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double1DVector get_demand_nominal(){
+	public BeatsTimeProfile get_demand_nominal(){
 		return demand_nominal;
 	}
 	
