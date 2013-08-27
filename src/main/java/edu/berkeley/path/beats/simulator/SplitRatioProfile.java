@@ -33,10 +33,13 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;
 	
-	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
-												// input link i, output link j. The first dimension 
-												// of the Double2DMatrix is time, the second in vehicle type.
-		
+//	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
+//												// input link i, output link j. The first dimension 
+//												// of the Double2DMatrix is time, the second in vehicle type.
+	
+	private BeatsTimeProfile [][][] profile; 	// profile[i][j][v] is the split ratio profile for
+												// input link i, output link j, vehicle type v.
+	
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
 	private int laststep;
 	private boolean isdone; 
@@ -81,17 +84,19 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 			}
 		}
 		
-		profile = new Double2DMatrix[myNode.getnIn()][myNode.getnOut()];
-		int in_index,out_index;
+//		profile = new Double2DMatrix[myNode.getnIn()][myNode.getnOut()];
+		profile = new BeatsTimeProfile[myNode.getnIn()][myNode.getnOut()][myScenario.getNumVehicleTypes()];
+		int in_index,out_index,vt_index;
 		laststep = 0;
 		for(edu.berkeley.path.beats.jaxb.Splitratio sr : getSplitratio()){
 			in_index = myNode.getInputLinkIndex(sr.getLinkIn());
 			out_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-			if(in_index<0 || out_index<0)
+			vt_index = myScenario.getVehicleTypeIndexForId(sr.getVehicleTypeId());
+			if(in_index<0 || out_index<0 || vt_index<0)
 				continue; 
-			profile[in_index][out_index] = new Double2DMatrix(sr.getContent());
-			if(!profile[in_index][out_index].isEmpty())
-				laststep = Math.max(laststep,profile[in_index][out_index].getnTime());
+			profile[in_index][out_index][vt_index] = new BeatsTimeProfile(sr.getContent());
+			if(!profile[in_index][out_index][vt_index].isEmpty())
+				laststep = Math.max(laststep,profile[in_index][out_index][vt_index].getNumTime());
 		}
 		
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
@@ -138,13 +143,14 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		}
 
 		boolean all_scalar = true;
-		int i,j;
+		int i,j,v;
 		for(i=0;i<profile.length;i++)
 			if(profile[i]!=null)
 				for(j=0;j<profile[i].length;j++)
 					if(profile[i][j]!=null)
-						all_scalar &= profile[i][j].getnTime()<=1;
-				
+						for(v=0;v<profile[i][j].length;v++)
+							if(profile[i][j][v]!=null)
+								all_scalar &= profile[i][j][v].getNumTime()<=1;
 
 		if(!all_scalar){
 			// dtinseconds must be positive if any profile has >1 element
@@ -156,25 +162,22 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 				BeatsErrorLog.addError("Time step = " + getDt() + " for split ratio profile of node id=" + getNodeId() + " is not a multiple of the simulation time step (" + myScenario.getSimdtinseconds() + ")"); 
 		}
 		
-		// check split ratio dimensions and values
-		int k,v;
-		for(i=0;i<profile.length;i++)
-			if(profile[i]!=null)
-				for(j=0;j<profile[i].length;j++)
-					if(profile[i][j]!=null){
-
-						// check dimensions
-						if(profile[i][j].getnVTypes()!=myScenario.getNumVehicleTypes())
-							BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
-
-						// check values
-						for(k=0;k<profile[i][j].getnTime();k++)
-							for(v=0;v<profile[i][j].getnVTypes();v++)
-								if( BeatsMath.greaterthan( profile[i][j].get(k,v) , 1.0 ) | BeatsMath.lessthan( profile[i][j].get(k,v) , 0.0 ) )
-									BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " is out of range.");
-
-					}
-		
+//		// check split ratio dimensions and values
+//		for(i=0;i<profile.length;i++)
+//			if(profile[i]!=null)
+//				for(j=0;j<profile[i].length;j++)
+//					if(profile[i][j]!=null){
+//
+//						// check dimensions
+//						if(profile[i][j].getnVTypes()!=myScenario.getNumVehicleTypes())
+//							BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " does not contain values for all vehicle types: ");
+//
+//						// check values
+//						for(k=0;k<profile[i][j].getnTime();k++)
+//							for(v=0;v<profile[i][j].getnVTypes();v++)
+//								if( BeatsMath.greaterthan( profile[i][j].get(k,v) , 1.0 ) | BeatsMath.lessthan( profile[i][j].get(k,v) , 0.0 ) )
+//									BeatsErrorLog.addError("Split ratio profile for node id=" + getNodeId() + " is out of range.");
+//					}		
 	}
 
 	protected void update() {
@@ -203,7 +206,6 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 		}		
 	}
 
-
 	/////////////////////////////////////////////////////////////////////
 	// protected getter
 	/////////////////////////////////////////////////////////////////////
@@ -224,19 +226,21 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioPro
 				myScenario.getNumVehicleTypes(),Double.NaN);	// initialize all unknown
 		
 		// get vehicle type order from SplitRatioProfileSet
-		Integer [] vehicletypeindex = null;
-		if(myScenario.getSplitRatioSet()!=null)
-			vehicletypeindex = ((SplitRatioSet)myScenario.getSplitRatioSet()).getVehicletypeindex();
+//		Integer [] vehicletypeindex = null;
+//		if(myScenario.getSplitRatioSet()!=null)
+//			vehicletypeindex = ((SplitRatioSet)myScenario.getSplitRatioSet()).getVehicletypeindex();
 		
-		int i,j,lastk;
+		int i,j,v,lastk;
 		for(i=0;i<myNode.getnIn();i++){
 			for(j=0;j<myNode.getnOut();j++){
-				if(profile[i][j]==null)						// nan if not defined
-					continue;
-				if(profile[i][j].isEmpty())					// nan if no data
-					continue;
-				lastk = Math.min(k,profile[i][j].getnTime()-1);	// hold last value
-				X.setAllVehicleTypes(i,j,profile[i][j].sampleAtTime(lastk,vehicletypeindex));
+				for(v=0;v<myScenario.getNumVehicleTypes();v++){
+					if(profile[i][j][v]==null)						// nan if not defined
+						continue;
+					if(profile[i][j][v].isEmpty())					// nan if no data
+						continue;
+					lastk = Math.min(k,profile[i][j][v].getNumTime()-1);	// hold last value
+					X.set(i,j,v,profile[i][j][v].get(lastk));
+				}
 			}
 		}
 		return X;
