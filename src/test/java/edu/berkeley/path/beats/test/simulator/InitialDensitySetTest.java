@@ -29,46 +29,53 @@ public class InitialDensitySetTest {
 
 	@Test
 	public void test_getDensityForLinkIdInVeh() {
-		double link_length_in_miles = scenario.getLinkWithId(1).getLengthInMeters()*0.621371/1000d;
-		Double [] X = BeatsMath.times( ids.getDensityForLinkIdInVeh(1,1),1/link_length_in_miles);
-		Double [] expected = {2d,1d};
-		assertTrue(X.length==expected.length);
-		for(int i=0;i<expected.length;i++)
-			assertEquals(X[i],expected[i],1E-4);
-	}
-
-	@Test
-	public void test_get_initial_density_in_vehpermeter() {
-		Double [][] expected = {{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d}};
-		Link [] links = ids.getLink();
-		double [][] X = ids.get_initial_density_in_vehpermeter();
+		
+		int [] link_id = {1,2,3,4,5,6,7};
 		int i,j;
-		for(i=0;i<links.length;i++)
-			for(j=0;j<scenario.getNumVehicleTypes();j++)
-				assertEquals(X[i][j]/(0.621371/1000d),expected[i][j],1E-4);
-	}
-
-	@Test
-	public void test_get_initial_density_in_veh() {
-		Double [][] expected = {{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d}};
-		Link [] links = ids.getLink();
-		Double [][] X = ids.get_initial_density_in_veh();
-		int i,j;
-		double linklength;
-		for(i=0;i<links.length;i++){
-			linklength = links[i].getLengthInMeters()*(0.621371/1000d);
-			for(j=0;j<scenario.getNumVehicleTypes();j++){
-				System.out.println(X[i][j]/linklength);
-				assertEquals(X[i][j]/linklength,expected[i][j],1E-4);
-			}
+		double [] X;
+		double [] expected = {2d,1d};		
+		for(i=0;i<link_id.length;i++){
+			Link link = scenario.getLinkWithId(link_id[i]);
+			double link_length_in_miles = link.getLengthInMeters()*0.621371/1000d;
+			X = BeatsMath.times( ids.getDensityForLinkIdInVeh(1,link_id[i]),1/link_length_in_miles);
+			for(j=0;j<expected.length;j++)
+				assertEquals(X[j],expected[j],1E-4);
 		}
+		
+		// edge case
+		X = ids.getDensityForLinkIdInVeh(-1,1);
+		assertNull(X);
+
+		// edge case
+		X = ids.getDensityForLinkIdInVeh(1,-1);
+		assertNull(X);
+		
 	}
 
-	@Test
-	public void test_getVehicletypeindex() {
-		Integer[] ind = ids.getVehicletypeindex();
-		Integer[] expected = {0,1};
-		assertTrue(Arrays.equals(ind,expected));
-	}
+//	@Test
+//	public void test_get_initial_density_in_vehpermeter() {
+//		Double [] expected = {2d,1d,2d,1d,2d,1d,2d,1d,2d,1d,2d,1d,2d,1d,0d,0d};
+//		Link [] links = ids.getLink();
+//		double [] X = ids.get_initial_density_in_vehpermeter();
+//		int i;
+//		for(i=0;i<links.length;i++)
+//			assertEquals(X[i]/(0.621371/1000d),expected[i],1E-4);
+//	}
+//
+//	@Test
+//	public void test_get_initial_density_in_veh() {
+//		Double [][] expected = {{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d}};
+//		Link [] links = ids.getLink();
+//		Double [][] X = ids.get_initial_density_in_veh();
+//		int i,j;
+//		double linklength;
+//		for(i=0;i<links.length;i++){
+//			linklength = links[i].getLengthInMeters()*(0.621371/1000d);
+//			for(j=0;j<scenario.getNumVehicleTypes();j++){
+//				System.out.println(X[i][j]/linklength);
+//				assertEquals(X[i][j]/linklength,expected[i][j],1E-4);
+//			}
+//		}
+//	}
 	
 }

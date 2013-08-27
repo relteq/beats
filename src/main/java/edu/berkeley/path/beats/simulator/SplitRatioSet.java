@@ -47,33 +47,33 @@ final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 
 		this.myScenario = myScenario;
 		
-		if(getSplitratioProfile().isEmpty())
+		if(getSplitRatioProfile().isEmpty())
 			return;
 
 		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
-		for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
+		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
 			((SplitRatioProfile) sr).populate(myScenario);
 	}
 
 	protected void validate() {
 
-		if(getSplitratioProfile()==null)
+		if(getSplitRatioProfile()==null)
 			return;
 		
-		if(getSplitratioProfile().isEmpty())
+		if(getSplitRatioProfile().isEmpty())
 			return;
 
 		// check that all vehicle types are accounted for
 		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
 			BeatsErrorLog.addError("Vehicle types list in split ratio profile set does not match that of settings.");
 		
-		for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
+		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
 			((SplitRatioProfile)sr).validate();		
 	}
 
 	protected void update() {
-    	for(edu.berkeley.path.beats.jaxb.SplitratioProfile sr : getSplitratioProfile())
+    	for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
     		((SplitRatioProfile) sr).update();	
 	}
 	

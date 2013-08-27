@@ -271,15 +271,15 @@
     <VehicleTypeOrder>
       <vehicle_type_x name="car"/>
     </VehicleTypeOrder>
-    <splitratioProfile id="-1" dt="300" node_id="2">
+    <splitRatioProfile id="-1" dt="300" node_id="2">
       <splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
-    </splitratioProfile>
-    <splitratioProfile id="-1" dt="300" node_id="4">
+    </splitRatioProfile>
+    <splitRatioProfile id="-1" dt="300" node_id="4">
       <splitratio vehicle_type_id="0" link_in="3" link_out="4">0.8</splitratio>
-    </splitratioProfile>
-    <splitratioProfile id="-1" dt="300" node_id="500">
+    </splitRatioProfile>
+    <splitRatioProfile id="-1" dt="300" node_id="500">
       <splitratio vehicle_type_id="0" link_in="4" link_out="5">1</splitratio>
-    </splitratioProfile>
+    </splitRatioProfile>
   </SplitRatioSet>
   <EventSet project_id="-1" id="-1">
     <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">

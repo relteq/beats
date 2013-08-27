@@ -143,7 +143,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// boundary capacities (must follow network)
 		if(downstreamBoundaryCapacitySet!=null)
-			for( edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getCapacityProfile() )
+			for( edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile() )
 				((CapacityProfile) capacityProfile).populate(this);
 
 		if(demandSet!=null)
@@ -189,7 +189,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// validate capacity profiles	
 		if(S.downstreamBoundaryCapacitySet!=null)
-			for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getCapacityProfile())
+			for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : S.downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
 				((CapacityProfile)capacityProfile).validate();
 		
 		// validate demand profiles
@@ -263,7 +263,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // sample profiles .............................	
     	if(downstreamBoundaryCapacitySet!=null)
-        	for(edu.berkeley.path.beats.jaxb.CapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getCapacityProfile())
+        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
         		((CapacityProfile) capacityProfile).update();
 
     	if(demandSet!=null)

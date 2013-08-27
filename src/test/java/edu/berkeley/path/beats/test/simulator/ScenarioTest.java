@@ -132,17 +132,17 @@ public class ScenarioTest {
 		assertEquals(names[0],"car");
 	}
 
-	@Test
-	public void test_getInitialDensityForNetwork() {
-		double x =  static_scenario.getInitialDensityForNetwork(-1)[0][0];
-		double exp = 0.0;
-		assertEquals(x,exp,1e-4);
-		
-		// edge cases
-		assertNull(static_scenario.getInitialDensityForNetwork(-100000));
-		//x =  static_scenario.getInitialDensityForNetwork(null)[0][0];	// null works for single networks
-		//assertEquals(x,exp,1e-4);
-	}
+//	@Test
+//	public void test_getInitialDensityForNetwork() {
+//		double x =  static_scenario.getInitialDensityForNetwork(-1)[0][0];
+//		double exp = 0.0;
+//		assertEquals(x,exp,1e-4);
+//		
+//		// edge cases
+//		assertNull(static_scenario.getInitialDensityForNetwork(-100000));
+//		//x =  static_scenario.getInitialDensityForNetwork(null)[0][0];	// null works for single networks
+//		//assertEquals(x,exp,1e-4);
+//	}
 
 	@Test
 	public void test_getDensityForNetwork() {

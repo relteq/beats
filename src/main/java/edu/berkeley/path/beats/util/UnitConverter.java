@@ -288,7 +288,7 @@ public class UnitConverter {
 
 	private void process(DownstreamBoundaryCapacitySet dbcpset) {
 		if (null == dbcpset) return;
-		for (CapacityProfile cp : dbcpset.getCapacityProfile()) {
+		for (DownstreamBoundaryCapacityProfile cp : dbcpset.getDownstreamBoundaryCapacityProfile()) {
 			// TODO delimiter = ':' or ','?
 			Data1D data1d = new Data1D(cp.getContent(), ",");
 			if (!data1d.isEmpty()) {

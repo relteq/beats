@@ -29,7 +29,7 @@ package edu.berkeley.path.beats.simulator;
 public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 	
 	@Override
-	public edu.berkeley.path.beats.jaxb.CapacityProfile createCapacityProfile() {
+	public edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile createDownstreamBoundaryCapacityProfile() {
 		return new CapacityProfile();
 	}
 	
@@ -94,8 +94,8 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 	}
 
 	@Override
-	public edu.berkeley.path.beats.jaxb.SplitratioProfile createSplitratioProfile() {
-		return new SplitRatioProfile();
+	public edu.berkeley.path.beats.jaxb.SplitRatioProfile createSplitRatioProfile() {
+		return new edu.berkeley.path.beats.simulator.SplitRatioProfile();
 	}
 
 	@Override

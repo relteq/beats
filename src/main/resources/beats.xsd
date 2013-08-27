@@ -608,11 +608,11 @@
 
 	<xs:element name="SplitRatioSet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
-			<xs:element ref="splitratioProfile" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
+        <xs:element ref="splitRatioProfile" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
 			<xs:attribute name="id" type="xs:long" use="required"/>
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" default="" />
@@ -620,13 +620,13 @@
 			<xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
 			<xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
 		</xs:complexType>
-	  </xs:element>
-	  
-		  <xs:element name="splitratioProfile">
+	</xs:element>
+
+		<xs:element name="splitRatioProfile">
 			<xs:complexType>
-			  <xs:sequence>
-				<xs:element ref="splitratio" minOccurs="0" maxOccurs="unbounded" />
-			  </xs:sequence>
+        <xs:sequence>
+          <xs:element ref="splitratio" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				<xs:attribute name="id" type="xs:long" use="required" />
 				<xs:attribute name="node_id" type="xs:long" use="required" />
@@ -655,17 +655,17 @@
 	  
 	<xs:element name="DownstreamBoundaryCapacitySet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
-			<xs:element ref="capacityProfile" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
+        <xs:element ref="downstreamBoundaryCapacityProfile" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
 			<xs:attribute name="id" type="xs:long" use="required"/>
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
-	  </xs:element>
+	</xs:element>
 
-		  <xs:element name="capacityProfile">									       <!-- content in [veh/time unit/lane] -->
+		<xs:element name="downstreamBoundaryCapacityProfile">		<!-- content in [veh/time unit/lane] -->
 			<xs:complexType mixed="true">
 				<xs:attribute name="link_id" type="xs:long" use="required" />
 				<!-- time stamp in [units of time] after midnight -->
@@ -817,8 +817,8 @@
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
-	  </xs:element>
-	  
+	</xs:element>
+
 		<xs:element name="controller">
 			<xs:complexType>
         <xs:sequence>
@@ -913,12 +913,12 @@
 			<xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
 			<xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
 		</xs:complexType>
-	  </xs:element>
-	  
-		  <xs:element name="fundamentalDiagramProfile">
+	</xs:element>
+
+		<xs:element name="fundamentalDiagramProfile">
 			<xs:complexType>
-			  <xs:sequence>
-				<xs:element ref="fundamentalDiagram" minOccurs="0" maxOccurs="unbounded" />
+				<xs:sequence>
+				  <xs:element ref="fundamentalDiagram" minOccurs="0" maxOccurs="unbounded" />
 				  <xs:element ref="fundamentalDiagramType" minOccurs="0" maxOccurs="1" />
 				  <xs:element ref="calibrationAlgorithmType" minOccurs="0" maxOccurs="1" />
 				</xs:sequence>
@@ -979,9 +979,9 @@
 		  <xs:attribute name="id" type="xs:long" use="optional" />
 		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
-	  </xs:element>  
+	</xs:element>  
 
-		  <xs:element name="networkpair">
+		<xs:element name="networkpair">
 			<xs:complexType>
         <xs:sequence>
           <xs:element ref="linkpair" minOccurs="0" maxOccurs="unbounded" />

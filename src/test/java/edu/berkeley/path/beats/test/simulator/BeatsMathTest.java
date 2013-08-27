@@ -16,7 +16,7 @@ public class BeatsMathTest {
 
 	@Test
 	public void test_zeros_1D() {
-		Double [] x = {0d,0d,0d};
+		double [] x = {0d,0d,0d};
 		assertTrue(Arrays.equals(BeatsMath.zeros(3),x));
 		
 		// edge cases
@@ -27,8 +27,8 @@ public class BeatsMathTest {
 	@Test
 	public void test_zeros_2D() {
 
-		Double [][] x = {{0d,0d},{0d,0d},{0d,0d}};
-		Double [][] y = BeatsMath.zeros(3,2);
+		double [][] x = {{0d,0d},{0d,0d},{0d,0d}};
+		double [][] y = BeatsMath.zeros(3,2);
 		
 		assertEquals(x.length,y.length);
 		for(int i=0;i<x.length;i++)

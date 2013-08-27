@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitratioProfile {
+final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 
 	private Scenario myScenario;
 	private Node myNode;

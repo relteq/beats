@@ -15,20 +15,20 @@
     <VehicleTypeOrder>
       <vehicle_type_x name="SOV"/>
     </VehicleTypeOrder>
-    <splitratioProfile id="-1" dt="300" node_id="-2">
+    <splitRatioProfile id="-1" dt="300" node_id="-2">
       <splitratio vehicle_type_id="0" link_in="-1" link_out="-2">1.000000</splitratio>
-    </splitratioProfile>
-    <splitratioProfile id="-1" dt="300" node_id="-3">
+    </splitRatioProfile>
+    <splitRatioProfile id="-1" dt="300" node_id="-3">
       <splitratio vehicle_type_id="0" link_in="-2" link_out="-3">1.000000</splitratio>
       <splitratio vehicle_type_id="0" link_in="-6" link_out="-3">1.000000</splitratio>
-    </splitratioProfile>
-    <splitratioProfile id="-1" dt="300" node_id="-4">
+    </splitRatioProfile>
+    <splitRatioProfile id="-1" dt="300" node_id="-4">
       <splitratio vehicle_type_id="0" link_in="-3" link_out="-4">1.000000</splitratio>
       <splitratio vehicle_type_id="0" link_in="-3" link_out="-7">0.000000</splitratio>
-    </splitratioProfile>
-    <splitratioProfile id="-1" dt="300" node_id="-5">
+    </splitRatioProfile>
+    <splitRatioProfile id="-1" dt="300" node_id="-5">
       <splitratio vehicle_type_id="0" link_in="-4" link_out="-5">1.000000</splitratio>
-    </splitratioProfile>
+    </splitRatioProfile>
   </SplitRatioSet>
   <EventSet project_id="-1" id="-1">
     <event enabled="true" tstamp="4" type="fundamental_diagram" id="-1">
