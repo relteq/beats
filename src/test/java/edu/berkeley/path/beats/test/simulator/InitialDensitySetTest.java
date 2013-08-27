@@ -41,7 +41,7 @@ public class InitialDensitySetTest {
 	public void test_get_initial_density_in_vehpermeter() {
 		Double [][] expected = {{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d},{2d,1d}};
 		Link [] links = ids.getLink();
-		Double [][] X = ids.get_initial_density_in_vehpermeter();
+		double [][] X = ids.get_initial_density_in_vehpermeter();
 		int i,j;
 		for(i=0;i<links.length;i++)
 			for(j=0;j<scenario.getNumVehicleTypes();j++)

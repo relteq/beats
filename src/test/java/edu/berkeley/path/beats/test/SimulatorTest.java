@@ -131,6 +131,7 @@ public class SimulatorTest {
 				}
 
 		} catch (BeatsException exc) {
+			System.out.print(exc.getMessage());
 			fail(exc.getMessage());
 		} 	
 	}
