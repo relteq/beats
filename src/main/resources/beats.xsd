@@ -556,11 +556,10 @@
 
 	<xs:element name="InitialDensitySet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
-			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
-			<xs:element ref="density" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
+        <xs:element ref="density" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
 			<xs:attribute name="id" type="xs:long" use="required" />
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" default="" />

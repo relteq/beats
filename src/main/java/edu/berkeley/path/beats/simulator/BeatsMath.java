@@ -41,19 +41,19 @@ public final class BeatsMath {
 	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
 	
- 	public static Double [] zeros(int n1){
+ 	public static double [] zeros(int n1){
  		if(n1<0)
  			return null;
-		Double [] answ = new Double [n1];
+		double [] answ = new double [n1];
 		for(int i=0;i<n1;i++)
-			answ[i] = 0.0;
+			answ[i] = 0.0d;
 		return answ;	
 	}
  	
- 	public static Double [][] zeros(int n1,int n2){
+ 	public static double [][] zeros(int n1,int n2){
  		if(n1<0 || n2<0)
  			return null;
-		Double [][] answ = new Double [n1][n2];
+		double [][] answ = new double [n1][n2];
 		int i,j;
 		for(i=0;i<n1;i++)
 			for(j=0;j<n2;j++)
@@ -120,6 +120,15 @@ public final class BeatsMath {
 		if(V==null)
 			return null;
 		Double [] answ = new Double [V.length];
+		for(int i=0;i<V.length;i++)
+			answ[i] = a*V[i];
+		return answ;
+	}
+
+	public static double [] times(double [] V,double a){
+		if(V==null)
+			return null;
+		double [] answ = new double [V.length];
 		for(int i=0;i<V.length;i++)
 			answ[i] = a*V[i];
 		return answ;

@@ -34,9 +34,9 @@ package edu.berkeley.path.beats.simulator;
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
 	private Scenario myScenario;
-	private double [][] initial_density; 	// [veh/meter] indexed by link and type
+	private double [] initial_density; 		// [veh/meter] indexed by link and type
 	private Link [] link;					// ordered array of references
-	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
+	private int [] vehicle_type_index;	; 	// index of vehicle types into global list
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -48,32 +48,33 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		
 		this.myScenario = myScenario;
 		
-		// count links in initial density list that are also in the scenario
+//		// count links in initial density list that are also in the scenario
 		int numLinks = getDensity().size();
-		int numLinks_exist = 0;
-		Link [] templink = new Link[numLinks];
-		for(i=0;i<numLinks;i++){
-			edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
-			templink[i] = myScenario.getLinkWithId(density.getLinkId());
-			if(templink[i]!=null)
-				numLinks_exist++;
-		}
+//		int numLinks_exist = 0;
+//		Link [] templink = new Link[numLinks];
+//		for(i=0;i<numLinks;i++){
+//			edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
+//			templink[i] = myScenario.getLinkWithId(density.getLinkId());
+//			if(templink[i]!=null)
+//				numLinks_exist++;
+//		}
 		
 		// allocate
-		initial_density = new double [numLinks_exist][];
-		link = new Link [numLinks_exist];
-		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
-
+		initial_density = BeatsMath.zeros(numLinks);
+		link = new Link [numLinks];
+		vehicle_type_index = new int [numLinks];
+		
 		// copy profile information to arrays in extended object
-		int c = 0;
+//		int c = 0;
 		for(i=0;i<numLinks;i++){
-			if(templink[i]!=null){
-				edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
-				link[c] = templink[i];
-				initial_density[c] = BeatsFormatter.readCSVstring(density.getContent(),":");
+			edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
+			link[i] = myScenario.getLinkWithId(density.getLinkId());
+			vehicle_type_index[i] = myScenario.getVehicleTypeIndexForId(density.getVehicleTypeId());
+			if(link[i]!=null && vehicle_type_index[i]>=0){
+				initial_density[i] = Double.parseDouble(density.getContent()); //  BeatsFormatter.readCSVstring(density.getContent(),":");
 //				Double1DVector D = new Double1DVector(density.getContent(),":");
 //				initial_density[c] = D.getData();
-				c++;
+//				c++;
 			}
 		}
 		
@@ -83,20 +84,20 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 		
 		int i;
 		
-		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
-			BeatsErrorLog.addError("List of vehicle types in initial density profile id=" + getId() + " does not match that of settings.");
-		
-		// check that vehicle types are valid
-		for(i=0;i<vehicletypeindex.length;i++)
-			if(vehicletypeindex[i]<0)
-				BeatsErrorLog.addError("Bad vehicle type name in initial density profile id=" + getId());
-		
-		// check size of data
-		if(link!=null)
-			for(i=0;i<link.length;i++)
-				if(initial_density[i].length!=vehicletypeindex.length)
-					BeatsErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
+//		// check that all vehicle types are accounted for
+//		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
+//			BeatsErrorLog.addError("List of vehicle types in initial density profile id=" + getId() + " does not match that of settings.");
+//		
+//		// check that vehicle types are valid
+//		for(i=0;i<vehicletypeindex.length;i++)
+//			if(vehicletypeindex[i]<0)
+//				BeatsErrorLog.addError("Bad vehicle type name in initial density profile id=" + getId());
+//		
+//		// check size of data
+//		if(link!=null)
+//			for(i=0;i<link.length;i++)
+//				if(initial_density[i].length!=vehicletypeindex.length)
+//					BeatsErrorLog.addError("Number of density values does not match number of vehicle types in initial density profile id=" + getId());
 
 		// check that values are between 0 and jam density
 		int j;
@@ -112,15 +113,15 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 			if(link[i].isSource())	// does not apply to source links
 				continue;
 			
-			sum = 0.0;
-			for(j=0;j<vehicletypeindex.length;j++){
-				x = initial_density[i][j];
-				if(x<0)
-					BeatsErrorLog.addError("Negative value found in initial density profile for link id=" + link[i].getId());
-				if( x.isNaN())
-					BeatsErrorLog.addError("Invalid value found in initial density profile for link id=" + link[i].getId());
-				sum += x;
-			}
+//			sum = 0.0;
+//			for(j=0;j<vehicletypeindex.length;j++){
+//				x = initial_density[i][j];
+//				if(x<0)
+//					BeatsErrorLog.addError("Negative value found in initial density profile for link id=" + link[i].getId());
+//				if( x.isNaN())
+//					BeatsErrorLog.addError("Invalid value found in initial density profile for link id=" + link[i].getId());
+//				sum += x;
+//			}
 			
 			// NOTE: REMOVED THIS CHECK TEMPORARILY. NEED TO DECIDE HOW TO DO IT 
 			// WITH ENSEMBLE FUNDAMENTAL DIAGRAMS
@@ -146,56 +147,51 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 	 * @param linkid String id of the link
 	 * @return array of intitial densities in [veh/link]
 	 */
-	public Double [] getDensityForLinkIdInVeh(long network_id,long linkid){
-		Double [] d = BeatsMath.zeros(myScenario.getNumVehicleTypes());
+	public double [] getDensityForLinkIdInVeh(long network_id,long linkid){
+		double [] d = BeatsMath.zeros(myScenario.getNumVehicleTypes());
+		boolean foundit = false;
 		for(int i=0;i<link.length;i++){
-			if(link[i].getId()==linkid && link[i].getMyNetwork().getId()==network_id){
-				for(int j=0;j<vehicletypeindex.length;j++)
-					d[vehicletypeindex[j]] = initial_density[i][j] * link[i].getLengthInMeters();
-				return d;
+			if(link[i]!=null && link[i].getId()==linkid && link[i].getMyNetwork().getId()==network_id){
+				foundit = true;
+				d[vehicle_type_index[i]] = initial_density[i] * link[i].getLengthInMeters();
 			}
 		}
-		return d;
+		if(foundit)
+			return d;
+		else
+			return null;
 	}
 
 	/** Get the initial densities in [veh/meter]
 	 * 
 	 * @return 2D array of doubles indexed by link and vehicle type
 	 */
-	public double[][] get_initial_density_in_vehpermeter() {
+	public double[] get_initial_density_in_vehpermeter() {
 		return initial_density;
 	}
 
-	/** Get the initial densities in [veh]
-	 * 
-	 * @return 2D array of doubles indexed by link and vehicle type
-	 */
-	public Double[][] get_initial_density_in_veh() {
-		Double [][] X = new Double [link.length][vehicletypeindex.length];
-		int i,j;
-		double linklength;
-		for(i=0;i<link.length;i++){
-			linklength = link[i].getLengthInMeters();
-			for(j=0;j<vehicletypeindex.length;j++)
-				X[i][j] = initial_density[i][j] * linklength;
-		}
-		return X;
-	}
-
-	/** Array of links included in the initial density set. 
-	 * 
-	 * @return array of Links
-	 */
-	public Link[] getLink() {
-		return link;
-	}
-
-	/** List of vehicle type indices used to order the density arrays.
-	 * 
-	 * @return array of integer indices.
-	 */
-	public Integer[] getVehicletypeindex() {
-		return vehicletypeindex;
-	}
+//	/** Get the initial densities in [veh]
+//	 * 
+//	 * @return 2D array of doubles indexed by link and vehicle type
+//	 */
+//	public Double[] get_initial_density_in_veh() {
+//		Double [] X = new Double [link.length][myScenario.getNumVehicleTypes()];
+//		int i,j;
+//		double linklength;
+//		for(i=0;i<link.length;i++){
+//			linklength = link[i].getLengthInMeters();
+//			for(j=0;j<myScenario.getNumVehicleTypes();j++)
+//				X[i][j] = initial_density[i][j] * linklength;
+//		}
+//		return X;
+//	}
+//
+//	/** Array of links included in the initial density set. 
+//	 * 
+//	 * @return array of Links
+//	 */
+//	public Link[] getLink() {
+//		return link;
+//	}
 
 }

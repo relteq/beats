@@ -649,36 +649,36 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return vehtypenames;
 	}
 	
-	/** Get the initial density state for the network with given id.
-	 * @param network_id String id of the network
-	 * @return A two-dimensional array of doubles where the first dimension is the
-	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-	 */
-	public double [][] getInitialDensityForNetwork(long network_id){
-
-		Network network = getNetworkWithId(network_id);
-		if(network==null)
-			return null;
-		
-		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
-
-		int i,j;
-		for(i=0;i<network.getLinkList().getLink().size();i++){
-			if(initprofile==null){
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = 0d;
-			}
-			else{
-				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
-				Double [] init_density = initprofile.getDensityForLinkIdInVeh(network.getId(),link.getId());
-				for(j=0;j<numVehicleTypes;j++)
-					density[i][j] = init_density[j];
-			}
-		}
-		return density;                         
-	}
+//	/** Get the initial density state for the network with given id.
+//	 * @param network_id String id of the network
+//	 * @return A two-dimensional array of doubles where the first dimension is the
+//	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
+//	 * (ordered as in {@link Scenario#getVehicleTypeNames})
+//	 */
+//	public double [][] getInitialDensityForNetwork(long network_id){
+//
+//		Network network = getNetworkWithId(network_id);
+//		if(network==null)
+//			return null;
+//		
+//		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
+//		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
+//
+//		int i,j;
+//		for(i=0;i<network.getLinkList().getLink().size();i++){
+//			if(initprofile==null){
+//				for(j=0;j<numVehicleTypes;j++)
+//					density[i][j] = 0d;
+//			}
+//			else{
+//				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
+//				Double [] init_density = initprofile.getDensityForLinkIdInVeh(network.getId(),link.getId());
+//				for(j=0;j<numVehicleTypes;j++)
+//					density[i][j] = init_density[j];
+//			}
+//		}
+//		return density;                         
+//	}
 
 	/** Get the current density state for the network with given id.
 	 * @param network_id String id of the network
