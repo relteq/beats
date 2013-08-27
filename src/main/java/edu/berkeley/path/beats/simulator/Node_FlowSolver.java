@@ -14,16 +14,16 @@ public abstract class Node_FlowSolver {
 
 	protected static class SupplyDemand {
 		// input to node model, copied from link suppy/demand
-		protected Double [][][] demand;		// [ensemble][nIn][nTypes]
+		protected double [][][] demand;		// [ensemble][nIn][nTypes]
 		protected double [][] supply;		// [ensemble][nOut]
 		
 		public SupplyDemand(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
 			super();
-	    	demand = new Double[numEnsemble][nIn][numVehicleTypes];
+	    	demand = new double[numEnsemble][nIn][numVehicleTypes];
 			supply = new double[numEnsemble][nOut];
 		}
 		
-		public void setDemand(int nE,int nI,Double [] val){
+		public void setDemand(int nE,int nI,double [] val){
 			demand[nE][nI] = val;
 		}
 		
@@ -46,13 +46,13 @@ public abstract class Node_FlowSolver {
 	
 	protected static class IOFlow {
 		// input to node model, copied from link suppy/demand
-		protected Double [][][] in;		// [ensemble][nIn][nTypes]
-		protected Double [][][] out;	// [ensemble][nOut][nTypes]
+		protected double [][][] in;		// [ensemble][nIn][nTypes]
+		protected double [][][] out;	// [ensemble][nOut][nTypes]
 		
 		public IOFlow(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
 			super();
-	    	in = new Double[numEnsemble][nIn][numVehicleTypes];
-			out = new Double[numEnsemble][nOut][numVehicleTypes];
+	    	in = new double[numEnsemble][nIn][numVehicleTypes];
+			out = new double[numEnsemble][nOut][numVehicleTypes];
 		}
 
 		public void setIn(int nE,int nI,int nV,double val){
@@ -63,7 +63,7 @@ public abstract class Node_FlowSolver {
 			out[nE][nO][nV]=val;
 		}
 		
-		public Double [] getIn(int nE,int nI){
+		public double [] getIn(int nE,int nI){
 			return in[nE][nI];
 		}
 
@@ -71,7 +71,7 @@ public abstract class Node_FlowSolver {
 			return in[nE][nI][nV];
 		}
 		
-		public Double [] getOut(int nE,int nO){
+		public double [] getOut(int nE,int nO){
 			return out[nE][nO];
 		}
 		

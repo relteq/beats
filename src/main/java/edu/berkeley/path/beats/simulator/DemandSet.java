@@ -127,7 +127,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double[] getFutureTotalDemandInVeh_NoNoise(long link_id,double dt_in_seconds,int num_steps) throws BeatsException{
+	public double[] getFutureTotalDemandInVeh_NoNoise(long link_id,double dt_in_seconds,int num_steps) throws BeatsException{
 		
 		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))
 			throw new BeatsException("dt_in_seconds must be an integer multiple of simulation dt.");
@@ -142,7 +142,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 		int current_step = myScenario.getClock().getCurrentstep();
 		
 		// return value
-		Double [] X = new Double [num_steps];
+		double [] X = new double [num_steps];
 
 		int n,j,k,step;
 		double nth_demand;
@@ -159,7 +159,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 					else
 						step = 0;
 					step = Math.min(step,dp.getNumTime()-1);
-					Double x = dp.getValueForStep(step);
+					double x = dp.getValueForStep(step);
 					x = dp.applyKnob(x);
 					nth_demand += x;
 					current_step++;

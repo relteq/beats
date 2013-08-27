@@ -70,6 +70,16 @@ public final class BeatsMath {
 				answ += V[i];
 		return answ;
 	}
+
+	public static double sum(double [] V){
+		if(V==null)
+			return Double.NaN;
+		double answ = 0d;
+		for(int i=0;i<V.length;i++)
+			if(!Double.isNaN(V[i]))
+				answ += V[i];
+		return answ;
+	}
 	
 	public static Double sum(Collection<Double> V) {
 		if (null == V) 

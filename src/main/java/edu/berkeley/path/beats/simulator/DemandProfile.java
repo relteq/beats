@@ -39,8 +39,8 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	private int vehicle_type_index;
 
 	private double _knob;
-	private Double std_dev_add;			// [veh]
-	private Double std_dev_mult;			// [veh]
+	private double std_dev_add;				// [veh]
+	private double std_dev_mult;			// [veh]
 	private boolean isdeterministic;		// true if the profile is deterministic
 
 	/////////////////////////////////////////////////////////////////////
@@ -218,9 +218,9 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	}
 
 	/** sample the k-th entry of the profile, add noise **/
-	private Double sample_KthTime_addNoise_applyKnob(int k){
+	private double sample_KthTime_addNoise_applyKnob(int k){
 				
-		Double demandvalue =  demand_nominal.get(k);
+		double demandvalue =  demand_nominal.get(k);
 		
 		// add noise
 		if(!isdeterministic)
@@ -231,10 +231,6 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		return demandvalue;
 	}
-	
-//	private Double getKthEntry(int k){
-//		return demand_nominal.get(k);
-//	}
 	
 	
 	/////////////////////////////////////////////////////////////////////
@@ -286,7 +282,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
  		double noisy_demand = demandvalue;
  		
 		// use smallest between multiplicative and additive standard deviations
-		double std_dev_apply = std_dev_mult.isInfinite() ? std_dev_add : 
+		double std_dev_apply = Double.isInfinite(std_dev_mult) ? std_dev_add : 
 															Math.min( noisy_demand*std_dev_mult , std_dev_add );
 		
 		// sample the distribution

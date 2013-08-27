@@ -29,7 +29,7 @@ package edu.berkeley.path.beats.simulator;
 final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
 
 	private Scenario myScenario;
-	private Double current_sample;
+	private double current_sample;
 	private boolean isOrphan;
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
@@ -162,7 +162,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public Double getCurrentValue(){
+	public double getCurrentValue(){
 		return current_sample;
 	}
 

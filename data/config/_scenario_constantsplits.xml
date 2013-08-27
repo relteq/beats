@@ -25,9 +25,6 @@
     </controller>
   </ControllerSet>
   <InitialDensitySet project_id="-1" id="-1" >
-    <VehicleTypeOrder>
-      <vehicle_type_x name="SOV"/>
-    </VehicleTypeOrder>
     <density id="-1" vehicle_type_id="0" link_id="-1">1.151128343</density>
     <density id="-1" vehicle_type_id="0" link_id="-2">2.323622691</density>
     <density id="-1" vehicle_type_id="0" link_id="-3">11.78780162</density>

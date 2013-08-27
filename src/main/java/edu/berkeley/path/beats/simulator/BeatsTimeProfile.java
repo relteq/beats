@@ -2,8 +2,8 @@ package edu.berkeley.path.beats.simulator;
 
 public class BeatsTimeProfile {
 
-	private double start_time;	// [seconds after midnight]
-	private double time_step;	// [seconds]
+//	private double start_time;	// [seconds after midnight]
+//	private double time_step;	// [seconds]
 	private double [] data;
 	
 	/////////////////////////////////////////////////////////////////////
@@ -23,36 +23,7 @@ public class BeatsTimeProfile {
     // initialize a 1D vector from comma separated string of positive numbers
     // negative numbers get replaced with nan.
     public BeatsTimeProfile(String str,String delim) {
-    	
     	data = BeatsFormatter.readCSVstring(str,delim);
-    	
-//      	if ((str.isEmpty()) || (str.equals("\n")) || (str.equals("\r\n"))){
-//			return;
-//    	}
-//    	
-//    	str.replaceAll("\\s","");
-//    	
-//    	// populate data
-//		StringTokenizer slicesX = new StringTokenizer(str,delim);
-//		int i=0;
-//		boolean allnan = true;
-//		data = new double[slicesX.countTokens()];
-//		while (slicesX.hasMoreTokens()) {			
-//			try {
-//				double value = Double.parseDouble(slicesX.nextToken());
-//				if(value>=0){
-//					data[i] = value;
-//					allnan = false;
-//				}
-//				else
-//					data[i] = Double.NaN;
-//			} catch (NumberFormatException e) {
-//				data[i] = Double.NaN;
-//			}
-//			i++;
-//		}
-//		if(allnan)
-//			data = null;
     }
     
 	/////////////////////////////////////////////////////////////////////
@@ -87,7 +58,7 @@ public class BeatsTimeProfile {
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
     
-    public void set(int i,Double f){
+    public void set(int i,double f){
     	if(data!=null)
     		data[i] = f;
     }

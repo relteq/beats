@@ -77,7 +77,7 @@ public class NodeTest {
 
 	@Test
 	public void test_getSplitRatio_a() {
-		Double [][][] X = node.getSplitRatio();
+		double [][][] X = node.getSplitRatio();
 		assertEquals(X[0][0][0],1d,1e-4);
 		assertEquals(X[0][1][0],0d,1e-4);
 	}

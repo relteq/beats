@@ -35,11 +35,11 @@ final class Defaults {
 	public static String vehicleType = "vehicle";
 	
 	// fundamental diagram
-	public static Double vf					= 60.0 * 0.44704;		// [m/s]
-	public static Double w					= 20.0 * 0.44704;		// [m/s]
-	public static Double densityJam			= 160.0 / 1609.344;		// [veh/meter/lane]
-	public static Double capacityDrop 		= 0.0;					// [veh/sec/lane]
-	public static Double capacity 			= 2400.0 / 3600.0;		// [veh/sec/lane]
+	public static double vf					= 60.0 * 0.44704;		// [m/s]
+	public static double w					= 20.0 * 0.44704;		// [m/s]
+	public static double densityJam			= 160.0 / 1609.344;		// [veh/meter/lane]
+	public static double capacityDrop 		= 0.0;					// [veh/sec/lane]
+	public static double capacity 			= 2400.0 / 3600.0;		// [veh/sec/lane]
 	
 	// signal phase
 	public static float mingreen			= 10f;		// [sec]

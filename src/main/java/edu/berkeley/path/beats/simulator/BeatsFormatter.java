@@ -105,8 +105,6 @@ final public class BeatsFormatter {
 		return data;
 	}
 	
-	
-	
 	public static ArrayList<ArrayList<Double>> readCSV(String filename,String delim) {
 		if(filename==null)
 			return null;
@@ -177,5 +175,14 @@ final public class BeatsFormatter {
 			return null;
 		}
 }
+
+	public static Double[] toDoubleArray(double [] d){
+		if(d==null)
+			return null;
+		Double [] D = new Double [d.length];
+		for(int i=0;i<d.length;i++)
+			D[i] = Double.valueOf(d[i]);
+		return D;
+	}
 
 }

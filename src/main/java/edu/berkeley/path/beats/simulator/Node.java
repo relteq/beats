@@ -302,7 +302,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected boolean validateSplitRatioMatrix(Double3DMatrix X){
 
 		int i,j,k;
-		Double value;
+		double value;
 		
 		// dimension
 		if(X.getnIn()!=nIn || X.getnOut()!=nOut || X.getnVTypes()!=myNetwork.getMyScenario().getNumVehicleTypes()){
@@ -315,7 +315,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			for(j=0;j<X.getnOut();j++){
 				for(k=0;k<X.getnVTypes();k++){
 					value = X.get(i,j,k);
-					if( !value.isNaN() && (value>1 || value<0) ){
+					if( !Double.isNaN(value) && (value>1 || value<0) ){
 						BeatsErrorLog.addError("Invalid split ratio values for node id=" + getId());
 						return false;
 					}
@@ -451,7 +451,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 //		normalizeSplitRatioMatrix(splitratio);
 //	}
 	
-	public Double [][][] getSplitRatio(){
+	public double [][][] getSplitRatio(){
 		if(splitratio_selected==null)
 			return null;
 		return splitratio_selected.cloneData();
@@ -464,7 +464,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	 * @param vehTypeInd vehicle type index
 	 * @return the split ratio
 	 */
-	public Double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
+	public double getSplitRatio(int inLinkInd, int outLinkInd, int vehTypeInd) {
 		if(splitratio_selected==null)
 			return Double.NaN;
 		return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);

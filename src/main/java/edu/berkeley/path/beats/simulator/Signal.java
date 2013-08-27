@@ -562,7 +562,7 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 				nema2indices.put(mySignal.phase[i].getNEMA(),indices);
 			}
 			
-			control_maxflow = new Double[target2index.size()];
+			control_maxflow = new double[target2index.size()];
 		}
 		
 		@Override 

@@ -188,8 +188,8 @@ final class Double3DMatrix {
 		return data;
 	}
 	
-	public Double [][][] cloneData() {
-		Double [][][] cData = new Double [nIn][nOut][nVTypes];
+	public double [][][] cloneData() {
+		double [][][] cData = new double [nIn][nOut][nVTypes];
 		int i,j,k;
 		for(i=0;i<nIn;i++)
 			for(j=0;j<nOut;j++)

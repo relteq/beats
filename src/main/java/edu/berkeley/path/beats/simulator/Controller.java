@@ -53,10 +53,10 @@ public class Controller {
 	private ArrayList<ScenarioElement> feedbacks;
 	
 	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
-	protected Double [] control_maxflow;
+	protected double [] control_maxflow;
 	
 	/** Maximum flow for link targets, in normalized units. Indexed by target.  */
-	private Double [] control_maxspeed;
+	private double [] control_maxspeed;
 	
 	/** Controller update period in seconds */
 	private double dtinseconds;
@@ -130,8 +130,8 @@ public class Controller {
 						targets.add(se);
 				}
 			
-			control_maxflow  = new Double [targets.size()];
-			control_maxspeed = new Double [targets.size()];
+			control_maxflow  = new double [targets.size()];
+			control_maxspeed = new double [targets.size()];
 
 			// store feedbacks ......
 			feedbacks = new ArrayList<ScenarioElement>();
@@ -370,11 +370,11 @@ public class Controller {
 		return myScenario;
 	}
 
-	public Double getControl_maxflow(int index) {
+	public double getControl_maxflow(int index) {
 		return control_maxflow[index];
 	}
 
-	public Double getControl_maxspeed(int index) {
+	public double getControl_maxspeed(int index) {
 		return control_maxspeed[index];
 	}
 
@@ -431,11 +431,11 @@ public class Controller {
 		return jaxbController;
 	}
 
-	protected void setControl_maxflow(int index, Double control_maxflow) {
+	protected void setControl_maxflow(int index, double control_maxflow) {
 		this.control_maxflow[index] = control_maxflow;
 	}
 
-	protected void setControl_maxspeed(int index, Double control_maxspeed) {
+	protected void setControl_maxspeed(int index, double control_maxspeed) {
 		this.control_maxspeed[index] = control_maxspeed;
 	}
 

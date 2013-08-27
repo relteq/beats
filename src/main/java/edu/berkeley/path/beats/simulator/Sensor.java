@@ -73,7 +73,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
-	public Double[] getDensityInVPM(int ensemble) {
+	public double[] getDensityInVPM(int ensemble) {
 		return null;
 	}
 
@@ -88,7 +88,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	}
 
 	@Override
-	public Double[] getFlowInVPS(int ensemble) {
+	public double[] getFlowInVPS(int ensemble) {
 		return null;
 	}
 

@@ -134,7 +134,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 	/////////////////////////////////////////////////////////////////////
 	
 	@Override
-	public Double[] getDensityInVPM(int ensemble) {
+	public double [] getDensityInVPM(int ensemble) {
 		return BeatsMath.times(getMyLink().getDensityInVeh(ensemble), 1 / getMyLink().getLengthInMeters());
 	}
 
@@ -154,7 +154,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 //	}
 	
 	@Override
-	public Double[] getFlowInVPS(int ensemble) {
+	public double[] getFlowInVPS(int ensemble) {
 		return BeatsMath.times(getMyLink().getOutflowInVeh(ensemble), 1 / getMyScenario().getSimdtinseconds());
 	}
 

@@ -77,8 +77,8 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 					for (int vt = 0; vt < numVehicleTypes; ++vt) {
 						if (1 < nOut) {
 							// S_{ij} = \sum_{vt} S_i^{vt} * sr_{ij}^{vt}
-							Double sr = splitratio.get(i, j, vt);
-							if (!sr.isNaN())
+							double sr = splitratio.get(i, j, vt);
+							if (!Double.isNaN(sr))
 								directed_demand[i][j] += demand_supply.getDemand(ens,i,vt) * sr;
 						} else
 							directed_demand[i][j] += demand_supply.getDemand(ens,i,vt);

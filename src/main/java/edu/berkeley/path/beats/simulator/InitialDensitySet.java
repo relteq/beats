@@ -101,8 +101,8 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 
 		// check that values are between 0 and jam density
 		int j;
-		Double sum;
-		Double x;
+		double sum;
+		double x;
 		for(i=0;i<initial_density.length;i++){
 			
 			if(link[i]==null){
@@ -174,7 +174,7 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 //	 * 
 //	 * @return 2D array of doubles indexed by link and vehicle type
 //	 */
-//	public Double[] get_initial_density_in_veh() {
+//	public double[] get_initial_density_in_veh() {
 //		Double [] X = new Double [link.length][myScenario.getNumVehicleTypes()];
 //		int i,j;
 //		double linklength;

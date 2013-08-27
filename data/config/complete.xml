@@ -255,9 +255,6 @@
     </sensor>
   </SensorSet>
   <InitialDensitySet project_id="-1" id="-1" >
-    <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
     <density id="-1" vehicle_type_id="0" link_id="1">2.0</density>
     <density id="-1" vehicle_type_id="0" link_id="2">2.0</density>
     <density id="-1" vehicle_type_id="0" link_id="3">2.0</density>

@@ -267,15 +267,15 @@ public class Event implements Comparable {
 		}
 	}
 	
-    protected void setDemandProfileEventKnob(edu.berkeley.path.beats.jaxb.DemandProfile profile,Double knob){
+    protected void setDemandProfileEventKnob(edu.berkeley.path.beats.jaxb.DemandProfile profile,double knob){
 		if(profile==null)
 			return;
-		if(knob.isNaN())
+		if(Double.isNaN(knob))
 			return;
 		((DemandProfile) profile).set_knob(knob);
     }
     
-    protected void setGlobalDemandEventKnob(Double knob){
+    protected void setGlobalDemandEventKnob(double knob){
     	myScenario.setGlobal_demand_knob(knob);
     }
 	    
@@ -287,9 +287,9 @@ public class Event implements Comparable {
 		private int input_index;
 		private int output_index;
 		private int vehicle_type_index;
-		private Double value;
+		private double value;
 
-		public SplitRatio(int input_index, int output_index, int vehicle_type_index, Double value) {
+		public SplitRatio(int input_index, int output_index, int vehicle_type_index, double value) {
 			this.input_index = input_index;
 			this.output_index = output_index;
 			this.vehicle_type_index = vehicle_type_index;
@@ -305,7 +305,7 @@ public class Event implements Comparable {
 		public int getVehicleTypeIndex() {
 			return vehicle_type_index;
 		}
-		public Double getValue() {
+		public double getValue() {
 			return value;
 		}
 	}

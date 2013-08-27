@@ -73,15 +73,15 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private DemandProfile [] myDemandProfile;  		// demand profiles per vehicle type 
 	
 	// input to node model
-	private Double [] spaceSupply;        			// [veh]	numEnsemble
-	private Double [][] outflowDemand;   			// [veh] 	numEnsemble x numVehTypes
+	private double [] spaceSupply;        			// [veh]	numEnsemble
+	private double [][] outflowDemand;   			// [veh] 	numEnsemble x numVehTypes
 	
 	// in/out flows (from node model or demand profiles)
-	private Double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
-	private Double [][] outflow;    				// [veh]	numEnsemble x numVehTypes
+	private double [][] inflow;    					// [veh]	numEnsemble x numVehTypes
+	private double [][] outflow;    				// [veh]	numEnsemble x numVehTypes
 	
 	// link state
-	private Double [][] density;    				// [veh]	numEnsemble x numVehTypes
+	private double [][] density;    				// [veh]	numEnsemble x numVehTypes
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -157,7 +157,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
 		case normal:					// from the initial density profile 
-			density = new Double[n1][n2];
+			density = new double[n1][n2];
 			for(int i=0;i<n1;i++)
 				if(myScenario.getInitialDensitySet()!=null)
 					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
@@ -321,11 +321,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	protected Double[] getOutflowDemand(int ensemble) {
+	protected double[] getOutflowDemand(int ensemble) {
 		return outflowDemand[ensemble];
 	}
 
-	protected Double getSpaceSupply(int ensemble) {
+	protected double getSpaceSupply(int ensemble) {
 		return spaceSupply[ensemble];
 	}
 
@@ -333,11 +333,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// interface for node model
 	/////////////////////////////////////////////////////////////////////
 
-	protected void setInflow(int ensemble,Double[] inflow) {
+	protected void setInflow(int ensemble,double[] inflow) {
 		this.inflow[ensemble] = inflow;
 	}
 
-	protected void setOutflow(int ensemble,Double[] outflow) {
+	protected void setOutflow(int ensemble,double[] outflow) {
 		this.outflow[ensemble] = outflow;
 	}
 	
@@ -524,7 +524,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @param ensemble Ensemble number 
 	 * @return number of vehicles of each type in the link. <code>null</code> if something goes wrong.
 	 */
-	public Double[] getDensityInVeh(int ensemble) {
+	public double[] getDensityInVeh(int ensemble) {
 		try{
 			return density[ensemble].clone();
 		} catch(Exception e){
@@ -570,7 +570,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * portion of the input file. 
 	 * @return array of exiting flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public Double[] getOutflowInVeh(int ensemble) {
+	public double[] getOutflowInVeh(int ensemble) {
 		try{
 			return outflow[ensemble].clone();
 		} catch(Exception e){
@@ -598,7 +598,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * portion of the input file. 
 	 * @return array of entering flows per vehicle type. <code>null</code> if something goes wrong.
 	 */
-	public Double[] getInflowInVeh(int ensemble) {
+	public double[] getInflowInVeh(int ensemble) {
 		try{
 			return inflow[ensemble].clone();
 		} catch(Exception e){
@@ -820,7 +820,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 *  [This is API call is being made available for implementation of particle filtering.
 	 *  Use with caution.]
 	 */
-	public void overrideDensityWithVeh(Double[] x,int ensemble){
+	public void overrideDensityWithVeh(double[] x,int ensemble){
 		if(ensemble<0 || ensemble>=density.length)
 			return;
 		if(x.length!=density[0].length)
@@ -839,7 +839,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @param vt_ind vehicle type index
 	 * @return density for the given ensemble and vehicle type [vehicles]
 	 */
-	public Double getDensity(int ensemble, int vt_ind) {
+	public double getDensity(int ensemble, int vt_ind) {
 		try{
 			if(density==null)
 				return Double.NaN;
@@ -854,7 +854,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @param vt_ind vehicle type index
 	 * @return input flow for the given ensemble and vehicle type [vehicles]
 	 */
-	public Double getInputFlow(int ensemble, int vt_ind) {
+	public double getInputFlow(int ensemble, int vt_ind) {
 		try{
 			if(inflow==null)
 				return Double.NaN;
@@ -870,7 +870,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	 * @param vt_ind vehicle type index
 	 * @return output flow for the given ensemble and vehicle type [vehicles]
 	 */
-	public Double getOutputFlow(int ensemble, int vt_ind) {
+	public double getOutputFlow(int ensemble, int vt_ind) {
 		try{
 			if(outflow==null)
 				return Double.NaN;

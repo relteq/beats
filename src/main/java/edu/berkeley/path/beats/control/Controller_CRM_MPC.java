@@ -6,6 +6,7 @@ import java.util.Map;
 
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandProfile;
@@ -202,8 +203,8 @@ public class Controller_CRM_MPC extends Controller {
 			// copy ramp demands
 			DemandSet demand_set = (DemandSet) getMyScenario().getDemandSet();
 			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-				if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0){
-					Double [] future_demands = demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int);
+				if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0){					
+					Double [] future_demands = BeatsFormatter.toDoubleArray(demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int));
 					rampDemands.put(link.getId(),future_demands);
 				}
 			

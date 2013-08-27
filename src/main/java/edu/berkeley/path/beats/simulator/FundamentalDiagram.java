@@ -30,13 +30,13 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 
 	private Link myLink;
 	private double lanes;
-	private Double _densityJam;     	// [veh] 
-	private Double _capacity;   		// [veh] 
-	private Double _capacityDrop;     	// [veh] 
-	private Double _vf;                	// [-]
-	private Double _w;                	// [-]
-	private Double std_dev_capacity;	// [veh]
-	private Double density_critical;	// [veh]
+	private double _densityJam;     	// [veh] 
+	private double _capacity;   		// [veh] 
+	private double _capacityDrop;     	// [veh] 
+	private double _vf;                	// [-]
+	private double _w;                	// [-]
+	private double std_dev_capacity;	// [veh]
+	private double density_critical;	// [veh]
 
 	/////////////////////////////////////////////////////////////////////
 	// construction 
@@ -204,7 +204,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	/////////////////////////////////////////////////////////////////////
 
 
-	protected void set_capacity(Double _capacity) {
+	protected void set_capacity(double _capacity) {
 		this._capacity = _capacity;
 	}	
 	
@@ -213,15 +213,15 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	// to links, these are initialized with default values, and 
 	// copyfrom only replaces with non-nan values.
 
-	protected Double _getDensityJamInVeh() {
+	protected double _getDensityJamInVeh() {
 		return _densityJam;
 	}
 
-	protected Double _getCapacityInVeh() {
+	protected double _getCapacityInVeh() {
 		return _capacity;
 	}
 
-	protected Double _getCapacityDropInVeh() {
+	protected double _getCapacityDropInVeh() {
 		return _capacityDrop;
 	}
 
@@ -233,7 +233,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		return _w;
 	}
 
-	protected Double getDensityCriticalInVeh() {
+	protected double getDensityCriticalInVeh() {
 		return density_critical;
 	}
 
@@ -343,7 +343,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		FundamentalDiagram samp = new FundamentalDiagram(myLink,this);
 		
 		// perturb it
-		if(!std_dev_capacity.isNaN() && std_dev_capacity>0){
+		if(!Double.isNaN(std_dev_capacity) && std_dev_capacity>0){
 			switch(myLink.getMyNetwork().getMyScenario().getUncertaintyModel()){
 			case uniform:
 				samp._capacity += BeatsMath.sampleZeroMeanUniform(std_dev_capacity);
