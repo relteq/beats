@@ -19,9 +19,9 @@
     <density id="-1" vehicle_type_id="0" link_id="2">0.00</density>
   </InitialDensitySet>
 
-  <DemandSet>
-    <demandProfile vehicle_type_id="0" dt="5" link_id_origin="-1">0.18, 0</demandProfile>
-    <demandProfile vehicle_type_id="0" dt="5" link_id_origin="-2">0.0</demandProfile>
+  <DemandSet id="-1" project_id="-1">
+    <demandProfile id="-1" vehicle_type_id="0" dt="5" link_id_origin="-1">0.18, 0</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="5" link_id_origin="-2">0.0</demandProfile>
   </DemandSet>
 
   <ControllerSet project_id="-1">

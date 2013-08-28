@@ -746,22 +746,33 @@
 			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 			<xs:element ref="demandProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<xs:attribute name="id" type="xs:long" use="required"/>
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+      <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+      <xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
+      <xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
 		</xs:complexType>
 	  </xs:element>
 			  
 		  <xs:element name="demandProfile">									<!-- content in [veh/time unit/vehicle type] -->
 			<xs:complexType mixed="true">
-			  <!-- <xs:attribute name="vehicle_type_id" type="xs:long" use="required" /> -->
-			  <xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
-			  <xs:attribute name="link_id_origin" type="xs:long" use="required" />
+				<xs:attribute name="id" type="xs:long" use="required"/>
+				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+				<xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
+				<!-- time stamp in [units of time] after midnight -->
+				<xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />
+				<!-- time step in [units of time] -->			
+				<xs:attribute name="dt" type="xs:decimal" use="optional" />
+			  <xs:attribute name="link_id_org" type="xs:long" use="required" />
 			  <xs:attribute name="vehicle_type_id" type="xs:long" use="required" />
-			  <xs:attribute name="destination_network_id" type="xs:long" use="optional" />
-			  <xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>					<!-- [veh/time unit/vehicle type] -->
-			  <xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>					<!-- [portion/vehicle type] -->
+				<xs:attribute name="destination_network_id" type="xs:long" use="optional" />
+				<!-- [veh/time unit] -->
+				<xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>	
+				<!-- [portion] -->
+				<xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>	
+				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />				
 			</xs:complexType>
 		  </xs:element>
 
