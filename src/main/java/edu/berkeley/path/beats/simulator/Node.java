@@ -340,7 +340,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				idxNegative = -1;
 				sum = 0.0f;
 				for (j = 0; j < X.getnOut(); j++)
-					if (X.get(i,j,k).isNaN()) {
+					if (Double.isNaN(X.get(i,j,k))) {
 						countNaN++;
 						idxNegative = j;
 						if (countNaN > 1)
@@ -369,7 +369,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				
 				if (sum >= 1.0)
 					for (j=0; j<X.getnOut(); j++)
-						if (X.get(i,j,k).isNaN())
+						if (Double.isNaN(X.get(i,j,k)))
 							X.set(i,j,k,0d);
 						else
 							X.set(i,j,k,(double) (1/sum) * X.get(i,j,k));

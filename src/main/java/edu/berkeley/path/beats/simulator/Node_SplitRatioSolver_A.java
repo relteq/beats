@@ -50,7 +50,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 	        	outDemandKnown[e][j] = 0f;
 	        	for(i=0;i<nIn;i++)
 	        		for(k=0;k<numVehicleTypes;k++)
-	        			if(!splitratio_selected.get(i,j,k).isNaN())
+	        			if(!Double.isNaN(splitratio_selected.get(i,j,k)))
 	        				outDemandKnown[e][j] += splitratio_selected.get(i,j,k) * demand_supply.getDemand(e,i,k);
 	        }
         
@@ -68,7 +68,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 		        	// number of outputs with unknown split ratio
 		        	numunknown = 0;
 		        	for(j=0;j<nOut;j++)
-		        		if(splitratio_selected.get(i,j,k).isNaN())
+		        		if(Double.isNaN(splitratio_selected.get(i,j,k)))
 		        			numunknown++;
 		        	
 		            if(numunknown==0)

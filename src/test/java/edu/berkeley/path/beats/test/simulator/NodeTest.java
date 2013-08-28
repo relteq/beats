@@ -88,12 +88,12 @@ public class NodeTest {
 		assertEquals(node.getSplitRatio(0, 1, 0),0d,1e-4);
 
 		// edge cases
-		assertNull(node.getSplitRatio(-1, 1, 0));
-		assertNull(node.getSplitRatio(100, 1, 0));
-		assertNull(node.getSplitRatio(0, -1, 0));
-		assertNull(node.getSplitRatio(0, 100, 0));
-		assertNull(node.getSplitRatio(0, 0, -1));
-		assertNull(node.getSplitRatio(0, 0, 100));
+		assertTrue(Double.isNaN(node.getSplitRatio(-1, 1, 0)));
+		assertTrue(Double.isNaN(node.getSplitRatio(100, 1, 0)));
+		assertTrue(Double.isNaN(node.getSplitRatio(0, -1, 0)));
+		assertTrue(Double.isNaN(node.getSplitRatio(0, 100, 0)));
+		assertTrue(Double.isNaN(node.getSplitRatio(0, 0, -1)));
+		assertTrue(Double.isNaN(node.getSplitRatio(0, 0, 100)));
 	}	
 
 }

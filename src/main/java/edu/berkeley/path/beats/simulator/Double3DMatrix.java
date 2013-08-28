@@ -36,17 +36,17 @@ final class Double3DMatrix {
 	private int nOut;			// [2nd dimension] number of columns
 	private int nVTypes;		// [3rd dimension] number of slices
 	private boolean isempty;	// true if there is no data;
-	private Double [][][] data;
+	private double [][][] data;
     
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
     
-    public Double3DMatrix(int nIn,int nOut,int nVTypes,Double val) {
+    public Double3DMatrix(int nIn,int nOut,int nVTypes,double val) {
     	this.nIn = nIn;
     	this.nOut = nOut;
     	this.nVTypes = nVTypes;
-    	data = new Double[nIn][nOut][nVTypes];
+    	data = new double[nIn][nOut][nVTypes];
     	for(int i=0;i<nIn;i++)
         	for(int j=0;j<nOut;j++)
             	for(int k=0;k<nVTypes;k++)
@@ -98,7 +98,7 @@ final class Double3DMatrix {
 				numtokens = slicesXYZ.countTokens();
 				if(nVTypes==0){ // first time here
 					nVTypes = numtokens;
-					data = new Double[nIn][nOut][nVTypes];
+					data = new double[nIn][nOut][nVTypes];
 				}
 				else{
 					if(nVTypes!=numtokens){
@@ -110,7 +110,7 @@ final class Double3DMatrix {
 				k=0;
 				while (slicesXYZ.hasMoreTokens() && issquare) {
 					try {
-						Double value = Double.parseDouble(slicesXYZ.nextToken());
+						double value = Double.parseDouble(slicesXYZ.nextToken());
 						if(value>=0){
 							data[i][j][k] = value;
 							allnan = false;
@@ -146,7 +146,7 @@ final class Double3DMatrix {
 		
     }
      
-    public Double3DMatrix(Double [][][] x){
+    public Double3DMatrix(double [][][] x){
     	nIn = x.length;
     	if(nIn==0)
     		return;
@@ -156,7 +156,7 @@ final class Double3DMatrix {
     	nVTypes = x[0][0].length;
     	if(nVTypes==0)
     		return;
-    	data = new Double[nIn][nOut][nVTypes];
+    	data = new double[nIn][nOut][nVTypes];
     	for(int i=0;i<nIn;i++)
         	for(int j=0;j<nOut;j++)
             	for(int k=0;k<nVTypes;k++)
@@ -184,7 +184,7 @@ final class Double3DMatrix {
 		return nVTypes;
 	}
 
-	public Double [][][] getData() {
+	public double [][][] getData() {
 		return data;
 	}
 	
@@ -198,18 +198,18 @@ final class Double3DMatrix {
 		return cData;
 	}
 
-	public Double get(int i,int j,int k){
+	public double get(int i,int j,int k){
     	if(isempty)
     		return Double.NaN;
 		try{
     		return data[i][j][k];
 		}
 		catch(ArrayIndexOutOfBoundsException e){
-			return null;
+			return Double.NaN;
 		}
     }
 	
-	public Double getSumOverTypes(int i,int j){
+	public double getSumOverTypes(int i,int j){
 		double sum = 0.0;
 		for(int k=0;k<data[i][j].length;k++)
 			sum += data[i][j][k];
@@ -241,7 +241,7 @@ final class Double3DMatrix {
 	// alter data
 	/////////////////////////////////////////////////////////////////////  
 
-	public void set(int i,int j,int k,Double f){
+	public void set(int i,int j,int k,double f){
     	if(isempty)
     		return;
     	data[i][j][k] = f;
@@ -295,7 +295,7 @@ final class Double3DMatrix {
     	for(i=0;i<nIn;i++)
     		for(j=0;j<nOut;j++)
     			for(k=0;k<nVTypes;k++)
-    				if(data[i][j][k].isNaN())
+    				if(Double.isNaN(data[i][j][k]))
     					return true;
     	return false;
     }
