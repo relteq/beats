@@ -7829,7 +7829,9 @@
     </network>
   </NetworkSet>
   <SensorSet  id="-1" project_id="-1">
-   <sensor id="-1" link_id="-144" type="loop">
+
+
+   <sensor id="-1" link_id="-144">
       <display_position>
          <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
@@ -7862,8 +7864,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-2" link_id="-288" type="loop">
+   <sensor id="-2" link_id="-288">
       <display_position>
          <point elevation="0" lat="34.1217" lng="-117.6962"/>
       </display_position>
@@ -7896,8 +7899,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-3" link_id="-345" type="loop">
+   <sensor id="-3" link_id="-345">
       <display_position>
          <point elevation="0" lat="34.1205" lng="-117.6972"/>
       </display_position>
@@ -7930,8 +7934,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-4" link_id="-344" type="loop">
+   <sensor id="-4" link_id="-344">
       <display_position>
          <point elevation="0" lat="34.1213" lng="-117.6958"/>
       </display_position>
@@ -7964,8 +7969,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-5" link_id="-286" type="loop">
+   <sensor id="-5" link_id="-286">
       <display_position>
          <point elevation="0" lat="34.1201" lng="-117.7016"/>
       </display_position>
@@ -8003,8 +8009,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-6" link_id="-142" type="loop">
+   <sensor id="-6" link_id="-142">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.702"/>
       </display_position>
@@ -8042,8 +8049,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-7" link_id="-139" type="loop">
+   <sensor id="-7" link_id="-139">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.7107"/>
       </display_position>
@@ -8081,8 +8089,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-8" link_id="-283" type="loop">
+   <sensor id="-8" link_id="-283">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.7118"/>
       </display_position>
@@ -8120,8 +8129,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-9" link_id="-136" type="loop">
+   <sensor id="-9" link_id="-136">
       <display_position>
          <point elevation="0" lat="34.1201" lng="-117.7207"/>
       </display_position>
@@ -8159,8 +8169,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-10" link_id="-280" type="loop">
+   <sensor id="-10" link_id="-280">
       <display_position>
          <point elevation="0" lat="34.1201" lng="-117.7217"/>
       </display_position>
@@ -8198,8 +8209,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-11" link_id="-134" type="loop">
+   <sensor id="-11" link_id="-134">
       <display_position>
          <point elevation="0" lat="34.1203" lng="-117.7279"/>
       </display_position>
@@ -8237,8 +8249,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-12" link_id="-278" type="loop">
+   <sensor id="-12" link_id="-278">
       <display_position>
          <point elevation="0" lat="34.1202" lng="-117.7272"/>
       </display_position>
@@ -8276,8 +8289,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-13" link_id="-276" type="loop">
+   <sensor id="-13" link_id="-276">
       <display_position>
          <point elevation="0" lat="34.1204" lng="-117.7347"/>
       </display_position>
@@ -8315,8 +8329,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-14" link_id="-339" type="loop">
+   <sensor id="-14" link_id="-339">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.7334"/>
       </display_position>
@@ -8354,8 +8369,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-15" link_id="-132" type="loop">
+   <sensor id="-15" link_id="-132">
       <display_position>
          <point elevation="0" lat="34.1204" lng="-117.7336"/>
       </display_position>
@@ -8393,8 +8409,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-16" link_id="-338" type="loop">
+   <sensor id="-16" link_id="-338">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.7385"/>
       </display_position>
@@ -8432,8 +8449,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-17" link_id="-128" type="loop">
+   <sensor id="-17" link_id="-128">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.7481"/>
       </display_position>
@@ -8471,8 +8489,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-18" link_id="-272" type="loop">
+   <sensor id="-18" link_id="-272">
       <display_position>
          <point elevation="0" lat="34.1199" lng="-117.7485"/>
       </display_position>
@@ -8510,8 +8529,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-19" link_id="-268" type="loop">
+   <sensor id="-19" link_id="-268">
       <display_position>
          <point elevation="0" lat="34.1197" lng="-117.761"/>
       </display_position>
@@ -8549,8 +8569,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-20" link_id="-337" type="loop">
+   <sensor id="-20" link_id="-337">
       <display_position>
          <point elevation="0" lat="34.1192" lng="-117.7599"/>
       </display_position>
@@ -8588,8 +8609,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-21" link_id="-124" type="loop">
+   <sensor id="-21" link_id="-124">
       <display_position>
          <point elevation="0" lat="34.1198" lng="-117.7601"/>
       </display_position>
@@ -8627,8 +8649,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-22" link_id="-336" type="loop">
+   <sensor id="-22" link_id="-336">
       <display_position>
          <point elevation="0" lat="34.1193" lng="-117.7654"/>
       </display_position>
@@ -8666,8 +8689,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-23" link_id="-121" type="loop">
+   <sensor id="-23" link_id="-121">
       <display_position>
          <point elevation="0" lat="34.1196" lng="-117.7703"/>
       </display_position>
@@ -8705,8 +8729,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-24" link_id="-265" type="loop">
+   <sensor id="-24" link_id="-265">
       <display_position>
          <point elevation="0" lat="34.1196" lng="-117.77"/>
       </display_position>
@@ -8744,8 +8769,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-25" link_id="-335" type="loop">
+   <sensor id="-25" link_id="-335">
       <display_position>
          <point elevation="0" lat="34.1198" lng="-117.7826"/>
       </display_position>
@@ -8783,8 +8809,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-26" link_id="-262" type="loop">
+   <sensor id="-26" link_id="-262">
       <display_position>
          <point elevation="0" lat="34.1199" lng="-117.7813"/>
       </display_position>
@@ -8822,8 +8849,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-27" link_id="-118" type="loop">
+   <sensor id="-27" link_id="-118">
       <display_position>
          <point elevation="0" lat="34.1198" lng="-117.7798"/>
       </display_position>
@@ -8861,8 +8889,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-28" link_id="-334" type="loop">
+   <sensor id="-28" link_id="-334">
       <display_position>
          <point elevation="0" lat="34.1196" lng="-117.789"/>
       </display_position>
@@ -8900,8 +8929,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-29" link_id="-249" type="loop">
+   <sensor id="-29" link_id="-249">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.8233"/>
       </display_position>
@@ -8939,8 +8969,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-30" link_id="-105" type="loop">
+   <sensor id="-30" link_id="-105">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.8221"/>
       </display_position>
@@ -8978,8 +9009,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-31" link_id="-333" type="loop">
+   <sensor id="-31" link_id="-333">
       <display_position>
          <point elevation="0" lat="34.1192" lng="-117.8232"/>
       </display_position>
@@ -9017,8 +9049,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-32" link_id="-332" type="loop">
+   <sensor id="-32" link_id="-332">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.8282"/>
       </display_position>
@@ -9056,8 +9089,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-33" link_id="-103" type="loop">
+   <sensor id="-33" link_id="-103">
       <display_position>
          <point elevation="0" lat="34.1211" lng="-117.8301"/>
       </display_position>
@@ -9095,8 +9129,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-34" link_id="-247" type="loop">
+   <sensor id="-34" link_id="-247">
       <display_position>
          <point elevation="0" lat="34.121" lng="-117.8292"/>
       </display_position>
@@ -9134,8 +9169,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-35" link_id="-331" type="loop">
+   <sensor id="-35" link_id="-331">
       <display_position>
          <point elevation="0" lat="34.1207" lng="-117.8334"/>
       </display_position>
@@ -9173,8 +9209,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-36" link_id="-330" type="loop">
+   <sensor id="-36" link_id="-330">
       <display_position>
          <point elevation="0" lat="34.1208" lng="-117.8306"/>
       </display_position>
@@ -9212,8 +9249,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-37" link_id="-242" type="loop">
+   <sensor id="-37" link_id="-242">
       <display_position>
          <point elevation="0" lat="34.1177" lng="-117.8455"/>
       </display_position>
@@ -9251,8 +9289,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-38" link_id="-329" type="loop">
+   <sensor id="-38" link_id="-329">
       <display_position>
          <point elevation="0" lat="34.1172" lng="-117.8452"/>
       </display_position>
@@ -9290,8 +9329,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-39" link_id="-98" type="loop">
+   <sensor id="-39" link_id="-98">
       <display_position>
          <point elevation="0" lat="34.1177" lng="-117.8461"/>
       </display_position>
@@ -9329,8 +9369,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-40" link_id="-328" type="loop">
+   <sensor id="-40" link_id="-328">
       <display_position>
          <point elevation="0" lat="34.12" lng="-117.8711"/>
       </display_position>
@@ -9368,8 +9409,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-41" link_id="-327" type="loop">
+   <sensor id="-41" link_id="-327">
       <display_position>
          <point elevation="0" lat="34.1205" lng="-117.8772"/>
       </display_position>
@@ -9407,8 +9449,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-42" link_id="-90" type="loop">
+   <sensor id="-42" link_id="-90">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.8714"/>
       </display_position>
@@ -9446,8 +9489,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-43" link_id="-234" type="loop">
+   <sensor id="-43" link_id="-234">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.8718"/>
       </display_position>
@@ -9485,8 +9529,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-44" link_id="-229" type="loop">
+   <sensor id="-44" link_id="-229">
       <display_position>
          <point elevation="0" lat="34.1209" lng="-117.8869"/>
       </display_position>
@@ -9524,8 +9569,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-45" link_id="-326" type="loop">
+   <sensor id="-45" link_id="-326">
       <display_position>
          <point elevation="0" lat="34.1205" lng="-117.8889"/>
       </display_position>
@@ -9563,8 +9609,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-46" link_id="-85" type="loop">
+   <sensor id="-46" link_id="-85">
       <display_position>
          <point elevation="0" lat="34.121" lng="-117.8863"/>
       </display_position>
@@ -9602,8 +9649,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-47" link_id="-84" type="loop">
+   <sensor id="-47" link_id="-84">
       <display_position>
          <point elevation="0" lat="34.1209" lng="-117.8902"/>
       </display_position>
@@ -9641,8 +9689,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-48" link_id="-325" type="loop">
+   <sensor id="-48" link_id="-325">
       <display_position>
          <point elevation="0" lat="34.1201" lng="-117.8911"/>
       </display_position>
@@ -9680,8 +9729,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-49" link_id="-228" type="loop">
+   <sensor id="-49" link_id="-228">
       <display_position>
          <point elevation="0" lat="34.1209" lng="-117.8915"/>
       </display_position>
@@ -9719,8 +9769,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-50" link_id="-324" type="loop">
+   <sensor id="-50" link_id="-324">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.893"/>
       </display_position>
@@ -9758,8 +9809,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-51" link_id="-224" type="loop">
+   <sensor id="-51" link_id="-224">
       <display_position>
          <point elevation="0" lat="34.1209" lng="-117.9045"/>
       </display_position>
@@ -9797,8 +9849,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-52" link_id="-323" type="loop">
+   <sensor id="-52" link_id="-323">
       <display_position>
          <point elevation="0" lat="34.1201" lng="-117.9065"/>
       </display_position>
@@ -9836,8 +9889,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-53" link_id="-80" type="loop">
+   <sensor id="-53" link_id="-80">
       <display_position>
          <point elevation="0" lat="34.1208" lng="-117.9052"/>
       </display_position>
@@ -9875,8 +9929,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-54" link_id="-322" type="loop">
+   <sensor id="-54" link_id="-322">
       <display_position>
          <point elevation="0" lat="34.1203" lng="-117.9081"/>
       </display_position>
@@ -9914,8 +9969,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-55" link_id="-78" type="loop">
+   <sensor id="-55" link_id="-78">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.9072"/>
       </display_position>
@@ -9953,8 +10009,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-56" link_id="-222" type="loop">
+   <sensor id="-56" link_id="-222">
       <display_position>
          <point elevation="0" lat="34.1206" lng="-117.9077"/>
       </display_position>
@@ -9992,8 +10049,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-57" link_id="-321" type="loop">
+   <sensor id="-57" link_id="-321">
       <display_position>
          <point elevation="0" lat="34.1211" lng="-117.9105"/>
       </display_position>
@@ -10031,8 +10089,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-58" link_id="-220" type="loop">
+   <sensor id="-58" link_id="-220">
       <display_position>
          <point elevation="0" lat="34.1252" lng="-117.9151"/>
       </display_position>
@@ -10070,8 +10129,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-59" link_id="-76" type="loop">
+   <sensor id="-59" link_id="-76">
       <display_position>
          <point elevation="0" lat="34.1252" lng="-117.9151"/>
       </display_position>
@@ -10109,8 +10169,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-60" link_id="-320" type="loop">
+   <sensor id="-60" link_id="-320">
       <display_position>
          <point elevation="0" lat="34.125" lng="-117.9152"/>
       </display_position>
@@ -10148,8 +10209,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-61" link_id="-319" type="loop">
+   <sensor id="-61" link_id="-319">
       <display_position>
          <point elevation="0" lat="34.1299" lng="-117.9322"/>
       </display_position>
@@ -10187,8 +10249,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-62" link_id="-70" type="loop">
+   <sensor id="-62" link_id="-70">
       <display_position>
          <point elevation="0" lat="34.1305" lng="-117.9314"/>
       </display_position>
@@ -10226,8 +10289,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-63" link_id="-214" type="loop">
+   <sensor id="-63" link_id="-214">
       <display_position>
          <point elevation="0" lat="34.1303" lng="-117.9319"/>
       </display_position>
@@ -10265,8 +10329,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-64" link_id="-207" type="loop">
+   <sensor id="-64" link_id="-207">
       <display_position>
          <point elevation="0" lat="34.1338" lng="-117.955"/>
       </display_position>
@@ -10304,8 +10369,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-65" link_id="-318" type="loop">
+   <sensor id="-65" link_id="-318">
       <display_position>
          <point elevation="0" lat="34.1332" lng="-117.9561"/>
       </display_position>
@@ -10343,8 +10409,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-66" link_id="-63" type="loop">
+   <sensor id="-66" link_id="-63">
       <display_position>
          <point elevation="0" lat="34.1338" lng="-117.955"/>
       </display_position>
@@ -10382,8 +10449,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-67" link_id="-61" type="loop">
+   <sensor id="-67" link_id="-61">
       <display_position>
          <point elevation="0" lat="34.1352" lng="-117.9607"/>
       </display_position>
@@ -10421,8 +10489,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-68" link_id="-205" type="loop">
+   <sensor id="-68" link_id="-205">
       <display_position>
          <point elevation="0" lat="34.1348" lng="-117.9593"/>
       </display_position>
@@ -10460,8 +10529,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-69" link_id="-317" type="loop">
+   <sensor id="-69" link_id="-317">
       <display_position>
          <point elevation="0" lat="34.1342" lng="-117.9594"/>
       </display_position>
@@ -10499,8 +10569,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-70" link_id="-203" type="loop">
+   <sensor id="-70" link_id="-203">
       <display_position>
          <point elevation="0" lat="34.1356" lng="-117.9673"/>
       </display_position>
@@ -10538,8 +10609,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-71" link_id="-59" type="loop">
+   <sensor id="-71" link_id="-59">
       <display_position>
          <point elevation="0" lat="34.1353" lng="-117.9663"/>
       </display_position>
@@ -10577,8 +10649,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-72" link_id="-316" type="loop">
+   <sensor id="-72" link_id="-316">
       <display_position>
          <point elevation="0" lat="34.1351" lng="-117.9624"/>
       </display_position>
@@ -10616,8 +10689,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-73" link_id="-56" type="loop">
+   <sensor id="-73" link_id="-56">
       <display_position>
          <point elevation="0" lat="34.1354" lng="-117.9777"/>
       </display_position>
@@ -10655,8 +10729,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-74" link_id="-315" type="loop">
+   <sensor id="-74" link_id="-315">
       <display_position>
          <point elevation="0" lat="34.135" lng="-117.9767"/>
       </display_position>
@@ -10694,8 +10769,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-75" link_id="-200" type="loop">
+   <sensor id="-75" link_id="-200">
       <display_position>
          <point elevation="0" lat="34.1354" lng="-117.9773"/>
       </display_position>
@@ -10733,8 +10809,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-76" link_id="-314" type="loop">
+   <sensor id="-76" link_id="-314">
       <display_position>
          <point elevation="0" lat="34.1351" lng="-117.978"/>
       </display_position>
@@ -10772,8 +10849,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-77" link_id="-199" type="loop">
+   <sensor id="-77" link_id="-199">
       <display_position>
          <point elevation="0" lat="34.1352" lng="-117.979"/>
       </display_position>
@@ -10811,8 +10889,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-78" link_id="-55" type="loop">
+   <sensor id="-78" link_id="-55">
       <display_position>
          <point elevation="0" lat="34.1354" lng="-117.979"/>
       </display_position>
@@ -10850,8 +10929,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-79" link_id="-313" type="loop">
+   <sensor id="-79" link_id="-313">
       <display_position>
          <point elevation="0" lat="34.1352" lng="-117.9861"/>
       </display_position>
@@ -10889,8 +10969,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-80" link_id="-50" type="loop">
+   <sensor id="-80" link_id="-50">
       <display_position>
          <point elevation="0" lat="34.1353" lng="-117.9957"/>
       </display_position>
@@ -10928,8 +11009,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-81" link_id="-194" type="loop">
+   <sensor id="-81" link_id="-194">
       <display_position>
          <point elevation="0" lat="34.1354" lng="-117.996"/>
       </display_position>
@@ -10967,8 +11049,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-82" link_id="-312" type="loop">
+   <sensor id="-82" link_id="-312">
       <display_position>
          <point elevation="0" lat="34.1351" lng="-117.9987"/>
       </display_position>
@@ -11006,8 +11089,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-83" link_id="-311" type="loop">
+   <sensor id="-83" link_id="-311">
       <display_position>
          <point elevation="0" lat="34.1353" lng="-118.0033"/>
       </display_position>
@@ -11045,8 +11129,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-84" link_id="-44" type="loop">
+   <sensor id="-84" link_id="-44">
       <display_position>
          <point elevation="0" lat="34.1394" lng="-118.0158"/>
       </display_position>
@@ -11084,8 +11169,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-85" link_id="-188" type="loop">
+   <sensor id="-85" link_id="-188">
       <display_position>
          <point elevation="0" lat="34.1387" lng="-118.015"/>
       </display_position>
@@ -11123,8 +11209,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-86" link_id="-310" type="loop">
+   <sensor id="-86" link_id="-310">
       <display_position>
          <point elevation="0" lat="34.139" lng="-118.0157"/>
       </display_position>
@@ -11162,8 +11249,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-87" link_id="-308" type="loop">
+   <sensor id="-87" link_id="-308">
       <display_position>
          <point elevation="0" lat="34.1418" lng="-118.0191"/>
       </display_position>
@@ -11201,8 +11289,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-88" link_id="-309" type="loop">
+   <sensor id="-88" link_id="-309">
       <display_position>
          <point elevation="0" lat="34.1409" lng="-118.0186"/>
       </display_position>
@@ -11240,8 +11329,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-89" link_id="-187" type="loop">
+   <sensor id="-89" link_id="-187">
       <display_position>
          <point elevation="0" lat="34.1413" lng="-118.0179"/>
       </display_position>
@@ -11279,8 +11369,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-90" link_id="-43" type="loop">
+   <sensor id="-90" link_id="-43">
       <display_position>
          <point elevation="0" lat="34.1412" lng="-118.018"/>
       </display_position>
@@ -11318,8 +11409,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-91" link_id="-307" type="loop">
+   <sensor id="-91" link_id="-307">
       <display_position>
          <point elevation="0" lat="34.1473" lng="-118.0307"/>
       </display_position>
@@ -11357,8 +11449,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-92" link_id="-39" type="loop">
+   <sensor id="-92" link_id="-39">
       <display_position>
          <point elevation="0" lat="34.1463" lng="-118.0279"/>
       </display_position>
@@ -11396,8 +11489,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-93" link_id="-183" type="loop">
+   <sensor id="-93" link_id="-183">
       <display_position>
          <point elevation="0" lat="34.1465" lng="-118.0283"/>
       </display_position>
@@ -11435,8 +11529,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-94" link_id="-306" type="loop">
+   <sensor id="-94" link_id="-306">
       <display_position>
          <point elevation="0" lat="34.1477" lng="-118.0324"/>
       </display_position>
@@ -11474,8 +11569,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-95" link_id="-33" type="loop">
+   <sensor id="-95" link_id="-33">
       <display_position>
          <point elevation="0" lat="34.1488" lng="-118.0478"/>
       </display_position>
@@ -11513,8 +11609,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-96" link_id="-304" type="loop">
+   <sensor id="-96" link_id="-304">
       <display_position>
          <point elevation="0" lat="34.1486" lng="-118.0532"/>
       </display_position>
@@ -11552,8 +11649,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-97" link_id="-177" type="loop">
+   <sensor id="-97" link_id="-177">
       <display_position>
          <point elevation="0" lat="34.1488" lng="-118.0491"/>
       </display_position>
@@ -11591,8 +11689,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-98" link_id="-305" type="loop">
+   <sensor id="-98" link_id="-305">
       <display_position>
          <point elevation="0" lat="34.1486" lng="-118.0495"/>
       </display_position>
@@ -11630,8 +11729,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-99" link_id="-346" type="loop">
+   <sensor id="-99" link_id="-346">
       <display_position>
          <point elevation="0" lat="34.148" lng="-118.0717"/>
       </display_position>
@@ -11669,8 +11769,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-100" link_id="-172" type="loop">
+   <sensor id="-100" link_id="-172">
       <display_position>
          <point elevation="0" lat="34.1487" lng="-118.0658"/>
       </display_position>
@@ -11708,8 +11809,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-101" link_id="-28" type="loop">
+   <sensor id="-101" link_id="-28">
       <display_position>
          <point elevation="0" lat="34.1486" lng="-118.0651"/>
       </display_position>
@@ -11747,8 +11849,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-102" link_id="-303" type="loop">
+   <sensor id="-102" link_id="-303">
       <display_position>
          <point elevation="0" lat="34.1483" lng="-118.0678"/>
       </display_position>
@@ -11786,8 +11889,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-103" link_id="-302" type="loop">
+   <sensor id="-103" link_id="-302">
       <display_position>
          <point elevation="0" lat="34.1483" lng="-118.0708"/>
       </display_position>
@@ -11825,8 +11929,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-104" link_id="-170" type="loop">
+   <sensor id="-104" link_id="-170">
       <display_position>
          <point elevation="0" lat="34.1486" lng="-118.0679"/>
       </display_position>
@@ -11864,8 +11969,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-105" link_id="-26" type="loop">
+   <sensor id="-105" link_id="-26">
       <display_position>
          <point elevation="0" lat="34.1487" lng="-118.0683"/>
       </display_position>
@@ -11903,8 +12009,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-106" link_id="-24" type="loop">
+   <sensor id="-106" link_id="-24">
       <display_position>
          <point elevation="0" lat="34.1477" lng="-118.0777"/>
       </display_position>
@@ -11942,8 +12049,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-107" link_id="-300" type="loop">
+   <sensor id="-107" link_id="-300">
       <display_position>
          <point elevation="0" lat="34.1474" lng="-118.0813"/>
       </display_position>
@@ -11981,8 +12089,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-108" link_id="-168" type="loop">
+   <sensor id="-108" link_id="-168">
       <display_position>
          <point elevation="0" lat="34.1477" lng="-118.0786"/>
       </display_position>
@@ -12020,8 +12129,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-109" link_id="-301" type="loop">
+   <sensor id="-109" link_id="-301">
       <display_position>
          <point elevation="0" lat="34.1476" lng="-118.0796"/>
       </display_position>
@@ -12059,8 +12169,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-110" link_id="-298" type="loop">
+   <sensor id="-110" link_id="-298">
       <display_position>
          <point elevation="0" lat="34.1515" lng="-118.0916"/>
       </display_position>
@@ -12098,8 +12209,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-111" link_id="-19" type="loop">
+   <sensor id="-111" link_id="-19">
       <display_position>
          <point elevation="0" lat="34.1524" lng="-118.0936"/>
       </display_position>
@@ -12137,8 +12249,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-112" link_id="-163" type="loop">
+   <sensor id="-112" link_id="-163">
       <display_position>
          <point elevation="0" lat="34.1518" lng="-118.0916"/>
       </display_position>
@@ -12176,8 +12289,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-113" link_id="-299" type="loop">
+   <sensor id="-113" link_id="-299">
       <display_position>
          <point elevation="0" lat="34.1476" lng="-118.0844"/>
       </display_position>
@@ -12215,8 +12329,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-114" link_id="-297" type="loop">
+   <sensor id="-114" link_id="-297">
       <display_position>
          <point elevation="0" lat="34.1523" lng="-118.0974"/>
       </display_position>
@@ -12254,8 +12369,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-115" link_id="-296" type="loop">
+   <sensor id="-115" link_id="-296">
       <display_position>
          <point elevation="0" lat="34.1523" lng="-118.1022"/>
       </display_position>
@@ -12293,8 +12409,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-116" link_id="-14" type="loop">
+   <sensor id="-116" link_id="-14">
       <display_position>
          <point elevation="0" lat="34.1524" lng="-118.11"/>
       </display_position>
@@ -12332,8 +12449,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-117" link_id="-158" type="loop">
+   <sensor id="-117" link_id="-158">
       <display_position>
          <point elevation="0" lat="34.1524" lng="-118.1088"/>
       </display_position>
@@ -12371,8 +12489,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-118" link_id="-295" type="loop">
+   <sensor id="-118" link_id="-295">
       <display_position>
          <point elevation="0" lat="34.1522" lng="-118.1107"/>
       </display_position>
@@ -12410,8 +12529,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-119" link_id="-11" type="loop">
+   <sensor id="-119" link_id="-11">
       <display_position>
          <point elevation="0" lat="34.1523" lng="-118.1179"/>
       </display_position>
@@ -12449,8 +12569,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-120" link_id="-294" type="loop">
+   <sensor id="-120" link_id="-294">
       <display_position>
          <point elevation="0" lat="34.1521" lng="-118.1186"/>
       </display_position>
@@ -12488,8 +12609,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-121" link_id="-155" type="loop">
+   <sensor id="-121" link_id="-155">
       <display_position>
          <point elevation="0" lat="34.1522" lng="-118.119"/>
       </display_position>
@@ -12527,8 +12649,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-122" link_id="-293" type="loop">
+   <sensor id="-122" link_id="-293">
       <display_position>
          <point elevation="0" lat="34.1518" lng="-118.1247"/>
       </display_position>
@@ -12566,8 +12689,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-123" link_id="-152" type="loop">
+   <sensor id="-123" link_id="-152">
       <display_position>
          <point elevation="0" lat="34.1516" lng="-118.1284"/>
       </display_position>
@@ -12605,8 +12729,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-124" link_id="-292" type="loop">
+   <sensor id="-124" link_id="-292">
       <display_position>
          <point elevation="0" lat="34.1515" lng="-118.1306"/>
       </display_position>
@@ -12644,8 +12769,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-125" link_id="-8" type="loop">
+   <sensor id="-125" link_id="-8">
       <display_position>
          <point elevation="0" lat="34.1516" lng="-118.1295"/>
       </display_position>
@@ -12683,8 +12809,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-126" link_id="-291" type="loop">
+   <sensor id="-126" link_id="-291">
       <display_position>
          <point elevation="0" lat="34.1514" lng="-118.1362"/>
       </display_position>
@@ -12722,8 +12849,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-127" link_id="-4" type="loop">
+   <sensor id="-127" link_id="-4">
       <display_position>
          <point elevation="0" lat="34.1517" lng="-118.143"/>
       </display_position>
@@ -12761,8 +12889,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-128" link_id="-148" type="loop">
+   <sensor id="-128" link_id="-148">
       <display_position>
          <point elevation="0" lat="34.1517" lng="-118.1427"/>
       </display_position>
@@ -12800,8 +12929,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-129" link_id="-290" type="loop">
+   <sensor id="-129" link_id="-290">
       <display_position>
          <point elevation="0" lat="34.1514" lng="-118.1433"/>
       </display_position>
@@ -12839,8 +12969,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-130" link_id="-289" type="loop">
+   <sensor id="-130" link_id="-289">
       <display_position>
          <point elevation="0" lat="34.1512" lng="-118.1516"/>
       </display_position>
@@ -12878,8 +13009,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-131" link_id="-145" type="loop">
+   <sensor id="-131" link_id="-145">
       <display_position>
          <point elevation="0" lat="34.1514" lng="-118.1517"/>
       </display_position>
@@ -12917,8 +13049,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
+      <sensor_type id="-1" name="loop"/>
    </sensor>
-   <sensor id="-132" link_id="-1" type="loop">
+   <sensor id="-132" link_id="-1">
       <display_position>
          <point elevation="0" lat="34.1513" lng="-118.152"/>
       </display_position>
@@ -12956,6 +13089,9 @@
             <column>PeMS Data Clearinghouse</column>
          </row>
       </table>
-   </sensor>  
+      <sensor_type id="-1" name="loop"/>
+   </sensor>
+  
+  
   </SensorSet>
 </scenario>

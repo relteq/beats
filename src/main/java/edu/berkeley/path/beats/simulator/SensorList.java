@@ -28,6 +28,8 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
+import edu.berkeley.path.beats.jaxb.SensorType;
+
 final class SensorList extends edu.berkeley.path.beats.jaxb.SensorSet  {
 
 	private ArrayList<Sensor> sensors = new ArrayList<Sensor>();
@@ -53,9 +55,11 @@ final class SensorList extends edu.berkeley.path.beats.jaxb.SensorSet  {
 			for(edu.berkeley.path.beats.jaxb.Sensor sensorjaxb : myScenario.getSensorSet().getSensor()) {
 				
 				// assign type
-				Sensor.Type myType;
+				Sensor.Type myType = null;
 		    	try {
-					myType = Sensor.Type.valueOf(sensorjaxb.getType());
+		    		SensorType stype = sensorjaxb.getSensorType();
+		    		if(stype!=null)
+		    			myType = Sensor.Type.valueOf(stype.getName());
 				} catch (IllegalArgumentException e) {
 					continue;
 				}

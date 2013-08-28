@@ -185,74 +185,76 @@
     </network>
   </NetworkSet>
   <SensorSet id="-1" project_id="-1">
-    <sensor id="1" type="loop" link_id="1">
+   <sensor id="1" link_id="1">
       <display_position>
-        <point elevation="0" lat="34.1215" lng="-117.6967"/>
+         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
       <parameters>
-        <parameter name="length" value="0"/>
-        <parameter name="vds" value="768041"/>
-        <parameter name="offset_in_link" value="0"/>
-        <parameter name="lanes" value="4"/>
-        <parameter name="hwy_name" value="210"/>
-        <parameter name="hwy_dir" value="E"/>
-        <parameter name="start_time" value="0"/>
-        <parameter name="postmile" value="52.139"/>
-        <parameter name="data_id" value="768041"/>
-        <parameter name="link_type" value="other"/>
+         <parameter name="length" value="0"/>
+         <parameter name="vds" value="768041"/>
+         <parameter name="offset_in_link" value="0"/>
+         <parameter name="lanes" value="4"/>
+         <parameter name="hwy_name" value="210"/>
+         <parameter name="hwy_dir" value="E"/>
+         <parameter name="start_time" value="0"/>
+         <parameter name="postmile" value="52.139"/>
+         <parameter name="data_id" value="768041"/>
+         <parameter name="link_type" value="other"/>
       </parameters>
       <table name="data_sources">
-        <column_names>
-          <column_name name="url" key="false"/>
-          <column_name name="dt" key="false"/>
-          <column_name name="format" key="false"/>
-        </column_names>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
+         <column_names>
+            <column_name key="false" name="url"/>
+            <column_name key="false" name="dt"/>
+            <column_name key="false" name="format"/>
+         </column_names>
+         <row>
+            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
+            <column>300</column>
+            <column>PeMS Data Clearinghouse</column>
+         </row>
+         <row>
+            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
+            <column>300</column>
+            <column>PeMS Data Clearinghouse</column>
+         </row>
       </table>
-    </sensor>
-    <sensor id="2" type="loop" link_id="100">
+      <sensor_type id="-1" name="loop"/>
+   </sensor>
+   <sensor id="2" link_id="100">
       <display_position>
-        <point elevation="0" lat="34.1215" lng="-117.6967"/>
+         <point elevation="0" lat="34.1215" lng="-117.6967"/>
       </display_position>
       <parameters>
-        <parameter name="length" value="0"/>
-        <parameter name="vds" value="768041"/>
-        <parameter name="offset_in_link" value="0"/>
-        <parameter name="lanes" value="4"/>
-        <parameter name="hwy_name" value="210"/>
-        <parameter name="hwy_dir" value="E"/>
-        <parameter name="start_time" value="0"/>
-        <parameter name="postmile" value="52.139"/>
-        <parameter name="data_id" value="768041"/>
-        <parameter name="link_type" value="other"/>
+         <parameter name="length" value="0"/>
+         <parameter name="vds" value="768041"/>
+         <parameter name="offset_in_link" value="0"/>
+         <parameter name="lanes" value="4"/>
+         <parameter name="hwy_name" value="210"/>
+         <parameter name="hwy_dir" value="E"/>
+         <parameter name="start_time" value="0"/>
+         <parameter name="postmile" value="52.139"/>
+         <parameter name="data_id" value="768041"/>
+         <parameter name="link_type" value="other"/>
       </parameters>
       <table name="data_sources">
-        <column_names>
-          <column_name name="url" key="false"/>
-          <column_name name="dt" key="false"/>
-          <column_name name="format" key="false"/>
-        </column_names>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
-        <row>
-          <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
-          <column>300</column>
-          <column>PeMS Data Clearinghouse</column>
-        </row>
+         <column_names>
+            <column_name key="false" name="url"/>
+            <column_name key="false" name="dt"/>
+            <column_name key="false" name="format"/>
+         </column_names>
+         <row>
+            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
+            <column>300</column>
+            <column>PeMS Data Clearinghouse</column>
+         </row>
+         <row>
+            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
+            <column>300</column>
+            <column>PeMS Data Clearinghouse</column>
+         </row>
       </table>
-    </sensor>
+      <sensor_type id="-1" name="loop"/>
+   </sensor>
   </SensorSet>
   <InitialDensitySet project_id="-1" id="-1" >
     <density id="-1" vehicle_type_id="0" link_id="1">2.0</density>

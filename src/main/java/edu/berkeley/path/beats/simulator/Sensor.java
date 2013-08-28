@@ -37,6 +37,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	private Scenario myScenario;	
 
 	private edu.berkeley.path.beats.jaxb.Sensor jaxbSensor;
+	
 	/** Sensor type. */
 	private Sensor.Type myType;
 	
