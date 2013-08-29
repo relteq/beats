@@ -66,7 +66,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		isdone = false;
 		
 		// required
-		Link myLink = myScenario.getLinkWithId(getLinkIdOrigin());
+		Link myLink = myScenario.getLinkWithId(getLinkIdOrg());
 		isOrphan = myLink==null;
 		
 		if(!isOrphan && vehicle_type_index>=0)
@@ -119,21 +119,21 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			return;
 		
 		if(isOrphan)
-			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrigin() + " in demand profile.");
+			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrg() + " in demand profile.");
 		
 		if(vehicle_type_index<0)
-			BeatsErrorLog.addError("Bad vehicle type id in demand profile for link id=" + getLinkIdOrigin());
+			BeatsErrorLog.addError("Bad vehicle type id in demand profile for link id=" + getLinkIdOrg());
 		
 		// check dtinseconds
 		if( dtinseconds<=0 && demand_nominal.getNumTime()>1 )
-			BeatsErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrigin());
+			BeatsErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrg());
 		
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && demand_nominal.getNumTime()>1 )
-			BeatsErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrigin() + " is not a multiple of simulation time step.");
+			BeatsErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrg() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
 		if(demand_nominal.hasNaN())
-			BeatsErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrigin());
+			BeatsErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrg());
 
 	}
 

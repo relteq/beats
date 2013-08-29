@@ -220,10 +220,10 @@
   
   
   <DemandSet id="-1" project_id="-1">
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_origin="6">400</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="1" dt="300" knob="1" link_id_origin="6">100</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_origin="1">100</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="1" dt="300" knob="1" link_id_origin="1">50</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="6">400</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="1" dt="300" knob="1" link_id_org="6">100</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="1">100</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="1" dt="300" knob="1" link_id_org="1">50</demandProfile>
   </DemandSet>
   
   <FundamentalDiagramSet>

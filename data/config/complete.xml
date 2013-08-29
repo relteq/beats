@@ -298,8 +298,8 @@
     <VehicleTypeOrder>
       <vehicle_type_x name="car"/>
     </VehicleTypeOrder>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_origin="6">400</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_origin="1">100</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="6">400</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="1">100</demandProfile>
   </DemandSet>
   <ControllerSet project_id="-1">
     <controller dt="5" type="IRM_ALINEA" id="1" enabled="true">

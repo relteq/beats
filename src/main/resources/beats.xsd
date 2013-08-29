@@ -758,6 +758,10 @@
 			  
 		  <xs:element name="demandProfile">									<!-- content in [veh/time unit/vehicle type] -->
 			<xs:complexType mixed="true">
+			<!--
+        <xs:sequence>
+          <xs:element ref="demand" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence> -->
 				<xs:attribute name="id" type="xs:long" use="required"/>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				<xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
@@ -774,7 +778,16 @@
 				<xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>	
 				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />				
 			</xs:complexType>
-		  </xs:element>
+		</xs:element>
+
+			<xs:element name="demand">
+				<xs:complexType mixed="true">		<!-- content in [veh/time unit] -->
+					<xs:attribute name="vehicle_type_id" type="xs:long" use="required" />
+          <xs:attribute name="ids" type="xs:string" use="optional"/>
+          <xs:attribute name="crudFlags" type="xs:string" use="optional"/>
+          <xs:attribute name="mod_stamps" type="xs:string" use="optional" />
+				</xs:complexType>
+			</xs:element>
 
   <!-- ControllerSet ............................................................. 
   

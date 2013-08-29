@@ -41,8 +41,8 @@
     <VehicleTypeOrder>
       <vehicle_type_x name="car"/>
     </VehicleTypeOrder>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_origin="-6">400.000000</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_origin="-1">200.000000</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="-6">400.000000</demandProfile>
+    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="-1">200.000000</demandProfile>
   </DemandSet>
   <FundamentalDiagramSet>
     <fundamentalDiagramProfile id="-1" link_id="-1">

@@ -904,7 +904,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		boolean foundit = false;
 		for(int i=0;i<demandSet.getDemandProfile().size();i++){
 			edu.berkeley.path.beats.jaxb.DemandProfile d = demandSet.getDemandProfile().get(i);
-			if(d.getLinkIdOrigin()==dem.getLinkIdOrigin()){
+			if(d.getLinkIdOrg()==dem.getLinkIdOrg()){
 				demandSet.getDemandProfile().set(i,dem);
 				foundit = true;
 				break;

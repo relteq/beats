@@ -67,7 +67,7 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 			dp.populate(myScenario);
 
 			// add to link map
-			long myLink_id =dp.getLinkIdOrigin();
+			long myLink_id =dp.getLinkIdOrg();
 			int veh_type_ind = dp.getVehicle_type_index();
 			if(!dp.isOrphan() && veh_type_ind>=0){
 				Integer [] dp_index = link_id_to_demandprofile_index.get(myLink_id);
