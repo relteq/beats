@@ -96,7 +96,7 @@ public class Event_Link_Demand_Knob extends Event {
 	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : getMyScenario().getDemandSet().getDemandProfile()){
 	        		if(profile.getLinkIdOrg()==s.getId()){
 	        			if(resetToNominal)
-	        				setDemandProfileEventKnob(profile,profile.getKnob().doubleValue());
+	        				setDemandProfileEventKnob(profile,profile.getKnob());
 	        			else
 	        				setDemandProfileEventKnob(profile,newknob);	        			
 	        			break;

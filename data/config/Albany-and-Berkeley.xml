@@ -890,7 +890,7 @@
    </demandProfile>
 
   </DemandSet>
-  <ControllerSet project_id="-1">
+  <ControllerSet project_id="-1" id="-1">
     <controller dt="1" id="-1" name="" type="SIG_Pretimed" enabled="true">
       <parameters>
         <parameter name="Transition Delay" value="0"/>
@@ -982,7 +982,7 @@
       </table>
     </controller>
   </ControllerSet>
-  <FundamentalDiagramSet>
+  <FundamentalDiagramSet project_id="-1" id="-1">
     <fundamentalDiagramProfile id="-1" link_id="-5121">
       <fundamentalDiagram capacity="3000" capacity_drop="0" congestion_speed="10" jam_density="400" free_flow_speed="30" critical_speed="30"/>
     </fundamentalDiagramProfile>

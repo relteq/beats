@@ -103,7 +103,7 @@ public class Controller {
 			this.jaxbController = jaxbC;
 			this.ison = false; //c.isEnabled(); 
 			this.activationTimes=new ArrayList<ActivationTimes>();
-			dtinseconds = jaxbC.getDt().floatValue();		// assume given in seconds
+			dtinseconds = jaxbC.getDt();		// assume given in seconds
 			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());		
 			
 			// Copy tables
@@ -118,7 +118,7 @@ public class Controller {
 			if (jaxbC.getActivationIntervals()!=null)
 				for (edu.berkeley.path.beats.jaxb.Interval tinterval : jaxbC.getActivationIntervals().getInterval())		
 					if(tinterval!=null)
-						activationTimes.add(new ActivationTimes(tinterval.getStartTime().doubleValue(),tinterval.getEndTime().doubleValue()));
+						activationTimes.add(new ActivationTimes(tinterval.getStartTime(),tinterval.getEndTime()));
 			Collections.sort(activationTimes);
 			
 			// store targets ......

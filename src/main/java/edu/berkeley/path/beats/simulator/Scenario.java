@@ -1145,7 +1145,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 					sim_start = Double.POSITIVE_INFINITY;
 					if(demandSet!=null)
 						for(edu.berkeley.path.beats.jaxb.DemandProfile D : demandSet.getDemandProfile())
-							sim_start = Math.min(sim_start,D.getStartTime().doubleValue());					
+							sim_start = Math.min(sim_start,D.getStartTime());					
 					if(Double.isInfinite(sim_start))
 						sim_start = 0d;
 					sim_start = Math.min(sim_start, timestartOutput);

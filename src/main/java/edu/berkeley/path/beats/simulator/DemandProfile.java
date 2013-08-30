@@ -136,7 +136,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		isdeterministic = (getStdDevAdd()==null || std_dev_add==0.0) && 
 						  (getStdDevMult()==null || std_dev_mult==0.0);
 		
-		_knob = getKnob().doubleValue();
+		_knob = getKnob();
 		
 	}
 
@@ -185,11 +185,13 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		isdone = false;
 		
 		// read start time, convert to stepinitial
-		double starttime;	// [sec]
-		if( getStartTime()!=null)
-			starttime = getStartTime().floatValue();
-		else
-			starttime = 0f;
+//		double starttime;	// [sec]
+//		if( getStartTime()!=null)
+//			starttime = getStartTime();
+//		else
+//			starttime = 0f;
+		
+		double starttime = getStartTime();
 
 		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		
@@ -197,7 +199,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		current_sample = BeatsMath.zeros(myScenario.getNumVehicleTypes());
 		
 		// set knob back to its original value
-		_knob = getKnob().doubleValue();	
+		_knob = getKnob();	
 	}
 	
 	protected void update(boolean forcesample) {

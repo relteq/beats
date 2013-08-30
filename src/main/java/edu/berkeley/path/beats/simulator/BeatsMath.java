@@ -227,6 +227,10 @@ public final class BeatsMath {
 	public static boolean equals(double a,double b){
 		return Math.abs(a-b) < BeatsMath.EPSILON;
 	}	
+
+	public static boolean equals(double a,double b,double epsilon){
+		return Math.abs(a-b) < epsilon;
+	}	
 	
 	public static boolean equals1D(ArrayList<Double> a,ArrayList<Double> b){
 		if(a==null || b==null)

@@ -124,7 +124,8 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 		// read start time, convert to stepinitial
 		double profile_starttime;	// [sec]
 		
-		profile_starttime = getStartTime()==null ? 0f : getStartTime().floatValue();
+		profile_starttime = getStartTime(); // ==null ? 0f : getStartTime().floatValue();
+		
 		stepinitial = BeatsMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		
 		if(FD!=null)

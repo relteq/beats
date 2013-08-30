@@ -12,7 +12,7 @@
    </VehicleTypeSet>  
    
   <!--
-  <ControllerSet project_id="-1">
+  <ControllerSet project_id="-1" id="-1">
     <controller dt="300" type="IRM_ALINEA" id="-1" enabled="true">
       <targetElements>
         <scenarioElement id="-289" type="link"/>
@@ -1116,7 +1116,7 @@
    </demandProfile>
 
    </DemandSet>
-   <FundamentalDiagramSet>
+   <FundamentalDiagramSet project_id="-1" id="-1">
       <fundamentalDiagramProfile id="-1" link_id="-1">
          <fundamentalDiagram capacity="1680" capacity_drop="0" congestion_speed="14.9292526709366" critical_speed="65.1499904020103" free_flow_speed="65.1499904020103" jam_density="138.3174"/>
       </fundamentalDiagramProfile>

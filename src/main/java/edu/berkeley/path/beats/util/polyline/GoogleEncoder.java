@@ -26,16 +26,21 @@ public class GoogleEncoder extends EncoderBase implements EncoderIF {
 		return sb.toString();
 	}
 
-	private void encode(BigDecimal curr, BigDecimal prev) {
-		curr = round(curr);
-		if (null != prev) curr = curr.subtract(round(prev));
-		encode(curr);
+	private void encode(Double curr, Double prev) {
+		
+		BigDecimal bd_curr = new BigDecimal(curr);
+		BigDecimal bd_prev = new BigDecimal(prev);
+		
+		bd_curr = round(bd_curr);
+		if (null != bd_prev) 
+			bd_curr = bd_curr.subtract(round(bd_prev));
+		encode(bd_curr);
 	}
-
+	
 	private BigDecimal round(BigDecimal value) {
 		return value.setScale(5, BigDecimal.ROUND_HALF_UP);
 	}
-
+	
 	/**
 	 * See https://developers.google.com/maps/documentation/utilities/polylinealgorithm
 	 * @param coord the value to encode
@@ -68,7 +73,7 @@ public class GoogleEncoder extends EncoderBase implements EncoderIF {
 		for (Integer chunk : chunks)
 			sb.append((char) (chunk.intValue() + 63));
 	}
-
+	
 	@Override
 	public void reset() {
 		sb.setLength(0);

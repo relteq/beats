@@ -12,21 +12,21 @@
 		</xs:complexType>
 	</xs:element>
 
-  <xs:element name="display_position">
-    <xs:complexType>
-      <xs:sequence>
-          <xs:element ref="point" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  
-  <xs:element name="point">
-    <xs:complexType>
-      <xs:attribute name="lat" type="xs:decimal" use="required" />
-      <xs:attribute name="lng" type="xs:decimal" use="required" />
-      <xs:attribute name="elevation" type="xs:decimal" use="optional" default="0" />
-    </xs:complexType>
-  </xs:element>
+	<xs:element name="display_position">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="point" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+		<xs:element name="point">
+			<xs:complexType>
+				<xs:attribute name="lat" type="xs:double" use="required" />
+				<xs:attribute name="lng" type="xs:double" use="required" />
+				<xs:attribute name="elevation" type="xs:double" use="optional" default="0" />
+			</xs:complexType>
+		</xs:element>
 
   <!-- description .................................................................. -->
   <!-- used by scenario, network, node, link, sensor, event, and all profiles and sets. -->
@@ -763,18 +763,18 @@
         </xs:sequence>
 				<xs:attribute name="id" type="xs:long" use="required"/>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
-				<xs:attribute name="knob" type="xs:decimal" use="optional"  default="1"/>
+				<xs:attribute name="knob" type="xs:double" use="optional"  default="1"/>
 				<!-- time stamp in [units of time] after midnight -->
-				<xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />
+				<xs:attribute name="start_time" type="xs:double" use="optional" default="0" />
 				<!-- time step in [units of time] -->			
-				<xs:attribute name="dt" type="xs:decimal" use="optional" />
+				<xs:attribute name="dt" type="xs:double" use="optional" />
 				<xs:attribute name="link_id_org" type="xs:long" use="required" />
 				<xs:attribute name="destination_network_id" type="xs:long" use="optional" />
 				<!-- [veh/time unit] -->
-				<xs:attribute name="std_dev_add" type="xs:decimal" use="optional"/>	
+				<xs:attribute name="std_dev_add" type="xs:double" use="optional"/>	
 				<!-- [portion] -->
-				<xs:attribute name="std_dev_mult" type="xs:decimal" use="optional"/>	
-				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />				
+				<xs:attribute name="std_dev_mult" type="xs:double" use="optional"/>	
+				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />
 			</xs:complexType>
 		</xs:element>
 
@@ -828,6 +828,7 @@
         <xs:element ref="description" minOccurs="0" />
         <xs:element ref="controller" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="required"/>
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
@@ -854,7 +855,7 @@
 				</xs:attribute>
 				<xs:attribute name="id" type="xs:long" use="required" />
 				<!-- in time units -->
-			  <xs:attribute name="dt" type="xs:decimal" use="required" />							<!-- in time units -->
+				<xs:attribute name="dt" type="xs:double" use="required" />
 				<xs:attribute name="enabled" type="xs:boolean" use="required" />
 				<xs:attribute name="java_class" type="xs:string" use="optional" />
 			</xs:complexType>
@@ -886,8 +887,10 @@
 
 				<xs:element name="interval">
 					<xs:complexType>
-						<xs:attribute name="start_time" type="xs:decimal" use="required" />		<!-- in time units -->
-						<xs:attribute name="end_time" type="xs:decimal" use="required" />		<!-- in time units -->
+						<!-- in time units -->
+						<xs:attribute name="start_time" type="xs:double" use="required" />
+						<!-- in time units -->
+						<xs:attribute name="end_time" type="xs:double" use="required" />
 					</xs:complexType>
 				</xs:element>
 				
@@ -921,8 +924,9 @@
 			<xs:element ref="description" minOccurs="0" />
 			<xs:element ref="fundamentalDiagramProfile" minOccurs="0" maxOccurs="unbounded" />
 		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 			<xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
 			<xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
@@ -938,10 +942,12 @@
 				</xs:sequence>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				<xs:attribute name="id" type="xs:long" use="required" />
-			  <xs:attribute name="link_id" type="xs:long" use="required" />
-			  <xs:attribute name="sensor_id" type="xs:long" use="optional" />
-			  <xs:attribute name="start_time" type="xs:decimal" use="optional" default="0" />		<!-- in time units -->
-			  <xs:attribute name="dt" type="xs:decimal" use="optional" />							<!-- in time units -->
+				<xs:attribute name="link_id" type="xs:long" use="required" />
+				<xs:attribute name="sensor_id" type="xs:long" use="optional" />
+				<!-- in time units after midnight-->
+				<xs:attribute name="start_time" type="xs:double" use="optional" default="0" />
+				<!-- in time units -->
+				<xs:attribute name="dt" type="xs:double" use="optional" /> 
 				<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
 				<xs:attribute name="agg_run_id" type="xs:long" use="optional" />
 			</xs:complexType>
@@ -986,12 +992,13 @@
 
 	<xs:element name="NetworkConnections">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
-			<xs:element ref="networkpair" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
-		  <xs:attribute name="id" type="xs:long" use="optional" />
-		  <xs:attribute name="name" type="xs:string" use="optional" default="" />
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
+        <xs:element ref="networkpair" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="optional" default="0" />
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
 		</xs:complexType>
 	</xs:element>  
 

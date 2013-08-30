@@ -226,11 +226,11 @@ public class UnitConverter {
 		return null == value ? null : BigDecimal.valueOf(converter.convert(value.doubleValue()));
 	}
 
-	private double convert(double value, javax.measure.converter.UnitConverter converter) {
+	private Double convert(Double value, javax.measure.converter.UnitConverter converter) {
 		return converter.convert(value);
 	}
 	
-	private double convertLength(double value) {
+	private Double convertLength(Double value) {
 		return convert(value, lconv);
 	}
 
@@ -240,6 +240,10 @@ public class UnitConverter {
 
 	private BigDecimal convertFlow(BigDecimal value) {
 		return convert(value, fconv);
+	}
+	
+	private Double convertFlow(Double value) {
+		return value==null ? null : convert(value, fconv);
 	}
 
 	private BigDecimal convertSpeed(BigDecimal value) {

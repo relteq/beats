@@ -11,7 +11,7 @@
 		<vehicleType id="0" name="SOV" size_factor="1.0"/>					
    </VehicleTypeSet>  
    
-  <ControllerSet project_id="-1">
+  <ControllerSet project_id="-1" id="-1">
     <controller dt="300" type="IRM_ALINEA" id="-1" enabled="true">
       <parameters>
         <parameter name="gain" value="10"/>
@@ -658,7 +658,7 @@
       <demand vehicle_type_id="0">400</demand>
    </demandProfile>
   </DemandSet>
-  <FundamentalDiagramSet>
+  <FundamentalDiagramSet project_id="-1" id="-1">
     <fundamentalDiagramProfile id="-1" link_id="-1">
       <fundamentalDiagram capacity="6720" capacity_drop="0" congestion_speed="14.9292526709366" jam_density="553.2696" free_flow_speed="65.1499904020103" critical_speed="65.1499904020103"/>
     </fundamentalDiagramProfile>

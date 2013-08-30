@@ -23,10 +23,16 @@ public class GoogleDecoder extends DecoderBase implements DecoderIF {
 			if (0 == nc % 2) result.add(factory.createPoint());
 			final int np = nc / 2; // point index
 			Point prev = np > 0 ? result.get(np - 1) : null;
-			if (0 == nc % 2)
-				result.get(np).setLat(null == prev ? coords.get(nc) : coords.get(nc).add(prev.getLat()));
-			else
-				result.get(np).setLng(null == prev ? coords.get(nc) : coords.get(nc).add(prev.getLng()));
+			if (0 == nc % 2){
+				BigDecimal bd_lat = new BigDecimal(prev.getLat());
+				BigDecimal newlat = null == prev ? coords.get(nc) : coords.get(nc).add(bd_lat);
+				result.get(np).setLat(newlat.doubleValue());
+			}
+			else{
+				BigDecimal bd_lng = new BigDecimal(prev.getLng());
+				BigDecimal newlng = null == prev ? coords.get(nc) : coords.get(nc).add(bd_lng);
+				result.get(np).setLng(newlng.doubleValue());
+			}
 		}
 		return result;
 	}

@@ -35,7 +35,7 @@ public class NetworkTest {
 	@Test
 	public void test_getNodeWithId() {
 		Node node = network.getNodeWithId(-2);
-		assertEquals(node.getPosition().getPoint().get(0).getLat().doubleValue(),37.8437831193107,1E-4);
+		assertEquals(node.getPosition().getPoint().get(0).getLat(),37.8437831193107,1E-4);
 	}
 
 	@Test

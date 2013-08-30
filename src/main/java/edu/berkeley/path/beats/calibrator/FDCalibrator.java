@@ -245,8 +245,8 @@ public class FDCalibrator {
 				edu.berkeley.path.beats.jaxb.FundamentalDiagram FD = new edu.berkeley.path.beats.jaxb.FundamentalDiagram();
 
 				FDprof.setLinkId(G.link.getId());
-				FDprof.setDt(new BigDecimal(300));
-				FDprof.setStartTime(new BigDecimal(0));
+				FDprof.setDt(300d);
+				FDprof.setStartTime(0d);
 				
 				SensorLoopStation S = (SensorLoopStation) G.sensor;
 				FDParameters FDp = (FDParameters) sensorFD.get(S);

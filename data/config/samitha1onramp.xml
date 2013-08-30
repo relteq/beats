@@ -28,7 +28,7 @@
    </demandProfile>
   </DemandSet>
 
-  <ControllerSet project_id="-1">
+  <ControllerSet project_id="-1" id="-1">
     <controller dt="5" id="0" name="MPC" type="CRM_MPC" enabled="true">
       <parameters>
         <parameter name="policy" value="adjoint"/>
@@ -48,7 +48,7 @@
     </controller>
   </ControllerSet>
 
-  <FundamentalDiagramSet>
+  <FundamentalDiagramSet project_id="-1" id="-1">
 
     <fundamentalDiagramProfile id="-1" link_id="-1">
       <fundamentalDiagram capacity=".2" congestion_speed="1" jam_density="100" free_flow_speed=".2" />

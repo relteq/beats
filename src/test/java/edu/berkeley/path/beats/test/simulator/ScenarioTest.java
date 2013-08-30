@@ -173,7 +173,7 @@ public class ScenarioTest {
 	@Test
 	public void test_getNodeWithId() {
 		Node node =  static_scenario.getNodeWithId(-2);
-		double x = node.getPosition().getPoint().get(0).getLat().doubleValue();
+		double x = node.getPosition().getPoint().get(0).getLat();
 		double exp  =37.8437831193107;
 		assertEquals(x,exp,1e-4);
 		
