@@ -3,9 +3,6 @@
   
   <settings>
     <units>SI</units>
-    <VehicleTypes>
-      <vehicle_type_x name="car" weight="1.0"/>
-    </VehicleTypes>
   </settings>
   
    <VehicleTypeSet project_id="-1" id="-1">

@@ -249,7 +249,7 @@ public class UnitConverter {
 	private BigDecimal convertSpeed(BigDecimal value) {
 		return convert(value, sconv);
 	}
-
+	
 	private void process() throws BeatsException {
 		// settings: nothing to process
 		process(scenario.getNetworkSet());

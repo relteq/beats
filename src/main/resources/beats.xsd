@@ -328,10 +328,9 @@
 
 	<xs:element name="settings">
 		<xs:complexType>
-		  <xs:all>
-			<xs:element ref="VehicleTypes" minOccurs="1" />
-			<xs:element ref="units" minOccurs="1" />
-		  </xs:all>
+			<xs:all>
+				<xs:element ref="units" minOccurs="1" />
+			</xs:all>
 		</xs:complexType>
 	</xs:element>
 
@@ -348,21 +347,6 @@
 			</xs:simpleType>
 		</xs:element>
 		
-		  <xs:element name="VehicleTypes">
-			<xs:complexType>
-			  <xs:sequence>
-				<xs:element ref="vehicle_type_x" minOccurs="1" maxOccurs="unbounded" />
-			  </xs:sequence>
-			</xs:complexType>
-		  </xs:element>
-
-			  <xs:element name="vehicle_type_x">
-				<xs:complexType>
-				  <xs:attribute name="name" type="xs:string" use="required" />
-				  <xs:attribute name="weight" type="xs:decimal" use="optional" />		<!-- default is 1, not used if part if VehicleTypeOrder -->
-				</xs:complexType>
-			  </xs:element>
-			  
   <!-- VehicleTypeSet .................................................................. -->
   
 	<xs:element name="VehicleTypeSet">
@@ -1080,15 +1064,6 @@
           <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				</xs:complexType>
 			</xs:element>
-
-  <xs:element name="VehicleTypeOrder">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="vehicle_type_x" minOccurs="0" maxOccurs="unbounded" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>  
-
 			
 			
 </xs:schema>

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario id="0" name="null" schemaVersion="2.0.2">
   <settings>
-    <VehicleTypes>
-      <vehicle_type_x name="car" weight="1.0"/>
-      <vehicle_type_x name="truck" weight="2.0"/>
-    </VehicleTypes>
     <units>US</units>
   </settings>
   

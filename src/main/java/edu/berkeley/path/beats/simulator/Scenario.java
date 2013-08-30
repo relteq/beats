@@ -44,6 +44,7 @@ import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
+import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
@@ -119,10 +120,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
 
 		this.numVehicleTypes = 1;
-	    if(getSettings()!=null)
-	        if(getSettings().getVehicleTypes()!=null)
-	            if(getSettings().getVehicleTypes().getVehicleTypeX()!=null) 
-	            	this.numVehicleTypes = getSettings().getVehicleTypes().getVehicleTypeX().size();
+		if(getVehicleTypeSet()!=null && getVehicleTypeSet().getVehicleType()!=null)
+			numVehicleTypes = getVehicleTypeSet().getVehicleType().size();
 
 		// network list
 		if(networkSet!=null)
@@ -417,50 +416,50 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
-	protected Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
-		
-		Integer [] vehicletypeindex;
-		
-		// single vehicle types in setting and no vtypeorder, return 0
-		if(vtypeorder==null && numVehicleTypes==1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			vehicletypeindex[0]=0;
-			return vehicletypeindex;
-		}
-		
-		// multiple vehicle types in setting and no vtypeorder, return 0...n
-		if(vtypeorder==null && numVehicleTypes>1){
-			vehicletypeindex = new Integer[numVehicleTypes];
-			for(int i=0;i<numVehicleTypes;i++)
-				vehicletypeindex[i] = i;	
-			return vehicletypeindex;	
-		}
-		
-		// vtypeorder is not null
-		int numTypesInOrder = vtypeorder.getVehicleTypeX().size();
-		int i,j;
-		vehicletypeindex = new Integer[numTypesInOrder];
-		for(i=0;i<numTypesInOrder;i++)
-			vehicletypeindex[i] = -1;			
-
-		if(getSettings()==null)
-			return vehicletypeindex;
-
-		if(getSettings().getVehicleTypes()==null)
-			return vehicletypeindex;
-		
-		for(i=0;i<numTypesInOrder;i++){
-			String vtordername = vtypeorder.getVehicleTypeX().get(i).getName();
-			List<edu.berkeley.path.beats.jaxb.VehicleTypeX> settingsname = getSettings().getVehicleTypes().getVehicleTypeX();
-			for(j=0;j<settingsname.size();j++){
-				if(settingsname.get(j).getName().equals(vtordername)){
-					vehicletypeindex[i] =  j;
-					break;
-				}
-			}			
-		}
-		return vehicletypeindex;
-	}
+//	protected Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
+//		
+//		Integer [] vehicletypeindex;
+//		
+//		// single vehicle types in setting and no vtypeorder, return 0
+//		if(vtypeorder==null && numVehicleTypes==1){
+//			vehicletypeindex = new Integer[numVehicleTypes];
+//			vehicletypeindex[0]=0;
+//			return vehicletypeindex;
+//		}
+//		
+//		// multiple vehicle types in setting and no vtypeorder, return 0...n
+//		if(vtypeorder==null && numVehicleTypes>1){
+//			vehicletypeindex = new Integer[numVehicleTypes];
+//			for(int i=0;i<numVehicleTypes;i++)
+//				vehicletypeindex[i] = i;	
+//			return vehicletypeindex;	
+//		}
+//		
+//		// vtypeorder is not null
+//		int numTypesInOrder = vtypeorder.getVehicleTypeX().size();
+//		int i,j;
+//		vehicletypeindex = new Integer[numTypesInOrder];
+//		for(i=0;i<numTypesInOrder;i++)
+//			vehicletypeindex[i] = -1;			
+//
+//		if(getSettings()==null)
+//			return vehicletypeindex;
+//
+//		if(getSettings().getVehicleTypes()==null)
+//			return vehicletypeindex;
+//		
+//		for(i=0;i<numTypesInOrder;i++){
+//			String vtordername = vtypeorder.getVehicleTypeX().get(i).getName();
+//			List<edu.berkeley.path.beats.jaxb.VehicleTypeX> settingsname = getSettings().getVehicleTypes().getVehicleTypeX();
+//			for(j=0;j<settingsname.size();j++){
+//				if(settingsname.get(j).getName().equals(vtordername)){
+//					vehicletypeindex[i] =  j;
+//					break;
+//				}
+//			}			
+//		}
+//		return vehicletypeindex;
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -641,11 +640,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public String [] getVehicleTypeNames(){
 		String [] vehtypenames = new String [numVehicleTypes];
-		if(getSettings()==null || getSettings().getVehicleTypes()==null)
+		if(getVehicleTypeSet()==null || getVehicleTypeSet().getVehicleType()==null)
 			vehtypenames[0] = Defaults.vehicleType;
 		else
-			for(int i=0;i<getSettings().getVehicleTypes().getVehicleTypeX().size();i++)
-				vehtypenames[i] = getSettings().getVehicleTypes().getVehicleTypeX().get(i).getName();
+			for(int i=0;i<numVehicleTypes;i++)
+				vehtypenames[i] = getVehicleTypeSet().getVehicleType().get(i).getName();
 		return vehtypenames;
 	}
 	

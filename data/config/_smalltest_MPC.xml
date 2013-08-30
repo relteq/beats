@@ -2,9 +2,6 @@
 <scenario id="0" name="null" schemaVersion="2.0.2">
   <settings>
     <units>US</units>
-    <VehicleTypes>
-      <vehicle_type_x name="car" weight="1.0"/>
-    </VehicleTypes>
   </settings>
   
    <VehicleTypeSet project_id="-1" id="-1">
