@@ -78,10 +78,14 @@
     </event>
   </EventSet>
   <DemandSet id="-1" project_id="-1">
-    <demandProfile id="-1" vehicle_type_id="1" dt="300" knob="1" link_id_org="-6">400</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="-6">200</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="1" dt="300" knob="1" link_id_org="-1">100</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="-1">50</demandProfile>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-6">
+      <demand vehicle_type_id="1">400</demand>
+      <demand vehicle_type_id="0">200</demand>
+   </demandProfile>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-1">
+      <demand vehicle_type_id="1">100</demand>
+      <demand vehicle_type_id="0">50</demand>
+   </demandProfile>
   </DemandSet>
   <ControllerSet project_id="-1">
     <controller dt="5" type="IRM_ALINEA" id="-1" enabled="true">

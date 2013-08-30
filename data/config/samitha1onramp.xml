@@ -20,8 +20,12 @@
   </InitialDensitySet>
 
   <DemandSet id="-1" project_id="-1">
-    <demandProfile id="-1" vehicle_type_id="0" dt="5" link_id_org="-1">0.18, 0</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="5" link_id_org="-2">0.0</demandProfile>
+   <demandProfile dt="5" id="-1" link_id_org="-2">
+      <demand vehicle_type_id="0">0</demand>
+   </demandProfile>
+   <demandProfile dt="5" id="-1" link_id_org="-1">
+      <demand vehicle_type_id="0">0.18,0</demand>
+   </demandProfile>
   </DemandSet>
 
   <ControllerSet project_id="-1">

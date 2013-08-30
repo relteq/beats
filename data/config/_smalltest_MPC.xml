@@ -36,11 +36,15 @@
     </event>
   </EventSet>
   <DemandSet id="-1" project_id="-1">
-    <VehicleTypeOrder>
+   <VehicleTypeOrder>
       <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="-6">400.000000</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" knob="1" link_id_org="-1">100.000000</demandProfile>
+   </VehicleTypeOrder>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-6">
+      <demand vehicle_type_id="0">400</demand>
+   </demandProfile>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-1">
+      <demand vehicle_type_id="0">100</demand>
+   </demandProfile>
   </DemandSet>
     <ControllerSet project_id="-1">
         <controller dt="300" id="0" name="MPC" type="CRM_MPC" enabled="true">

@@ -23,11 +23,15 @@
   </SplitRatioSet>
   
   <DemandSet id="-1" project_id="-1">
-    <VehicleTypeOrder>
+   <VehicleTypeOrder>
       <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" start_time="100" knob="1" link_id_org="-6">400</demandProfile>
-    <demandProfile id="-1" vehicle_type_id="0" dt="300" start_time="100" knob="1" link_id_org="-1">100</demandProfile>
+   </VehicleTypeOrder>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-6" start_time="100">
+      <demand vehicle_type_id="0">400</demand>
+   </demandProfile>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-1" start_time="100">
+      <demand vehicle_type_id="0">100</demand>
+   </demandProfile>
   </DemandSet>
   
   <FundamentalDiagramSet>
