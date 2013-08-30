@@ -952,19 +952,26 @@
 				<xs:attribute name="agg_run_id" type="xs:long" use="optional" />
 			</xs:complexType>
 		  </xs:element>
-
+			
 			  <xs:element name="fundamentalDiagram">
 				<xs:complexType>
-				  <xs:attribute name="capacity" type="xs:decimal" use="required" />							<!-- [veh/s/lane]   -->
-				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
-				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />					<!-- [m/s] -->
-				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />					<!-- [m/s] -->
-				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />						<!-- [veh/m/lane] -->
-				  <xs:attribute name="transition_density" type="xs:decimal" use="optional" />				<!-- [veh/m/lane] -->
-				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>		<!-- [veh/s/lane]   -->
-				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>					<!-- [veh/s/lane]   -->
-				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>			<!-- [m/s]   -->
-				  <xs:attribute name="std_dev_congestion_speed" type="xs:decimal" use="optional"/>			<!-- [m/s]   -->
+					<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+					<xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+					<xs:attribute name="order" type="xs:int" use="optional" />
+					<!-- these are [vehicles/[time unit]/lane]   -->
+				  <xs:attribute name="capacity" type="xs:decimal" use="required" />
+				  <xs:attribute name="capacity_drop" type="xs:decimal" use="optional" default="0.0"/>
+				  <xs:attribute name="std_dev_capacity" type="xs:decimal" use="optional"/>
+					<!-- these are [[distance unit]/[time unit]] -->
+				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />
+				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />
+				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />
+				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>
+				  <xs:attribute name="std_dev_congestion_speed" type="xs:decimal" use="optional"/>
+				  <!-- these are [ vehicle/[disctance unit]/lane] -->
+				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />
+				  <xs:attribute name="transition_density" type="xs:decimal" use="optional" />
 				</xs:complexType>
 			  </xs:element>  
 

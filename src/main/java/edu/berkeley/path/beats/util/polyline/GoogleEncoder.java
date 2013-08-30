@@ -28,8 +28,8 @@ public class GoogleEncoder extends EncoderBase implements EncoderIF {
 
 	private void encode(Double curr, Double prev) {
 		
-		BigDecimal bd_curr = new BigDecimal(curr);
-		BigDecimal bd_prev = new BigDecimal(prev);
+		BigDecimal bd_curr = curr==null ? null : new BigDecimal(curr);
+		BigDecimal bd_prev = prev==null ? null : new BigDecimal(prev);
 		
 		bd_curr = round(bd_curr);
 		if (null != bd_prev) 

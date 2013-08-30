@@ -24,13 +24,13 @@ public class GoogleDecoder extends DecoderBase implements DecoderIF {
 			final int np = nc / 2; // point index
 			Point prev = np > 0 ? result.get(np - 1) : null;
 			if (0 == nc % 2){
-				BigDecimal bd_lat = new BigDecimal(prev.getLat());
-				BigDecimal newlat = null == prev ? coords.get(nc) : coords.get(nc).add(bd_lat);
+				BigDecimal bd_lat = prev==null ? null : new BigDecimal(prev.getLat());
+				BigDecimal newlat = bd_lat==null ? coords.get(nc) : coords.get(nc).add(bd_lat);
 				result.get(np).setLat(newlat.doubleValue());
 			}
 			else{
-				BigDecimal bd_lng = new BigDecimal(prev.getLng());
-				BigDecimal newlng = null == prev ? coords.get(nc) : coords.get(nc).add(bd_lng);
+				BigDecimal bd_lng = prev==null ? null : new BigDecimal(prev.getLng());
+				BigDecimal newlng = bd_lng==null ? coords.get(nc) : coords.get(nc).add(bd_lng);
 				result.get(np).setLng(newlng.doubleValue());
 			}
 		}
