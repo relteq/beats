@@ -579,7 +579,6 @@
 		<xs:complexType>
       <xs:sequence>
         <xs:element ref="description" minOccurs="0" />
-			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
         <xs:element ref="weavingfactors" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
 			<xs:attribute name="id" type="xs:long" use="required"/>
@@ -602,7 +601,6 @@
 		<xs:complexType>
       <xs:sequence>
         <xs:element ref="description" minOccurs="0" />
-			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
         <xs:element ref="splitRatioProfile" minOccurs="0" maxOccurs="unbounded" />
       </xs:sequence>
 			<xs:attribute name="id" type="xs:long" use="required"/>
@@ -731,7 +729,6 @@
 			<xs:element name="splitratioEvent">		<!-- split ratio matrix for one time instant, one input link, one vehicle type -->
 				<xs:complexType>
 					<xs:sequence>
-					<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
 						<xs:element ref="splitratio" minOccurs="1" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
@@ -741,11 +738,10 @@
   
 	<xs:element name="DemandSet">
 		<xs:complexType>
-		  <xs:sequence>
-			<xs:element ref="description" minOccurs="0" />
-			<xs:element ref="VehicleTypeOrder" minOccurs="0"  maxOccurs="1"/>
-			<xs:element ref="demandProfile" minOccurs="0" maxOccurs="unbounded" />
-		  </xs:sequence>
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" />
+        <xs:element ref="demandProfile" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
 			<xs:attribute name="id" type="xs:long" use="required"/>
 			<xs:attribute name="project_id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="optional" default="" />

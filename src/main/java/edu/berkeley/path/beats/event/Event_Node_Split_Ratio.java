@@ -86,94 +86,94 @@ public class Event_Node_Split_Ratio extends Event {
 	@Override
 	protected void populate(Object jaxbobject) {
 
-		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
-		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
-
-		// reset_to_nominal
-		boolean reset_to_nominal = false;
-		if (null != params && params.has("reset_to_nominal"))
-			reset_to_nominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
-
-		if(!reset_to_nominal && jaxbe.getSplitratioEvent()==null)
-			return;
-
-		// only accepts single target
-		if(getTargets().size()!=1)
-			return;
-
-		this.resetToNominal = reset_to_nominal;
-		this.myNode = (Node) getTargets().get(0).getReference();
-		
-		if(myNode==null)
-			return;
-		
-		if(resetToNominal)		// nothing else to populate in this case
-			return;
-		
-		edu.berkeley.path.beats.jaxb.SplitratioEvent srevent = jaxbe.getSplitratioEvent();
-		if (srevent != null) {
-			int[] vt_index = null;
-			if (null == srevent.getVehicleTypeOrder()) {
-				vt_index = new int[getMyScenario().getNumVehicleTypes()];
-				for (int i = 0; i < vt_index.length; ++i)
-					vt_index[i] = i;
-			} else {
-				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleTypeX().size()];
-				int i = 0;
-				for (edu.berkeley.path.beats.jaxb.VehicleTypeX vt : srevent.getVehicleTypeOrder().getVehicleTypeX())
-					vt_index[i++] = getMyScenario().getVehicleTypeIndexForName(vt.getName());
-			}
-			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());
-			for (edu.berkeley.path.beats.jaxb.Splitratio sr : srevent.getSplitratio()) {
-				Data1D data1d = new Data1D(sr.getContent(), ":");
-				if (!data1d.isEmpty()) {
-					java.math.BigDecimal[] data = data1d.getData();
-					int input_index = myNode.getInputLinkIndex(sr.getLinkIn());
-					int output_index = myNode.getOutputLinkIndex(sr.getLinkOut());
-					for (int i = 0; i < data.length; ++i)
-						splitratios.add(new SplitRatio(input_index, output_index, vt_index[i], data[i].doubleValue()));
-				}
-			}
-		}
+//		edu.berkeley.path.beats.jaxb.Event jaxbe = (edu.berkeley.path.beats.jaxb.Event) jaxbobject;
+//		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) jaxbe.getParameters();
+//
+//		// reset_to_nominal
+//		boolean reset_to_nominal = false;
+//		if (null != params && params.has("reset_to_nominal"))
+//			reset_to_nominal = params.get("reset_to_nominal").equalsIgnoreCase("true");
+//
+//		if(!reset_to_nominal && jaxbe.getSplitratioEvent()==null)
+//			return;
+//
+//		// only accepts single target
+//		if(getTargets().size()!=1)
+//			return;
+//
+//		this.resetToNominal = reset_to_nominal;
+//		this.myNode = (Node) getTargets().get(0).getReference();
+//		
+//		if(myNode==null)
+//			return;
+//		
+//		if(resetToNominal)		// nothing else to populate in this case
+//			return;
+//		
+//		edu.berkeley.path.beats.jaxb.SplitratioEvent srevent = jaxbe.getSplitratioEvent();
+//		if (srevent != null) {
+//			int[] vt_index = null;
+//			if (null == srevent.getVehicleTypeOrder()) {
+//				vt_index = new int[getMyScenario().getNumVehicleTypes()];
+//				for (int i = 0; i < vt_index.length; ++i)
+//					vt_index[i] = i;
+//			} else {
+//				vt_index = new int[srevent.getVehicleTypeOrder().getVehicleTypeX().size()];
+//				int i = 0;
+//				for (edu.berkeley.path.beats.jaxb.VehicleTypeX vt : srevent.getVehicleTypeOrder().getVehicleTypeX())
+//					vt_index[i++] = getMyScenario().getVehicleTypeIndexForName(vt.getName());
+//			}
+//			splitratios = new ArrayList<SplitRatio>(vt_index.length * srevent.getSplitratio().size());
+//			for (edu.berkeley.path.beats.jaxb.Splitratio sr : srevent.getSplitratio()) {
+//				Data1D data1d = new Data1D(sr.getContent(), ":");
+//				if (!data1d.isEmpty()) {
+//					java.math.BigDecimal[] data = data1d.getData();
+//					int input_index = myNode.getInputLinkIndex(sr.getLinkIn());
+//					int output_index = myNode.getOutputLinkIndex(sr.getLinkOut());
+//					for (int i = 0; i < data.length; ++i)
+//						splitratios.add(new SplitRatio(input_index, output_index, vt_index[i], data[i].doubleValue()));
+//				}
+//			}
+//		}
 
 	}
 	
 	@Override
 	protected void validate() {
 		
-		super.validate();
-		
-		if(getTargets().size()!=1)
-			BeatsErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
-		
-		// check each target is valid
-		if(getTargets().get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
-			BeatsErrorLog.addError("Wrong target type for event id="+getId()+".");
-		
-		if(myNode==null)
-			BeatsErrorLog.addWarning("Invalid node id for event id="+getId()+".");
-		
-		// check split ratio matrix
-		if(!resetToNominal){
-			for (SplitRatio sr : splitratios) {
-				if (sr.getInputIndex() < 0 || sr.getInputIndex() >= myNode.getnIn())
-					BeatsErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
-				if (sr.getOutputIndex() < 0 || sr.getOutputIndex() >= myNode.getnOut())
-					BeatsErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
-				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= getMyScenario().getNumVehicleTypes())
-					BeatsErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
-			}
-		}
+//		super.validate();
+//		
+//		if(getTargets().size()!=1)
+//			BeatsErrorLog.addError("Multiple targets assigned to split ratio event id="+this.getId()+".");
+//		
+//		// check each target is valid
+//		if(getTargets().get(0).getMyType().compareTo(ScenarioElement.Type.node)!=0)
+//			BeatsErrorLog.addError("Wrong target type for event id="+getId()+".");
+//		
+//		if(myNode==null)
+//			BeatsErrorLog.addWarning("Invalid node id for event id="+getId()+".");
+//		
+//		// check split ratio matrix
+//		if(!resetToNominal){
+//			for (SplitRatio sr : splitratios) {
+//				if (sr.getInputIndex() < 0 || sr.getInputIndex() >= myNode.getnIn())
+//					BeatsErrorLog.addWarning("Invalid input link index for event id="+getId()+".");
+//				if (sr.getOutputIndex() < 0 || sr.getOutputIndex() >= myNode.getnOut())
+//					BeatsErrorLog.addWarning("Invalid output link index for event id="+getId()+".");
+//				if (sr.getVehicleTypeIndex() < 0 || sr.getVehicleTypeIndex() >= getMyScenario().getNumVehicleTypes())
+//					BeatsErrorLog.addWarning("Invalid vehicle type index for event id="+getId()+".");
+//			}
+//		}
 	}
 	
 	@Override
 	protected void activate() throws BeatsException{
-		if(myNode==null)
-			return;
-		if(resetToNominal)
-			revertNodeEventSplitRatio(myNode);
-		else
-			setNodeEventSplitRatio(myNode, splitratios);
+//		if(myNode==null)
+//			return;
+//		if(resetToNominal)
+//			revertNodeEventSplitRatio(myNode);
+//		else
+//			setNodeEventSplitRatio(myNode, splitratios);
 	}
 
 }

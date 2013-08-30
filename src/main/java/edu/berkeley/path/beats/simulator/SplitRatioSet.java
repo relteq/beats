@@ -29,15 +29,15 @@ package edu.berkeley.path.beats.simulator;
 final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 
 	private Scenario myScenario;
-	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
+//	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	protected Integer[] getVehicletypeindex() {
-		return vehicletypeindex;
-	}
+//	protected Integer[] getVehicletypeindex() {
+//		return vehicletypeindex;
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -50,7 +50,7 @@ final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 		if(getSplitRatioProfile().isEmpty())
 			return;
 
-		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
+//		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
 		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
 			((SplitRatioProfile) sr).populate(myScenario);
@@ -64,9 +64,9 @@ final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 		if(getSplitRatioProfile().isEmpty())
 			return;
 
-		// check that all vehicle types are accounted for
-		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
-			BeatsErrorLog.addError("Vehicle types list in split ratio profile set does not match that of settings.");
+//		// check that all vehicle types are accounted for
+//		if(vehicletypeindex.length!=myScenario.getNumVehicleTypes())
+//			BeatsErrorLog.addError("Vehicle types list in split ratio profile set does not match that of settings.");
 		
 		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
 			((SplitRatioProfile)sr).validate();		

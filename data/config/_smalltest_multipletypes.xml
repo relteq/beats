@@ -14,26 +14,7 @@
 		<vehicleType id="0" name="car" size_factor="1.0"/>	
 		<vehicleType id="1" name="truck" size_factor="2.5"/>				
    </VehicleTypeSet>  
-   
-   <!--
-  <SplitRatioSet project_id="-1" id="-1">
-    <splitRatioProfile id="-1" dt="300" node_id="-2">
-      <splitratio vehicle_type_id="0" link_in="-1" link_out="-2">1:.1</splitratio>
-    </splitRatioProfile>
-    <splitRatioProfile id="-1" dt="300" node_id="-3">
-      <splitratio vehicle_type_id="0" link_in="-2" link_out="-3">1:.1</splitratio>
-      <splitratio vehicle_type_id="0" link_in="-6" link_out="-3">1:.1</splitratio>
-    </splitRatioProfile>
-    <splitRatioProfile id="-1" dt="300" node_id="-4">
-      <splitratio vehicle_type_id="0" link_in="-3" link_out="-4">1:.1</splitratio>
-      <splitratio vehicle_type_id="0" link_in="-3" link_out="-7">0:0</splitratio>
-    </splitRatioProfile>
-    <splitRatioProfile id="-1" dt="300" node_id="-5">
-      <splitratio vehicle_type_id="0" link_in="-4" link_out="-5">1:.1</splitratio>
-    </splitRatioProfile>
-  </SplitRatioSet>
-  -->
-  
+     
   <SplitRatioSet project_id="-1" id="-1">
     <splitRatioProfile id="-1" dt="300" node_id="-2">
       <splitratio vehicle_type_id="0" link_in="-1" link_out="-2">1</splitratio>
@@ -77,6 +58,7 @@
       <parameters/>
     </event>
   </EventSet>
+  
   <DemandSet id="-1" project_id="-1">
    <demandProfile dt="300" id="-1" knob="1" link_id_org="-6">
       <demand vehicle_type_id="1">400</demand>

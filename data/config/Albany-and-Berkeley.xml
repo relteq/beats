@@ -12,9 +12,6 @@
    </VehicleTypeSet>  
    
   <SplitRatioSet project_id="-1" id="-1">
-    <VehicleTypeOrder>
-      <vehicle_type_x name="General vehicle"/>
-    </VehicleTypeOrder>
     <splitRatioProfile id="-1" dt="900" node_id="-51">
       <splitratio vehicle_type_id="0" link_in="-5121" link_out="-5123">0.930000</splitratio>
       <splitratio vehicle_type_id="0" link_in="-5121" link_out="-5143">0.070000</splitratio>
@@ -779,10 +776,6 @@
     </splitRatioProfile>
   </SplitRatioSet>
   <DemandSet id="-1" project_id="-1">
- 
-   <VehicleTypeOrder>
-      <vehicle_type_x name="General vehicle"/>
-   </VehicleTypeOrder>
    <demandProfile dt="900" id="-1" knob="1" link_id_org="-2113401">
       <demand vehicle_type_id="0">64.00,0.00,0.00,0.00,0.00,16.00,0.00,0.00,0.00</demand>
    </demandProfile>

@@ -201,8 +201,6 @@
     <density id="-1" vehicle_type_id="1" link_id="100">1.0</density>
   </InitialDensitySet>
   
-  
-  
   <SplitRatioSet project_id="-1" id="-1">
     <splitRatioProfile id="-1" dt="300" node_id="2">
       <splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
@@ -217,7 +215,6 @@
       <splitratio vehicle_type_id="1" link_in="4" link_out="5">1</splitratio>
     </splitRatioProfile>
   </SplitRatioSet>
-  
   
   <DemandSet id="-1" project_id="-1">
    <demandProfile dt="300" id="-1" knob="1" link_id_org="1">

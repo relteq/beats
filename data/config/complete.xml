@@ -267,9 +267,6 @@
     <density id="-1" vehicle_type_id="0" link_id="100">2.0</density>
   </InitialDensitySet>
   <SplitRatioSet project_id="-1" id="-1">
-    <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
     <splitRatioProfile id="-1" dt="300" node_id="2">
       <splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
     </splitRatioProfile>
@@ -295,9 +292,6 @@
     </event>
   </EventSet>
   <DemandSet id="-1" project_id="-1">
-   <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-   </VehicleTypeOrder>
    <demandProfile dt="300" id="-1" knob="1" link_id_org="1">
       <demand vehicle_type_id="0">100</demand>
    </demandProfile>

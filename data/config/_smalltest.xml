@@ -12,9 +12,6 @@
    </VehicleTypeSet>  
    
   <SplitRatioSet project_id="-1" id="-1">
-    <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-    </VehicleTypeOrder>
     <splitRatioProfile id="-1" dt="300" node_id="-4">
       <splitratio vehicle_type_id="0" link_in="-3" link_out="-4">1.000000</splitratio>
       <splitratio vehicle_type_id="0" link_in="-3" link_out="-7">0.000000</splitratio>
@@ -36,9 +33,6 @@
     </event>
   </EventSet>
   <DemandSet id="-1" project_id="-1">
-   <VehicleTypeOrder>
-      <vehicle_type_x name="car"/>
-   </VehicleTypeOrder>
    <demandProfile dt="300" id="-1" knob="1" link_id_org="-6">
       <demand vehicle_type_id="0">400</demand>
    </demandProfile>
