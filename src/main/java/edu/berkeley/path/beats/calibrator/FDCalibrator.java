@@ -253,9 +253,9 @@ public class FDCalibrator {
 				
 				value = FDp.getQ_max();
 				if(!Float.isNaN(value))
-					FD.setCapacity(new BigDecimal(value));
+					FD.setCapacity(value);
 				else
-					FD.setCapacity(null);
+					FD.setCapacity(Defaults.capacity);
 				
 				value = FDp.getW();
 				if(!Float.isNaN(value))
@@ -275,8 +275,8 @@ public class FDCalibrator {
 				else
 					FD.setFreeFlowSpeed(null);				
 				
-				FD.setCapacityDrop(new BigDecimal(0));
-				FD.setStdDevCapacity(new BigDecimal(0));
+				FD.setCapacityDrop(0d);
+				FD.setStdDevCapacity(0d);
 				
 				FDprof.getFundamentalDiagram().add(FD);
 				FDprofileset.getFundamentalDiagramProfile().add(FDprof);

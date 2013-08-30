@@ -87,10 +87,17 @@ public class Event_Fundamental_Diagram extends Event {
 		// FD
 		if (null != params) {
 			this.FD = new edu.berkeley.path.beats.jaxb.FundamentalDiagram();
+			
 			if (params.has("capacity")) 
-				this.FD.setCapacity(new BigDecimal(params.get("capacity")));
+				this.FD.setCapacity(Double.parseDouble(params.get("capacity")));
+			else
+				this.FD.setCapacity(Double.NaN);
+			
 			if (params.has("capacity_drop")) 
-				this.FD.setCapacityDrop(new BigDecimal(params.get("capacity_drop")));
+				this.FD.setCapacityDrop(Double.parseDouble(params.get("capacity_drop")));
+			else
+				this.FD.setCapacityDrop(Double.NaN);
+				
 			if (params.has("congestion_speed")) 
 				this.FD.setCongestionSpeed(new BigDecimal(params.get("congestion_speed")));
 			if (params.has("jam_density")) 

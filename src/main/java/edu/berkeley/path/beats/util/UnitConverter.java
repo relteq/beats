@@ -410,7 +410,7 @@ public class UnitConverter {
 		fd.setCapacity(convertFlow(fd.getCapacity()));
 		if (null != fd.getJamDensity())
 			fd.setJamDensity(convertDensity(fd.getJamDensity()));
-		if (null != fd.getCapacityDrop())
+		if (Double.isNaN(fd.getCapacityDrop()))
 			fd.setCapacityDrop(convertFlow(fd.getCapacityDrop()));
 		if (null != fd.getStdDevCapacity())
 			fd.setStdDevCapacity(convertFlow(fd.getStdDevCapacity()));

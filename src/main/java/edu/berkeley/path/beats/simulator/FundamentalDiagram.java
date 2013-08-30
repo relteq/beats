@@ -83,8 +83,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	    double value;
 	    double simDtInSeconds = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
 	    
-		if(jaxbfd.getCapacity()!=null){
-			value = jaxbfd.getCapacity().doubleValue();			// [veh/second/lane]
+		if(!Double.isNaN(jaxbfd.getCapacity())){
+			value = jaxbfd.getCapacity();			// [veh/second/lane]
 			_capacity = value * lanes * simDtInSeconds;
 			missing_capacity = false;
 		} 
@@ -170,8 +170,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			std_dev_capacity = 0.0;
 		}
 		
-		if(jaxbfd.getCapacityDrop()!=null){
-			value = jaxbfd.getCapacityDrop().doubleValue();		// [veh/second/lane]
+		if(!Double.isNaN(jaxbfd.getCapacityDrop())){
+			value = jaxbfd.getCapacityDrop();		// [veh/second/lane]
 			_capacityDrop = value * lanes * simDtInSeconds;
 		} 
 		else{
@@ -284,8 +284,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			_densityJam = value * lanes * myLink.getLengthInMeters();
 		} 
 
-		if(fd.getCapacity()!=null){
-			value = fd.getCapacity().doubleValue();			// [veh/second/lane]
+		if(!Double.isNaN(fd.getCapacity())){
+			value = fd.getCapacity();			// [veh/second/lane]
 			_capacity = value * lanes * simDtInSeconds;
 		} 
 		
@@ -294,8 +294,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			std_dev_capacity = value * lanes * simDtInSeconds;
 		}
 		
-		if(fd.getCapacityDrop()!=null){
-			value = fd.getCapacityDrop().doubleValue();		// [veh/second/lane]
+		if(!Double.isNaN(fd.getCapacityDrop())){
+			value = fd.getCapacityDrop();		// [veh/second/lane]
 			_capacityDrop = value * lanes * simDtInSeconds;
 		} 
 		
