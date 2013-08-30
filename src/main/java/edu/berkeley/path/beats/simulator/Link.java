@@ -70,7 +70,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private CapacityProfile myCapacityProfile;
 
 	// source demand profile
-	private DemandProfile [] myDemandProfile;  		// demand profiles per vehicle type 
+	private DemandProfile myDemandProfile;  		// demand profiles
 	
 	// input to node model
 	private double [] spaceSupply;        			// [veh]	numEnsemble
@@ -97,8 +97,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 		this.myNetwork = myNetwork;
 
-		// demand profile references
-		myDemandProfile = new DemandProfile [myNetwork.getMyScenario().getNumVehicleTypes()]; 
+//		// demand profile references
+//		myDemandProfile = new DemandProfile [myNetwork.getMyScenario().getNumVehicleTypes()]; 
 		
 		// link type
 		if(getLinkType()==null)
@@ -199,11 +199,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(issink)
 			outflow = outflowDemand;
 
-		if(issource)
+		if(issource && myDemandProfile!=null)
 			for(e=0;e<this.myNetwork.getMyScenario().getNumEnsemble();e++)
-				for(j=0;j<myNetwork.getMyScenario().getNumVehicleTypes();j++)
-					if(myDemandProfile[j]!=null)
-						inflow[e][j] = myDemandProfile[j].getCurrentValue();
+				inflow[e] = myDemandProfile.getCurrentValue();
 
 		for(e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++)
 			for(j=0;j<myNetwork.getMyScenario().getNumVehicleTypes();j++)
@@ -346,9 +344,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 
 	// demand profiles .................................................
-	protected void setMyDemandProfile(DemandProfile x,int vehicle_type_index){
-		if(vehicle_type_index>=0)
-			this.myDemandProfile[vehicle_type_index] = x;
+	protected void setMyDemandProfile(DemandProfile x){
+		this.myDemandProfile = x;
 	}
 
 	// capcity profile .................................................

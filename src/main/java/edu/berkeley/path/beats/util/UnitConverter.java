@@ -359,20 +359,21 @@ public class UnitConverter {
 	}
 
 	private void process(DemandProfile dp) {
+		if (null == dp) return;
 		dp.setStdDevAdd(convertFlow(dp.getStdDevAdd()));
+		for (Demand d : dp.getDemand())
+			process(d);
+	}
 
-		Data2D data2d = new Data2D(dp.getContent(), new String[] {",", ":"});
-		if (!data2d.isEmpty()) {
-			BigDecimal[][] data = data2d.getData();
+	private void process(Demand d) {
+		Data1D data1d = new Data1D(d.getContent(),",");		
+		if (!data1d.isEmpty()) {
 			StringBuilder sb = new StringBuilder();
-			for (int t = 0; t < data.length; ++t) {
-				if (0 < t) sb.append(',');
-				for (int vtn = 0; vtn < data[t].length; ++vtn) {
-					if (0 < vtn) sb.append(':');
-					sb.append(convertFlow(data[t][vtn]).toPlainString());
-				}
+			for (BigDecimal val : data1d.getData()) {
+				if (0 < sb.length()) sb.append(',');
+				sb.append(convertFlow(val).toPlainString());
 			}
-			dp.setContent(sb.toString());
+			d.setContent(sb.toString());
 		}
 	}
 

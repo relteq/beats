@@ -29,20 +29,23 @@ package edu.berkeley.path.beats.simulator;
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	private Scenario myScenario;
-	private double current_sample;
+	
+	private double [] current_sample;		// sample per vehicle type
 	private boolean isOrphan;
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;				// [sim steps] profile sample period
-	private BeatsTimeProfile demand_nominal;	// [veh]
+	private BeatsTimeProfile [] demand_nominal;	// [veh] demand profile per vehicle type
+	private int [] vehicle_type_index;		// vehicle type indices for demand_nominal
 	private boolean isdone; 
 	private int stepinitial;
-	private int vehicle_type_index;
-
+		
 	private double _knob;
 	private double std_dev_add;				// [veh]
 	private double std_dev_mult;			// [veh]
 	private boolean isdeterministic;		// true if the profile is deterministic
-
+	private boolean all_demands_scalar;
+	private int profile_length;
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -53,15 +56,18 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		// resample the profile
 		update(true);
 	}
-	
+
+	protected boolean isOrphan() {
+		return isOrphan;
+	}
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
-	
+
 	protected void populate(Scenario myScenario) {
 
 		this.myScenario = myScenario;
-		this.vehicle_type_index = myScenario.getVehicleTypeIndexForId(getVehicleTypeId());
 		
 		isdone = false;
 		
@@ -69,14 +75,35 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		Link myLink = myScenario.getLinkWithId(getLinkIdOrg());
 		isOrphan = myLink==null;
 		
-		if(!isOrphan && vehicle_type_index>=0)
-			myLink.setMyDemandProfile(this,vehicle_type_index);
+		if(isOrphan)
+			return;
+		
+		// attach to link
+		myLink.setMyDemandProfile(this);
 		
 		// sample demand distribution, convert to vehicle units
-		if(!isOrphan && getContent()!=null){
-			demand_nominal = new BeatsTimeProfile(getContent());
-			demand_nominal.multiplyscalar(myScenario.getSimdtinseconds());
+		int numdemand = getDemand().size();
+		demand_nominal = new BeatsTimeProfile[numdemand];
+		vehicle_type_index = new int[numdemand];
+		for(int i=0;i<numdemand;i++){
+			edu.berkeley.path.beats.jaxb.Demand d = getDemand().get(i);
+			vehicle_type_index[i] = myScenario.getVehicleTypeIndexForId(d.getVehicleTypeId());
+			if(vehicle_type_index[i]<0)
+				continue;
+			if(d.getContent()!=null){
+				demand_nominal[i] = new BeatsTimeProfile(d.getContent());
+				demand_nominal[i].multiplyscalar(myScenario.getSimdtinseconds());
+			}
 		}
+		
+		// check whether all demands are scalar
+		all_demands_scalar = true;
+		profile_length = -1;
+		for(BeatsTimeProfile d : demand_nominal)
+			if(d!=null){
+				all_demands_scalar &= d.getNumTime()<=1;
+				profile_length = d.getNumTime();		// will check in validation that they are all the same
+			}
 		
 		// optional dt
 		if(getDt()!=null){
@@ -84,7 +111,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
 		}
 		else{ 	// allow only if it contains one time step
-			if(demand_nominal.getNumTime()==1){
+			if(all_demands_scalar){
 				dtinseconds = Double.POSITIVE_INFINITY;
 				samplesteps = Integer.MAX_VALUE;
 			}
@@ -115,25 +142,38 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 
 	protected void validate() {
 		
-		if(demand_nominal==null || demand_nominal.isEmpty())
+		int i;
+		
+		if(demand_nominal==null || demand_nominal.length==0)
 			return;
 		
-		if(isOrphan)
+		if(isOrphan){
 			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrg() + " in demand profile.");
+			return;
+		}
 		
-		if(vehicle_type_index<0)
-			BeatsErrorLog.addError("Bad vehicle type id in demand profile for link id=" + getLinkIdOrg());
+		// check all demands have same length
+		for(BeatsTimeProfile d : demand_nominal)
+			if(d.getNumTime()!=profile_length){
+				BeatsErrorLog.addError("In demand profile for link id=" + getLinkIdOrg() + ", not all demands have the same length.");
+				break;
+			}
+		
+		for(i=0;i<demand_nominal.length;i++)
+			if(vehicle_type_index[i]<0)
+				BeatsErrorLog.addError("Bad vehicle type id " + getDemand().get(i).getVehicleTypeId() + " in demand profile for link id=" + getLinkIdOrg());
 		
 		// check dtinseconds
-		if( dtinseconds<=0 && demand_nominal.getNumTime()>1 )
+		if( dtinseconds<=0 && !all_demands_scalar )
 			BeatsErrorLog.addError("Non-positive time step in demand profile for link id=" + getLinkIdOrg());
 		
-		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && demand_nominal.getNumTime()>1 )
+		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()) && !all_demands_scalar )
 			BeatsErrorLog.addError("Demand time step in demand profile for link id=" + getLinkIdOrg() + " is not a multiple of simulation time step.");
 		
 		// check non-negative
-		if(demand_nominal.hasNaN())
-			BeatsErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrg());
+		for(i=0;i<demand_nominal.length;i++)
+			if(demand_nominal[i]!=null && demand_nominal[i].hasNaN())
+				BeatsErrorLog.addError("Illegal values in demand profile for link id=" + getLinkIdOrg() + ", vehicle type id " + getDemand().get(i).getVehicleTypeId());
 
 	}
 
@@ -154,7 +194,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		
 		// set current sample to zero
-		current_sample = 0d;
+		current_sample = BeatsMath.zeros(myScenario.getNumVehicleTypes());
 		
 		// set knob back to its original value
 		_knob = getKnob().doubleValue();	
@@ -165,7 +205,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		if(isOrphan)
 			return;
 		
-		if(demand_nominal==null || demand_nominal.isEmpty())
+		if(demand_nominal==null || demand_nominal.length==0)
 			return;
 		
 		if(isdone && !forcesample)
@@ -174,12 +214,14 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		if(forcesample || myScenario.getClock().istimetosample(samplesteps,stepinitial)){
 			
 			// REMOVE THESE
-			int n = demand_nominal.getNumTime()-1;
+			int n = profile_length-1;
 			int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
+			int i;
 			
 			// forced sample due to knob change
 			if(forcesample){
-				current_sample = sample_finalTime_addNoise_applyKnob();
+				for(i=0;i<demand_nominal.length;i++)
+					current_sample[vehicle_type_index[i]] = sample_finalTime_addNoise_applyKnob(i);
 				return;
 			}
 			
@@ -189,13 +231,15 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			
 			// sample the profile
 			if(step<n){
-				current_sample = sample_currentTime_addNoise_applyKnob();
+				for(i=0;i<demand_nominal.length;i++)
+					current_sample[vehicle_type_index[i]] = sample_currentTime_addNoise_applyKnob(i);
 				return;
 			}
 			
 			// last sample
 			if(step>=n && !isdone){
-				current_sample = sample_finalTime_addNoise_applyKnob();
+				for(i=0;i<demand_nominal.length;i++)
+					current_sample[vehicle_type_index[i]] = sample_finalTime_addNoise_applyKnob(i);
 				isdone = true;
 				return;
 			}
@@ -207,20 +251,19 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	// private methods
 	/////////////////////////////////////////////////////////////////////
 	
-	private double sample_finalTime_addNoise_applyKnob(){	
-		int step = demand_nominal.getNumTime()-1;
-		return sample_KthTime_addNoise_applyKnob(step);
+	private double sample_finalTime_addNoise_applyKnob(int vtype_index){
+		return sample_KthTime_addNoise_applyKnob(profile_length-1,vtype_index);
 	}
 	
-	private double sample_currentTime_addNoise_applyKnob(){
+	private double sample_currentTime_addNoise_applyKnob(int vtype_index){
 		int step = myScenario.getClock().sampleindex(stepinitial, samplesteps);
-		return sample_KthTime_addNoise_applyKnob(step);
+		return sample_KthTime_addNoise_applyKnob(step,vtype_index);
 	}
 
 	/** sample the k-th entry of the profile, add noise **/
-	private double sample_KthTime_addNoise_applyKnob(int k){
+	private double sample_KthTime_addNoise_applyKnob(int k,int vtype_index){
 				
-		double demandvalue =  demand_nominal.get(k);
+		double demandvalue =  demand_nominal[vtype_index].get(k);
 		
 		// add noise
 		if(!isdeterministic)
@@ -237,47 +280,50 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public BeatsTimeProfile get_demand_nominal(){
-		return demand_nominal;
+	
+	public double [] getCurrentValue(){
+		return current_sample;
 	}
 	
-	public double getCurrentValue(){
-		return this.current_sample;
-	}
-	
-	public boolean isOrphan() {
-		return isOrphan;
-	}
+//	public BeatsTimeProfile get_demand_nominal(){
+//		return demand_nominal;
+//	}
 
-	public int getVehicle_type_index() {
-		return vehicle_type_index;
-	}
+//	public boolean isOrphan() {
+//		return isOrphan;
+//	}
+//
+//	public int getVehicle_type_index() {
+//		return vehicle_type_index;
+//	}
 
 	public int getSamplesteps() {
 		return samplesteps;
 	}
 	
-	public double getValueForStep(int step){
-		
+	public double getTotalForStep(int step){
 		// hold last value
-		step = Math.min(step,demand_nominal.getNumTime()-1);
-		
-		return demand_nominal.get(step);
+		step = Math.min(step,profile_length-1);
+		double val=0;
+		for(BeatsTimeProfile p:demand_nominal)
+			if(p!=null)
+				val += p.get(step);
+		return val;
 	}
 	
-	public int getNumTime(){
-		return demand_nominal.getNumTime();
+	protected int getProfile_length() {
+		return profile_length;
 	}
 
 	protected int getStepinitial() {
 		return stepinitial;
 	}
 
-	public double applyKnob(final double demandvalue){
+	protected double applyKnob(final double demandvalue){
 		return demandvalue*myScenario.getGlobal_demand_knob()*_knob;
 	}
 	
- 	public double addNoise(final double demandvalue){
+	private double addNoise(final double demandvalue){
 
  		double noisy_demand = demandvalue;
  		

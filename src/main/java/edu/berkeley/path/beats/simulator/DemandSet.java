@@ -34,16 +34,7 @@ import java.util.Map;
 final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 
 	private Scenario myScenario;
-//	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
-	private Map<Long,Integer[]> link_id_to_demandprofile_index;
-	
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-
-//	protected Integer[] getVehicletypeindex() {
-//		return vehicletypeindex;
-//	}
+	private Map<Long,DemandProfile> link_id_to_demandprofile;
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -56,25 +47,16 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 		if(getDemandProfile().isEmpty())
 			return;
 		
-		link_id_to_demandprofile_index = new HashMap<Long,Integer[]>();
-		
-//		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
-
-		for(int i=0;i<getDemandProfile().size();i++){
-			DemandProfile dp = (DemandProfile) getDemandProfile().get(i);
+		// link to demand profile map
+		link_id_to_demandprofile = new HashMap<Long,DemandProfile>();
+		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile()){
 			
-			// populate demand profile
-			dp.populate(myScenario);
+			DemandProfile sdp = (DemandProfile) dp;
+			
+			link_id_to_demandprofile.put(new Long(dp.getLinkIdOrg()), sdp);
 
-			// add to link map
-			long myLink_id =dp.getLinkIdOrg();
-			int veh_type_ind = dp.getVehicle_type_index();
-			if(!dp.isOrphan() && veh_type_ind>=0){
-				Integer [] dp_index = link_id_to_demandprofile_index.get(myLink_id);
-				if(dp_index==null)
-					dp_index = new Integer [myScenario.getNumVehicleTypes()];
-				dp_index[veh_type_ind] = i;
-			}
+			// populate demand profile
+			sdp.populate(myScenario);
 		}
 	}
 
@@ -90,29 +72,6 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 		
 		if(getDemandProfile().isEmpty())
 			return;
-		
-		// all profiles for a link should have the same start time, sample rate, and length
-		for (Map.Entry<Long,Integer[]> entry : link_id_to_demandprofile_index.entrySet()) {
-			Long link_id = entry.getKey();
-			Integer [] dp_index_array = entry.getValue();
-			if(dp_index_array!=null){
-				HashSet<BigDecimal> unique_dt = new HashSet<BigDecimal>();
-				HashSet<BigDecimal> unique_start_time = new HashSet<BigDecimal>();
-				HashSet<Integer> unique_length = new HashSet<Integer>();
-				for(Integer dp_index : dp_index_array){
-					DemandProfile thisdp = (DemandProfile) demandProfile.get(dp_index);
-					unique_dt.add(thisdp.getDt());
-					unique_start_time.add(thisdp.getStartTime());
-					unique_length.add(thisdp.get_demand_nominal().getNumTime());
-				}
-				if(unique_dt.size()!=1)
-					BeatsErrorLog.addError("different dts found in demands for link id=" + link_id);
-				if(unique_start_time.size()!=1)
-					BeatsErrorLog.addError("different start times found in demands for link id=" + link_id);
-				if(unique_length.size()!=1)
-					BeatsErrorLog.addError("different profile lengths found in demands for link id=" + link_id);
-			}
-		}
 		
 		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
 			((DemandProfile)dp).validate();		
@@ -132,9 +91,12 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))
 			throw new BeatsException("dt_in_seconds must be an integer multiple of simulation dt.");
 		
-		// list of demand profile indices for each vehicle type
-		Integer [] dp_index = link_id_to_demandprofile_index.get(link_id);
+		// demand profile for this link
+		DemandProfile dp = link_id_to_demandprofile.get(link_id);
 
+		if(dp==null)
+			throw new BeatsException("requested demand for non-existent link.");
+		
 		// simulation dt per output dt
 		int num_times_per_sample = BeatsMath.round(dt_in_seconds / myScenario.getSimdtinseconds());
 
@@ -148,26 +110,19 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 		double nth_demand;
 		for(n=0;n<num_steps;n++){
 			nth_demand = 0d;
-			
 			for(j=0;j<myScenario.getNumVehicleTypes();j++) {
-				if(dp_index[j]==null)
-					continue;
-				DemandProfile dp = (DemandProfile) demandProfile.get(dp_index[j]);
 				for(k=0;k<num_times_per_sample;k++){
 					if(dp.getSamplesteps()>0)
 						step = BeatsMath.floor((current_step-dp.getStepinitial())/((float)dp.getSamplesteps()));
 					else
 						step = 0;
-					step = Math.min(step,dp.getNumTime()-1);
-					double x = dp.getValueForStep(step);
+					step = Math.min(step,dp.getProfile_length()-1);
+					double x = dp.getTotalForStep(step);
 					x = dp.applyKnob(x);
 					nth_demand += x;
 					current_step++;
 				}
-			
-				
 			}
-			
 			X[n] = nth_demand;
 		}
 		
