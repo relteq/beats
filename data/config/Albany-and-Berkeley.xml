@@ -1665,7 +1665,7 @@
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>
   <NetworkSet project_id="-1" id="-1">
-    <network dt="1" id="-1" name="San Pablo Ave.">
+    <network id="-1" name="San Pablo Ave.">
       <description>San Pablo Avenue constructed with the TOPL Arterial Masterscript.</description>
       <position>
         <point lat="37.8754243331838" lng="-122.294240831369"/>

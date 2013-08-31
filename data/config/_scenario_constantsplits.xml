@@ -1690,7 +1690,7 @@
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>
   <NetworkSet project_id="-1" id="-1">
-    <network dt="5" id="-1" name="My Network">
+    <network id="-1" name="My Network">
       <description>Calibrated for 2009_02_12</description>
       <position>
         <point elevation="0" lat="34.1326" lng="-117.9338"/>

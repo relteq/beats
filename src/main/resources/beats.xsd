@@ -133,7 +133,7 @@
 				<xs:element ref="position" minOccurs="0" />
 			</xs:all>
       <xs:attribute name="name" type="xs:string" use="required" />
-			  <xs:attribute name="dt" type="xs:decimal" use="required" />			<!-- in time units -->
+			  <!--<xs:attribute name="dt" type="xs:decimal" use="required" />			 in time units -->
       <xs:attribute name="id" type="xs:long" use="required" />
       <xs:attribute name="mod_stamp" type="xs:string" use="optional" />
       <xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />

@@ -100,7 +100,7 @@
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>
   <NetworkSet project_id="-1" id="-1">
-    <network dt="5" id="-1" name="New Network">
+    <network id="-1" name="New Network">
       <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
       <position>
         <point lat="37.857985471963" lng="-122.300827883184"/>

@@ -63,7 +63,7 @@
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>
   <NetworkSet project_id="-1" id="-1">
-    <network dt="5" id="-1" name="New Network">
+    <network id="-1" name="New Network">
       <NodeList>
         <node id="-1" >
           <outputs>

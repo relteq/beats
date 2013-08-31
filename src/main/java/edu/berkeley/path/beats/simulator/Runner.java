@@ -60,7 +60,8 @@ public final class Runner {
 				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 			
 			// run the scenario
-			scenario.run(runargs.getStartTime(), 
+			scenario.run(runargs.getDt(),
+					runargs.getStartTime(), 
 					runargs.getEndTime(), 
 					runargs.getOutputDt(),
 					runargs.getOutput_format(),
@@ -88,21 +89,24 @@ public final class Runner {
 			str = "Usage:" + "\n";
 			str += "-----\n" + "\n";
 			str += "args[0]: Configuration file name. (required)\n";
-			str += "args[1]: Output file name.\n";
-			str += "args[2]: Output file format.\n";
-			str += "args[3]: Start time [seconds after midnight]." + "\n";
-			str += "         Defailt: Minimum start time of all demand profiles." + "\n";
-			str += "args[4]: Duration [seconds]." + "\n";
-			str += "         Defailt: 86,400 seconds." + "\n";
-			str += "args[5]: Output sampling time [seconds]." + "\n";
+			str += "args[1]: Time step [seconds]. (required)\n";
+			str += "args[2]: Output file name.\n";
+			str += "         Default: 'outputs'\n";
+			str += "args[3]: Output file format.\n";
+			str += "         Default: 'xml'.\n";
+			str += "args[4]: Start time [seconds after midnight]." + "\n";
+			str += "         Default: Minimum start time of all demand profiles." + "\n";
+			str += "args[5]: Duration [seconds]." + "\n";
+			str += "         Default: 86,400 seconds." + "\n";
+			str += "args[6]: Output sampling time [seconds]." + "\n";
 			str += "         Default: 300 seconds." + "\n";
-			str += "args[6]: Number of simulations." + "\n";
+			str += "args[7]: Number of simulations." + "\n";
 			str += "         Default: 1." + "\n";
-			str += "args[7]: noise model <gaussian,uniform>." + "\n";
+			str += "args[8]: noise model <gaussian,uniform>." + "\n";
 			str += "         Default: uniform." + "\n";
-			str += "args[8]: node flow solver <proportional,symmetric>." + "\n";
+			str += "args[9]: node flow solver <proportional,symmetric>." + "\n";
 			str += "         Default: proportional." + "\n";
-			str += "args[9]: node split ratio solver <A,B,C>." + "\n";
+			str += "args[10]: node split ratio solver <A,B,C>." + "\n";
 			str += "         Default: A." + "\n";
 			str += "\nSimulation modes:" + "\n";
 			str += "----------------\n" + "\n";
@@ -168,7 +172,8 @@ public final class Runner {
 		logger.info("Simulation parameters: " + runargs);
 
 		logger.info("Simulation");
-		scenario.run(runargs.getStartTime(), 
+		scenario.run(runargs.getDt(),
+				runargs.getStartTime(), 
 				runargs.getEndTime(), 
 				runargs.getOutputDt(),
 				"db",

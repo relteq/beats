@@ -80,7 +80,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private int numVehicleTypes;			// number of vehicle types
 	private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
-	private double simdtinseconds;		// [sec] simulation time step 
+//	private double simdtinseconds;		// [sec] simulation time step 
 	private boolean scenariolocked=false;	// true when the simulation is running
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events	
@@ -115,7 +115,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	    // initialize scenario attributes ..............................................
 		this.global_control_on = true;
 		this.global_demand_knob = 1d;
-		this.simdtinseconds = computeCommonSimulationTimeInSeconds(this);
 		this.uncertaintyModel = UncertaintyType.uniform;
 		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
 
@@ -303,9 +302,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// start-to-end run
 	/////////////////////////////////////////////////////////////////////
 
-	public void run(double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
+	public void run(double simdt,double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
 		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(timestart, timeend, outdt, simdtinseconds);
+		RunParameters param = new RunParameters(simdt,timestart, timeend, outdt);
 		run_internal(param,numReps,true,outputtype,outputfileprefix);
 	}
 
@@ -320,13 +319,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * rolling back all profiles and clocks. 
 	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-	public void initialize_run(int numEnsemble,double timestart) throws BeatsException{
+	public void initialize_run(double simdt,int numEnsemble,double timestart) throws BeatsException{
 
 		if(numEnsemble<=0)
 			throw new BeatsException("Number of ensemble runs must be at least 1.");
 		
-		RunParameters param = new RunParameters(timestart,Double.POSITIVE_INFINITY,Double.NaN,simdtinseconds);
+		RunParameters param = new RunParameters(simdt,timestart,Double.POSITIVE_INFINITY,Double.NaN);
 
+		this.simdtinseconds = param.simDt;
 		this.scenariolocked = false;
 		this.numEnsemble = numEnsemble;
         
@@ -597,9 +597,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 
 	 */
-	public double getSimdtinseconds() {
-		return simdtinseconds;
-	}
+//	public double getSimdtinseconds() {
+//		return simdtinseconds;
+//	}
 
 	/** Start time of the simulation.
 	 * @return Start time in seconds. 
@@ -985,12 +985,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,String outtype,String outprefix) throws BeatsException{
 
 		// lock the scenario
-        scenariolocked = true;	
+		this.scenariolocked = true;	
+		this.simdtinseconds = param.simDt;
         
 		logger.info("Simulation mode: " + param.simulationMode);
-		logger.info("Simulation period: [" + param.sim_start + ":" + simdtinseconds + ":" + param.sim_end + "]");
+		logger.info("Simulation period: [" + param.sim_start + ":" + param.simDt + ":" + param.sim_end + "]");
 		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
 		
+				
 		// output writer properties
 		Properties owr_props = new Properties();
 		if (null != outprefix) 
@@ -1058,41 +1060,41 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		cumulatives.reset();
 	}
 
-	
 	/////////////////////////////////////////////////////////////////////
 	// public static
 	/////////////////////////////////////////////////////////////////////	
 	
 	// returns greatest common divisor among network time steps.
 	// The time steps are rounded to the nearest decisecond.
-	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
-		
-		if(scenario.getNetworkSet()==null)
-			return Double.NaN;
-		
-		if(scenario.getNetworkSet().getNetwork().size()==0)
-			return Double.NaN;
-			
-		// loop through networks calling gcd
-		double dt;
-		List<edu.berkeley.path.beats.jaxb.Network> networkSet = scenario.getNetworkSet().getNetwork();
-		int tengcd = 0;		// in deciseconds
-		for(int i=0;i<networkSet.size();i++){
-			dt = networkSet.get(i).getDt().doubleValue();	// in seconds
-	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
-	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
-				dt *= 3600;
-	        }
-			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
-		}
-    	return ((double)tengcd)/10.0;
-	}
+//	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
+//		
+//		if(scenario.getNetworkSet()==null)
+//			return Double.NaN;
+//		
+//		if(scenario.getNetworkSet().getNetwork().size()==0)
+//			return Double.NaN;
+//			
+//		// loop through networks calling gcd
+//		double dt;
+//		List<edu.berkeley.path.beats.jaxb.Network> networkSet = scenario.getNetworkSet().getNetwork();
+//		int tengcd = 0;		// in deciseconds
+//		for(int i=0;i<networkSet.size();i++){
+//			dt = networkSet.get(i).getDt().doubleValue();	// in seconds
+//	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
+//	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
+//				dt *= 3600;
+//	        }
+//			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
+//		}
+//    	return ((double)tengcd)/10.0;
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// private classes
 	/////////////////////////////////////////////////////////////////////	
 	
 	private class RunParameters{
+		public double simDt;				// [sec] simulation time step
 		public double sim_start;			// [sec] start of the simulation
 		public double sim_end;				// [sec] end of the simulation
 		public double timestartOutput;		// [sec] start outputing data
@@ -1101,13 +1103,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		public ModeType simulationMode;
 		
 		// input parameter outdt [sec] output sampling time
-		public RunParameters(double tstart,double tend,double outdt,double simdtinseconds) throws BeatsException{
+		public RunParameters(double simdt,double tstart,double tend,double outdt) throws BeatsException{
 			
 			// round to the nearest decisecond
+			simdt = round(simdt);
 			tstart = round(tstart);
-			simdtinseconds = round(simdtinseconds);
+			//simdtinseconds = round(simdtinseconds);
 			tend = round(tend);
 			outdt = round(outdt);
+			
+			// check simdt non-negative
+			if( BeatsMath.lessthan(simdt,0d))
+				throw new BeatsException("Negative time step.");
 			
 			// check tstart non-negative
 			if( BeatsMath.lessthan(tstart,0d))
@@ -1118,14 +1125,15 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				throw new BeatsException("Empty simulation period.");
 
 			// check that outdt is a multiple of simdt
-			if(!Double.isNaN(outdt) && !BeatsMath.isintegermultipleof(outdt,simdtinseconds))
-				throw new BeatsException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
+			if(!Double.isNaN(outdt) && !BeatsMath.isintegermultipleof(outdt,simdt))
+				throw new BeatsException("outdt (" + outdt + ") must be an interger multiple of simulation dt (" + simdt + ").");
 			
+			this.simDt = simdt;
 			this.sim_start = tstart;
 			this.timestartOutput = tstart;
 			this.sim_end = tend;
-	        this.outsteps = BeatsMath.round(outdt/simdtinseconds);
-			this.outDt = outsteps*simdtinseconds;
+	        this.outsteps = BeatsMath.round(outdt/simdt);
+			this.outDt = outsteps*simdt;
 
 	        double time_ic = getInitialDensitySet()!=null ? getInitialDensitySet().getTstamp() : Double.POSITIVE_INFINITY;  // [sec]
 	        
@@ -1273,14 +1281,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 	}
 
-	
-	
 	public void setUncertaintyModel(Scenario.UncertaintyType uncertaintyModel) {
 		this.uncertaintyModel = uncertaintyModel;
 	}
-	
-	
-	
-	
 	
 }

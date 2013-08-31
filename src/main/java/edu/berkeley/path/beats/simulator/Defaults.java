@@ -26,6 +26,10 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 final public class Defaults {
 	public static double DURATION 	= 86400f;		// [sec]
 	public static double TIME_INIT 	= 0f;			// [sec]
@@ -45,4 +49,29 @@ final public class Defaults {
 	public static float mingreen			= 10f;		// [sec]
 	public static float redcleartime		= 5f;		// [sec]
 	public static float yellowtime			= 5f;		// [sec]
+	
+	// dt
+	public static final Map<String, Integer> dt;
+	
+	// initialization
+    static {
+        Map<String, Integer> aMap = new HashMap<String, Integer>();
+        aMap.put("Albany-and-Berkeley.xml",1);
+    	aMap.put("complete.xml",5);
+    	aMap.put("complete_twotypes.xml",5);
+    	aMap.put("samitha1onramp.xml",5);
+    	aMap.put("scenario_twotypes.xml",5);
+    	aMap.put("testfwy2.xml",5);
+    	aMap.put("testfwy_w.xml",5);
+    	aMap.put("test_event.xml",5);
+    	aMap.put("_scenario_2009_02_12.xml",5);
+    	aMap.put("_scenario_constantsplits.xml",5);
+    	aMap.put("_smalltest.xml",5);
+    	aMap.put("_smalltest_MPC.xml",5);
+    	aMap.put("_smalltest_multipletypes.xml",5);
+    	aMap.put("_smalltest_nocontrol_broken.xml",5);
+        dt = Collections.unmodifiableMap(aMap);
+    }
+
+    
 }

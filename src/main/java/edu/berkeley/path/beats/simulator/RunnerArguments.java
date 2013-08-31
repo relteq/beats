@@ -9,6 +9,7 @@ final class RunnerArguments {
 	
 	// given
 	private String configfilename;				// configuration file XML
+	private Integer simdt;						// [sec] simulation time step
 	private String outputfileprefix;			// prefix for output files
 	private String output_format;				// output format {text,xml,db}
 	private Double startTime = null; 			// [sec] output start time
@@ -50,6 +51,10 @@ final class RunnerArguments {
 		this.configfilename = configfilename;
 	}
 
+	public void setDt(Integer simdt) {
+		this.simdt = simdt;
+	}
+	
 	public void setOutputfileprefix(String outputfileprefix) {
 		this.outputfileprefix = outputfileprefix;
 	}
@@ -125,6 +130,12 @@ final class RunnerArguments {
 	public String getConfigfilename() {
 		if (null != configfilename) return configfilename;
 		else if (null != parent) return parent.getConfigfilename();
+		else return null;
+	}
+
+	public Integer getDt() {
+		if (null != simdt) return simdt;
+		else if (null != parent) return parent.getDt();
 		else return null;
 	}
 	
@@ -219,6 +230,8 @@ final class RunnerArguments {
 	public void parseArgs(String[] args, int index) {
 		if (index < args.length)
 			this.configfilename = args[index];
+		if (++index < args.length)
+			this.simdt = Integer.parseInt(args[index]);
 		if (++index < args.length)
 			this.outputfileprefix = args[index];
 		if (++index < args.length)
