@@ -26,15 +26,10 @@
 
 package edu.berkeley.path.beats.event;
 
-import java.util.ArrayList;
-
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.ScenarioElement;
-import edu.berkeley.path.beats.util.Data1D;
 
 public class Event_Node_Split_Ratio extends Event {
 

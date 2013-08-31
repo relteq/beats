@@ -95,10 +95,6 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	    
 		if(!Double.isNaN(jaxbfd.getFreeFlowSpeed())){
 			value = jaxbfd.getFreeFlowSpeed();		// [meters/second]
-			
-			System.out.println("FundamentalDiagram A " + value);
-			
-			
 			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
 			missing_vf = false;
 		} 
@@ -107,8 +103,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			missing_vf = true;
 		}
 	
-		if(jaxbfd.getCongestionSpeed()!=null){
-			value = jaxbfd.getCongestionSpeed().doubleValue();		// [meters/second]
+		if(!Double.isNaN(jaxbfd.getCongestionSpeed())){
+			value = jaxbfd.getCongestionSpeed();		// [meters/second]
 			_w = value * simDtInSeconds / myLink.getLengthInMeters();
 			missing_w = false;
 		} 
@@ -305,15 +301,11 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		
 		if(!Double.isNaN(fd.getFreeFlowSpeed())){
 			value = fd.getFreeFlowSpeed();		// [meters/second]
-			
-			System.out.println("FundamentalDiagram B " + value);
-			
-			
 			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
 		}
 
-		if(fd.getCongestionSpeed()!=null){
-			value = fd.getCongestionSpeed().doubleValue();		// [meters/second]
+		if(!Double.isNaN(fd.getCongestionSpeed())){
+			value = fd.getCongestionSpeed();		// [meters/second]
 			_w = value * simDtInSeconds / myLink.getLengthInMeters();
 		}
 

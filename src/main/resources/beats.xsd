@@ -945,13 +945,13 @@
 					<xs:attribute name="std_dev_capacity" type="xs:double" use="optional"/>	
 					<!-- these are [[distance unit]/[time unit]] -->
 				  <xs:attribute name="free_flow_speed" type="xs:double" use="required" />
-				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />
-				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />
-				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>
-				  <xs:attribute name="std_dev_congestion_speed" type="xs:decimal" use="optional"/>
+				  <xs:attribute name="congestion_speed" type="xs:double" use="required" />
+				  <xs:attribute name="critical_speed" type="xs:double" use="optional" />
+				  <xs:attribute name="std_dev_free_flow_speed" type="xs:double" use="optional"/>
+				  <xs:attribute name="std_dev_congestion_speed" type="xs:double" use="optional"/>
 				  <!-- these are [ vehicle/[disctance unit]/lane] -->
-				  <xs:attribute name="jam_density" type="xs:decimal" use="optional" />
-				  <xs:attribute name="transition_density" type="xs:decimal" use="optional" />
+				  <xs:attribute name="jam_density" type="xs:double" use="optional" />
+				  <xs:attribute name="transition_density" type="xs:double" use="optional" />
 				</xs:complexType>
 			</xs:element>  
 

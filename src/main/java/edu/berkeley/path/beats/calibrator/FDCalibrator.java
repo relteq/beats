@@ -26,7 +26,6 @@
 
 package edu.berkeley.path.beats.calibrator;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
@@ -259,24 +258,22 @@ public class FDCalibrator {
 				
 				value = FDp.getW();
 				if(!Float.isNaN(value))
-					FD.setCongestionSpeed(new BigDecimal(value));
+					FD.setCongestionSpeed(value);
 				else
-					FD.setCongestionSpeed(null);
+					FD.setCongestionSpeed(Defaults.w);
 
 				value = FDp.getRho_jam();
 				if(!Float.isNaN(value))
-					FD.setJamDensity(new BigDecimal(value));
+					FD.setJamDensity(new Double(value));
 				else
-					FD.setJamDensity(null);
+					FD.setJamDensity(Defaults.densityJam);
 				
 				value = FDp.getVf();
 				if(!Float.isNaN(value))
 					FD.setFreeFlowSpeed(value);
 				else
 					FD.setFreeFlowSpeed(Defaults.vf);				
-				
-				System.out.println(FD.getFreeFlowSpeed());
-				
+								
 				FD.setCapacityDrop(0d);
 				FD.setStdDevCapacity(0d);
 				
@@ -312,8 +309,8 @@ public class FDCalibrator {
 		int z = (int) Math.floor(numdata*p);
 		if(numdata*p==z)
 			return (values.get(z-1)+values.get(z))/2f;
-		else
-			return values.get(z);
+		
+		return values.get(z);
 	}
 
 	private static void growout(String upordn,GrowLink G,HashMap<Long,GrowLink> H){

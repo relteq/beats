@@ -63,7 +63,7 @@ public class UnitConverter {
 
 	private static Logger logger = Logger.getLogger(UnitConverter.class);
 
-	private enum UnitSystem {SI, US, METRIC};
+	private enum UnitSystem {SI, US, METRIC}
 
 	private static UnitSystem getUnitSystem(String units) throws BeatsException {
 		if (units.equalsIgnoreCase("SI"))
@@ -238,16 +238,16 @@ public class UnitConverter {
 		return convert(value, dconv);
 	}
 
+	private double convertDensity(double value) {
+		return convert(value, dconv);
+	}
+	
 	private BigDecimal convertFlow(BigDecimal value) {
 		return convert(value, fconv);
 	}
 	
 	private Double convertFlow(Double value) {
 		return value==null ? null : convert(value, fconv);
-	}
-
-	private BigDecimal convertSpeed(BigDecimal value) {
-		return convert(value, sconv);
 	}
 
 	private double convertSpeed(double value) {
@@ -408,10 +408,7 @@ public class UnitConverter {
 	}
 
 	private void process(FundamentalDiagram fd) {
-		fd.setFreeFlowSpeed(convertSpeed(fd.getFreeFlowSpeed()));
-		
-		System.out.println(fd.getFreeFlowSpeed());
-		
+		fd.setFreeFlowSpeed(convertSpeed(fd.getFreeFlowSpeed()));		
 		fd.setCriticalSpeed(convertSpeed(fd.getCriticalSpeed()));
 		fd.setCongestionSpeed(convertSpeed(fd.getCongestionSpeed()));
 		fd.setCapacity(convertFlow(fd.getCapacity()));
