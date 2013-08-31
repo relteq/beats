@@ -944,7 +944,7 @@
 					<xs:attribute name="capacity_drop" type="xs:double" use="optional" default="0.0"/>	
 					<xs:attribute name="std_dev_capacity" type="xs:double" use="optional"/>	
 					<!-- these are [[distance unit]/[time unit]] -->
-				  <xs:attribute name="free_flow_speed" type="xs:decimal" use="required" />
+				  <xs:attribute name="free_flow_speed" type="xs:double" use="required" />
 				  <xs:attribute name="congestion_speed" type="xs:decimal" use="required" />
 				  <xs:attribute name="critical_speed" type="xs:decimal" use="optional" />
 				  <xs:attribute name="std_dev_free_flow_speed" type="xs:decimal" use="optional"/>
@@ -1064,7 +1064,6 @@
           <xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				</xs:complexType>
 			</xs:element>
-			
 			
 </xs:schema>
 

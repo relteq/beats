@@ -271,9 +271,9 @@ public class FDCalibrator {
 				
 				value = FDp.getVf();
 				if(!Float.isNaN(value))
-					FD.setFreeFlowSpeed(new BigDecimal(value));
+					FD.setFreeFlowSpeed(value);
 				else
-					FD.setFreeFlowSpeed(null);				
+					FD.setFreeFlowSpeed(Defaults.vf);				
 				
 				FD.setCapacityDrop(0d);
 				FD.setStdDevCapacity(0d);

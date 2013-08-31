@@ -93,8 +93,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			missing_capacity = true;
 		}
 	    
-		if(jaxbfd.getFreeFlowSpeed()!=null){
-			value = jaxbfd.getFreeFlowSpeed().doubleValue();		// [meters/second]
+		if(!Double.isNaN(jaxbfd.getFreeFlowSpeed())){
+			value = jaxbfd.getFreeFlowSpeed();		// [meters/second]
 			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
 			missing_vf = false;
 		} 
@@ -299,8 +299,8 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 			_capacityDrop = value * lanes * simDtInSeconds;
 		} 
 		
-		if(fd.getFreeFlowSpeed()!=null){
-			value = fd.getFreeFlowSpeed().doubleValue();		// [meters/second]
+		if(!Double.isNaN(fd.getFreeFlowSpeed())){
+			value = fd.getFreeFlowSpeed();		// [meters/second]
 			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
 		}
 
