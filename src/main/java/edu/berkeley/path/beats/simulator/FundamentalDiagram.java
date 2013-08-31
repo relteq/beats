@@ -96,7 +96,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		if(!Double.isNaN(jaxbfd.getFreeFlowSpeed())){
 			value = jaxbfd.getFreeFlowSpeed();		// [meters/second]
 			
-			System.out.println(value);
+			System.out.println("FundamentalDiagram A " + value);
 			
 			
 			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
@@ -306,7 +306,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 		if(!Double.isNaN(fd.getFreeFlowSpeed())){
 			value = fd.getFreeFlowSpeed();		// [meters/second]
 			
-			System.out.println(value);
+			System.out.println("FundamentalDiagram B " + value);
 			
 			
 			_vf = value * simDtInSeconds / myLink.getLengthInMeters();

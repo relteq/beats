@@ -409,6 +409,9 @@ public class UnitConverter {
 
 	private void process(FundamentalDiagram fd) {
 		fd.setFreeFlowSpeed(convertSpeed(fd.getFreeFlowSpeed()));
+		
+		System.out.println(fd.getFreeFlowSpeed());
+		
 		fd.setCriticalSpeed(convertSpeed(fd.getCriticalSpeed()));
 		fd.setCongestionSpeed(convertSpeed(fd.getCongestionSpeed()));
 		fd.setCapacity(convertFlow(fd.getCapacity()));

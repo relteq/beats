@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -102,10 +103,13 @@ public class Event_Fundamental_Diagram extends Event {
 				this.FD.setCongestionSpeed(new BigDecimal(params.get("congestion_speed")));
 			if (params.has("jam_density")) 
 				this.FD.setJamDensity(new BigDecimal(params.get("jam_density")));
+			
 			if (params.has("free_flow_speed")) 
 				this.FD.setFreeFlowSpeed(Double.parseDouble(params.get("free_flow_speed")));
-			
-			System.out.println(FD.getFreeFlowSpeed());
+			else
+				this.FD.setFreeFlowSpeed(Double.NaN);
+				
+			System.out.println("Event " + FD.getFreeFlowSpeed());
 			
 		} else
 			this.FD = null;
