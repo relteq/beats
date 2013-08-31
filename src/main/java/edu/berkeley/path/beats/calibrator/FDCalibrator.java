@@ -275,6 +275,8 @@ public class FDCalibrator {
 				else
 					FD.setFreeFlowSpeed(Defaults.vf);				
 				
+				System.out.println(FD.getFreeFlowSpeed());
+				
 				FD.setCapacityDrop(0d);
 				FD.setStdDevCapacity(0d);
 				

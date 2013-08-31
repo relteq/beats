@@ -104,6 +104,9 @@ public class Event_Fundamental_Diagram extends Event {
 				this.FD.setJamDensity(new BigDecimal(params.get("jam_density")));
 			if (params.has("free_flow_speed")) 
 				this.FD.setFreeFlowSpeed(Double.parseDouble(params.get("free_flow_speed")));
+			
+			System.out.println(FD.getFreeFlowSpeed());
+			
 		} else
 			this.FD = null;
 	}
