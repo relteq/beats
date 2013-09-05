@@ -262,63 +262,6 @@ final public class ObjectFactory {
         S.setNodeFlowSolver(nodeflowsolver);
         S.setNodeSRSolver(nodesrsolver);
 
-		return process(S);
-	}
-
-	/**
-	 * Updates a scenario loaded by JAXB.
-	 * Converts units to SI, populates the scenario,
-	 * registers signals and controllers,
-	 * and validates the scenario.
-	 * @param S a scenario
-	 * @return the updated scenario or null if an error occurred
-	 * @throws BeatsException
-	 */
-	public static Scenario process(Scenario S) throws BeatsException {
-		
-		if (null == S.getSettings() || null == S.getSettings().getUnits())
-			logger.warn("Scenario units not specified. Assuming SI");
-		else if (!"SI".equalsIgnoreCase(S.getSettings().getUnits())) {
-			logger.info("Converting scenario units from " + S.getSettings().getUnits() + " to SI");
-			edu.berkeley.path.beats.util.UnitConverter.process(S);
-		}
-
-	    // populate the scenario ....................................................
-	    S.populate();
-
-	    // register signals with their targets ..................................
-	    boolean registersuccess = true;
-		if(S.getSignalSet()!=null)
-	    	for(edu.berkeley.path.beats.jaxb.Signal signal:S.getSignalSet().getSignal())
-	    		registersuccess &= ((Signal)signal).register();
-	    if(!registersuccess){
-	    	throw new BeatsException("Signal registration failure");
-	    }
-
-	    if(S.getControllerset()!=null)
-	    	if(!S.getControllerset().register()){
-	    		throw new BeatsException("Controller registration failure");
-		    }
-
-	    // print messages and clear before validation
-		if (BeatsErrorLog.hasmessage()) {
-			BeatsErrorLog.print();
-			BeatsErrorLog.clearErrorMessage();
-		}
-
-		// validate scenario ......................................
-	    Scenario.validate(S);
-	    	    
-		if(BeatsErrorLog.haserror()){
-			BeatsErrorLog.print();
-			throw new ScenarioValidationError();
-		}
-		
-		if(BeatsErrorLog.haswarning()) {
-			BeatsErrorLog.print();
-			BeatsErrorLog.clearErrorMessage();
-		}
-
 		return S;
 	}
 

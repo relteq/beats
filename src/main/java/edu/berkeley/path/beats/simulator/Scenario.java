@@ -299,6 +299,101 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
+	// initialization
+	/////////////////////////////////////////////////////////////////////
+	
+	public void initialize(double timestep,double starttime) {
+
+		//this.numEnsemble = numEnsemble;
+		//this.scenariolocked = false;
+		
+		// make run parameters
+		RunParameters param = new RunParameters(timestep,starttime,Double.POSITIVE_INFINITY,Double.NaN);
+
+		// populate/validate
+		try {
+			populate_validate();
+		} catch (BeatsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// copy to scenario
+		this.simdtinseconds = param.simDt;
+  
+		// create the clock
+		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+        
+		// reset the simulation
+		if(!reset(param.simulationMode))
+			throw new BeatsException("Reset failed.");
+
+		// lock the scenario
+        scenariolocked = true;	
+        
+        // advance to start of output time        
+        while( getCurrentTimeInSeconds()<param.timestartOutput )
+        	advanceNSeconds(simdtinseconds);
+
+	}
+	
+	/**
+	 * Processes a scenario loaded by JAXB.
+	 * Converts units to SI, populates the scenario,
+	 * registers signals and controllers,
+	 * and validates the scenario.
+	 * @param S a scenario
+	 * @return the updated scenario or null if an error occurred
+	 * @throws BeatsException
+	 */
+	protected void populate_validate() throws BeatsException {
+		
+		if (null == getSettings() || null == getSettings().getUnits())
+			logger.warn("Scenario units not specified. Assuming SI");
+		else if (!"SI".equalsIgnoreCase(getSettings().getUnits())) {
+			logger.info("Converting scenario units from " + getSettings().getUnits() + " to SI");
+			edu.berkeley.path.beats.util.UnitConverter.process(this);
+		}
+
+	    // populate the scenario ....................................................
+	    populate();
+
+	    // register signals with their targets ..................................
+	    boolean registersuccess = true;
+		if(getSignalSet()!=null)
+	    	for(edu.berkeley.path.beats.jaxb.Signal signal: getSignalSet().getSignal())
+	    		registersuccess &= ((Signal)signal).register();
+	    if(!registersuccess){
+	    	throw new BeatsException("Signal registration failure");
+	    }
+
+	    if(getControllerset()!=null)
+	    	if(!getControllerset().register()){
+	    		throw new BeatsException("Controller registration failure");
+		    }
+
+	    // print messages and clear before validation
+		if (BeatsErrorLog.hasmessage()) {
+			BeatsErrorLog.print();
+			BeatsErrorLog.clearErrorMessage();
+		}
+
+		// validate scenario ......................................
+	    Scenario.validate(this);
+	    	    
+		if(BeatsErrorLog.haserror()){
+			BeatsErrorLog.print();
+			throw new ScenarioValidationError();
+		}
+		
+		if(BeatsErrorLog.haswarning()) {
+			BeatsErrorLog.print();
+			BeatsErrorLog.clearErrorMessage();
+		}
+
+	}
+
+	/////////////////////////////////////////////////////////////////////
 	// start-to-end run
 	/////////////////////////////////////////////////////////////////////
 
@@ -319,32 +414,35 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * rolling back all profiles and clocks. 
 	 * @param numEnsemble Number of simulations to run in parallel
 	 */
-	public void initialize_run(double simdt,int numEnsemble,double timestart) throws BeatsException{
-
-		if(numEnsemble<=0)
-			throw new BeatsException("Number of ensemble runs must be at least 1.");
-		
-		RunParameters param = new RunParameters(simdt,timestart,Double.POSITIVE_INFINITY,Double.NaN);
-
-		this.simdtinseconds = param.simDt;
-		this.scenariolocked = false;
-		this.numEnsemble = numEnsemble;
-        
-		// create the clock
-		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
-        
-		// reset the simulation
-		if(!reset(param.simulationMode))
-			throw new BeatsException("Reset failed.");
-
-		// lock the scenario
-        scenariolocked = true;	
-        
-        // advance to start of output time        
-        while( getCurrentTimeInSeconds()<param.timestartOutput )
-        	advanceNSeconds(simdtinseconds);
-        
-	}
+//	public void initialize_run(int numEnsemble,double simdt,double timestart) throws BeatsException{
+//
+//		if(numEnsemble<=0)
+//			throw new BeatsException("Number of ensemble runs must be at least 1.");
+//		
+//		RunParameters param = new RunParameters(simdt,timestart,Double.POSITIVE_INFINITY,Double.NaN);
+//
+//		this.simdtinseconds = param.simDt;
+//		
+//		this.populate_validate();
+//		
+//		this.scenariolocked = false;
+//		this.numEnsemble = numEnsemble;
+//        
+//		// create the clock
+//		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+//        
+//		// reset the simulation
+//		if(!reset(param.simulationMode))
+//			throw new BeatsException("Reset failed.");
+//
+//		// lock the scenario
+//        scenariolocked = true;	
+//        
+//        // advance to start of output time        
+//        while( getCurrentTimeInSeconds()<param.timestartOutput )
+//        	advanceNSeconds(simdtinseconds);
+//        
+//	}
 	
 	/** Advance the simulation <i>nsec</i> seconds.
 	 * 

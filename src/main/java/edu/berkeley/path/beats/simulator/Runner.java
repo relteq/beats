@@ -51,17 +51,20 @@ public final class Runner {
 		try {
 			// process input parameters
 			RunnerArguments runargs = parseInput(args);
-			if (null == runargs) 
+			if (null == runargs)
 				return;
 
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename(),runargs.getNodeFlowSolver(),runargs.getNodeSRSolver());
+
 			if (null == scenario)
-				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
+				throw new BeatsException("Scenario did not load");
+			
+			// populate, validate
+			scenario.initialize(runargs.getDt(),runargs.getStartTime());
 			
 			// run the scenario
-			scenario.run(runargs.getDt(),
-					runargs.getStartTime(), 
+			scenario.run(
 					runargs.getEndTime(), 
 					runargs.getOutputDt(),
 					runargs.getOutput_format(),
