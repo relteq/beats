@@ -302,25 +302,30 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// initialization
 	/////////////////////////////////////////////////////////////////////
 	
-	public void initialize(double timestep,double starttime) {
-
-		//this.numEnsemble = numEnsemble;
-		//this.scenariolocked = false;
+	public void set_run_parameters(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) {
 		
-		// make run parameters
-		RunParameters param = new RunParameters(timestep,starttime,Double.POSITIVE_INFINITY,Double.NaN);
+		//	TODO: CHECK INPUT PARAMETERS
+	
+		RunParameters param = new RunParameters(timestep,starttime,endtime,outdt);
+//		RunParameters param = new RunParameters(timestep,starttime,Double.POSITIVE_INFINITY,Double.NaN);
+				
+		boolean writefiles = true;
 
-		// populate/validate
-		try {
-			populate_validate();
-		} catch (BeatsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// lock the scenario
+		this.numEnsemble = numEnsemble;
+		this.scenariolocked = true;	
+		this.simdtinseconds = param.simDt;
 		
 		// copy to scenario
 		this.simdtinseconds = param.simDt;
-  
+		
+		// populate/validate
+		try {
+			populate_validate();
+		} catch (BeatsException e) {			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		// create the clock
 		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
         
@@ -392,58 +397,65 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 
 	}
-
+	
 	/////////////////////////////////////////////////////////////////////
 	// start-to-end run
 	/////////////////////////////////////////////////////////////////////
 
-	public void run(double simdt,double timestart,double timeend,double outdt,String outputtype, String outputfileprefix,int numReps) throws BeatsException{
-		this.numEnsemble = 1;
-		RunParameters param = new RunParameters(simdt,timestart, timeend, outdt);
-		run_internal(param,numReps,true,outputtype,outputfileprefix);
+	public void run(double simdt,double timestart,double timeend,double outdt,String outtype, String outprefix,int numRepetitions) throws BeatsException{
+//		this.numEnsemble = 1;
+//		RunParameters param = new RunParameters(simdt,timestart, timeend, outdt);
+//		run_internal(param,numRepetitions,true,outtype,outprefix);
+//				
+//		boolean writefiles = true;
+//
+//		// lock the scenario
+//		this.scenariolocked = true;	
+//		this.simdtinseconds = param.simDt;
+        
+		logger.info("Simulation mode: " + param.simulationMode);
+		logger.info("Simulation period: [" + param.sim_start + ":" + param.simDt + ":" + param.sim_end + "]");
+		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
+		
+		// output writer properties
+		Properties owr_props = new Properties();
+		if (null != outprefix) 
+			owr_props.setProperty("prefix", outprefix);
+		if (null != outtype) 
+			owr_props.setProperty("type",outtype);
+		
+		// create the clock
+		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+        
+		// loop through simulation runs ............................
+		for(int i=0;i<numRepetitions;i++){
+			
+			OutputWriterBase outputwriter = null;
+			if (writefiles){
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, param.outDt,param.outsteps);
+				outputwriter.open(i);
+			}
+			
+			try{
+				// reset the simulation
+				if(!reset(param.simulationMode))
+					throw new BeatsException("Reset failed.");
+
+				// advance to end of simulation
+				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.timestartOutput) ){					
+				}
+			} finally {
+				if (null != outputwriter) outputwriter.close();
+			}
+		}
+        scenariolocked = false;		
+		
 	}
 
 	/////////////////////////////////////////////////////////////////////
 	// step-by-step run
 	/////////////////////////////////////////////////////////////////////
-	
-	/** Initialize the run before using {@link Scenario#advanceNSeconds(double)}
-	 * 
-	 * <p>This method performs certain necessary initialization tasks on the scenario. In particular
-	 * it locks the scenario so that elements may not be added mid-run. It also resets the scenario
-	 * rolling back all profiles and clocks. 
-	 * @param numEnsemble Number of simulations to run in parallel
-	 */
-//	public void initialize_run(int numEnsemble,double simdt,double timestart) throws BeatsException{
-//
-//		if(numEnsemble<=0)
-//			throw new BeatsException("Number of ensemble runs must be at least 1.");
-//		
-//		RunParameters param = new RunParameters(simdt,timestart,Double.POSITIVE_INFINITY,Double.NaN);
-//
-//		this.simdtinseconds = param.simDt;
-//		
-//		this.populate_validate();
-//		
-//		this.scenariolocked = false;
-//		this.numEnsemble = numEnsemble;
-//        
-//		// create the clock
-//		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
-//        
-//		// reset the simulation
-//		if(!reset(param.simulationMode))
-//			throw new BeatsException("Reset failed.");
-//
-//		// lock the scenario
-//        scenariolocked = true;	
-//        
-//        // advance to start of output time        
-//        while( getCurrentTimeInSeconds()<param.timestartOutput )
-//        	advanceNSeconds(simdtinseconds);
-//        
-//	}
-	
+
 	/** Advance the simulation <i>nsec</i> seconds.
 	 * 
 	 * <p> Move the simulation forward <i>nsec</i> seconds and stops.
@@ -1082,47 +1094,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	private void run_internal(RunParameters param,int numRepetitions,boolean writefiles,String outtype,String outprefix) throws BeatsException{
 
-		// lock the scenario
-		this.scenariolocked = true;	
-		this.simdtinseconds = param.simDt;
-        
-		logger.info("Simulation mode: " + param.simulationMode);
-		logger.info("Simulation period: [" + param.sim_start + ":" + param.simDt + ":" + param.sim_end + "]");
-		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
-		
-				
-		// output writer properties
-		Properties owr_props = new Properties();
-		if (null != outprefix) 
-			owr_props.setProperty("prefix", outprefix);
-		if (null != outtype) 
-			owr_props.setProperty("type",outtype);
-		
-		// create the clock
-		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
-        
-		// loop through simulation runs ............................
-		for(int i=0;i<numRepetitions;i++){
-			
-			OutputWriterBase outputwriter = null;
-			if (writefiles){
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props, param.outDt,param.outsteps);
-				outputwriter.open(i);
-			}
-			
-			try{
-				// reset the simulation
-				if(!reset(param.simulationMode))
-					throw new BeatsException("Reset failed.");
-
-				// advance to end of simulation
-				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.timestartOutput) ){					
-				}
-			} finally {
-				if (null != outputwriter) outputwriter.close();
-			}
-		}
-        scenariolocked = false;
 	}
 	
 	private boolean advanceNSteps_internal(ModeType simulationMode,int n,boolean writefiles,OutputWriterBase outputwriter,double outStart) throws BeatsException{
