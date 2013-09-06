@@ -80,12 +80,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private int numVehicleTypes;			// number of vehicle types
 	private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
-//	private double simdtinseconds;		// [sec] simulation time step 
 	private boolean scenariolocked=false;	// true when the simulation is running
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events	
 	private SensorList sensorlist = new SensorList();
-	private int numEnsemble;
 	private boolean started_writing;
 
 	private String configfilename;
@@ -99,6 +97,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// data
 	private boolean sensor_data_loaded = false;
+	
+	// run parameters
+	private RunParameters runParam;
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected constructor
@@ -302,22 +303,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// initialization
 	/////////////////////////////////////////////////////////////////////
 	
-	public void set_run_parameters(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) {
+	public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
 		
 		//	TODO: CHECK INPUT PARAMETERS
-	
-		RunParameters param = new RunParameters(timestep,starttime,endtime,outdt);
-//		RunParameters param = new RunParameters(timestep,starttime,Double.POSITIVE_INFINITY,Double.NaN);
+		boolean writeoutput = true;		
+		runParam = new RunParameters( timestep, 
+									  starttime,
+									  endtime,
+									  outdt,
+									  writeoutput,
+									  outtype,
+									  outprefix,
+									  numReps,
+									  numEnsemble );
 				
-		boolean writefiles = true;
-
 		// lock the scenario
-		this.numEnsemble = numEnsemble;
 		this.scenariolocked = true;	
-		this.simdtinseconds = param.simDt;
-		
-		// copy to scenario
-		this.simdtinseconds = param.simDt;
 		
 		// populate/validate
 		try {
@@ -327,18 +328,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		
 		// create the clock
-		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+		clock = new Clock(runParam.sim_start,runParam.sim_end,runParam.simDt);
         
 		// reset the simulation
-		if(!reset(param.simulationMode))
+		if(!reset(runParam.simulationMode))
 			throw new BeatsException("Reset failed.");
 
 		// lock the scenario
         scenariolocked = true;	
         
         // advance to start of output time        
-        while( getCurrentTimeInSeconds()<param.timestartOutput )
-        	advanceNSeconds(simdtinseconds);
+        while( getCurrentTimeInSeconds()<runParam.timestartOutput )
+        	advanceNSeconds(runParam.simDt);
 
 	}
 	
@@ -402,7 +403,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// start-to-end run
 	/////////////////////////////////////////////////////////////////////
 
-	public void run(double simdt,double timestart,double timeend,double outdt,String outtype, String outprefix,int numRepetitions) throws BeatsException{
+	public void run() throws BeatsException{
 //		this.numEnsemble = 1;
 //		RunParameters param = new RunParameters(simdt,timestart, timeend, outdt);
 //		run_internal(param,numRepetitions,true,outtype,outprefix);
@@ -413,36 +414,36 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //		this.scenariolocked = true;	
 //		this.simdtinseconds = param.simDt;
         
-		logger.info("Simulation mode: " + param.simulationMode);
-		logger.info("Simulation period: [" + param.sim_start + ":" + param.simDt + ":" + param.sim_end + "]");
-		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
+//		logger.info("Simulation mode: " + param.simulationMode);
+//		logger.info("Simulation period: [" + param.sim_start + ":" + param.simDt + ":" + param.sim_end + "]");
+//		logger.info("Output period: [" + param.timestartOutput + ":" + param.outDt + ":" + param.sim_end + "]");
 		
 		// output writer properties
 		Properties owr_props = new Properties();
-		if (null != outprefix) 
-			owr_props.setProperty("prefix", outprefix);
-		if (null != outtype) 
-			owr_props.setProperty("type",outtype);
+		if (null != runParam.outprefix) 
+			owr_props.setProperty("prefix", runParam.outprefix);
+		if (null != runParam.outtype) 
+			owr_props.setProperty("type",runParam.outtype);
 		
 		// create the clock
-		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
+//		clock = new Clock(param.sim_start,param.sim_end,simdtinseconds);
         
 		// loop through simulation runs ............................
-		for(int i=0;i<numRepetitions;i++){
+		for(int i=0;i<runParam.numReps;i++){
 			
 			OutputWriterBase outputwriter = null;
-			if (writefiles){
-				outputwriter = OutputWriterFactory.getWriter(this, owr_props, param.outDt,param.outsteps);
+			if (runParam.writefiles){
+				outputwriter = OutputWriterFactory.getWriter(this, owr_props, runParam.outDt,runParam.outsteps);
 				outputwriter.open(i);
 			}
 			
 			try{
 				// reset the simulation
-				if(!reset(param.simulationMode))
+				if(!reset(runParam.simulationMode))
 					throw new BeatsException("Reset failed.");
 
 				// advance to end of simulation
-				while( advanceNSteps_internal(param.simulationMode,1,writefiles,outputwriter,param.timestartOutput) ){					
+				while( advanceNSteps_internal(runParam.simulationMode,1,runParam.writefiles,outputwriter,runParam.timestartOutput) ){					
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();
@@ -469,9 +470,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		if(!scenariolocked)
 			throw new BeatsException("Run not initialized. Use initialize_run() first.");
 		
-		if(!BeatsMath.isintegermultipleof(nsec,simdtinseconds))
-			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + simdtinseconds + ").");
-		int nsteps = BeatsMath.round(nsec/simdtinseconds);				
+		if(!BeatsMath.isintegermultipleof(nsec,runParam.simDt))
+			throw new BeatsException("nsec (" + nsec + ") must be an interger multiple of simulation dt (" + runParam.simDt + ").");
+		int nsteps = BeatsMath.round(nsec/runParam.simDt);				
 		return advanceNSteps_internal(ModeType.normal,nsteps,false,null,-1d);
 	}
 
@@ -669,7 +670,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Integer number of elements in the ensemble.
 	 */
 	public int getNumEnsemble() {
-		return numEnsemble;
+		return runParam.numEnsemble;
 	}
 
 	/** Vehicle type index from name
@@ -707,9 +708,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 
 	 */
-//	public double getSimdtinseconds() {
-//		return simdtinseconds;
-//	}
+	public double getSimdtinseconds() {
+		return runParam.simDt;
+	}
 
 	/** Start time of the simulation.
 	 * @return Start time in seconds. 
@@ -797,7 +798,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 */
 	public double [][] getDensityForNetwork(long network_id,int ensemble){
 		
-		if(ensemble<0 || ensemble>=numEnsemble)
+		if(ensemble<0 || ensemble>=runParam.numEnsemble)
 			return null;
 		Network network = getNetworkWithId(network_id);
 		if(network==null)
@@ -1163,21 +1164,35 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	/////////////////////////////////////////////////////////////////////	
 	
 	private class RunParameters{
+		
+		// prescribed
 		public double simDt;				// [sec] simulation time step
 		public double sim_start;			// [sec] start of the simulation
 		public double sim_end;				// [sec] end of the simulation
-		public double timestartOutput;		// [sec] start outputing data
 		public double outDt;				// [sec] output sampling time
+		public boolean writefiles;
+		public String outtype;
+		public String outprefix;
+		public int numReps;
+		public int numEnsemble;
+
+		// derived
+		public double timestartOutput;		// [sec] start outputing data
 		public int outsteps;				// [-] number of simulation steps per output step
 		public ModeType simulationMode;
-		
+		  
 		// input parameter outdt [sec] output sampling time
-		public RunParameters(double simdt,double tstart,double tend,double outdt) throws BeatsException{
+		public RunParameters(double simdt,double tstart,double tend,double outdt, boolean writefiles,String outtype,String outprefix,int numReps,int numEnsemble) throws BeatsException{
+			
+			this.writefiles = writefiles;
+			this.outtype = outtype;
+			this.outprefix = outprefix;
+			this.numReps = numReps;
+			this.numEnsemble = numEnsemble;
 			
 			// round to the nearest decisecond
 			simdt = round(simdt);
 			tstart = round(tstart);
-			//simdtinseconds = round(simdtinseconds);
 			tend = round(tend);
 			outdt = round(outdt);
 			

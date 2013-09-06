@@ -51,26 +51,34 @@ final public class Defaults {
 	public static float yellowtime			= 5f;		// [sec]
 	
 	// dt
-	public static final Map<String, Integer> dt;
+	public static final Map<String, Double> dt_map;
 	
 	// initialization
     static {
-        Map<String, Integer> aMap = new HashMap<String, Integer>();
-        aMap.put("Albany-and-Berkeley.xml",1);
-    	aMap.put("complete.xml",5);
-    	aMap.put("complete_twotypes.xml",5);
-    	aMap.put("samitha1onramp.xml",5);
-    	aMap.put("scenario_twotypes.xml",5);
-    	aMap.put("testfwy2.xml",5);
-    	aMap.put("testfwy_w.xml",5);
-    	aMap.put("test_event.xml",5);
-    	aMap.put("_scenario_2009_02_12.xml",5);
-    	aMap.put("_scenario_constantsplits.xml",5);
-    	aMap.put("_smalltest.xml",5);
-    	aMap.put("_smalltest_MPC.xml",5);
-    	aMap.put("_smalltest_multipletypes.xml",5);
-    	aMap.put("_smalltest_nocontrol_broken.xml",5);
-        dt = Collections.unmodifiableMap(aMap);
+        Map<String, Double> aMap = new HashMap<String, Double>();    	
+        aMap.put("Albany-and-Berkeley.xml",1d);
+    	aMap.put("complete.xml",5d);
+    	aMap.put("complete_twotypes.xml",5d);
+    	aMap.put("samitha1onramp.xml",5d);
+    	aMap.put("scenario_twotypes.xml",5d);
+    	aMap.put("testfwy2.xml",5d);
+    	aMap.put("testfwy_w.xml",5d);
+    	aMap.put("test_event.xml",5d);
+    	aMap.put("_scenario_2009_02_12.xml",5d);
+    	aMap.put("_scenario_constantsplits.xml",5d);
+    	aMap.put("_smalltest.xml",5d);
+    	aMap.put("_smalltest_MPC.xml",5d);
+    	aMap.put("_smalltest_multipletypes.xml",5d);
+    	aMap.put("_smalltest_nocontrol_broken.xml",5d);
+        dt_map = Collections.unmodifiableMap(aMap);
+    }
+    
+    public static double getTimestepFor(String configname){
+    	try {
+			return dt_map.get(configname);
+		} catch (Exception e) {
+			return Double.NaN;
+		}
     }
 
     

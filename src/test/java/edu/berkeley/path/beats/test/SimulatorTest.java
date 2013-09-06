@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsException;
@@ -112,9 +113,17 @@ public class SimulatorTest {
 			if (null == scenario)
 				throw new BeatsException("UNEXPECTED! Scenario was not loaded");
 			
+			double timestep = Defaults.getTimestepFor(conffile.getName());
+			
+			if(Double.isNaN(timestep))
+				throw new BeatsException("Unknown configuration file.");
+				
+			// initialize the scenario
+			scenario.initialize(timestep, startTime, startTime+duration, outDt, "text", outputprefix, 1, 1);
+			
 			// run the scenario
 			System.out.println("\tRunning");
-			scenario.run(startTime,startTime+duration,outDt,"text",outputprefix,numReps);
+			scenario.run();
 			
 			String [] vehicleTypes = scenario.getVehicleTypeNames();
 							

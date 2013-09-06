@@ -61,16 +61,17 @@ public final class Runner {
 				throw new BeatsException("Scenario did not load");
 			
 			// populate, validate
-			scenario.initialize(runargs.getDt(),runargs.getStartTime());
+			scenario.initialize( runargs.getDt(),
+								 runargs.getStartTime(),
+								 runargs.getEndTime(),
+								 runargs.getOutputDt(),
+								 runargs.getOutput_format(),
+								 runargs.getOutputfileprefix(),
+								 runargs.getNumReps(),
+								 1 );
 			
 			// run the scenario
-			scenario.run(
-					runargs.getEndTime(), 
-					runargs.getOutputDt(),
-					runargs.getOutput_format(),
-					runargs.getOutputfileprefix(),
-					runargs.getNumReps()
-					);
+			scenario.run();
 			
 			System.out.println("done in " + (System.currentTimeMillis()-time));
 			
@@ -175,13 +176,13 @@ public final class Runner {
 		logger.info("Simulation parameters: " + runargs);
 
 		logger.info("Simulation");
-		scenario.run(runargs.getDt(),
-				runargs.getStartTime(), 
-				runargs.getEndTime(), 
-				runargs.getOutputDt(),
-				"db",
-				runargs.getOutputfileprefix(),
-				runargs.getNumReps());
+//		scenario.run(runargs.getDt(),
+//				runargs.getStartTime(), 
+//				runargs.getEndTime(), 
+//				runargs.getOutputDt(),
+//				"db",
+//				runargs.getOutputfileprefix(),
+//				runargs.getNumReps());
 
 		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");
