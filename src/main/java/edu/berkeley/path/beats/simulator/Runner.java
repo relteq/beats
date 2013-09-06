@@ -56,11 +56,11 @@ public final class Runner {
 
 			// load configuration file
 			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename(),runargs.getNodeFlowSolver(),runargs.getNodeSRSolver());
-
+			
 			if (null == scenario)
 				throw new BeatsException("Scenario did not load");
 			
-			// populate, validate
+			// initialize
 			scenario.initialize( runargs.getDt(),
 								 runargs.getStartTime(),
 								 runargs.getEndTime(),
@@ -176,13 +176,13 @@ public final class Runner {
 		logger.info("Simulation parameters: " + runargs);
 
 		logger.info("Simulation");
-//		scenario.run(runargs.getDt(),
-//				runargs.getStartTime(), 
-//				runargs.getEndTime(), 
-//				runargs.getOutputDt(),
-//				"db",
-//				runargs.getOutputfileprefix(),
-//				runargs.getNumReps());
+		scenario.run(runargs.getDt(),
+				runargs.getStartTime(), 
+				runargs.getEndTime(), 
+				runargs.getOutputDt(),
+				"db",
+				runargs.getOutputfileprefix(),
+				runargs.getNumReps());
 
 		edu.berkeley.path.beats.db.Service.shutdown();
 		logger.info("Done");

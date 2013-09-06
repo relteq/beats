@@ -79,7 +79,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 			((Link)link).validate();
 	}
 
-	protected void reset(Scenario.ModeType simulationMode) throws BeatsException {
+	protected void reset() throws BeatsException {
 
 		if(isempty)
 			return;
@@ -90,7 +90,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
 		// link list
 		for (edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink())
-			((Link) link).reset(simulationMode);
+			((Link) link).reset();
 
 	}
 

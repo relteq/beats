@@ -30,13 +30,17 @@ import java.util.ArrayList;
 
 final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile {
 
+
+	// does not change ....................................
 	private Scenario myScenario;
 	private Link myLink;
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
 	private ArrayList<FundamentalDiagram> FD;
-	private boolean isdone; 
 	private int stepinitial;
+
+	// does change ........................................
+	private boolean isdone; 
 
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
@@ -93,7 +97,10 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 //			_fd.copyfrom(fd);					// copy and normalize
 			FD.add(_fd);
 		}
-		
+
+		// read start time, convert to stepinitial		
+		stepinitial = BeatsMath.round((getStartTime()-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
+				
 	}
 	
 	protected void validate() {
@@ -120,13 +127,6 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 
 	protected void reset() throws BeatsException {
 		isdone = false;
-		
-		// read start time, convert to stepinitial
-		double profile_starttime;	// [sec]
-		
-		profile_starttime = getStartTime(); // ==null ? 0f : getStartTime().floatValue();
-		
-		stepinitial = BeatsMath.round((profile_starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		
 		if(FD!=null)
 			for(FundamentalDiagram fd : FD)

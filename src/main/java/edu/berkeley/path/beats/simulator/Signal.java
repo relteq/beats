@@ -83,8 +83,6 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		if(myNode==null)
 			return;
 		
-//		myNode.mySignal = this;
-
 		int i;
 		int totalphases = getPhase().size();
 		

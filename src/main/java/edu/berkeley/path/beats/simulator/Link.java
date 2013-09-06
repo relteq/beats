@@ -34,6 +34,11 @@ import java.math.BigDecimal;
  */
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
+	/** Type of link. */
+	public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
+	
+	// does not change ....................................
+
 	private Network myNetwork;
 	private Node begin_node;
 	private Node end_node;
@@ -41,24 +46,16 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// link type
 	private Link.Type myType;
 
-	/** Type of link. */
-	public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
-
 	// link geometry
-	private double _length;							// [meters]
 	private double _lanes;							// [-]
 	
 	// source/sink indicators
 	private boolean issource; 						// [boolean]
 	private boolean issink;     					// [boolean]
-
-	// FDs
-	private FundamentalDiagram [] FDfromProfile;	// profile fundamental diagram
-	private FundamentalDiagram FDfromEvent;			// event fundamental diagram
 	
-	// Events
-	private FundamentalDiagramProfile myFDprofile;	// reference to fundamental diagram profile (used to rescale future FDs upon lane change event)
-	private boolean activeFDevent;					// true if an FD event is active on this link,
+	private FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
+	private CapacityProfile myCapacityProfile; 		// capacity profile
+	private DemandProfile myDemandProfile;  		// demand profiles
 
 	// Controllers
 	private int control_maxflow_index;
@@ -66,12 +63,18 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private Controller myFlowController;
 	private Controller mySpeedController;
 	
-	// capacity profile
-	private CapacityProfile myCapacityProfile;
-
-	// source demand profile
-	private DemandProfile myDemandProfile;  		// demand profiles
+	// does change ........................................
 	
+	// link geometry
+	private double _length;							// [meters]
+
+	// FDs
+	private FundamentalDiagram [] FDfromProfile;	// profile fundamental diagram
+	private FundamentalDiagram FDfromEvent;			// event fundamental diagram
+	
+	// Events
+	private boolean activeFDevent;					// true if an FD event is active on this link,
+		
 	// input to node model
 	private double [] spaceSupply;        			// [veh]	numEnsemble
 	private double [][] outflowDemand;   			// [veh] 	numEnsemble x numVehTypes
@@ -82,6 +85,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	
 	// link state
 	private double [][] density;    				// [veh]	numEnsemble x numVehTypes
+	private double   [] initial_density;			// [veh]  	numVehTypes
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -97,9 +101,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 		this.myNetwork = myNetwork;
 
-//		// demand profile references
-//		myDemandProfile = new DemandProfile [myNetwork.getMyScenario().getNumVehicleTypes()]; 
-		
 		// link type
 		if(getLinkType()==null)
 			this.myType = Link.Type.unspecified;
@@ -136,39 +137,39 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			BeatsErrorLog.addError("Non-positive number of lanes in link id=" + getId() + ".");		
 	}
 
-	protected void reset(Scenario.ModeType simulationMode){
+	protected void reset(){
 		resetLanes();		
-		resetState(simulationMode);
+		resetState();
 		resetFD();
 	}
 	
-	private void resetState(Scenario.ModeType simulationMode) {
+	private void resetState() {
 
 		Scenario myScenario = myNetwork.getMyScenario();
-
 		int n1 = myScenario.getNumEnsemble();
 		int n2 = myScenario.getNumVehicleTypes();
+		
+		density = BeatsMath.zeros(n1,n2);
 
-		switch(simulationMode){
-
-		case warmupFromZero:			// in warmupFromZero mode the simulation start with an empty network
-			density = BeatsMath.zeros(n1,n2);
-			break;
-
-		case warmupFromIC:				// in warmupFromIC and normal modes, the simulation starts 
-		case normal:					// from the initial density profile 
-			density = new double[n1][n2];
-			for(int i=0;i<n1;i++)
-				if(myScenario.getInitialDensitySet()!=null)
-					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
-				else 
-					density[i] = BeatsMath.zeros(myScenario.getNumVehicleTypes());
-			break;
-
-		default:
-			break;
-
-		}
+//		switch(simulationMode){
+//
+//		case left_of_init_dens:			// in warmupFromZero mode the simulation start with an empty network
+//			density = BeatsMath.zeros(n1,n2);
+//			break;
+//
+//		case right_of_init_dens:				// in warmupFromIC and normal modes, the simulation starts 
+//		case on_init_dens:					// from the initial density profile 
+//			density = new double[n1][n2];
+//			for(int i=0;i<n1;i++)
+//				if(myScenario.getInitialDensitySet()!=null)
+//					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
+//				else 
+//					density[i] = BeatsMath.zeros(myScenario.getNumVehicleTypes());
+//			break;
+//
+//		default:
+//			break;
+//		}
 
 		// reset other quantities
 		inflow 				= BeatsMath.zeros(n1,n2);
@@ -177,6 +178,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		spaceSupply 		= BeatsMath.zeros(n1);
 
 		return;
+
 	}
 
 	private void resetLanes(){
@@ -189,7 +191,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			FDfromProfile[i] = new FundamentalDiagram(this);
 			FDfromProfile[i].settoDefault();
 		}
+		FDfromEvent = null;
 		activeFDevent = false;
+		
 	}
 
 	protected void update() {
@@ -442,6 +446,12 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return false;
 		mySpeedController = null;			
 		return true;
+	}
+
+	
+	// initial condition ..................................................
+	protected void record_initial_state(){
+		initial_density = density[0].clone();
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -831,7 +841,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			density[ensemble][i] = x[i];
 	}
 
-	/** Get the density in [veh] for a given ensemble and vehicle type.
+	/** Get the density in [veh] for a given ensemble member and vehicle type.
 	 * @param ensemble number of ensemble
 	 * @param vt_ind vehicle type index
 	 * @return density for the given ensemble and vehicle type [vehicles]

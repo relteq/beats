@@ -28,24 +28,26 @@ package edu.berkeley.path.beats.simulator;
 
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
+
+	// does not change ....................................
 	private Scenario myScenario;
-	
-	private double [] current_sample;		// sample per vehicle type
 	private boolean isOrphan;
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;				// [sim steps] profile sample period
+	private int stepinitial;
 	private BeatsTimeProfile [] demand_nominal;	// [veh] demand profile per vehicle type
 	private int [] vehicle_type_index;		// vehicle type indices for demand_nominal
-	private boolean isdone; 
-	private int stepinitial;
-		
-	private double _knob;
 	private double std_dev_add;				// [veh]
 	private double std_dev_mult;			// [veh]
 	private boolean isdeterministic;		// true if the profile is deterministic
-	private boolean all_demands_scalar;
 	private int profile_length;
+	private boolean all_demands_scalar;		// true if all demand profiles have length 1.	
 	
+	// does change ........................................
+	private boolean isdone; 
+	private double [] current_sample;		// sample per vehicle type
+	private double _knob;
+
 	/////////////////////////////////////////////////////////////////////
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
@@ -137,7 +139,8 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 						  (getStdDevMult()==null || std_dev_mult==0.0);
 		
 		_knob = getKnob();
-		
+		stepinitial = BeatsMath.round((getStartTime()-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
+
 	}
 
 	protected void validate() {
@@ -183,18 +186,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			return;
 					
 		isdone = false;
-		
-		// read start time, convert to stepinitial
-//		double starttime;	// [sec]
-//		if( getStartTime()!=null)
-//			starttime = getStartTime();
-//		else
-//			starttime = 0f;
-		
-		double starttime = getStartTime();
 
-		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
-		
 		// set current sample to zero
 		current_sample = BeatsMath.zeros(myScenario.getNumVehicleTypes());
 		

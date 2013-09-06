@@ -28,23 +28,21 @@ package edu.berkeley.path.beats.simulator;
 
 final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 
+	// does not change ...................................
 	private Scenario myScenario;
 	private Node myNode;
 	private double dtinseconds;				// not really necessary
 	private int samplesteps;
-	
-//	private Double2DMatrix [][] profile;		// profile[i][j] is the 2D split matrix for
-//												// input link i, output link j. The first dimension 
-//												// of the Double2DMatrix is time, the second in vehicle type.
-	
+	private int laststep;
 	private BeatsTimeProfile [][][] profile; 	// profile[i][j][v] is the split ratio profile for
 												// input link i, output link j, vehicle type v.
 	
+	// does change ........................................
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
-	private int laststep;
 	private boolean isdone; 
 	private int stepinitial;
 
+	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -61,8 +59,6 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 		
 		// required
 		myNode = myScenario.getNodeWithId(getNodeId());
-
-		isdone = false;
 		
 		if(myNode==null)
 			return;
@@ -98,12 +94,9 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 			if(!profile[in_index][out_index][vt_index].isEmpty())
 				laststep = Math.max(laststep,profile[in_index][out_index][vt_index].getNumTime());
 		}
-		
-		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-		
+				
 		// inform the node
 		myNode.setMySplitRatioProfile(this);
-//		myNode.setHasSRprofile(true);
 		
 	}
 
@@ -117,6 +110,10 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 			starttime = getStartTime();	// assume given in seconds
 		
 		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
+
+		isdone = false;
+		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
+
 	}
 
 	protected void validate() {

@@ -28,16 +28,19 @@ package edu.berkeley.path.beats.simulator;
 
 final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
+	// does not change ....................................
 	private Link myLink;
+	private double _vf;                	// [-]
+	private double _w;                	// [-]
+	private double std_dev_capacity;	// [veh]
+	
+	// does change ........................................
 	private double lanes;
 	private double _densityJam;     	// [veh] 
 	private double _capacity;   		// [veh] 
 	private double _capacityDrop;     	// [veh] 
-	private double _vf;                	// [-]
-	private double _w;                	// [-]
-	private double std_dev_capacity;	// [veh]
 	private double density_critical;	// [veh]
-
+	
 	/////////////////////////////////////////////////////////////////////
 	// construction 
 	/////////////////////////////////////////////////////////////////////
@@ -391,11 +394,6 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 
 		if(_w>1)
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
-		
-		if(myLink!=null)
-			for(int e=0;e<myLink.getMyNetwork().getMyScenario().getNumEnsemble();e++)
-				if(myLink.getTotalDensityInVeh(e)>_densityJam)
-					BeatsErrorLog.addError("Initial density=" + myLink.getTotalDensityInVeh(e) + " of link id=" + myLink.getId() + " exceeds jam density=" + _densityJam);
 	}
 
 }

@@ -28,29 +28,14 @@ package edu.berkeley.path.beats.simulator;
 
 final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 
-	private Scenario myScenario;
-//	private Integer [] vehicletypeindex; 	// index of vehicle types into global list
-
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-	
-//	protected Integer[] getVehicletypeindex() {
-//		return vehicletypeindex;
-//	}
-	
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate(Scenario myScenario) {
-
-		this.myScenario = myScenario;
 		
 		if(getSplitRatioProfile().isEmpty())
 			return;
-
-//		vehicletypeindex = myScenario.getVehicleTypeIndices(getVehicleTypeOrder());
 		
 		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
 			((SplitRatioProfile) sr).populate(myScenario);

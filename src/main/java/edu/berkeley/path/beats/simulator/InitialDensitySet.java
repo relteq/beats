@@ -33,48 +33,34 @@ package edu.berkeley.path.beats.simulator;
  */
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
+
+	// does not change ....................................
 	private Scenario myScenario;
-	private double [] initial_density; 		// [veh/meter] indexed by link and type
 	private Link [] link;					// ordered array of references
-	private int [] vehicle_type_index;	; 	// index of vehicle types into global list
+	private int [] vehicle_type_index; 		// index of vehicle types into global list
+	private double [] initial_density; 		// [veh/meter] indexed by link and type
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
 	protected void populate(Scenario myScenario){
-		
-		int i;
-		
+				
 		this.myScenario = myScenario;
-		
-//		// count links in initial density list that are also in the scenario
-		int numLinks = getDensity().size();
-//		int numLinks_exist = 0;
-//		Link [] templink = new Link[numLinks];
-//		for(i=0;i<numLinks;i++){
-//			edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
-//			templink[i] = myScenario.getLinkWithId(density.getLinkId());
-//			if(templink[i]!=null)
-//				numLinks_exist++;
-//		}
-		
+
 		// allocate
+		int numLinks = getDensity().size();
 		initial_density = BeatsMath.zeros(numLinks);
 		link = new Link [numLinks];
 		vehicle_type_index = new int [numLinks];
 		
 		// copy profile information to arrays in extended object
-//		int c = 0;
-		for(i=0;i<numLinks;i++){
+		for(int i=0;i<numLinks;i++){
 			edu.berkeley.path.beats.jaxb.Density density = getDensity().get(i);
 			link[i] = myScenario.getLinkWithId(density.getLinkId());
 			vehicle_type_index[i] = myScenario.getVehicleTypeIndexForId(density.getVehicleTypeId());
 			if(link[i]!=null && vehicle_type_index[i]>=0){
-				initial_density[i] = Double.parseDouble(density.getContent()); //  BeatsFormatter.readCSVstring(density.getContent(),":");
-//				Double1DVector D = new Double1DVector(density.getContent(),":");
-//				initial_density[c] = D.getData();
-//				c++;
+				initial_density[i] = Double.parseDouble(density.getContent()); 
 			}
 		}
 		

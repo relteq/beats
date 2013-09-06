@@ -34,6 +34,7 @@ import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 */
 public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		   
+	// does not change ....................................
 	protected Network myNetwork;
 
 	// connectivity
@@ -41,33 +42,26 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	protected int nOut;
 	protected boolean istrivialsplit;
 	protected boolean isTerminal;
-	
+
 	// link references
 	protected Link [] output_link;
 	protected Link [] input_link;
-	
+
 	// split ratio from profile
 	protected SplitRatioProfile mySplitRatioProfile;
 	protected boolean hasSRprofile;
+
+	// node behavior
+	protected Node_SplitRatioSolver node_sr_solver;
+	protected Node_FlowSolver node_flow_solver;
 	
+	// does change ........................................
+
 	// split ratio from event
 	protected boolean hasactivesplitevent;	// split ratios set by events take precedence over
 	
 	// split ratio from profile or event
 	private Double3DMatrix splitratio_selected;
-	
-	// node behavior
-	protected Node_SplitRatioSolver node_sr_solver;
-	protected Node_FlowSolver node_flow_solver;
-	
-//	private Signal mySignal = null;
-
-    // controller
-//	private boolean hascontroller;
-//	private boolean controlleron;
-	
-	// output from node model (inDemand gets scaled)
-	//protected Double [][][] outFlow; 		// [ensemble][nOut][nTypes]
 	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -113,11 +107,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		hasSRprofile = false;
 		
 		// initialize the split ratio matrix
+		// NOTE: SHOULD THIS GO IN RESET?
 		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
 		normalizeSplitRatioMatrix(splitratio_selected);
 
-//		hascontroller = false;
-//		controlleron = false;
 		hasactivesplitevent = false;
 		
 		// create node flow solver

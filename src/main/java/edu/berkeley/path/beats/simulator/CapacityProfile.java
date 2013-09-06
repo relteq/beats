@@ -28,14 +28,17 @@ package edu.berkeley.path.beats.simulator;
 
 final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
 
+	// does not change ....................................
 	private Scenario myScenario;
-	private double current_sample;
 	private boolean isOrphan;
 	private double dtinseconds;			// not really necessary
 	private int samplesteps;
 	private BeatsTimeProfile capacity;	// [veh]
-	private boolean isdone;
 	private int stepinitial;
+
+	// does change ........................................
+	private boolean isdone;
+	private double current_sample;
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -52,11 +55,14 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 
 		isOrphan = myLink==null;
 				
-		if(!isOrphan)
-			myLink.setMyCapacityProfile(this);
+		if(isOrphan)
+			return;
+		
+		// set to link
+		myLink.setMyCapacityProfile(this);
 		
 		// sample demand distribution, convert to vehicle units
-		if(!isOrphan && getContent()!=null){
+		if(getContent()!=null){
 			capacity = new BeatsTimeProfile(getContent(),",");	// true=> reshape to vector along k, define length
 			capacity.multiplyscalar(myScenario.getSimdtinseconds()*myLink.get_Lanes());
 		}
@@ -77,17 +83,27 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 				return;
 			}
 		}
-			
+		
+		// read start time, convert to stepinitial
+		double starttime;
+		if( !Double.isNaN(getStartTime()) )
+			starttime = getStartTime();
+		else
+			starttime = 0f;
+		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
+
 	}
 	
 	protected void validate() {
+
+		if(isOrphan){
+			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkId() + " in capacity profile.");
+			return;
+		}
 		
 		if(capacity==null || capacity.isEmpty())
 			return;
 
-		if(isOrphan)
-			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkId() + " in capacity profile.");
-		
 		// check dtinseconds
 		if( dtinseconds<=0  && capacity.getNumTime()>1)
 			BeatsErrorLog.addError("Non-positive time step in capacity profile for link id=" + getLinkId());
@@ -107,16 +123,7 @@ final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBound
 			return;
 		
 		isdone = false;
-		
-		// read start time, convert to stepinitial
-		double starttime;
-		if( !Double.isNaN(getStartTime()) )
-			starttime = getStartTime();
-		else
-			starttime = 0f;
-
-		stepinitial = (int) Math.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
-
+	
 		current_sample = capacity.get(0);
 		
 	}

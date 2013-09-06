@@ -42,23 +42,11 @@ public final class BeatsMath {
 	private static final double EPSILON = (double) 1e-4;
 	
  	public static double [] zeros(int n1){
- 		if(n1<0)
- 			return null;
-		double [] answ = new double [n1];
-		for(int i=0;i<n1;i++)
-			answ[i] = 0.0d;
-		return answ;	
+ 		return n1<0 ? null : new double [n1];
 	}
  	
  	public static double [][] zeros(int n1,int n2){
- 		if(n1<0 || n2<0)
- 			return null;
-		double [][] answ = new double [n1][n2];
-		int i,j;
-		for(i=0;i<n1;i++)
-			for(j=0;j<n2;j++)
-				answ[i][j] = 0.0;
-		return answ;
+ 		return (n1<0 || n2<0) ? null : new double[n1][n2];
 	}
 	
 	public static Double sum(Double [] V){

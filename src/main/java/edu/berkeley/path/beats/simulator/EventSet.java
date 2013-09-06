@@ -31,10 +31,13 @@ import java.util.Collections;
 
 final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 
+	// does not change ....................................
 	private Scenario myScenario;
+	private ArrayList<Event> sortedevents = new ArrayList<Event>();
+
+	// does change ........................................
 	private boolean isdone;			// true if we are done with events
 	private int currentevent;
-	private ArrayList<Event> sortedevents = new ArrayList<Event>();
 
 	/////////////////////////////////////////////////////////////////////
 	// public interface
