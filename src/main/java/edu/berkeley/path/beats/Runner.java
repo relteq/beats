@@ -178,9 +178,11 @@ public class Runner {
 				logger.debug("Scenario " + scenario.getId() + " saved to file " + filename);
 			} else if (cmd.equals("calibrate") || cmd.equals("c")) {
 				edu.berkeley.path.beats.calibrator.FDCalibrator.main(arguments);
-			} else if (cmd.equals("simulate") || cmd.equals("s")) {
-				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
-			} else if (cmd.equals("simulate_output") || cmd.equals("so")) {
+			} 
+//			else if (cmd.equals("simulate") || cmd.equals("s")) {
+//				edu.berkeley.path.beats.simulator.Runner.run_db(arguments);
+//			} 
+			else if (cmd.equals("simulate_output") || cmd.equals("so")) {
 				edu.berkeley.path.beats.simulator.Runner.main(arguments);
 			} else if (cmd.equals("simulate_process") || cmd.equals("sp")) {
 				throw new NotImplementedException(cmd);

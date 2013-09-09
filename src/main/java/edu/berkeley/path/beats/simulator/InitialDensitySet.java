@@ -140,21 +140,21 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 			if(link[i]!=null && link[i].getId()==linkid && link[i].getMyNetwork().getId()==network_id){
 				foundit = true;
 				d[vehicle_type_index[i]] = initial_density[i] * link[i].getLengthInMeters();
+				break;
 			}
 		}
 		if(foundit)
 			return d;
-		else
-			return null;
+		return null;
 	}
 
-	/** Get the initial densities in [veh/meter]
-	 * 
-	 * @return 2D array of doubles indexed by link and vehicle type
-	 */
-	public double[] get_initial_density_in_vehpermeter() {
-		return initial_density;
-	}
+//	/** Get the initial densities in [veh/meter]
+//	 * 
+//	 * @return 2D array of doubles indexed by link and vehicle type
+//	 */
+//	public double[] get_initial_density_in_vehpermeter() {
+//		return initial_density;
+//	}
 
 //	/** Get the initial densities in [veh]
 //	 * 

@@ -149,27 +149,14 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		int n1 = myScenario.getNumEnsemble();
 		int n2 = myScenario.getNumVehicleTypes();
 		
-		density = BeatsMath.zeros(n1,n2);
-
-//		switch(simulationMode){
-//
-//		case left_of_init_dens:			// in warmupFromZero mode the simulation start with an empty network
-//			density = BeatsMath.zeros(n1,n2);
-//			break;
-//
-//		case right_of_init_dens:				// in warmupFromIC and normal modes, the simulation starts 
-//		case on_init_dens:					// from the initial density profile 
-//			density = new double[n1][n2];
-//			for(int i=0;i<n1;i++)
-//				if(myScenario.getInitialDensitySet()!=null)
-//					density[i] = ((InitialDensitySet)myScenario.getInitialDensitySet()).getDensityForLinkIdInVeh(myNetwork.getId(),getId());	
-//				else 
-//					density[i] = BeatsMath.zeros(myScenario.getNumVehicleTypes());
-//			break;
-//
-//		default:
-//			break;
-//		}
+		if(density==null)
+			density = new double[n1][n2];
+		
+		// copy initial density to density
+		int e,v;
+		for(e=0;e<n1;e++)
+			for(v=0;v<n2;v++)
+				density[e][v] = initial_density[v];
 
 		// reset other quantities
 		inflow 				= BeatsMath.zeros(n1,n2);
@@ -447,13 +434,29 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		mySpeedController = null;			
 		return true;
 	}
-
 	
 	// initial condition ..................................................
-	protected void record_initial_state(){
+	protected void copy_state_to_initial_state(){
 		initial_density = density[0].clone();
 	}
+	
+	protected void set_initial_state(double [] d){
+		initial_density  = d==null ? BeatsMath.zeros(myNetwork.getMyScenario().getNumVehicleTypes()) : d.clone();
+	}
 
+	// override density ..................................................
+	protected void set_density_with_singleton(double [] d){
+		int e,v;
+		int n1 = myNetwork.getMyScenario().getNumEnsemble();
+		int n2 = myNetwork.getMyScenario().getNumVehicleTypes();
+		if(density==null)
+			density = new double[n1][n2];
+		for(e=0;e<n1;e++)
+			for(v=0;v<n2;v++)
+				this.density[e][v] = d[v];
+	
+	}
+	
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////

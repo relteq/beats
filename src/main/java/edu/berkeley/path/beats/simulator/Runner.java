@@ -132,60 +132,60 @@ public final class Runner {
 		return simsettings;
 	}
 
-	public static void run_db(String [] args) throws BeatsException, edu.berkeley.path.beats.Runner.InvalidUsageException {
-		logger.info("Parsing arguments");
-		long scenario_id;
-		RunnerArguments runargs = new RunnerArguments(RunnerArguments.defaults());
-		if (0 == args.length || 5 < args.length) {
-			final String eol = System.getProperty("line.separator");
-			throw new edu.berkeley.path.beats.Runner.InvalidUsageException(
-					"Usage: simulate|s scenario_id [parameters]" + eol +
-					"Parameters:" + eol +
-					"\tstart time, sec" + eol +
-					"\tduration, sec" + eol +
-					"\toutput sampling time, sec" + eol +
-					"\tnumber of simulations");
-		} else {
-			scenario_id = Long.parseLong(args[0]);
-			runargs.parseArgs(args, 1);
-		}
-
-		edu.berkeley.path.beats.db.Service.init();
-
-		logger.info("Loading scenario");
-		Scenario scenario = ScenarioLoader.load(scenario_id);
-
-		if (args.length < 4) {
-			logger.info("Loading default simulation settings");
-			try {
-				DefSimSettings db_defss = DefSimSettingsPeer.retrieveByPK(Long.valueOf(scenario_id));
-				RunnerArguments defss = new RunnerArguments(runargs.getParent());
-				defss.setStartTime(db_defss.getSimStartTime());
-				defss.setDuration(db_defss.getSimDuration());
-				defss.setOutputDt(db_defss.getOutputDt());
-				runargs.setParent(defss);
-			} catch (NoRowsException exc) {
-				logger.warn("Found no default simulation settings for scenario " + scenario_id, exc);
-			} catch (TooManyRowsException exc) {
-				logger.error("Too many default simulation settings for scenario " + scenario_id, exc);
-			} catch (TorqueException exc) {
-				throw new BeatsException(exc);
-			}
-		}
-
-		logger.info("Simulation parameters: " + runargs);
-
-		logger.info("Simulation");
-		scenario.run(runargs.getDt(),
-				runargs.getStartTime(), 
-				runargs.getEndTime(), 
-				runargs.getOutputDt(),
-				"db",
-				runargs.getOutputfileprefix(),
-				runargs.getNumReps());
-
-		edu.berkeley.path.beats.db.Service.shutdown();
-		logger.info("Done");
-	}
+//	public static void run_db(String [] args) throws BeatsException, edu.berkeley.path.beats.Runner.InvalidUsageException {
+//		logger.info("Parsing arguments");
+//		long scenario_id;
+//		RunnerArguments runargs = new RunnerArguments(RunnerArguments.defaults());
+//		if (0 == args.length || 5 < args.length) {
+//			final String eol = System.getProperty("line.separator");
+//			throw new edu.berkeley.path.beats.Runner.InvalidUsageException(
+//					"Usage: simulate|s scenario_id [parameters]" + eol +
+//					"Parameters:" + eol +
+//					"\tstart time, sec" + eol +
+//					"\tduration, sec" + eol +
+//					"\toutput sampling time, sec" + eol +
+//					"\tnumber of simulations");
+//		} else {
+//			scenario_id = Long.parseLong(args[0]);
+//			runargs.parseArgs(args, 1);
+//		}
+//
+//		edu.berkeley.path.beats.db.Service.init();
+//
+//		logger.info("Loading scenario");
+//		Scenario scenario = ScenarioLoader.load(scenario_id);
+//
+//		if (args.length < 4) {
+//			logger.info("Loading default simulation settings");
+//			try {
+//				DefSimSettings db_defss = DefSimSettingsPeer.retrieveByPK(Long.valueOf(scenario_id));
+//				RunnerArguments defss = new RunnerArguments(runargs.getParent());
+//				defss.setStartTime(db_defss.getSimStartTime());
+//				defss.setDuration(db_defss.getSimDuration());
+//				defss.setOutputDt(db_defss.getOutputDt());
+//				runargs.setParent(defss);
+//			} catch (NoRowsException exc) {
+//				logger.warn("Found no default simulation settings for scenario " + scenario_id, exc);
+//			} catch (TooManyRowsException exc) {
+//				logger.error("Too many default simulation settings for scenario " + scenario_id, exc);
+//			} catch (TorqueException exc) {
+//				throw new BeatsException(exc);
+//			}
+//		}
+//
+//		logger.info("Simulation parameters: " + runargs);
+//
+//		logger.info("Simulation");
+//		scenario.run(runargs.getDt(),
+//				runargs.getStartTime(), 
+//				runargs.getEndTime(), 
+//				runargs.getOutputDt(),
+//				"db",
+//				runargs.getOutputfileprefix(),
+//				runargs.getNumReps());
+//
+//		edu.berkeley.path.beats.db.Service.shutdown();
+//		logger.info("Done");
+//	}
 
 }
