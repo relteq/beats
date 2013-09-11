@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
@@ -21,6 +22,12 @@ public class NodeTest {
 		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
+		
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		scenario.initialize(timestep,starttime,endtime,numEnsemble);
 		node = scenario.getNodeWithId(-4);
 	}
 

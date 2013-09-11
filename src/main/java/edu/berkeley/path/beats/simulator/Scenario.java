@@ -100,7 +100,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// run parameters
 	private RunParameters runParam;
-	private boolean scenario_initialized = false;
+	private boolean initialized = true;
 	private boolean scenario_locked=false;				// true when the simulation is running
 	
 	/////////////////////////////////////////////////////////////////////
@@ -217,7 +217,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * open output files
 	 * @return success		A boolean indicating whether the scenario was successfuly reset.
 	 */
-	private void reset() throws BeatsException {
+	public void reset() throws BeatsException {
 		
 		started_writing = false;
 		global_control_on = true;
@@ -306,6 +306,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// initialization
 	/////////////////////////////////////////////////////////////////////
 	
+	public void initialize(double timestep,double starttime,double endtime,int numEnsemble) throws BeatsException {
+		initialize(timestep,starttime,endtime,Double.POSITIVE_INFINITY,"","",1,numEnsemble);
+	}
+			
 	public void initialize(double timestep,double starttime,double endtime, double outdt, String outtype,String outprefix, int numReps, int numEnsemble) throws BeatsException {
 		
 		// create run parameters object
@@ -331,10 +335,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// compute the initial state by running the simulator to the start time
 		assign_initial_state();
+		
+		// create the clock
+		clock = new Clock(runParam.t_start_output,runParam.t_end_output,runParam.dt_sim);		
 
 		// it's initialized
-        scenario_initialized = true;
-        
+        initialized = true;
 
 	}
 	
@@ -817,14 +823,13 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the link. 
 	 * @return Reference to the link if it exists, <code>null</code> otherwise
 	 */
-	public Link getLinkWithId(long id){
-		if(networkSet==null)
+	public Link getLinkWithId(long id) {
+		if(getNetworkSet()==null)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-			Link link = ((edu.berkeley.path.beats.simulator.Network) network).getLinkWithId(id);
-			if(link!=null)
-				return link;
-		}
+		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
+			for(edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink())
+				if(link.getId()==id)
+					return (Link) link;
 		return null;
 	}
 	
@@ -833,22 +838,68 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id String id of the node. 
 	 * @return Reference to the node if it exists, <code>null</code> otherwise
 	 */
-	public Node getNodeWithId(long id){
-		if(networkSet==null)
+	public Node getNodeWithId(long id) {
+		if(getNetworkSet()==null)
 			return null;
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork()){
-			Node node = ((edu.berkeley.path.beats.simulator.Network) network).getNodeWithId(id);
-			if(node!=null)
-				return node;
+		for(edu.berkeley.path.beats.jaxb.Network network : getNetworkSet().getNetwork())
+			for(edu.berkeley.path.beats.jaxb.Node node : network.getNodeList().getNode())
+				if(node.getId()==id)
+					return (Node) node;
+		return null;
+	}
+
+	/** Get sensor with given id.
+	 * @param id String id of the sensor.
+	 * @return Sensor object.
+	 */
+	public Sensor getSensorWithId(long id) {
+		if(sensorlist==null)
+			return null;
+		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorlist.getSensors() ){
+			if(sensor.getId()==id)
+				return (Sensor) sensor;
 		}
 		return null;
 	}
 
+	/** Get signal with given id.
+	 * @param id String id of the signal.
+	 * @return Signal object.
+	 */
+	public Signal getSignalWithId(long id) {
+		if(getSignalSet()==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
+			if(signal.getId()==id)
+				return (Signal) signal;
+		}
+		return null;
+	}
+	
+	/** Get a reference to a signal by the id of its node.
+	 * 
+	 * @param node_id String id of the node. 
+	 * @return Reference to the signal if it exists, <code>null</code> otherwise
+	 */
+	public Signal getSignalWithNodeId(long node_id) {
+		if(getSignalSet()==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Signal signal : getSignalSet().getSignal()){
+			if(signal.getNodeId()==node_id)
+				return (Signal)signal;
+		}
+		return null;
+	}
+		
 	/** Get a reference to a controller by its id.
 	 * @param id Id of the controller.
 	 * @return A reference to the controller if it exists, <code>null</code> otherwise.
 	 */
-	public Controller getControllerWithId(long id){
+	public Controller getControllerWithId(long id) {
+		if(!initialized){
+			logger.error("Initialize the scenario before calling this method.");
+			return null;
+		}
 		if(controllerset==null)
 			return null;
 		for(Controller c : controllerset.get_Controllers()){
@@ -862,7 +913,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @param id Id of the event.
 	 * @return A reference to the event if it exists, <code>null</code> otherwise.
 	 */
-	public Event getEventWithId(long id){
+	public Event getEventWithId(long id) {
+		if(!initialized){
+			logger.error("Initialize the scenario before calling this method.");
+			return null;
+		}
 		if(eventset==null)
 			return null;
 		for(Event e : eventset.getSortedevents()){
@@ -872,49 +927,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}		
 
-	/** Get sensor with given id.
-	 * @param id String id of the sensor.
-	 * @return Sensor object.
-	 */
-	public Sensor getSensorWithId(long id){
-		if(sensorSet==null)
-			return null;
-		for(edu.berkeley.path.beats.simulator.Sensor sensor :sensorlist.getSensors()){
-			if(sensor.getId()==id)
-				return sensor;
-		}
-		return null;
-	}
 	
-	/** Get signal with given id.
-	 * @param id String id of the signal.
-	 * @return Signal object.
-	 */
-	public Signal getSignalWithId(long id){
-		if(signalSet==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal()){
-			if(signal.getId()==id)
-				return (Signal) signal;
-		}
-		return null;
-	}
-	
-	/** Get a reference to a signal by the id of its node.
-	 * 
-	 * @param node_id String id of the node. 
-	 * @return Reference to the signal if it exists, <code>null</code> otherwise
-	 */
-	public Signal getSignalWithNodeId(long node_id){
-		if(signalSet==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal()){
-			if(signal.getNodeId()==node_id)
-				return (Signal)signal;
-		}
-		return null;
-	}
-		
 	/////////////////////////////////////////////////////////////////////
 	// scenario modification
 	/////////////////////////////////////////////////////////////////////
@@ -1147,8 +1160,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 			
 		// run the density forward
-		clock = new Clock(sim_start,runParam.t_end_output,runParam.dt_sim);		
+		
 		if(run_singleton_to_start_output){
+			
+			// temporary warmup clock
+			clock = new Clock(sim_start,runParam.t_end_output,runParam.dt_sim);		
 			
 	        // advance a point ensemble to start_output time
 	        int original_numEnsemble = runParam.numEnsemble;
@@ -1168,6 +1184,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			
 	        // revert numEnsemble
 	        runParam.numEnsemble = original_numEnsemble;
+	        
+	        // delete the warmup clock
+	        clock = null;
 		}
 		
         
@@ -1256,26 +1275,34 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 //		public ModeType simulationMode;
 		  
 		// input parameter outdt [sec] output sampling time
-		public RunParameters(double simdt,double tstart,double tend,double outdt, boolean writefiles,String outtype,String outprefix,int numReps,int numEnsemble) throws BeatsException{
+		public RunParameters(double simdt,double tstart,double tend,double outdt, boolean dowrite,String outtype,String outprefix,int numReps,int numEnsemble) throws BeatsException{
 			
 			// round to the nearest decisecond
 			simdt = round(simdt);
 			tstart = round(tstart);
 			tend = round(tend);
 			outdt = round(outdt);
-			
+
 			this.dt_sim = simdt;
 			this.t_start_output = tstart;
 			this.t_end_output = tend;
-	        this.outsteps = BeatsMath.round(outdt/simdt);
-			this.dt_output = outsteps*simdt;
-
-			this.writefiles = writefiles;
-			this.outtype = outtype;
-			this.outprefix = outprefix;
 			this.numReps = numReps;
 			this.numEnsemble = numEnsemble;
-						
+			
+			this.writefiles = Double.isInfinite(outdt)||Double.isNaN(outdt) ? false : dowrite;
+			
+			if(writefiles){
+				this.outtype = outtype;
+				this.outprefix = outprefix;
+		        this.outsteps = BeatsMath.round(outdt/simdt);
+				this.dt_output = outsteps*simdt;
+			}
+			else{
+				this.outtype = "";
+				this.outprefix = "";
+		        this.outsteps = -1;
+				this.dt_output = Double.POSITIVE_INFINITY;
+			}			
 		}
 		
 		public void validate() throws BeatsException{
@@ -1293,7 +1320,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				throw new BeatsException("Empty simulation period.");
 
 			// check that outdt is a multiple of simdt
-			if(!Double.isNaN(dt_output) && !BeatsMath.isintegermultipleof(dt_output,dt_sim))
+			if(!Double.isInfinite(dt_output) && !BeatsMath.isintegermultipleof(dt_output,dt_sim))
 				throw new BeatsException("outdt (" + dt_output + ") must be an interger multiple of simulation dt (" + dt_sim + ").");
 					
 			// initial density set time stamp
@@ -1338,7 +1365,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			if (null == links) {
 				links = new java.util.HashMap<Long, LinkCumulativeData>();
 				for (edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
-					if(((edu.berkeley.path.beats.simulator.Network) network).isIsempty())
+					if(((edu.berkeley.path.beats.simulator.Network) network).isEmpty())
 						continue;
 					for (edu.berkeley.path.beats.jaxb.Link link : network.getLinkList().getLink()) {
 						if (links.containsKey(link.getId()))

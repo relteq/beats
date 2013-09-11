@@ -140,7 +140,6 @@ public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.Initia
 			if(link[i]!=null && link[i].getId()==linkid && link[i].getMyNetwork().getId()==network_id){
 				foundit = true;
 				d[vehicle_type_index[i]] = initial_density[i] * link[i].getLengthInMeters();
-				break;
 			}
 		}
 		if(foundit)

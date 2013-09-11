@@ -35,7 +35,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 
 	private boolean isempty;
 	private Scenario myScenario;
-	
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
@@ -58,10 +58,6 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		
 	}
 	
-	public boolean isEmpty() {
-		return isempty;
-	}
-
 	protected void validate() {
 
 		if(isempty)
@@ -118,20 +114,20 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-	public boolean isIsempty() {
-		return isempty;
+	public boolean isEmpty() {
+		return getNodeList()==null || getLinkList()==null;
 	}
 
 	public Scenario getMyScenario() {
 		return myScenario;
 	}
-		
+
 	/** Get link with given id.
 	 * @param id String id of the link.
 	 * @return Link object.
 	 */
 	public Link getLinkWithId(long id){
-		if(isempty)
+		if(getLinkList()==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Link link : getLinkList().getLink()){
 			if(link.getId()==id)
@@ -145,7 +141,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * @return Node object.
 	 */
 	public Node getNodeWithId(long id){
-		if(isempty)
+		if(getNodeList()==null)
 			return null;
 		for(edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode()){
 			if(node.getId()==id)
@@ -159,9 +155,7 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * Each of these may be cast to a {@link Node}.
 	 */
 	public List<edu.berkeley.path.beats.jaxb.Node> getListOfNodes() {
-		if(isempty)
-			return null;
-		if(getNodeList().getNode()==null)
+		if(getNodeList()==null)
 			return null;
 		return getNodeList().getNode();
 	}
@@ -171,28 +165,18 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 	 * Each of these may be cast to a {@link Link}.
 	 */
 	public List<edu.berkeley.path.beats.jaxb.Link> getListOfLinks() {
-		if(isempty)
-			return null;
-		if(getLinkList().getLink()==null)
+		if(getLinkList()==null)
 			return null;
 		return getLinkList().getLink();	
 	}
-
-//	/** Get the list of sensors in this network.
-//	 * @return List of all sensors. 
-//	 */
-//	public List<edu.berkeley.path.beats.jaxb.Sensor> getListOfSensors() {
-//		if(getSensorList()==null)
-//			return null;
-//		return getSensorList().getSensor();
-//	}
 
 	/**
 	 * Retrieves a list of signals referencing nodes from this network
 	 * @return a list of signals or null if the scenario's signal list is null
 	 */
 	public List<edu.berkeley.path.beats.jaxb.Signal> getListOfSignals() {
-		if (null == myScenario.getSignalSet()) return null;
+		if(myScenario==null || myScenario.getSignalSet()==null)
+			return null;
 		List<edu.berkeley.path.beats.jaxb.Signal> sigl = new java.util.ArrayList<edu.berkeley.path.beats.jaxb.Signal>();
 		for (edu.berkeley.path.beats.jaxb.Signal sig : myScenario.getSignalSet().getSignal()) {
 			if (null != getNodeWithId(sig.getNodeId()))
@@ -200,4 +184,5 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		}
 		return sigl;
 	}
+	
 }

@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.BeatsMath;
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
@@ -21,9 +22,18 @@ public class InitialDensitySetTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		scenario = ObjectFactory.createAndLoadScenario(config_folder+"complete_twotypes.xml");
+		String config_file = "complete_twotypes.xml";
+		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
+
+		// initialize
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		scenario.initialize(timestep,starttime,endtime,numEnsemble);
+		
 		ids = (InitialDensitySet) scenario.getInitialDensitySet();
 	}
 

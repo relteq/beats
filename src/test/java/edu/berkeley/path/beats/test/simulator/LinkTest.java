@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -22,13 +23,20 @@ public class LinkTest {
 		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
-		link = scenario.getLinkWithId(-4);
-		try {
-			scenario.initialize_run(1, 300d);
-			scenario.advanceNSeconds(300d);
-		} catch (BeatsException e) {
-			fail("initialization failure.");
-		}
+		
+		link = scenario.getLinkWithId(-4);		
+
+		// initialize
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 300d;
+		double endtime = Double.POSITIVE_INFINITY;
+		int numEnsemble = 1;
+		scenario.initialize(timestep,starttime,endtime,numEnsemble);
+		scenario.reset();
+		
+		// run the scenario
+		scenario.advanceNSeconds(300d);
+
 	}
 
 	@Test

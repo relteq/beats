@@ -149,8 +149,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		int n1 = myScenario.getNumEnsemble();
 		int n2 = myScenario.getNumVehicleTypes();
 		
-		if(density==null)
-			density = new double[n1][n2];
+		density = new double[n1][n2];
 		
 		// copy initial density to density
 		int e,v;

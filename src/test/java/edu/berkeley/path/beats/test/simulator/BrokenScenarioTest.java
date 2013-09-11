@@ -9,7 +9,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
+import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioValidationError;
 import edu.berkeley.path.beats.simulator.BeatsException;
 
@@ -32,7 +34,7 @@ public class BrokenScenarioTest {
 													 "test_event"
 													 };
 	
-	private static String[] broken_config_names = { "scenario_twotypes","_smalltest_nocontrol_broken"};
+	private static String[] broken_config_names = { "_smalltest_nocontrol_broken"};
 
 	/**
 	 * Lists working configuration files
@@ -59,7 +61,6 @@ public class BrokenScenarioTest {
 		return res;
 	}
 
-
 	/**
 	 * Prepares a testing environment
 	 * @param config the configuration file
@@ -75,6 +76,14 @@ public class BrokenScenarioTest {
 	@Test(expected=ScenarioValidationError.class)
 	public void ensureValidationError() throws BeatsException {
 		logger.info("CONFIG: " + config.getPath());
-		ObjectFactory.createAndLoadScenario(config.getPath());
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config.getPath());
+		
+		// initialize
+		double timestep = Defaults.getTimestepFor(config.getName());
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		scenario.initialize(timestep,starttime,endtime,numEnsemble);
+		
 	}
 }
