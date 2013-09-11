@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
@@ -21,6 +22,13 @@ public class SensorTest {
 		scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 		if(scenario==null)
 			fail("scenario did not load");
+		
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		scenario.initialize(timestep,starttime,endtime,numEnsemble);
+		
 		sensor = scenario.getSensorWithId(1);
 	}
 

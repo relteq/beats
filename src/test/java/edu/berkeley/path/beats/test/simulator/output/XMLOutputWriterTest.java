@@ -51,6 +51,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
@@ -120,7 +121,10 @@ public class XMLOutputWriterTest {
 
 		String out_prefix = OUT_PREFIX + confname.substring(0, confname.length() - CONF_SUFFIX.length()) + "_";
 		File outfile = File.createTempFile(out_prefix, OUT_SUFFIX);
-		runBeats(conffile.getPath(), outfile.getAbsolutePath());
+		
+		
+		double dt = Defaults.getTimestepFor(confname);
+		runBeats(conffile.getPath(), outfile.getAbsolutePath(),dt);
 		logger.info("Simulation completed");
 
 		validate(outfile, oschema);
@@ -151,7 +155,7 @@ public class XMLOutputWriterTest {
 	 * @param outpath String an output file path
 	 * @throws BeatsException
 	 */
-	protected void runBeats(String confpath, String outpath) throws BeatsException {
+	private void runBeats(String confpath, String outpath,double simdt) throws BeatsException {
 		// output writer properties
 		if (!outpath.endsWith(OUT_SUFFIX)) fail("Incorrect output file path: " + outpath);
 		String outprefix = outpath.substring(0, outpath.length() - OUT_SUFFIX.length());
@@ -168,10 +172,14 @@ public class XMLOutputWriterTest {
 		double duration = 3600d;
 		double outDt = 600d;
 		int numReps = 1;
-
+		int numEnsemble = 1;
+		
+		// initialize
+		scenario.initialize(simdt,timestart,timestart+duration,outDt,outtype,outprefix,numReps,numEnsemble);
+		
 		// run the scenario
 		logger.info("Running a simulation");
-		scenario.run(timestart,timestart+duration,outDt,outtype,outprefix,numReps);
+		scenario.run();
 
 		if (BeatsErrorLog.haserror()) {
 			BeatsErrorLog.print();

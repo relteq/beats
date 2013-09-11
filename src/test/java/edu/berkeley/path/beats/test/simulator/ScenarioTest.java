@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
@@ -30,11 +31,18 @@ public class ScenarioTest {
 			static_scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(static_scenario==null)
 				fail("scenario did not load");
-			static_scenario.initialize_run(10, 300d);
+
+			// initialize
+			double timestep = Defaults.getTimestepFor(config_file);
+			double starttime = 300d;
+			double endtime = Double.POSITIVE_INFINITY;
+			int numEnsemble = 10;
+			static_scenario.initialize(timestep,starttime,endtime,numEnsemble);
+			static_scenario.reset();
+			
 		} catch (BeatsException e) {
 			fail("initialization failure.");
 		}
-		
 	}
 
 	@Test
@@ -44,7 +52,14 @@ public class ScenarioTest {
 			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(scenario==null)
 				fail("scenario did not load");
-			scenario.initialize_run(10, 300d);
+
+			// initialize
+			double timestep = Defaults.getTimestepFor(config_file);
+			double starttime = 300d;
+			double endtime = Double.POSITIVE_INFINITY;
+			int numEnsemble = 10;
+			scenario.initialize(timestep,starttime,endtime,numEnsemble);
+			scenario.reset();
 
 			assertEquals(scenario.getCurrentTimeInSeconds(),300d,1e-4);
 			assertEquals(scenario.getNumEnsemble(),10,1e-4);
@@ -82,8 +97,8 @@ public class ScenarioTest {
 	@Test
 	public void test_time_getters() {
 		assertEquals(static_scenario.getCurrentTimeInSeconds(),300d,1e-4);
-		assertEquals(static_scenario.getTimeElapsedInSeconds(),300d,1e-4);
-		assertEquals(static_scenario.getCurrentTimeStep(),60,1e-4);
+		assertEquals(static_scenario.getTimeElapsedInSeconds(),0d,1e-4);
+		assertEquals(static_scenario.getCurrentTimeStep(),0,1e-4);
 		assertEquals(static_scenario.getTotalTimeStepsToSimulate(),-1,1e-4);
 	}
 
@@ -113,7 +128,7 @@ public class ScenarioTest {
 
 	@Test
 	public void test_getTimeStart() {
-		assertEquals(static_scenario.getTimeStart(),0d,1e-4);
+		assertEquals(static_scenario.getTimeStart(),300d,1e-4);
 	}
 
 	@Test
@@ -188,6 +203,14 @@ public class ScenarioTest {
 			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
 			if(scenario==null)
 				fail("scenario did not load");
+
+			// initialize
+			double timestep = Defaults.getTimestepFor(config_file);
+			double starttime = 300d;
+			double endtime = Double.POSITIVE_INFINITY;
+			int numEnsemble = 10;
+			scenario.initialize(timestep,starttime,endtime,numEnsemble);
+			scenario.reset();
 			
 			assertNotNull(scenario.getControllerWithId(1));
 			assertNotNull(scenario.getEventWithId(1));
