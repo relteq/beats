@@ -680,8 +680,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return integer index of the vehicle type.
 	 */
 	public int getVehicleTypeIndexForId(long id){
-		if(name==null)
-			return -1;
 		if(getVehicleTypeSet()==null)
 			return 0;
 		if(getVehicleTypeSet().getVehicleType()==null)
