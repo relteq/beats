@@ -131,29 +131,29 @@ public class ScenarioUtil {
 		return ScenarioLoader.load(id);
 	}
 
-	/**
-	 * runs a scenario simulation
-	 * @param scenario
-	 * @param startTime simulation start time, sec
-	 * @param endTime simulation end time, sec
-	 * @param outDt output frequency
-	 * @throws BeatsException
-	 */
-	public static void runScenario(edu.berkeley.path.beats.simulator.Scenario scenario, double startTime, double endTime, double outDt) throws BeatsException {
-		edu.berkeley.path.beats.db.Service.ensureInit();
-		scenario.run(startTime,endTime,outDt,"db",null,1);
-	}
-
-	/**
-	 * runs a scenario simulation once
-	 * @param id the scenario id
-	 * @param startTime simulation start time, sec
-	 * @param endTime simulation end time, sec
-	 * @param outDt output frequency
-	 * @throws BeatsException
-	 */
-	public static void runScenario(long id, double startTime, double endTime, double outDt) throws BeatsException {
-		runScenario(getScenario(id), startTime, endTime, outDt);
-	}
+//	/**
+//	 * runs a scenario simulation
+//	 * @param scenario
+//	 * @param startTime simulation start time, sec
+//	 * @param endTime simulation end time, sec
+//	 * @param outDt output frequency
+//	 * @throws BeatsException
+//	 */
+//	public static void runScenario(edu.berkeley.path.beats.simulator.Scenario scenario, double startTime, double endTime, double outDt) throws BeatsException {
+//		edu.berkeley.path.beats.db.Service.ensureInit();
+//		scenario.run(startTime,endTime,outDt,"db",null,1);
+//	}
+//
+//	/**
+//	 * runs a scenario simulation once
+//	 * @param id the scenario id
+//	 * @param startTime simulation start time, sec
+//	 * @param endTime simulation end time, sec
+//	 * @param outDt output frequency
+//	 * @throws BeatsException
+//	 */
+//	public static void runScenario(long id, double startTime, double endTime, double outDt) throws BeatsException {
+//		runScenario(getScenario(id), startTime, endTime, outDt);
+//	}
 
 }

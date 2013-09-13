@@ -10,9 +10,10 @@ abstract class ScenarioLoaderBase implements ScenarioLoaderIF {
 
 	@Override
 	public edu.berkeley.path.beats.simulator.Scenario load() throws BeatsException {
-		edu.berkeley.path.beats.simulator.Scenario scenario = (edu.berkeley.path.beats.simulator.Scenario) loadRaw();
-		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(scenario);
-		return edu.berkeley.path.beats.simulator.ObjectFactory.populate_validate(scenario);
+//		edu.berkeley.path.beats.simulator.Scenario scenario = (edu.berkeley.path.beats.simulator.Scenario) loadRaw();
+//		edu.berkeley.path.beats.util.ScenarioUtil.checkSchemaVersion(scenario);
+//		return edu.berkeley.path.beats.simulator.ObjectFactory.populate_validate(scenario);
+		return null;
 	}
 
 	static JAXBContext getJAXBContext() throws JAXBException {
