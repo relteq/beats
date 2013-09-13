@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.simulator;
 import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
+import edu.berkeley.path.beats.simulator.output.OutputWriterTSV;
 import edu.berkeley.path.beats.simulator.output.OutputWriterTXT;
 import edu.berkeley.path.beats.simulator.output.OutputWriterXML;
 
@@ -52,6 +53,8 @@ final public class OutputWriterFactory {
 			return new OutputWriterDB(scenario,outDt,outsteps);
 		else if (type.equals("text") || type.equals("plaintext")) 
 			return new OutputWriterTXT(scenario, props,outDt,outsteps);
+		else if (type.equals("tsv")) 
+			return new OutputWriterTSV(scenario, props,outDt,outsteps);
 		else 
 			throw new BeatsException("Unknown output writer type '" + type + "'");
 	}
