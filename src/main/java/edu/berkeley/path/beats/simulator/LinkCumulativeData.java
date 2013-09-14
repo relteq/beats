@@ -8,9 +8,9 @@ final public class LinkCumulativeData {
 	private edu.berkeley.path.beats.simulator.Link link;
 	private int nensemble;
 	private int nvehtype;
-	private double[][] density;
-	private double[][] iflow;
-	private double[][] oflow;
+	private double[][] density;		// [veh]
+	private double[][] iflow;		// [veh]
+	private double[][] oflow;		// [veh]
 	private int nsteps;
 
 	/////////////////////////////////////////////////////////////////////
@@ -53,63 +53,63 @@ final public class LinkCumulativeData {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
-	public double getMeanDensity(int ensemble, int vehtypenum) {
+	public double getMeanDensityInVeh(int ensemble, int vehtypenum) {
 		return 0 == nsteps ? Double.NaN : density[ensemble][vehtypenum] / nsteps;
 	}
 
-	public double getMeanTotalDensity(int ensemble) {
+	public double getMeanTotalDensityInVeh(int ensemble) {
 		return 0 == nsteps ? Double.NaN : sum(density[ensemble]) / nsteps;
 	}
 
-	public double[] getMeanDensity(int ensemble) {
+	public double[] getMeanDensityInVeh(int ensemble) {
 		if (0 == nsteps)
 			return new double[nvehtype];
 		return BeatsMath.times(density[ensemble], 1.0d / nsteps);
 	}
 
-	public double getCumulativeInputFlow(int ensemble, int vehtypenum) {
+	public double getCumulativeInputFlowInVeh(int ensemble, int vehtypenum) {
 		return iflow[ensemble][vehtypenum];
 	}
 
-	public double[] getCumulativeInputFlow(int ensemble) {
+	public double[] getCumulativeInputFlowInveh(int ensemble) {
 		return iflow[ensemble];
 	}
 
-	public double getCumulativeTotalInputFlow(int ensemble) {
+	public double getCumulativeTotalInputFlowInVeh(int ensemble) {
 		return sum(iflow[ensemble]);
 	}
 
-	public double[] getMeanInputFlow(int ensemble) {
+	public double[] getMeanInputFlowInVeh(int ensemble) {
 		if (0 == nsteps)
 			return new double[nvehtype];
 		return BeatsMath.times(iflow[ensemble], 1.0d / nsteps);
 	}
 	
-	public double getMeanInputFlow(int ensemble, int vt_ind) {
+	public double getMeanInputFlowInVeh(int ensemble, int vt_ind) {
 		return 0 == nsteps ? Double.NaN : iflow[ensemble][vt_ind] / nsteps;
 	}
 
-	public double getCumulativeOutputFlow(int ensemble, int vehtypenum) {
+	public double getCumulativeOutputFlowInVeh(int ensemble, int vehtypenum) {
 		return oflow[ensemble][vehtypenum];
 	}
 
-	public double getCumulativeTotalOutputFlow(int ensemble) {
+	public double getCumulativeTotalOutputFlowInVeh(int ensemble) {
 		return sum(oflow[ensemble]);
 	}
 
-	public double[] getCumulativeOutputFlow(int ensemble) {
+	public double[] getCumulativeOutputFlowInVeh(int ensemble) {
 		return oflow[ensemble];
 	}
 
-	public double getMeanOutputFlow(int ensemble, int vt_ind) {
+	public double getMeanOutputFlowInVeh(int ensemble, int vt_ind) {
 		return 0 == nsteps ? Double.NaN : oflow[ensemble][vt_ind] / nsteps;
 	}
 
-	public double getMeanTotalOutputFlow(int ensemble) {
+	public double getMeanTotalOutputFlowInVeh(int ensemble) {
 		return 0 == nsteps ? Double.NaN : sum(oflow[ensemble]) / nsteps;
 	}
 
-	public double[] getMeanOutputFlow(int ensemble) {
+	public double[] getMeanOutputFlowInVeh(int ensemble) {
 		if (0 == nsteps)
 			return new double[nvehtype];
 		return BeatsMath.times(oflow[ensemble], 1.0d / nsteps);

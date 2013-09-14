@@ -264,14 +264,14 @@ public class OutputWriterDB extends OutputWriterBase {
 
 		LinkCumulativeData link_cum_data = getCumulatives(link);
 		// mean density, vehicles
-		double density = exportflows ? link_cum_data.getMeanTotalDensity(0) : BeatsMath.sum(link.getDensityInVeh(0));
+		double density = exportflows ? link_cum_data.getMeanTotalDensityInVeh(0) : BeatsMath.sum(link.getDensityInVeh(0));
 		db_ldt.setDensity(double2decimal(density));
 
 		if (exportflows) {
 			// input flow, vehicles
-			db_ldt.setInFlow(double2decimal(link_cum_data.getCumulativeTotalInputFlow(0)));
+			db_ldt.setInFlow(double2decimal(link_cum_data.getCumulativeTotalInputFlowInVeh(0)));
 			// output flow, vehicles
-			db_ldt.setOutFlow(double2decimal(link_cum_data.getCumulativeTotalOutputFlow(0)));
+			db_ldt.setOutFlow(double2decimal(link_cum_data.getCumulativeTotalOutputFlowInVeh(0)));
 
 			// free flow speed, m/s
 			double ffspeed = link.getVfInMPS(0);
@@ -279,7 +279,7 @@ public class OutputWriterDB extends OutputWriterBase {
 			if (density <= 0)
 				db_ldt.setSpeed(double2decimal(ffspeed));
 			else {
-				double speed = link_cum_data.getMeanTotalOutputFlow(0) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
+				double speed = link_cum_data.getMeanTotalOutputFlowInVeh(0) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
 				if (!Double.isNaN(speed)) {
 					if (!Double.isNaN(ffspeed) && speed > ffspeed)
 						db_ldt.setSpeed(double2decimal(ffspeed));
@@ -328,18 +328,18 @@ public class OutputWriterDB extends OutputWriterBase {
 			db_ldd.setAggregationTypes(db_aggregation_type_raw);
 			db_ldd.setQuantityTypes(db_quantity_type_mean);
 			// mean density, vehicles
-			double density = exportflows ? link_cum_data.getMeanDensity(0, vt_ind) : link.getDensityInVeh(0)[vt_ind];
+			double density = exportflows ? link_cum_data.getMeanDensityInVeh(0, vt_ind) : link.getDensityInVeh(0)[vt_ind];
 			db_ldd.setDensity(double2decimal(density));
 			if (exportflows) {
 				// input flow, vehicles
-				db_ldd.setInFlow(double2decimal(link_cum_data.getCumulativeInputFlow(0, vt_ind)));
+				db_ldd.setInFlow(double2decimal(link_cum_data.getCumulativeInputFlowInVeh(0, vt_ind)));
 				// output flow, vehicles
-				db_ldd.setOutFlow(double2decimal(link_cum_data.getCumulativeOutputFlow(0, vt_ind)));
+				db_ldd.setOutFlow(double2decimal(link_cum_data.getCumulativeOutputFlowInVeh(0, vt_ind)));
 				if (density <= 0)
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
+					double speed = link_cum_data.getMeanOutputFlowInVeh(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
 					if (!Double.isNaN(speed)) {
 						// free flow speed, m/s
 						double ffspeed = link.getVfInMPS(0);

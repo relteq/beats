@@ -138,26 +138,26 @@ public final class OutputWriterXML extends OutputWriterBase {
 					Link _link = (Link) link;
 					LinkCumulativeData link_cum_data = getCumulatives(link);
 					// d = average number of vehicles during the interval of reporting dt
-					xmlsw.writeAttribute("d", dens_formatter.format(exportflows ? link_cum_data.getMeanDensity(0) : _link.getDensityInVeh(0)));
+					xmlsw.writeAttribute("d", dens_formatter.format(exportflows ? link_cum_data.getMeanDensityInVeh(0) : _link.getDensityInVeh(0)));
 					if (exportflows) {
 						// f = flow per dt, vehicles
-						xmlsw.writeAttribute("f", flow_formatter.format(link_cum_data.getCumulativeOutputFlow(0)));
+						xmlsw.writeAttribute("f", flow_formatter.format(link_cum_data.getCumulativeOutputFlowInVeh(0)));
 						// computing speed
 						speed_formatter.clear();
 						double ffspeed = _link.getVfInMPS(0);
-						double mean_total_density = link_cum_data.getMeanTotalDensity(0);
+						double mean_total_density = link_cum_data.getMeanTotalDensityInVeh(0);
 						if (0 >= mean_total_density) {
 							if (!Double.isNaN(ffspeed))
 								for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind)
 									speed_formatter.add(ffspeed);
 						} else {
-							double mean_speed = link_cum_data.getMeanTotalOutputFlow(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimdtinseconds());
+							double mean_speed = link_cum_data.getMeanTotalOutputFlowInVeh(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimdtinseconds());
 							if (!Double.isNaN(ffspeed) && ffspeed < mean_speed) mean_speed = ffspeed;
 							for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
-								double density = link_cum_data.getMeanDensity(0, vt_ind);
+								double density = link_cum_data.getMeanDensityInVeh(0, vt_ind);
 								double speed = mean_speed;
 								if (0 < density) {
-									speed = link_cum_data.getMeanOutputFlow(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimdtinseconds());
+									speed = link_cum_data.getMeanOutputFlowInVeh(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimdtinseconds());
 									if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
 								}
 								speed_formatter.add(speed);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
@@ -60,12 +61,12 @@ public class OutputWriterTSV extends OutputWriterBase {
 					Link link = (Link) jlink;
 					LinkCumulativeData link_cum_data = getCumulatives(link);
 					if(exportflows){
-						density = link_cum_data.getMeanTotalDensity(0);
-						flow = link_cum_data.getCumulativeTotalOutputFlow(0);
-						speed = 65d;
+						density = link_cum_data.getMeanTotalDensityInVeh(0)/link.getLengthInMeters();
+						flow = link_cum_data.getCumulativeTotalOutputFlowInVeh(0)/outDt;
+						speed = link.computeSpeedInMPS(0);
 					} 
 					else{
-						density = link.getTotalDensityInVeh(0);
+						density = link.getTotalDensityInVeh(0)/link.getLengthInMeters();
 						flow = Double.NaN;
 						speed = Double.NaN;
 					}

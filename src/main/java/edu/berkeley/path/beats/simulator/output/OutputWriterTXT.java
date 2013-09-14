@@ -96,14 +96,14 @@ public final class OutputWriterTXT extends OutputWriterBase {
 						LinkCumulativeData link_cum_data = getCumulatives(link);
 						if (0 < i) 
 							out_density[j].write(OutputWriterTXT.delim);
-						out_density[j].write(String.format("%f", exportflows ? link_cum_data.getMeanDensity(0,j) : link.getDensityInVeh(0,j)));
+						out_density[j].write(String.format("%f", exportflows ? link_cum_data.getMeanDensityInVeh(0,j) : link.getDensityInVeh(0,j)));
 						if(exportflows){
 							if (0 < i) {
 								out_outflow[j].write(OutputWriterTXT.delim);
 								out_inflow[j].write(OutputWriterTXT.delim);
 							}							
-							out_outflow[j].write(String.format("%f",link_cum_data.getMeanOutputFlow(0,j)));
-							out_inflow[j].write(String.format("%f",link_cum_data.getMeanInputFlow(0,j)));
+							out_outflow[j].write(String.format("%f",link_cum_data.getMeanOutputFlowInVeh(0,j)));
+							out_inflow[j].write(String.format("%f",link_cum_data.getMeanInputFlowInVeh(0,j)));
 						}
 					}
 
