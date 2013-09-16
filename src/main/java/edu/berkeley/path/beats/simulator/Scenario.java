@@ -118,7 +118,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	    // initialize scenario attributes ..............................................
 		this.global_control_on = true;
 		this.global_demand_knob = 1d;
-		this.uncertaintyModel = UncertaintyType.uniform;
 		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
 
 		this.numVehicleTypes = 1;
@@ -1450,8 +1449,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 	}
 
-	public void setUncertaintyModel(Scenario.UncertaintyType uncertaintyModel) {
-		this.uncertaintyModel = uncertaintyModel;
+	public void setUncertaintyModel(String uncertaintyModel) {
+		this.uncertaintyModel = Scenario.UncertaintyType.valueOf(uncertaintyModel);
 	}
 	
 }

@@ -55,7 +55,7 @@ public final class Runner {
 				return;
 
 			// load configuration file
-			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename(),runargs.getNodeFlowSolver(),runargs.getNodeSRSolver());
+			Scenario scenario = ObjectFactory.createAndLoadScenario(runargs.getConfigfilename(),runargs.getUncertaintyModel(),runargs.getNodeFlowSolver(),runargs.getNodeSRSolver());
 			
 			if (null == scenario)
 				throw new BeatsException("Scenario did not load");
