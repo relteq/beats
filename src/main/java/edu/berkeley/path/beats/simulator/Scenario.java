@@ -170,6 +170,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	public static void validate(Scenario S) {
 				
+		// should have a network
+		if(S.networkSet==null || S.networkSet.getNetwork().isEmpty())
+			BeatsErrorLog.addError("Scenario does not contain a network.");
+
 		// validate network
 		if( S.networkSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Network network : S.networkSet.getNetwork())
