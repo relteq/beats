@@ -76,7 +76,7 @@
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
         </configuration>
-      </plugin>
+      </plugin>	  
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
@@ -161,13 +161,14 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>edu.berkeley.path.beats.Runner</mainClass>
+              <mainClass>edu.berkeley.path.beats.simulator.Runner</mainClass>
               <addClasspath>true</addClasspath>
+			  <classpathPrefix>lib/</classpathPrefix>
             </manifest>
           </archive>
         </configuration>
       </plugin>
-<!--
+
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -178,11 +179,14 @@
             </goals>
             <configuration>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
+			  <!--<overWriteReleases>false</overWriteReleases>-->
+			  <!--<overWriteSnapshots>false</overWriteSnapshots>-->
+			  <!--<overWriteIfNewer>true</overWriteIfNewer>-->
             </configuration>
           </execution>
         </executions>
       </plugin>
--->
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-eclipse-plugin</artifactId>
