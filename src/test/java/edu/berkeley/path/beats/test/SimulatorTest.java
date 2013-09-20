@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -71,6 +72,13 @@ public class SimulatorTest {
 	@Parameters
 	public static Vector<Object[]> conffiles() {
 		return edu.berkeley.path.beats.test.simulator.BrokenScenarioTest.getWorkingConfigs();
+	}
+	
+	@Before
+	public void createOutput(){
+		File file = new File(output_folder);   
+		if(!file.exists())
+			file.mkdir();
 	}
 	
 	@After
