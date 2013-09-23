@@ -78,7 +78,6 @@ final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-
 	@SuppressWarnings("unchecked")
 	protected void populate(Scenario myScenario) {
 		

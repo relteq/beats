@@ -377,10 +377,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 				
 		if(myLink==null)
 			return;
-		
-//		if(_vf.isNaN() || _w.isNaN() || _densityJam.isNaN() || _capacity.isNaN() || _capacityDrop.isNaN())
-//			BeatsErrorLog.addError("Undefined fundamental diagram parameters for link id=" + myLinkIdparameters in the fundamental diagram.");
-		
+				
 		if(_vf<0 || _w<0 || _densityJam<0 || _capacity<0 || _capacityDrop<0)
 			BeatsErrorLog.addError("Negative fundamental diagram parameters for link id=" + myLink.getId());
 

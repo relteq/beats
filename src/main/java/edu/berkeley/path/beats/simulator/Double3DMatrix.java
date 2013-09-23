@@ -246,13 +246,6 @@ final class Double3DMatrix {
     		return;
     	data[i][j][k] = f;
     }
-    	
-//	public void setAllVehicleTypes(int i,int j,Double [] f){
-//    	if(isempty)
-//    		return;
-//		for(int k=0;k<nVTypes;k++)
-//			data[i][j][k] = f[k];
-//	}
 	
     public void multiplyscalar(double value){
     	if(isempty)

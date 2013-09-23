@@ -2,8 +2,6 @@ package edu.berkeley.path.beats.simulator;
 
 public class BeatsTimeProfile {
 
-//	private double start_time;	// [seconds after midnight]
-//	private double time_step;	// [seconds]
 	private double [] data;
 	
 	/////////////////////////////////////////////////////////////////////

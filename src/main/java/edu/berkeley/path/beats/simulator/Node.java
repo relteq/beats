@@ -225,22 +225,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		this.mySplitRatioProfile = mySplitRatioProfile;
 		if(!istrivialsplit){
 			this.hasSRprofile = true;
-			//this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
-			//normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
 		}
 	}
-	
-//	protected void setHasSRprofile(boolean hasSRprofile) {
-//		if(!istrivialsplit){
-//			this.hasSRprofile = hasSRprofile;
-//			this.splitFromProfile = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
-//			normalizeSplitRatioMatrix(this.splitFromProfile);	// GCG REMOVE THIS AFTER CHANGING 0->NaN
-//		}
-//	}
-
-//	protected void setSampledSRProfile(Double3DMatrix s){
-//    	splitFromProfile = s;;
-//    }
 	
 	// controllers ......................................................
 
@@ -421,28 +407,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	public int getnOut() {
 		return nOut;
 	}
-    
-    /** <code>true</code> iff there is a split ratio controller attached to this link */
-//	public boolean hasController() {
-//		return hascontroller;
-//	}
-	
-	/** ADDED TEMPORARILY FOR MANUEL'S DTA WORK 
-	 * @throws BeatsException */
-//	public void setSplitRatioMatrix(double [][][] x) throws BeatsException {
-//		if(x.length!=splitratio.getnIn())
-//			throw new BeatsException("Node.setSplitRatioMatrix, bad first dimension.");
-//		if(x[0].length!=splitratio.getnOut())
-//			throw new BeatsException("Node.setSplitRatioMatrix, bad second dimension.");
-//		if(x[0][0].length!=splitratio.getnVTypes())
-//			throw new BeatsException("Node.setSplitRatioMatrix, bad third dimension.");
-//		int i,j,k;
-//		for(i=0;i<splitratio.getnIn();i++)
-//			for(j=0;j<splitratio.getnOut();j++)
-//				for(k=0;k<splitratio.getnVTypes();k++)
-//					splitratio.set(i, j, k, x[i][j][k]);
-//		normalizeSplitRatioMatrix(splitratio);
-//	}
 	
 	public double [][][] getSplitRatio(){
 		if(splitratio_selected==null)
@@ -462,74 +426,5 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			return Double.NaN;
 		return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
-//
-//	protected class SupplyDemand {
-//		// input to node model, copied from link suppy/demand
-//		protected Double [][][] demand;		// [ensemble][nIn][nTypes]
-//		protected double [][] supply;		// [ensemble][nOut]
-//		
-//		public SupplyDemand(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
-//			super();
-//	    	demand = new Double[numEnsemble][nIn][numVehicleTypes];
-//			supply = new double[numEnsemble][nOut];
-//		}
-//		
-//		public void setDemand(int nE,int nI,Double [] val){
-//			demand[nE][nI] = val;
-//		}
-//		
-//		public void setSupply(int nE,int nO, double val){
-//			supply[nE][nO]=val;
-//		}
-//		
-//		public double getDemand(int nE,int nI,int nK){
-//			return demand[nE][nI][nK];
-//		}
-//		
-//		public double getSupply(int nE,int nO){
-//			return supply[nE][nO];
-//		}
-//
-//		public double [] getSupply(int nE){
-//			return supply[nE];
-//		}
-//	}
-	
-//	protected class IOFlow {
-//		// input to node model, copied from link suppy/demand
-//		protected Double [][][] in;		// [ensemble][nIn][nTypes]
-//		protected Double [][][] out;	// [ensemble][nOut][nTypes]
-//		
-//		public IOFlow(int numEnsemble,int nIn,int nOut,int numVehicleTypes) {
-//			super();
-//	    	in = new Double[numEnsemble][nIn][numVehicleTypes];
-//			out = new Double[numEnsemble][nOut][numVehicleTypes];
-//		}
-//
-//		public void setIn(int nE,int nI,int nV,double val){
-//			in[nE][nI][nV] = val;
-//		}
-//		
-//		public void setOut(int nE,int nO,int nV,double val){
-//			out[nE][nO][nV]=val;
-//		}
-//		
-//		public Double [] getIn(int nE,int nI){
-//			return in[nE][nI];
-//		}
-//
-//		public double getIn(int nE,int nI,int nV){
-//			return in[nE][nI][nV];
-//		}
-//		
-//		public Double [] getOut(int nE,int nO){
-//			return out[nE][nO];
-//		}
-//		
-//		public void addOut(int nE,int nO,int nV,double val){
-//			out[nE][nO][nV] += val;
-//		}
-//		
-//	}
 	
 }

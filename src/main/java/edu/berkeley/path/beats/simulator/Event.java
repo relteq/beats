@@ -109,22 +109,6 @@ public class Event implements Comparable {
 		return targets;
 	}
 
-	
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////
-	
-//	protected void populateFromJaxbXXX(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType){
-//		this.id = jaxbE.getId();
-//		this.myScenario = myScenario;
-//		this.myType = myType;
-//		this.timestampstep = BeatsMath.round(jaxbE.getTstamp().floatValue()/myScenario.getSimDtInSeconds());		// assume in seconds
-//		this.targets = new ArrayList<ScenarioElement>();
-//		if(jaxbE.getTargetElements()!=null)
-//			for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbE.getTargetElements().getScenarioElement() )
-//				this.targets.add(ObjectFactory.createScenarioElementFromJaxb(myScenario,s));
-//	}
-
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / activate
 	/////////////////////////////////////////////////////////////////////

@@ -148,21 +148,6 @@ final class Double2DMatrix {
 		return nVTypes;
 	}
 
-//	public Double [] sampleAtTime(int k,Integer [] vehicletypeindex){
-//		Double [] x = new Double[nVTypes];
-//		if(vehicletypeindex==null){
-//			for(int j=0;j<nVTypes;j++){
-//				x[j] = data[k][j];
-//			}
-//		}
-//		else{
-//			for(int j=0;j<nVTypes;j++){
-//				x[vehicletypeindex[j]] = data[k][j];
-//			}
-//		}
-//		return x;
-//	}
-
 	/**
 	 * Retrieves the split ratio value for a given time slice and a given vehicle type index
 	 * @param timeslice the time slice

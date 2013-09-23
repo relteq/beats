@@ -278,18 +278,6 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	public double [] getCurrentValue(){
 		return current_sample;
 	}
-	
-//	public BeatsTimeProfile get_demand_nominal(){
-//		return demand_nominal;
-//	}
-
-//	public boolean isOrphan() {
-//		return isOrphan;
-//	}
-//
-//	public int getVehicle_type_index() {
-//		return vehicle_type_index;
-//	}
 
 	public int getSamplesteps() {
 		return samplesteps;

@@ -516,51 +516,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return null;
 	}
-
-//	protected Integer [] getVehicleTypeIndices(edu.berkeley.path.beats.jaxb.VehicleTypeOrder vtypeorder){
-//		
-//		Integer [] vehicletypeindex;
-//		
-//		// single vehicle types in setting and no vtypeorder, return 0
-//		if(vtypeorder==null && numVehicleTypes==1){
-//			vehicletypeindex = new Integer[numVehicleTypes];
-//			vehicletypeindex[0]=0;
-//			return vehicletypeindex;
-//		}
-//		
-//		// multiple vehicle types in setting and no vtypeorder, return 0...n
-//		if(vtypeorder==null && numVehicleTypes>1){
-//			vehicletypeindex = new Integer[numVehicleTypes];
-//			for(int i=0;i<numVehicleTypes;i++)
-//				vehicletypeindex[i] = i;	
-//			return vehicletypeindex;	
-//		}
-//		
-//		// vtypeorder is not null
-//		int numTypesInOrder = vtypeorder.getVehicleTypeX().size();
-//		int i,j;
-//		vehicletypeindex = new Integer[numTypesInOrder];
-//		for(i=0;i<numTypesInOrder;i++)
-//			vehicletypeindex[i] = -1;			
-//
-//		if(getSettings()==null)
-//			return vehicletypeindex;
-//
-//		if(getSettings().getVehicleTypes()==null)
-//			return vehicletypeindex;
-//		
-//		for(i=0;i<numTypesInOrder;i++){
-//			String vtordername = vtypeorder.getVehicleTypeX().get(i).getName();
-//			List<edu.berkeley.path.beats.jaxb.VehicleTypeX> settingsname = getSettings().getVehicleTypes().getVehicleTypeX();
-//			for(j=0;j<settingsname.size();j++){
-//				if(settingsname.get(j).getName().equals(vtordername)){
-//					vehicletypeindex[i] =  j;
-//					break;
-//				}
-//			}			
-//		}
-//		return vehicletypeindex;
-//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// public API
@@ -746,37 +701,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				vehtypenames[i] = getVehicleTypeSet().getVehicleType().get(i).getName();
 		return vehtypenames;
 	}
-	
-//	/** Get the initial density state for the network with given id.
-//	 * @param network_id String id of the network
-//	 * @return A two-dimensional array of doubles where the first dimension is the
-//	 * link index (ordered as in {@link Network#getListOfLinks}) and the second is the vehicle type 
-//	 * (ordered as in {@link Scenario#getVehicleTypeNames})
-//	 */
-//	public double [][] getInitialDensityForNetwork(long network_id){
-//
-//		Network network = getNetworkWithId(network_id);
-//		if(network==null)
-//			return null;
-//		
-//		double [][] density = new double [network.getLinkList().getLink().size()][getNumVehicleTypes()];
-//		InitialDensitySet initprofile = (InitialDensitySet) getInitialDensitySet();
-//
-//		int i,j;
-//		for(i=0;i<network.getLinkList().getLink().size();i++){
-//			if(initprofile==null){
-//				for(j=0;j<numVehicleTypes;j++)
-//					density[i][j] = 0d;
-//			}
-//			else{
-//				edu.berkeley.path.beats.jaxb.Link link = network.getLinkList().getLink().get(i);
-//				Double [] init_density = initprofile.getDensityForLinkIdInVeh(network.getId(),link.getId());
-//				for(j=0;j<numVehicleTypes;j++)
-//					density[i][j] = init_density[j];
-//			}
-//		}
-//		return density;                         
-//	}
 
 	/** Get the current density state for the network with given id.
 	 * @param network_id String id of the network
@@ -1224,35 +1148,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	/////////////////////////////////////////////////////////////////////
-	// public static
-	/////////////////////////////////////////////////////////////////////	
-	
-	// returns greatest common divisor among network time steps.
-	// The time steps are rounded to the nearest decisecond.
-//	private static double computeCommonSimulationTimeInSeconds(Scenario scenario){
-//		
-//		if(scenario.getNetworkSet()==null)
-//			return Double.NaN;
-//		
-//		if(scenario.getNetworkSet().getNetwork().size()==0)
-//			return Double.NaN;
-//			
-//		// loop through networks calling gcd
-//		double dt;
-//		List<edu.berkeley.path.beats.jaxb.Network> networkSet = scenario.getNetworkSet().getNetwork();
-//		int tengcd = 0;		// in deciseconds
-//		for(int i=0;i<networkSet.size();i++){
-//			dt = networkSet.get(i).getDt().doubleValue();	// in seconds
-//	        if( BeatsMath.lessthan( Math.abs(dt) ,0.1) ){
-//	        	BeatsErrorLog.addError("Warning: Network dt given in hours. Changing to seconds.");
-//				dt *= 3600;
-//	        }
-//			tengcd = BeatsMath.gcd( BeatsMath.round(dt*10.0) , tengcd );
-//		}
-//    	return ((double)tengcd)/10.0;
-//	}
-	
-	/////////////////////////////////////////////////////////////////////
 	// private classes
 	/////////////////////////////////////////////////////////////////////	
 	
@@ -1260,7 +1155,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		
 		// prescribed
 		public double dt_sim;				// [sec] simulation time step
-		//public double sim_start;			// [sec] start of the simulation
 		public double t_start_output;		// [sec] start outputing data
 		public double t_end_output;			// [sec] end of the simulation
 		public double dt_output;				// [sec] output sampling time
@@ -1273,7 +1167,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// derived
 		public int outsteps;				// [-] number of simulation steps per output step
-//		public ModeType simulationMode;
 		  
 		// input parameter outdt [sec] output sampling time
 		public RunParameters(double simdt,double tstart,double tend,double outdt, boolean dowrite,String outtype,String outprefix,int numReps,int numEnsemble) throws BeatsException{

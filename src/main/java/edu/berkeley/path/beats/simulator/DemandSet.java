@@ -26,9 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
