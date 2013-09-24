@@ -63,9 +63,6 @@ public final class Network extends edu.berkeley.path.beats.jaxb.Network {
 		if(isempty)
 			return;
 		
-		if(myScenario.getSimdtinseconds()<=0)
-			BeatsErrorLog.addError("Non-positive simulation step size (" + myScenario.getSimdtinseconds() +").");
-		
 		// node list
 		for (edu.berkeley.path.beats.jaxb.Node node : getNodeList().getNode())
 			((Node) node).validate();

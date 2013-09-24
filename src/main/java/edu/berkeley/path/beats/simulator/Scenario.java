@@ -168,7 +168,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	public static void validate(Scenario S) {
-				
+
+		if(S.getSimdtinseconds()<=0)
+			BeatsErrorLog.addError("Non-positive simulation step size (" + S.getSimdtinseconds() +").");
+		
 		// should have a network
 		if(S.networkSet==null || S.networkSet.getNetwork().isEmpty())
 			BeatsErrorLog.addError("Scenario does not contain a network.");

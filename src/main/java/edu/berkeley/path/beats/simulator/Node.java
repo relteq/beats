@@ -153,12 +153,6 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				if(link==null)
 					BeatsErrorLog.addError("Incorrect input link id in node id=" + getId());
 		
-		if(nIn==0)
-			BeatsErrorLog.addError("No inputs into non-terminal node id=" + getId());
-
-		if(nOut==0)
-			BeatsErrorLog.addError("No outputs from non-terminal node id=" + getId());
-		
 	}
 	
 	protected void reset() {

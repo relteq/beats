@@ -118,8 +118,10 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 
 	protected void validate() {
 
-		if(getSplitratio().isEmpty())
+		if(getSplitratio().isEmpty()){
+			BeatsErrorLog.addWarning("Split ratio id=" + this.getId()  + " has no data.");
 			return;
+		}
 		
 		if(myNode==null){
 			BeatsErrorLog.addWarning("Unknown node with id=" + getNodeId() + " in split ratio profile.");

@@ -147,8 +147,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		int i;
 		
-		if(demand_nominal==null || demand_nominal.length==0)
+		if(demand_nominal==null || demand_nominal.length==0){
+			BeatsErrorLog.addWarning("Demand profile id=" + getId() + " has no data.");
 			return;
+		}
 		
 		if(isOrphan){
 			BeatsErrorLog.addWarning("Bad origin link id=" + getLinkIdOrg() + " in demand profile.");
