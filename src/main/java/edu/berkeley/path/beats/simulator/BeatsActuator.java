@@ -1,6 +1,6 @@
-package edu.berkeley.path.beats.actuator;
+package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.actuator.InterfaceActuator;
 
 public class BeatsActuator implements InterfaceActuator {
 

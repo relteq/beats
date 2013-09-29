@@ -9,7 +9,7 @@ public class ActuatorRampMeter extends AbstractActuator {
 
 	@Override
 	public void delpoy(Object command) {
-		this.implmentor.deploy_metering_rate((Double) command);
+		this.implementor.deploy_metering_rate((Double) command);
 	}
-	
+
 }
