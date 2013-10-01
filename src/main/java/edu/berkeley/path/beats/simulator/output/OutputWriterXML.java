@@ -151,13 +151,13 @@ public final class OutputWriterXML extends OutputWriterBase {
 								for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind)
 									speed_formatter.add(ffspeed);
 						} else {
-							double mean_speed = link_cum_data.getMeanTotalOutputFlowInVeh(0) * _link.getLengthInMeters() / (mean_total_density * scenario.getSimdtinseconds());
+							double mean_speed = link_cum_data.getCumulativeTotalOutputFlowInVeh(0) * _link.getLengthInMeters() / (mean_total_density * outDt);
 							if (!Double.isNaN(ffspeed) && ffspeed < mean_speed) mean_speed = ffspeed;
 							for (int vt_ind = 0; vt_ind < scenario.getNumVehicleTypes(); ++vt_ind) {
 								double density = link_cum_data.getMeanDensityInVeh(0, vt_ind);
 								double speed = mean_speed;
 								if (0 < density) {
-									speed = link_cum_data.getMeanOutputFlowInVeh(0, vt_ind) * _link.getLengthInMeters() / (density * scenario.getSimdtinseconds());
+									speed = link_cum_data.getCumulativeOutputFlowInVeh(0, vt_ind) * _link.getLengthInMeters() / (density * outDt);
 									if (!Double.isNaN(ffspeed) && speed > ffspeed) speed = ffspeed;
 								}
 								speed_formatter.add(speed);

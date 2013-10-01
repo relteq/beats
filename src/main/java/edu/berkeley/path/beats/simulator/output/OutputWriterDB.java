@@ -279,7 +279,7 @@ public class OutputWriterDB extends OutputWriterBase {
 			if (density <= 0)
 				db_ldt.setSpeed(double2decimal(ffspeed));
 			else {
-				double speed = link_cum_data.getMeanTotalOutputFlowInVeh(0) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
+				double speed = link_cum_data.getCumulativeTotalOutputFlowInVeh(0) * link.getLengthInMeters() / (outDt * density);
 				if (!Double.isNaN(speed)) {
 					if (!Double.isNaN(ffspeed) && speed > ffspeed)
 						db_ldt.setSpeed(double2decimal(ffspeed));
@@ -339,7 +339,7 @@ public class OutputWriterDB extends OutputWriterBase {
 					db_ldd.setSpeed(total_speed);
 				else {
 					// speed, m/s
-					double speed = link_cum_data.getMeanOutputFlowInVeh(0, vt_ind) * link.getLengthInMeters() / (scenario.getSimdtinseconds() * density);
+					double speed = link_cum_data.getCumulativeOutputFlowInVeh(0, vt_ind) * link.getLengthInMeters() / (outDt * density);
 					if (!Double.isNaN(speed)) {
 						// free flow speed, m/s
 						double ffspeed = link.getVfInMPS(0);

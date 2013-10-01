@@ -102,8 +102,8 @@ public final class OutputWriterTXT extends OutputWriterBase {
 								out_outflow[j].write(OutputWriterTXT.delim);
 								out_inflow[j].write(OutputWriterTXT.delim);
 							}							
-							out_outflow[j].write(String.format("%f",link_cum_data.getMeanOutputFlowInVeh(0,j)));
-							out_inflow[j].write(String.format("%f",link_cum_data.getMeanInputFlowInVeh(0,j)));
+							out_outflow[j].write(String.format("%f",link_cum_data.getCumulativeOutputFlowInVeh(0,j)));
+							out_inflow[j].write(String.format("%f",link_cum_data.getCumulativeInputFlowInVeh(0,j)));
 						}
 					}
 
