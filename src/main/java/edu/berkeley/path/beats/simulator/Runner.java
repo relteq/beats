@@ -88,7 +88,7 @@ public final class Runner {
 
 	private static RunnerArguments parseInput(String[] args){
 
-		if(args.length<1){
+		if(args.length<2){
 			String str;
 			str = "Usage:" + "\n";
 			str += "-----\n" + "\n";
