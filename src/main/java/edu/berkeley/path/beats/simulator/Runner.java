@@ -110,7 +110,7 @@ public final class Runner {
 			str += "         Default: uniform." + "\n";
 			str += "args[9]: node flow solver <proportional,symmetric>." + "\n";
 			str += "         Default: proportional." + "\n";
-			str += "args[10]: node split ratio solver <A,B,C>." + "\n";
+
 			str += "         Default: A." + "\n";
 			str += "\nSimulation modes:" + "\n";
 			str += "----------------\n" + "\n";
