@@ -153,40 +153,39 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	/////////////////////////////////////////////////////////////////////
 	
 	private void extractTable(){
-		if (null == table) {
-			istablevalid = false;
-			return;
-		}
-		
-		// read parameters from table, and also validate
-		
-		int timeIndx = table.getColumnNo("StartTime");
-		int rateIndx = table.getColumnNo("MeteringRates");
-		
-		
-		istablevalid=table.checkTable() && (table.getNoColumns()!=2? false:true) && (timeIndx!=-1) && (rateIndx!=-1);
-		
-		// need a valid table to parse
-		if (!istablevalid) 
-			return;
-		
-		
-		// read table, initialize values. 
-		todMeteringRates_normalized=new double[table.getNoRows()];
-		todActivationTimes=new double[table.getNoRows()];		
-		todActivationIndx=0;
-		
-		for (int i=0;i<table.getNoRows();i++){
-			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
-			todActivationTimes[i]=Double.parseDouble(table.getTableElement(i,timeIndx)); // in sec
-			// check that table values are valid.			
-			if ((i>0 && todActivationTimes[i]<=todActivationTimes[i-1])||(todMeteringRates_normalized[i]<0))
-				istablevalid=false;					
-		}			
-		
-		if (todActivationTimes[0]>this.getFirstStartTime())
-			istablevalid=false;
-		}
-	
+//		if (null == table) {
+//			istablevalid = false;
+//			return;
+//		}
+//		
+//		// read parameters from table, and also validate
+//		
+//		int timeIndx = table.getColumnNo("StartTime");
+//		int rateIndx = table.getColumnNo("MeteringRates");
+//		
+//		
+//		istablevalid=table.checkTable() && (table.getNoColumns()!=2? false:true) && (timeIndx!=-1) && (rateIndx!=-1);
+//		
+//		// need a valid table to parse
+//		if (!istablevalid) 
+//			return;
+//		
+//		
+//		// read table, initialize values. 
+//		todMeteringRates_normalized=new double[table.getNoRows()];
+//		todActivationTimes=new double[table.getNoRows()];		
+//		todActivationIndx=0;
+//		
+//		for (int i=0;i<table.getNoRows();i++){
+//			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
+//			todActivationTimes[i]=Double.parseDouble(table.getTableElement(i,timeIndx)); // in sec
+//			// check that table values are valid.			
+//			if ((i>0 && todActivationTimes[i]<=todActivationTimes[i-1])||(todMeteringRates_normalized[i]<0))
+//				istablevalid=false;					
+//		}			
+//		
+//		if (todActivationTimes[0]>this.getFirstStartTime())
+//			istablevalid=false;
+	}
 	
 }

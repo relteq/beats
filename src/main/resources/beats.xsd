@@ -77,6 +77,7 @@
 				<xs:complexType>
 					<xs:attribute name="name" type="xs:string" use="required" />
 					<xs:attribute name="key" type="xs:boolean" use="required" />
+					<xs:attribute name="id" type="xs:long" use="required" />
 				</xs:complexType>
 			</xs:element>
 
@@ -89,9 +90,9 @@
 		</xs:element>
 
 			<xs:element name="column">
-				<xs:simpleType>
-					<xs:restriction base="xs:string"/>
-				</xs:simpleType>
+				<xs:complexType mixed="true">
+					<xs:attribute name="id" type="xs:long" use="required" />
+				</xs:complexType>
 			</xs:element>
 
 		

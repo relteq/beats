@@ -188,6 +188,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// sensor list
 		S.sensorlist.validate();
+
+		// validate actuators
+		if( S.actuatorSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Actuator actuator : S.actuatorSet.getActuator())
+				((Actuator)actuator).validate();
 		
 		// signal list
 		if(S.signalSet!=null)
@@ -238,11 +243,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		clock.reset();
 		
 		// reset network
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-			((Network)network).reset();
+		if(networkSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+				((Network)network).reset();
 		
 		// sensor list
 		sensorlist.reset();
+
+		// reset actuators
+		if(actuatorSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
+				((Actuator)actuator).reset();
 		
 		// signal list
 		if(signalSet!=null)
@@ -298,6 +309,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update controllers
     	if(global_control_on)
     		controllerset.update();
+    	
+    	// update actuators
+    	if(actuatorSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
+				((Actuator)actuator).update();
 
     	// update events
     	eventset.update();

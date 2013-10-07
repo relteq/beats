@@ -298,7 +298,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		hasspeedthres=(spdIndx!=-1);
 		hasoccthres=(occIndx!=-1);		
 		
-		istablevalid=table.checkTable() && (rateIndx!=-1) && (hasflowthres || hasoccthres || hasspeedthres);
+//		istablevalid=table.checkTable() && (rateIndx!=-1) && (hasflowthres || hasoccthres || hasspeedthres);
 		
 		// need a valid table to parse
 		if (!istablevalid) 
@@ -319,27 +319,27 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		trMeteringRates_normalized=new double[table.getNoRows()];			
 		trlevelindex = 0;
 		// extract data from the table and populate
-		for (int i=0;i<table.getNoRows();i++){
-			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
-			if (hasflowthres){
-				trFlowThresh[i]=Double.parseDouble(table.getTableElement(i,flwIndx));			// flow in veh/sec
-			}
-			if (hasoccthres){
-				trOccThresh[i]=Double.parseDouble(table.getTableElement(i,occIndx));  			// occupancy in %
-			}
-			if (hasspeedthres){
-				trSpeedThresh[i]=Double.parseDouble(table.getTableElement(i,spdIndx)); 			// speed in m/s
-			}
-
-			if (i==0 && ((hasflowthres && trFlowThresh[i]<0) || (hasoccthres && trOccThresh[i]<0) ||
-					(hasspeedthres && trSpeedThresh[i]<0)))
-					istablevalid=false;
-			// decreasing metering rates, and increasing thresholds, where applicable.		
-			if ((trMeteringRates_normalized[i]<0) || (i>0 && (trMeteringRates_normalized[i]>trMeteringRates_normalized[i-1])) || 
-			(i>0 && !((hasflowthres && trFlowThresh[i]>trFlowThresh[i-1]) || (hasoccthres && trOccThresh[i]>trOccThresh[i-1]) ||
-					(hasspeedthres && trSpeedThresh[i]>trSpeedThresh[i-1]))))				
-				istablevalid=false;					
-		}
+//		for (int i=0;i<table.getNoRows();i++){
+//			trMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
+//			if (hasflowthres){
+//				trFlowThresh[i]=Double.parseDouble(table.getTableElement(i,flwIndx));			// flow in veh/sec
+//			}
+//			if (hasoccthres){
+//				trOccThresh[i]=Double.parseDouble(table.getTableElement(i,occIndx));  			// occupancy in %
+//			}
+//			if (hasspeedthres){
+//				trSpeedThresh[i]=Double.parseDouble(table.getTableElement(i,spdIndx)); 			// speed in m/s
+//			}
+//
+//			if (i==0 && ((hasflowthres && trFlowThresh[i]<0) || (hasoccthres && trOccThresh[i]<0) ||
+//					(hasspeedthres && trSpeedThresh[i]<0)))
+//					istablevalid=false;
+//			// decreasing metering rates, and increasing thresholds, where applicable.		
+//			if ((trMeteringRates_normalized[i]<0) || (i>0 && (trMeteringRates_normalized[i]>trMeteringRates_normalized[i-1])) || 
+//			(i>0 && !((hasflowthres && trFlowThresh[i]>trFlowThresh[i-1]) || (hasoccthres && trOccThresh[i]>trOccThresh[i-1]) ||
+//					(hasspeedthres && trSpeedThresh[i]>trSpeedThresh[i-1]))))				
+//				istablevalid=false;					
+//		}
 		
 		// occupancy thresholds should be between 0 and 100.
 		if (hasoccthres && trOccThresh[0]<=0 && trOccThresh[trOccThresh.length-1]>100)
