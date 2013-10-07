@@ -109,6 +109,11 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 	}
 
 	@Override
+	public edu.berkeley.path.beats.jaxb.Actuator createActuator() {
+		return new Actuator();
+	}
+	
+	@Override
 	public edu.berkeley.path.beats.jaxb.Parameters createParameters() {
 		return new Parameters();
 	}

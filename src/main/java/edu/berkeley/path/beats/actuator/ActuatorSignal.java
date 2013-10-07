@@ -1,12 +1,14 @@
 package edu.berkeley.path.beats.actuator;
 
+import java.util.List;
+
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
 
-public class ActuatorRampMeter extends Actuator {
+public class ActuatorSignal extends Actuator {
 
-	public void setRampMeteringRate(Double rate){
-		this.command = rate;
+	public void setGreenTimes(List<Double> green_times){
+		this.command = green_times;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -38,7 +40,7 @@ public class ActuatorRampMeter extends Actuator {
 	
 	@Override
 	public void delpoy(Object command) {
-		this.implementor.deploy_metering_rate((Double) command);
+		this.implementor.deploy_green_times((List<Double>) command);
 	}
 
 }

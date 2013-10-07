@@ -378,6 +378,7 @@
         <xs:element ref="NetworkSet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="VehicleTypeSet" minOccurs="1" />
         <xs:element ref="SignalSet" minOccurs="0" maxOccurs="1"  />
+        <xs:element ref="ActuatorSet" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="SensorSet" minOccurs="0" maxOccurs="1"  />
         <xs:element ref="InitialDensitySet" minOccurs="0" maxOccurs="1" />
         <xs:element ref="WeavingFactorSet" minOccurs="0" maxOccurs="1" />
@@ -1085,6 +1086,7 @@
 		<xs:element name="actuator">
 			<xs:complexType>
 				<xs:all>
+					<xs:element ref="scenarioElement" minOccurs="0" maxOccurs="1" />
 					<xs:element ref="display_position" minOccurs="0" />
 					<xs:element ref="parameters" minOccurs="0" />
 					<xs:element ref="table" minOccurs="0" />
@@ -1092,7 +1094,6 @@
 				</xs:all>
 				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
 				<xs:attribute name="id" type="xs:long" use="required"/>
-				<xs:attribute name="link_id" type="xs:long" use="optional" />
 				<xs:attribute name="modStamp" type="xs:string" use="optional" />
 				<xs:attribute name="health_status" use="optional">
 					<xs:simpleType >

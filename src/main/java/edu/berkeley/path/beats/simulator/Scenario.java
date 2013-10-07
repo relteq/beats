@@ -132,6 +132,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// sensors
 		sensorlist.populate(this);
 		
+		// actuators
+		if(actuatorSet!=null)
+			for( edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator() )
+				((Actuator) actuator).populate(this);
+		
 		// signals
 		if(signalSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())

@@ -1,44 +1,37 @@
-package edu.berkeley.path.beats.actuator;
+package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.simulator.Actuator;
-import edu.berkeley.path.beats.simulator.BeatsException;
 
-public class ActuatorRampMeter extends Actuator {
 
-	public void setRampMeteringRate(Double rate){
-		this.command = rate;
-	}
+public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
+
+	protected InterfaceActuator implementor;
+	protected Object command;
+	
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / update
 	/////////////////////////////////////////////////////////////////////
-
-	@Override
+	
 	protected void populate(Object jaxbobject) {
 		return;
 	}
 
-	@Override
 	protected void validate() {
 	}
 
-	@Override
 	protected void reset() throws BeatsException {
 		return;
 	}
 
-	@Override
 	protected void update() throws BeatsException {
 		return;
 	}
+
 
 	/////////////////////////////////////////////////////////////////////
 	// deploy
 	/////////////////////////////////////////////////////////////////////
 	
-	@Override
-	public void delpoy(Object command) {
-		this.implementor.deploy_metering_rate((Double) command);
-	}
-
+	public void delpoy(Object command){};
+	
 }

@@ -1,8 +1,9 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.actuator.InterfaceActuator;
+import java.util.List;
 
-public class BeatsActuator implements InterfaceActuator {
+
+public class ActuatorImplementation implements InterfaceActuator {
 
 	private Link myLink;
 	
@@ -12,7 +13,7 @@ public class BeatsActuator implements InterfaceActuator {
 	}
 
 	@Override
-	public void deploy_green_splits() {
+	public void deploy_green_times(List<Double> green_times) {
 		// TODO Auto-generated method stub
 		
 	}
