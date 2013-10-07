@@ -1064,5 +1064,57 @@
 				</xs:complexType>
 			</xs:element>
 			
+
+	 <!-- ActuatorSet ...................................................  -->
+   			  
+	<xs:element name="ActuatorSet">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="actuator" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="project_id" type="xs:long" use="required" />
+			<xs:attribute name="name" type="xs:string" use="optional" default="" />
+			<xs:attribute name="description" type="xs:string" use="optional" default="0" />
+			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+			<xs:attribute name="lockedForEdit" type="xs:boolean" use="optional" default="false" />
+			<xs:attribute name="lockedForHistory" type="xs:boolean" use="optional" default="false" />
+		</xs:complexType>
+	</xs:element>
+
+		<xs:element name="actuator">
+			<xs:complexType>
+				<xs:all>
+					<xs:element ref="display_position" minOccurs="0" />
+					<xs:element ref="parameters" minOccurs="0" />
+					<xs:element ref="table" minOccurs="0" />
+					<xs:element ref="actuator_type" minOccurs="0" maxOccurs="1"/>
+				</xs:all>
+				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+				<xs:attribute name="id" type="xs:long" use="required"/>
+				<xs:attribute name="link_id" type="xs:long" use="optional" />
+				<xs:attribute name="modStamp" type="xs:string" use="optional" />
+				<xs:attribute name="health_status" use="optional">
+					<xs:simpleType >
+						<xs:restriction base="xs:double">
+							<xs:minInclusive value="0.0"/>
+							<xs:maxInclusive value="1.0"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:complexType>
+		</xs:element>
+
+			<!-- Actuator Type -->
+			<xs:element name="actuator_type">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="name" type="xs:string" use="required"/>
+					<xs:attribute name="description" type="xs:string" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+	 			
+			
+			
 </xs:schema>
 
