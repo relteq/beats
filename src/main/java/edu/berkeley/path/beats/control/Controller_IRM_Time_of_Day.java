@@ -138,15 +138,15 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	// register / deregister
 	/////////////////////////////////////////////////////////////////////
 	
-	@Override
-	public boolean register() {
-		return registerFlowController(onramplink,0);
-	}
-
-	@Override
-	public boolean deregister() {
-		return deregisterFlowController(onramplink);
-	}
+//	@Override
+//	public boolean register() {
+//		return registerFlowController(onramplink,0);
+//	}
+//
+//	@Override
+//	public boolean deregister() {
+//		return deregisterFlowController(onramplink);
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// private

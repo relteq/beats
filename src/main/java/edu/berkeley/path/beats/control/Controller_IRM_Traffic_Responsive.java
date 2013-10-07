@@ -267,14 +267,14 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	// register / deregister
 	/////////////////////////////////////////////////////////////////////
 
-	@Override
-	protected boolean register() {
-		return registerFlowController(onramplink,0);
-	}
-	
-	protected boolean deregister() {
-		return deregisterFlowController(onramplink);
-	}
+//	@Override
+//	protected boolean register() {
+//		return registerFlowController(onramplink,0);
+//	}
+//	
+//	protected boolean deregister() {
+//		return deregisterFlowController(onramplink);
+//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// private methods

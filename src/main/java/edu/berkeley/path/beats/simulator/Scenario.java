@@ -372,18 +372,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	    populate();
 
 	    // register signals with their targets ..................................
-	    boolean registersuccess = true;
-		if(getSignalSet()!=null)
-	    	for(edu.berkeley.path.beats.jaxb.Signal signal: getSignalSet().getSignal())
-	    		registersuccess &= ((Signal)signal).register();
-	    if(!registersuccess){
-	    	throw new BeatsException("Signal registration failure");
-	    }
-
-	    if(getControllerset()!=null)
-	    	if(!getControllerset().register()){
-	    		throw new BeatsException("Controller registration failure");
-		    }
+//	    boolean registersuccess = true;
+//		if(getSignalSet()!=null)
+//	    	for(edu.berkeley.path.beats.jaxb.Signal signal: getSignalSet().getSignal())
+//	    		registersuccess &= ((Signal)signal).register();
+//	    if(!registersuccess){
+//	    	throw new BeatsException("Signal registration failure");
+//	    }
+//
+//	    if(getControllerset()!=null)
+//	    	if(!getControllerset().register()){
+//	    		throw new BeatsException("Controller registration failure");
+//		    }
 
 	    // print messages and clear before validation
 		if (BeatsErrorLog.hasmessage()) {

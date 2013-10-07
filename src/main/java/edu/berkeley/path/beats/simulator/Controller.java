@@ -252,55 +252,55 @@ public class Controller {
 		return false;
 	}
 		
-   	/** Use this method within {@link InterfaceController#register} to register
-   	 * flow control with a target link. The return value is <code>true</code> if
-   	 * the registration is successful, and <code>false</code> otherwise. 
-   	 * @param link The target link for flow control.
-   	 * @param index The index of the link in the controller's list of targets.
-   	 * @return A boolean indicating success of the registration. 
-   	 */
-	protected boolean registerFlowController(Link link,int index){
-		if(link==null)
-			return true;
-		return link.registerFlowController(this,index);
-	}
+//   	/** Use this method within {@link InterfaceController#register} to register
+//   	 * flow control with a target link. The return value is <code>true</code> if
+//   	 * the registration is successful, and <code>false</code> otherwise. 
+//   	 * @param link The target link for flow control.
+//   	 * @param index The index of the link in the controller's list of targets.
+//   	 * @return A boolean indicating success of the registration. 
+//   	 */
+//	protected boolean registerFlowController(Link link,int index){
+//		if(link==null)
+//			return true;
+//		return link.registerFlowController(this,index);
+//	}
 
-   	/** Use this method within {@link InterfaceController#deregister} to deregister
-   	 * speed control with a target link. The return value is <code>true</code> if
-   	 * the deregistration is successful, and <code>false</code> otherwise. 
-   	 * @param link The target link for speed control.
-   	 * @return A boolean indicating success of the deregistration. 
-   	 */
-	protected boolean deregisterSpeedController(Link link){
-		if(link!=null)			
-			return link.deregisterSpeedController(this);
-		return false;
-	}
+//   	/** Use this method within {@link InterfaceController#deregister} to deregister
+//   	 * speed control with a target link. The return value is <code>true</code> if
+//   	 * the deregistration is successful, and <code>false</code> otherwise. 
+//   	 * @param link The target link for speed control.
+//   	 * @return A boolean indicating success of the deregistration. 
+//   	 */
+//	protected boolean deregisterSpeedController(Link link){
+//		if(link!=null)			
+//			return link.deregisterSpeedController(this);
+//		return false;
+//	}
 	
-	/** Use this method within {@link InterfaceController#deregister} to deregister
-   	 * flow control with a target link. The return value is <code>true</code> if
-   	 * the deregistration is successful, and <code>false</code> otherwise. 
-   	 * @param link The target link for flow control.
-   	 * @return A boolean indicating success of the deregistration. 
-   	 */
-	protected boolean deregisterFlowController(Link link){
-		if(link==null)
-			return false;
-		return link.deregisterFlowController(this);
-	}
+//	/** Use this method within {@link InterfaceController#deregister} to deregister
+//   	 * flow control with a target link. The return value is <code>true</code> if
+//   	 * the deregistration is successful, and <code>false</code> otherwise. 
+//   	 * @param link The target link for flow control.
+//   	 * @return A boolean indicating success of the deregistration. 
+//   	 */
+//	protected boolean deregisterFlowController(Link link){
+//		if(link==null)
+//			return false;
+//		return link.deregisterFlowController(this);
+//	}
 
-   	/** Use this method within {@link InterfaceController#register} to register
-   	 * speed control with a target link. The return value is <code>true</code> if
-   	 * the registration is successful, and <code>false</code> otherwise. 
-   	 * @param link The target link for speed control.
-   	 * @param index The index of the link in the controller's list of targets.
-   	 * @return A boolean indicating success of the registration. 
-   	 */
-	protected boolean registerSpeedController(Link link,int index){
-		if(link==null)
-			return true;
-		return link.registerSpeedController(this,index);
-	}
+//   	/** Use this method within {@link InterfaceController#register} to register
+//   	 * speed control with a target link. The return value is <code>true</code> if
+//   	 * the registration is successful, and <code>false</code> otherwise. 
+//   	 * @param link The target link for speed control.
+//   	 * @param index The index of the link in the controller's list of targets.
+//   	 * @return A boolean indicating success of the registration. 
+//   	 */
+//	protected boolean registerSpeedController(Link link,int index){
+//		if(link==null)
+//			return true;
+//		return link.registerSpeedController(this,index);
+//	}
 	
 //   	/** DESCRIPTION
 //   	 * 

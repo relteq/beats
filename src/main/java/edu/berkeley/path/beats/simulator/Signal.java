@@ -569,21 +569,21 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		@Override 
 		public void update() throws BeatsException {}
 
-		@Override
-		public boolean register() {
-	        for(Link link : target2index.keySet())
-	        	if (null != link && !link.registerFlowController(this,target2index.get(link)))
-	        		return false;
-			return true;
-		}
+//		@Override
+//		public boolean register() {
+//	        for(Link link : target2index.keySet())
+//	        	if (null != link && !link.registerFlowController(this,target2index.get(link)))
+//	        		return false;
+//			return true;
+//		}
 		
-		@Override
-		public boolean deregister() {
-	        for(Link link : target2index.keySet())
-	        	if(!link.deregisterFlowController(this))
-	        		return false;
-			return true;
-		}
+//		@Override
+//		public boolean deregister() {
+//	        for(Link link : target2index.keySet())
+//	        	if(!link.deregisterFlowController(this))
+//	        		return false;
+//			return true;
+//		}
 		
 		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
 			
