@@ -127,7 +127,7 @@ public class Controller_CRM_MPC extends Controller {
 		rampDemands = new HashMap<Long,Double[]>();
 		metering_rate = new HashMap<Long,Double[]>();
 		for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-			if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0) {
+			if( ((Link)link).isOnramp()) {
 				rampDemands.put(link.getId(), null);
 				metering_rate.put(link.getId(), null);
 			}
@@ -203,7 +203,7 @@ public class Controller_CRM_MPC extends Controller {
 			// copy ramp demands
 			DemandSet demand_set = (DemandSet) getMyScenario().getDemandSet();
 			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-				if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0){					
+				if( ((Link)link).isOnramp()){					
 					Double [] future_demands = BeatsFormatter.toDoubleArray(demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int));
 					rampDemands.put(link.getId(),future_demands);
 				}

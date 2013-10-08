@@ -35,7 +35,25 @@ import java.math.BigDecimal;
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** Type of link. */
-	public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
+	//public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
+	
+//	Freeway
+//	Highway
+//	On-Ramp
+//	Off-Ramp
+//	Interconnect
+//	HOV
+//	HOT
+//	Toll Lane
+//	Heavy Vehicle Lane
+//	Bus Lane
+//	Street
+//	Intersection Approach
+//	Left Turn Pocket
+//	Right Turn Pocket
+//	Source
+//	Sink
+
 	
 	// does not change ....................................
 
@@ -44,7 +62,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private Node end_node;
 
 	// link type
-	private Link.Type myType;
+	//private Link.Type myType;
 
 	// link geometry
 	private double _lanes;							// [-]
@@ -106,10 +124,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		this.myNetwork = myNetwork;
 
 		// link type
-		if(getLinkType()==null)
-			this.myType = Link.Type.unspecified;
-		else
-			this.myType = Link.Type.valueOf(getLinkType().getName());
+//		if(getLinkType()==null)
+//			this.myType = Link.Type.unspecified;
+//		else
+//			this.myType = Link.Type.valueOf(getLinkType().getName());
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -464,22 +482,34 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// Link type ........................
 
 	/** Type of the link */
-	public Link.Type getMyType() {
-		return myType;
+//	public Link.Type getMyType() {
+//		return myType;
+//	}
+
+	public static boolean haveSameType(Link linkA,Link linkB){
+		String typeA = linkA.getType();
+		String typeB = linkB.getType();
+		if(typeA==null || typeB==null)
+			return false;
+		return typeA.equalsIgnoreCase(typeB);
+	}
+	
+	public String getType(){
+		if(getLinkType()==null)
+			return null;
+		if(getLinkType().getName()==null)
+			return null;
+		return getLinkType().getName();
+	}
+	
+	public boolean isOnramp(){
+		String name = getType();
+		return name==null ? null : name.compareToIgnoreCase("onramp")==0;
 	}
 
-	/** Evaluate whether a link is of the freeway type */
-	public static boolean isFreewayType(Link link){
-
-		if(link==null)
-			return false;
-
-		Link.Type linktype = link.getMyType();
-
-		return  linktype.compareTo(Link.Type.intersection_approach)!=0 &&
-				linktype.compareTo(Link.Type.offramp)!=0 &&
-				linktype.compareTo(Link.Type.onramp)!=0 &&
-				linktype.compareTo(Link.Type.street)!=0;		
+	public boolean isFreeway(){
+		String name = getType();
+		return name==null ? null : name.compareToIgnoreCase("freeway")==0;
 	}
 
 	// Link geometry ....................

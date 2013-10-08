@@ -84,7 +84,7 @@ public class FDCalibrator {
 		float w_max = 19 * 0.44704f;	// [m/s]
 
 		// ignore non-freeway links
-		if(!Link.isFreewayType(S.getMyLink()))
+		if(!S.getMyLink().isFreeway())
 			return new FDParameters();
 		
 		// get data
@@ -192,7 +192,7 @@ public class FDCalibrator {
 			for(edu.berkeley.path.beats.jaxb.Network network : scenario.getNetworkSet().getNetwork()){
 				for(edu.berkeley.path.beats.jaxb.Link jlink : network.getLinkList().getLink()){
 					Link link = (Link) jlink;
-					if(Link.isFreewayType(link)){
+					if(link.isFreeway()){
 						GrowLink G = new GrowLink(link);
 						hashgrownetwork.put(link.getId(),G);
 						arraygrownetwork.add(G);
@@ -203,7 +203,7 @@ public class FDCalibrator {
 		// initialize the grow network with sensored links 
 		for(edu.berkeley.path.beats.jaxb.Sensor sensor : scenario.getSensorSet().getSensor()){
 			SensorLoopStation S = (SensorLoopStation) sensor;
-			if(S.getVDS()!=0 && S.getMyLink()!=null && Link.isFreewayType(S.getMyLink())){
+			if(S.getVDS()!=0 && S.getMyLink()!=null && S.getMyLink().isFreeway() ){
 				long linkid = S.getMyLink().getId();
 				GrowLink G = hashgrownetwork.get(linkid);
 				G.sensor = S;
@@ -336,7 +336,7 @@ public class FDCalibrator {
 				continue;
 			
 			// propagate if nG is unassigned and of the same type as G
-			if( !nG.isassigned & nG.link.getMyType().compareTo(G.link.getMyType())==0 ){
+			if( !nG.isassigned & Link.haveSameType(nG.link,G.link) ){
 				nG.sensor = G.sensor;
 				nG.isassigned = true;
 				nG.isgrowable = true;

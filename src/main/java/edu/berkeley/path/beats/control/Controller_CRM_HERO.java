@@ -339,7 +339,7 @@ public class Controller_CRM_HERO extends Controller {
 			BeatsErrorLog.addError("Invalid/Unavailable queue sensor for HERO controller id=" + getId()+ ".");
 		
 		// queueSensor link_reference is not the same as onrampLink id
-		if(queueSensor!=null && (queueSensor.getMyLink().getId()!=onrampLink.getId() || queueSensor.getMyLink().getMyType().compareTo(Link.Type.onramp)!=0 ))
+		if(queueSensor!=null && (queueSensor.getMyLink().getId()!=onrampLink.getId() || !queueSensor.getMyLink().isOnramp() ))
 			BeatsErrorLog.addError("Queue sensor is not connected to the onramp link of HERO controller id=" + getId()+ " ");		
 				
 		// negative gain
@@ -455,7 +455,7 @@ public class Controller_CRM_HERO extends Controller {
         	
 			
 			
-			if( ((Link)aLink).getMyType().compareTo(Link.Type.freeway)==0  && ((Link)aLink).getEnd_node().isTerminal()) { 	
+			if( ((Link)aLink).isFreeway()  && ((Link)aLink).getEnd_node().isTerminal()) { 	
         		nodesOrdered.add(((Link)aLink).getEnd_node());
         		if(printMessages)
         		System.out.println("The Most Downstream Freeway Link is " + aLink.getId()+ " with End Node " + nodesOrdered.get(0).getId());
@@ -467,7 +467,7 @@ public class Controller_CRM_HERO extends Controller {
 		int isTerminalNode=0;	
 		while (isTerminalNode==0) {
 			for(edu.berkeley.path.beats.jaxb.Link aLink: getMyScenario().getNetworkSet().getNetwork().get(0).getLinkList().getLink()) {
-	        	if( ((Link)aLink).getMyType().compareTo(Link.Type.freeway)==0 &&  ((Link)aLink).getEnd_node().getId()==nodesOrdered.get(nodesOrdered.size()-1).getId() ) { 
+	        	if( ((Link)aLink).isFreeway() &&  ((Link)aLink).getEnd_node().getId()==nodesOrdered.get(nodesOrdered.size()-1).getId() ) { 
 	        		linksOrdered.add(((Link)aLink));
 	        		nodesOrdered.add(((Link)aLink).getBegin_node());	
 	        		if(printMessages)
@@ -484,9 +484,9 @@ public class Controller_CRM_HERO extends Controller {
 		for(Node aNode: nodesOrdered){	
 			for (edu.berkeley.path.beats.jaxb.Link aLink: aNode.getInput_link()){ 
 				//System.out.println("Input Link: "+ aLink.getId());
-				if( ((Link)aLink).getMyType().compareTo(Link.Type.onramp)==0 ){
+				if( ((Link)aLink).isOnramp() ){
 					if(printMessages)
-						System.out.println("Node "+ aNode.getId()+": "+ ((Link) aLink).getMyType() + " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
+						System.out.println("Node "+ aNode.getId()+": "+ aLink.getLinkType().getName() + " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
 					
 					for(edu.berkeley.path.beats.jaxb.Controller aController: getMyScenario().getControllerSet().getController()) {
 						if(aController.getTargetElements().getScenarioElement().get(0).getId()==aLink.getId() && aController.getType().equals("CRM_hero"))   {
