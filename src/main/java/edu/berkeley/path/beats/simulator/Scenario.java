@@ -310,10 +310,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     	if(global_control_on)
     		controllerset.update();
     	
-    	// update actuators
+    	// deploy actuators
     	if(actuatorSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
-				((Actuator)actuator).update();
+				((Actuator)actuator).deploy();
 
     	// update events
     	eventset.update();
@@ -811,6 +811,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+	/** Get actuator with given id.
+	 * @param id String id of the actuator.
+	 * @return Actuator object.
+	 */
+	public Actuator getActuatorWithId(long id) {
+		if(getActuatorSet()==null)
+			return null;
+		if(getActuatorSet().getActuator()==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Actuator actuator : getActuatorSet().getActuator() ){
+			if(actuator.getId()==id)
+				return (Actuator) actuator;
+		}
+		return null;
+	}
+	
 	/** Get signal with given id.
 	 * @param id String id of the signal.
 	 * @return Signal object.

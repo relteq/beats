@@ -324,6 +324,20 @@
 		</xs:complexType>
 	</xs:element>
 		  
+	<xs:element name="scenarioElement"> 
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="usage" type="xs:string" use="optional" />
+			<xs:attribute name="type" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="link|node|controller|sensor|event|signal"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+				
   <!-- settings .................................................................. -->
 
 	<xs:element name="settings">
@@ -820,8 +834,10 @@
         <xs:sequence>
           <xs:element ref="parameters" minOccurs="0" />
           <xs:element ref="display_position" minOccurs="0" />
-          <xs:element ref="targetElements" minOccurs="1" />
-          <xs:element ref="feedbackElements" minOccurs="0" />
+          <!-- <xs:element ref="targetElements" minOccurs="1" /> -->
+		  <xs:element ref="target_actuators" minOccurs="0" />
+          <!-- <xs:element ref="feedbackElements" minOccurs="0" /> -->
+		  <xs:element ref="feedback_sensors" minOccurs="0" />
           <xs:element ref="queue_controller" minOccurs="0" />
           <xs:element ref="ActivationIntervals" minOccurs="0" />
           <xs:element ref="table" minOccurs="0" maxOccurs="unbounded" />
@@ -875,6 +891,38 @@
 					</xs:complexType>
 				</xs:element>
 				
+			<xs:element name="target_actuators">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="target_actuator" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+				<xs:element name="target_actuator"> 
+					<xs:complexType>
+						<xs:attribute name="id" type="xs:long" use="required" />
+						<xs:attribute name="usage" type="xs:string" use="optional" />
+					</xs:complexType>
+				</xs:element>	
+				
+			<xs:element name="feedback_sensors">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="feedback_sensor" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+				<xs:element name="feedback_sensor"> 
+					<xs:complexType>
+						<xs:attribute name="id" type="xs:long" use="required" />
+						<xs:attribute name="usage" type="xs:string" use="optional" />
+					</xs:complexType>
+				</xs:element>
+				
+				
+				<!--
 			<xs:element name="feedbackElements">
 				<xs:complexType>
 					<xs:sequence>
@@ -882,20 +930,8 @@
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
-
-				<xs:element name="scenarioElement"> 
-					<xs:complexType>
-						<xs:attribute name="id" type="xs:long" use="required" />
-						<xs:attribute name="usage" type="xs:string" use="optional" />
-						<xs:attribute name="type" use="required">
-							<xs:simpleType>
-								<xs:restriction base="xs:string">
-									<xs:pattern value="link|node|controller|sensor|event|signal"/>
-								</xs:restriction>
-							</xs:simpleType>
-						</xs:attribute>
-					</xs:complexType>
-				</xs:element>				
+	
+-->				
 					  
   <!-- FundamentalDiagramSet .............................................. -->
 

@@ -64,7 +64,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Traffic_Responsive(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+	public Controller_IRM_Traffic_Responsive(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
 		super(myScenario,c,myType);
 	}
 

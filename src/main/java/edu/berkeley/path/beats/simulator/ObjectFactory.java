@@ -65,7 +65,7 @@ final public class ObjectFactory {
 	// protected create from Jaxb
 	/////////////////////////////////////////////////////////////////////
 	
-	protected static Controller createControllerFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType) {		
+	protected static Controller createControllerFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Algorithm myType) {		
 		if(myScenario==null)
 			return null;
 		Controller C;

@@ -109,7 +109,7 @@ public class Controller_CRM_HERO extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-    public Controller_CRM_HERO(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+    public Controller_CRM_HERO(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
 		super(myScenario,c,myType);
     }
 

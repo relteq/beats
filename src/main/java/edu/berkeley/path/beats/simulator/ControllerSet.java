@@ -61,9 +61,9 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 			for(edu.berkeley.path.beats.jaxb.Controller controller : myScenario.getControllerSet().getController()){
 	
 				// assign type
-				Controller.Type myType;
+				Controller.Algorithm myType;
 		    	try {
-					myType = Controller.Type.valueOf(controller.getType());
+					myType = Controller.Algorithm.valueOf(controller.getType());
 				} catch (IllegalArgumentException e) {
 					continue;
 				}

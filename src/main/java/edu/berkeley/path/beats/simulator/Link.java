@@ -33,36 +33,11 @@ import java.math.BigDecimal;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
-
-	/** Type of link. */
-	//public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
-	
-//	Freeway
-//	Highway
-//	On-Ramp
-//	Off-Ramp
-//	Interconnect
-//	HOV
-//	HOT
-//	Toll Lane
-//	Heavy Vehicle Lane
-//	Bus Lane
-//	Street
-//	Intersection Approach
-//	Left Turn Pocket
-//	Right Turn Pocket
-//	Source
-//	Sink
-
 	
 	// does not change ....................................
-
 	private Network myNetwork;
 	private Node begin_node;
 	private Node end_node;
-
-	// link type
-	//private Link.Type myType;
 
 	// link geometry
 	private double _lanes;							// [-]
@@ -74,12 +49,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
 	private CapacityProfile myCapacityProfile; 		// capacity profile
 	private DemandProfile myDemandProfile;  		// demand profiles
-
-	// Controllers
-//	private int control_maxflow_index;
-//	private int control_maxspeed_index;
-//	private Controller myFlowController;
-//	private Controller mySpeedController;
 	
 	// Actuation
 	private double external_max_flow;
@@ -122,12 +91,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	protected void populate(Network myNetwork) {
 
 		this.myNetwork = myNetwork;
-
-		// link type
-//		if(getLinkType()==null)
-//			this.myType = Link.Type.unspecified;
-//		else
-//			this.myType = Link.Type.valueOf(getLinkType().getName());
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
@@ -190,7 +153,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		spaceSupply 		= BeatsMath.zeros(n1);
 
 		return;
-
 	}
 
 	private void resetLanes(){
@@ -478,13 +440,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
-
-	// Link type ........................
-
-	/** Type of the link */
-//	public Link.Type getMyType() {
-//		return myType;
-//	}
 
 	public static boolean haveSameType(Link linkA,Link linkB){
 		String typeA = linkA.getType();
@@ -919,11 +874,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return Double.NaN;
 		}
 	}
-
-	// Demand Profile ...................
-//	public DemandProfile getMyDemandProfile(){
-//		return myDemandProfile;
-//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// private

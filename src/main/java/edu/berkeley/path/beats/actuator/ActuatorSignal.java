@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.Controller;
 
 public class ActuatorSignal extends Actuator {
 
@@ -11,8 +12,18 @@ public class ActuatorSignal extends Actuator {
 		this.command = green_times;
 	}
 
+
 	/////////////////////////////////////////////////////////////////////
-	// populate / validate / reset / update
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
+	public ActuatorSignal(Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+		super(C);
+	}
+	
+	
+	/////////////////////////////////////////////////////////////////////
+	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
 
 	@Override
@@ -30,16 +41,7 @@ public class ActuatorSignal extends Actuator {
 	}
 
 	@Override
-	protected void update() throws BeatsException {
-		return;
-	}
-
-	/////////////////////////////////////////////////////////////////////
-	// deploy
-	/////////////////////////////////////////////////////////////////////
-	
-	@Override
-	public void delpoy(Object command) {
+	public void deploy() {
 		this.implementor.deploy_green_times((List<Double>) command);
 	}
 

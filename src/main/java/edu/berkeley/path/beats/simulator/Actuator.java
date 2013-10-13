@@ -4,12 +4,21 @@ package edu.berkeley.path.beats.simulator;
 
 public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
+	protected Controller myController;
 	protected InterfaceActuator implementor;
 	protected Object command;
 	
 
 	/////////////////////////////////////////////////////////////////////
-	// populate / validate / reset / update
+	// construction
+	/////////////////////////////////////////////////////////////////////
+	
+	public Actuator (Controller C){
+		myController = C;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate(Object jaxbobject) {
@@ -22,16 +31,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	protected void reset() throws BeatsException {
 		return;
 	}
-
-	protected void update() throws BeatsException {
-		return;
-	}
-
-
-	/////////////////////////////////////////////////////////////////////
-	// deploy
-	/////////////////////////////////////////////////////////////////////
 	
-	public void delpoy(Object command){};
+	protected void deploy(){};
 	
 }

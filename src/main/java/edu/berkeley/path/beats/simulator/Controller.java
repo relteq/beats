@@ -28,8 +28,17 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+
+import edu.berkeley.path.beats.actuator.ActuatorCMS;
+import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
+import edu.berkeley.path.beats.actuator.ActuatorVSL;
+import edu.berkeley.path.beats.jaxb.FeedbackSensor;
+import edu.berkeley.path.beats.jaxb.TargetActuator;
 
 /** Base class for controllers. 
  * Provides a default implementation of <code>InterfaceController</code>.
@@ -39,39 +48,43 @@ import org.apache.log4j.Logger;
 public class Controller {
 
 	/** Scenario that contains this controller */
-	private Scenario myScenario;										       								       
+	protected Scenario myScenario;										       								       
 	
-	private edu.berkeley.path.beats.jaxb.Controller jaxbController;
+	protected edu.berkeley.path.beats.jaxb.Controller jaxbController;
 										
 	/** Controller type. */
-	private Controller.Type myType;
+	protected Controller.Algorithm myType;
 	
 	/** List of scenario elements affected by this controller */
-	private ArrayList<ScenarioElement> targets;
+	//private ArrayList<ScenarioElement> targets;
+	protected ArrayList<Actuator> actuators;
+	protected ArrayList<String> actuator_usage;
 	
 	/** List of scenario elements that provide input to this controller */
-	private ArrayList<ScenarioElement> feedbacks;
+	//private ArrayList<ScenarioElement> feedbacks;
+	protected ArrayList<Sensor> sensors;
+	protected ArrayList<String> sensor_usage;
 	
 	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
-	protected double [] control_maxflow;
+//	protected double [] control_maxflow;
 	
 	/** Maximum flow for link targets, in normalized units. Indexed by target.  */
-	private double [] control_maxspeed;
+//	private double [] control_maxspeed;
 	
 	/** Controller update period in seconds */
-	private double dtinseconds;
+	protected double dtinseconds;
 	
 	/** Controller update period in number of simulation steps */
-	private int samplesteps;
+	protected int samplesteps;
 	
 	/** On/off switch for this controller */
-	private boolean ison;
+	protected boolean ison;
 	
 	/** Activation times for this controller */
-	private ArrayList<ActivationTimes> activationTimes;
+	protected ArrayList<ActivationTimes> activationTimes;
 	
 	/** Tables of parameters. */
-	private java.util.Map<String, Table> tables;
+	protected java.util.Map<String, Table> tables;
 	
 	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
 	 * controller.  
@@ -82,21 +95,38 @@ public class Controller {
 	 * <li> SIG, signal control (intersections) </li>
 	 * </ul>
 	 */
-	public static enum Type {  
+	public static enum Algorithm {  
 	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_ALINEA,
 	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
 	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
       /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
       /** see {@link ObjectFactory#createController_CRM_MPC}				*/ 	CRM_MPC,
       /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed }
+
+	public static enum ActuatorType { 
+		RAMP_METER,
+		CMS,
+		VSL,
+		SIGNAL
+	}
 	
+    public static final Map<Algorithm, ActuatorType> map_algorithm_actuator = new HashMap<Algorithm, ActuatorType>();
+    static {
+    	map_algorithm_actuator.put( Algorithm.IRM_ALINEA , ActuatorType.RAMP_METER);
+    	map_algorithm_actuator.put( Algorithm.IRM_TOD 		, ActuatorType.RAMP_METER );
+    	map_algorithm_actuator.put( Algorithm.IRM_TOS 		, ActuatorType.RAMP_METER );
+    	map_algorithm_actuator.put( Algorithm.CRM_HERO 		, ActuatorType.RAMP_METER );
+    	map_algorithm_actuator.put( Algorithm.CRM_MPC 		, ActuatorType.RAMP_METER );
+    	map_algorithm_actuator.put( Algorithm.SIG_Pretimed  , ActuatorType.SIGNAL );
+    }
+    
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
 
     protected Controller(){}
       
-	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Type myType){
+	 protected Controller(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller jaxbC,Controller.Algorithm myType){
 		 
 			this.myScenario = myScenario;
 			this.myType = myType;
@@ -121,26 +151,46 @@ public class Controller {
 						activationTimes.add(new ActivationTimes(tinterval.getStartTime(),tinterval.getEndTime()));
 			Collections.sort(activationTimes);
 			
-			// store targets ......
-			targets = new ArrayList<ScenarioElement>();
-			if(jaxbC.getTargetElements()!=null)
-				for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbC.getTargetElements().getScenarioElement() ){
-					ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
-					if(se!=null)
-						targets.add(se);
+			// read target actuators
+			actuators = new ArrayList<Actuator>();
+			actuator_usage = new ArrayList<String>();
+			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
+				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
+					Actuator jaxbA = getMyScenario().getActuatorWithId(ta.getId());
+					if(jaxbA!=null){
+						Actuator myActuator = null;
+						ActuatorType myActuatorType = Controller.map_algorithm_actuator.get(myType);
+						switch(myActuatorType){
+						case RAMP_METER:
+							myActuator = new ActuatorRampMeter(this,jaxbA);
+							break;
+						case CMS:
+							myActuator = new ActuatorCMS(this,jaxbA);
+							break;
+						case VSL:
+							myActuator = new ActuatorVSL(this,jaxbA);
+							break;
+						case SIGNAL:
+							myActuator = new ActuatorSignal(this,jaxbA);
+							break;
+						}
+						actuators.add(myActuator);
+						actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
+					}
 				}
-			
-			control_maxflow  = new double [targets.size()];
-			control_maxspeed = new double [targets.size()];
+			}
 
-			// store feedbacks ......
-			feedbacks = new ArrayList<ScenarioElement>();
-			if(jaxbC.getFeedbackElements()!=null)
-				for(edu.berkeley.path.beats.jaxb.ScenarioElement s : jaxbC.getFeedbackElements().getScenarioElement()){
-					ScenarioElement se = ObjectFactory.createScenarioElementFromJaxb(myScenario,s);
-					if(se!=null)
-						feedbacks.add(se);	
+			// read feedback sensors
+
+			sensors = new ArrayList<Sensor>();
+			sensor_usage = new ArrayList<String>();
+			if(jaxbC.getFeedbackSensors()!=null && jaxbC.getFeedbackSensors().getFeedbackSensor()!=null){
+				for(FeedbackSensor fs : jaxbC.getFeedbackSensors().getFeedbackSensor()){
+					sensors.add(getMyScenario().getSensorWithId(fs.getId()));
+					sensor_usage.add(fs.getUsage()==null ? "" : fs.getUsage());
 				}
+			}
+
 	 }
 
 //	 protected Controller(ArrayList<ScenarioElement> targets){
@@ -190,8 +240,8 @@ public class Controller {
 			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
 		
 		// check that the target is valid
-		if(targets==null)
-			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
+//		if(targets==null)
+//			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
@@ -370,13 +420,13 @@ public class Controller {
 		return myScenario;
 	}
 
-	public double getControl_maxflow(int index) {
-		return control_maxflow[index];
-	}
-
-	public double getControl_maxspeed(int index) {
-		return control_maxspeed[index];
-	}
+//	public double getControl_maxflow(int index) {
+//		return control_maxflow[index];
+//	}
+//
+//	public double getControl_maxspeed(int index) {
+//		return control_maxspeed[index];
+//	}
 
 	public int getSamplesteps() {
 		return samplesteps;
@@ -396,19 +446,19 @@ public class Controller {
 	}	
 
 	/** Get the type of the controller.  */
-	public Controller.Type getMyType() {
+	public Controller.Algorithm getMyType() {
 		return myType;
 	}
 
-   	/** Get list of controller targets  */
-	public ArrayList<ScenarioElement> getTargets() {
-		return targets;
-	}
-
-   	/** Get list of controller feedback elements  */
-	public ArrayList<ScenarioElement> getFeedbacks() {
-		return feedbacks;
-	}
+//   	/** Get list of controller targets  */
+//	public ArrayList<ScenarioElement> getTargets() {
+//		return targets;
+//	}
+//
+//   	/** Get list of controller feedback elements  */
+//	public ArrayList<ScenarioElement> getFeedbacks() {
+//		return feedbacks;
+//	}
 
    	/** Get the controller update period in [seconds]  */
 	public double getDtinseconds() {
@@ -422,7 +472,23 @@ public class Controller {
 		return ison;
 	}
 
+	public ArrayList<Actuator> getActuatorByUsage(String usage){
+		ArrayList<Actuator> list = new ArrayList<Actuator>();
+		for(int i=0;i<actuators.size();i++)
+			if(actuator_usage.get(i).compareTo(usage)==0)
+				list.add(actuators.get(i));
+		return list;
+	}
 
+	public ArrayList<Sensor> getSensorByUsage(String usage){
+		ArrayList<Sensor> list = new ArrayList<Sensor>();
+		for(int i=0;i<sensors.size();i++)
+			if(sensor_usage.get(i).compareTo(usage)==0)
+				list.add(sensors.get(i));
+		return list;
+	}
+
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected getters and setters
 	/////////////////////////////////////////////////////////////////////
@@ -431,13 +497,13 @@ public class Controller {
 		return jaxbController;
 	}
 
-	protected void setControl_maxflow(int index, double control_maxflow) {
-		this.control_maxflow[index] = control_maxflow;
-	}
-
-	protected void setControl_maxspeed(int index, double control_maxspeed) {
-		this.control_maxspeed[index] = control_maxspeed;
-	}
+//	protected void setControl_maxflow(int index, double control_maxflow) {
+//		this.control_maxflow[index] = control_maxflow;
+//	}
+//
+//	protected void setControl_maxspeed(int index, double control_maxspeed) {
+//		this.control_maxspeed[index] = control_maxspeed;
+//	}
 
 	protected void setIson(boolean ison) {
 		this.ison = ison;
