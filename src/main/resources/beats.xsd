@@ -170,7 +170,7 @@
 			<xs:element name="roadway_markers">
 				<xs:complexType>
 					<xs:sequence>
-						<xs:element ref="marker" minOccurs="1" maxOccurs="unbounded" />
+						<xs:element ref="marker" minOccurs="0" maxOccurs="unbounded" />
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>

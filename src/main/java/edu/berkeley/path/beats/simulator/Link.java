@@ -35,7 +35,17 @@ import java.math.BigDecimal;
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	/** Type of link. */
-	public static enum Type	{unspecified,freeway,HOV,HOT,onramp,offramp,freeway_connector,street,intersection_approach,heavy_vehicle,electric_toll}
+	public static enum Type	{ unspecified,
+						      freeway,
+						      HOV,
+						      HOT,
+						      onramp,
+						      offramp,
+						      freeway_connector,
+						      street,
+						      intersection_approach,
+						      heavy_vehicle,
+						      electric_toll}
 	
 	// does not change ....................................
 
@@ -105,7 +115,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		if(getLinkType()==null)
 			this.myType = Link.Type.unspecified;
 		else
-			this.myType = Link.Type.valueOf(getLinkType().getName());
+			try {
+				this.myType = Link.Type.valueOf(getLinkType().getName());
+			} catch (Exception e) {
+				this.myType = Link.Type.unspecified;
+			}
 
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
