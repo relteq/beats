@@ -227,8 +227,8 @@ public class Controller_CRM_MPC extends Controller {
 
 		// return the values corresponding to the current time
 		int time_index = BeatsMath.floor(time_since_last_opt/getDtinseconds());		
-		for(int i=0;i<getTargets().size();i++)
-			setControl_maxflow(i, metering_rate.get(getTargets().get(i).getId())[time_index]);
+		for(int i=0;i<actuators.size();i++)
+			setControl_maxflow(i, metering_rate.get(actuators.get(i).getId())[time_index]);
 	}
 	
 }

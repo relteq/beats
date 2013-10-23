@@ -47,10 +47,10 @@ public class Controller_CRM_HERO extends Controller {
 	private Sensor mainlineSensor = null;
 	private SensorLoopStation queueSensor = null;
 
-	private boolean useMainlineSensor;
+//	private boolean useMainlineSensor;
 	private boolean useQueueSensor;
 	
-	boolean hasMainlineLink;		// true if config file contains entry for mainlinelink
+//	boolean hasMainlineLink;		// true if config file contains entry for mainlinelink
 	boolean hasMainlineSensor; 		// true if config file contains entry for mainlinesensor
 	boolean hasQueueSensor; 		// true if config file contains entry for queuesensor
 	
@@ -130,48 +130,43 @@ public class Controller_CRM_HERO extends Controller {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
-		if(jaxbc.getFeedbackElements()==null)
-			return;
-		if(jaxbc.getFeedbackElements().getScenarioElement()==null)
+		if(jaxbc.getTargetActuators()==null || 
+		   jaxbc.getTargetActuators().getTargetActuator()==null ||
+		   jaxbc.getFeedbackSensors()==null ||
+		   jaxbc.getFeedbackSensors().getFeedbackSensor()==null )
 			return;
 		
-		hasMainlineLink = false;
+//		hasMainlineLink = false;
 		hasMainlineSensor = false;
 		hasQueueSensor = false;
 		
 		// There should be only one target element, and it is the onramp
-		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+		if(jaxbc.getTargetActuators().getTargetActuator().size()==1){
+			edu.berkeley.path.beats.jaxb.TargetActuator s = jaxbc.getTargetActuators().getTargetActuator().get(0);
 			onrampLink = getMyScenario().getLinkWithId(s.getId());	
 		}
 		
 		
 		// Feedback elements can be "mainlineSensor","mainlineLink", and "queueSensor"
-		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
+		if(!jaxbc.getFeedbackSensors().getFeedbackSensor().isEmpty()){
 			
-			for(edu.berkeley.path.beats.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
+			for(edu.berkeley.path.beats.jaxb.FeedbackSensor s:jaxbc.getFeedbackSensors().getFeedbackSensor()){
 				
 				if(s.getUsage()==null)
 					return;
 				
-				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
-				    s.getType().equalsIgnoreCase("sensor") && mainlineSensor==null){
+				if( s.getUsage().equalsIgnoreCase("mainlinesensor") && mainlineSensor==null){
 					mainlineSensor=getMyScenario().getSensorWithId(s.getId());
 					hasMainlineSensor = true;
 				}
 
-				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
-					s.getType().equalsIgnoreCase("link") && mainlineLink==null){
-					mainlineLink=getMyScenario().getLinkWithId(s.getId());
-					hasMainlineLink = true;
-				}
+//				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
+//					s.getType().equalsIgnoreCase("link") && mainlineLink==null){
+//					mainlineLink=getMyScenario().getLinkWithId(s.getId());
+//					hasMainlineLink = true;
+//				}
 
-				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
-					s.getType().equalsIgnoreCase("sensor")  && queueSensor==null){
+				if( s.getUsage().equalsIgnoreCase("queuesensor") && queueSensor==null){
 					queueSensor=(SensorLoopStation)getMyScenario().getSensorWithId(s.getId());
 					hasQueueSensor = true;
 				}				
@@ -179,15 +174,17 @@ public class Controller_CRM_HERO extends Controller {
 		}
 		
 		// abort unless there is either one mainline link or one mainline sensor
-		if(mainlineLink==null && mainlineSensor==null)
+		if(mainlineSensor==null)
 			return;
-		if(mainlineLink!=null  && mainlineSensor!=null)
-			return;
+//		if(mainlineLink==null && mainlineSensor==null)
+//			return;
+//		if(mainlineLink!=null  && mainlineSensor!=null)
+//			return;
 		
-		useMainlineSensor = mainlineSensor!=null;
+//		useMainlineSensor = mainlineSensor!=null;
 		
 		// need the sensor's link for target density
-		if(useMainlineSensor)
+//		if(useMainlineSensor)
 			mainlineLink = mainlineSensor.getMyLink();
 		
 		if(mainlineLink==null)
@@ -271,7 +268,6 @@ public class Controller_CRM_HERO extends Controller {
 				}
 			}	
 		
-		
 		// Normalize ALINEA Gain
 		alineaGainNormalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainlineLink.getLengthInMeters();
 		
@@ -302,8 +298,8 @@ public class Controller_CRM_HERO extends Controller {
 		
 		super.validate();
 
-		// must have exactly one target
-		if(getTargets().size()!=1)
+		// must have exactly one targetDensity
+		if(getNumActuators()!=1)
 			BeatsErrorLog.addError("Numnber of targets for HERO controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
@@ -315,11 +311,11 @@ public class Controller_CRM_HERO extends Controller {
 			BeatsErrorLog.addError("Bad queue sensor id in HERO controller id=" + getId()+".");
 		
 		// both link and sensor feedback
-		if(hasMainlineLink && hasMainlineSensor)
-			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in HERO controller id=" + getId()+".");
+//		if(hasMainlineLink && hasMainlineSensor)
+//			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in HERO controller id=" + getId()+".");
 		
 		// Mainline sensor is disconnected
-		if(useMainlineSensor && mainlineSensor.getMyLink()==null)
+		if(mainlineSensor.getMyLink()==null)
 			BeatsErrorLog.addError("Mainline sensor is not connected to a link in HERO controller id=" + getId()+ " ");
 		
 		// Queue sensor is disconnected
@@ -489,7 +485,7 @@ public class Controller_CRM_HERO extends Controller {
 						System.out.println("Node "+ aNode.getId()+": "+ aLink.getLinkType().getName() + " Link "+ aLink.getId() + " has end node "+ ((Link)aLink).getEnd_node().getId()); 
 					
 					for(edu.berkeley.path.beats.jaxb.Controller aController: getMyScenario().getControllerSet().getController()) {
-						if(aController.getTargetElements().getScenarioElement().get(0).getId()==aLink.getId() && aController.getType().equals("CRM_hero"))   {
+						if(aController.getTargetActuators().getTargetActuator().get(0).getId()==aLink.getId() && aController.getType().equals("CRM_hero"))   {
 							if(printMessages)
 								System.out.println("Controller " + aController.getId() + " is of type " + aController.getType()); 
 							controllersOrdered.add(aController.getId());
@@ -515,10 +511,10 @@ public class Controller_CRM_HERO extends Controller {
 				controllerList.get(i).targetVehicles=controllerList.get(i).mainlineLink.getDensityCriticalInVeh(0);
 		
 			// get Mainline density either from sensor or from link
-			if(controllerList.get(i).useMainlineSensor)
+//			if(controllerList.get(i).useMainlineSensor)
 				controllerList.get(i).mainlineVehiclesCurrent=controllerList.get(i).mainlineSensor.getTotalDensityInVeh(0);
-			else
-				controllerList.get(i).mainlineVehiclesCurrent=controllerList.get(i).mainlineLink.getTotalDensityInVeh(0);
+//			else
+//				controllerList.get(i).mainlineVehiclesCurrent=controllerList.get(i).mainlineLink.getTotalDensityInVeh(0);
 			
 			// get Queue either from sensor or from link
 			if(controllerList.get(i).useQueueSensor)

@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -81,11 +82,11 @@ public class Controller_SIG_Pretimed extends Controller {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 
 		// must have these
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
 
+		if(jaxbc.getTargetActuators()==null || 
+				   jaxbc.getTargetActuators().getTargetActuator()==null  )
+					return;			
+		
 		// check all tables
 		for (String table_name : new String[] {"Cycle Length", "Offsets", "Plan List", "Plan Sequence"})
 			if (null == getTables().get(table_name)) {
@@ -177,10 +178,10 @@ public class Controller_SIG_Pretimed extends Controller {
 			if (null == plansequence[i])
 				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 
-		// all targets are signals
-		for(ScenarioElement se: getTargets())
-			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
-				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+//		// all targets are signals
+//		for(Actuator act: actuators)
+//			if(act.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
+//				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		for (Controller_SIG_Pretimed_Plan pretimed_plan : plan.values())
 			pretimed_plan.validate();

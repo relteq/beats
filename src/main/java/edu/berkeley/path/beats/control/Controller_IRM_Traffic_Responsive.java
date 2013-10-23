@@ -39,9 +39,9 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	private Link mainlinelink = null;
 	private Sensor mainlinesensor = null;
 	private Sensor queuesensor = null;
-	private boolean usesensor;
+//	private boolean usesensor;
 	
-	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
+//	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
 	boolean hasmainlinesensor; 		// true if config file contains entry for mainlinesensor
 	boolean hasqueuesensor; 		// true if config file contains entry for queuesensor
 
@@ -108,47 +108,42 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
-		if(jaxbc.getFeedbackElements()==null)
-			return;
-		if(jaxbc.getFeedbackElements().getScenarioElement()==null)
-			return;
+		if(jaxbc.getTargetActuators()==null || 
+				   jaxbc.getTargetActuators().getTargetActuator()==null ||
+				   jaxbc.getFeedbackSensors()==null ||
+				   jaxbc.getFeedbackSensors().getFeedbackSensor()==null )
+					return;			
 		
-		hasmainlinelink = false;
+//		hasmainlinelink = false;
 		hasmainlinesensor = false;
 		hasqueuesensor = false;
 		
 		// There should be only one target element, and it is the onramp
-		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+		if(jaxbc.getTargetActuators().getTargetActuator().size()==1){
+			edu.berkeley.path.beats.jaxb.TargetActuator s = jaxbc.getTargetActuators().getTargetActuator().get(0);
 			onramplink = getMyScenario().getLinkWithId(s.getId());	
 		}
 		
 		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
-		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
+		if(!jaxbc.getFeedbackSensors().getFeedbackSensor().isEmpty()){
 			
-			for(edu.berkeley.path.beats.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
+			for(edu.berkeley.path.beats.jaxb.FeedbackSensor s:jaxbc.getFeedbackSensors().getFeedbackSensor()){
 				
 				if(s.getUsage()==null)
 					return;
 				
-				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
-				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
+				if( s.getUsage().equalsIgnoreCase("mainlinesensor") && mainlinesensor==null){
 					mainlinesensor=getMyScenario().getSensorWithId(s.getId());
 					hasmainlinesensor = true;
 				}
 
-				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
-					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
-					mainlinelink=getMyScenario().getLinkWithId(s.getId());
-					hasmainlinelink = true;
-				}
+//				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
+//					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
+//					mainlinelink=getMyScenario().getLinkWithId(s.getId());
+//					hasmainlinelink = true;
+//				}
 
-				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
-					s.getType().equalsIgnoreCase("sensor")  && queuesensor==null){
+				if( s.getUsage().equalsIgnoreCase("queuesensor") && queuesensor==null){
 					queuesensor=getMyScenario().getSensorWithId(s.getId());
 					hasqueuesensor = true;
 				}				
@@ -156,16 +151,18 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		}
 		
 		// abort unless there is either one mainline link or one mainline sensor
-		if(mainlinelink==null && mainlinesensor==null)
+		if(mainlinesensor==null)
 			return;
-		if(mainlinelink!=null  && mainlinesensor!=null)
-			return;
+//		if(mainlinelink==null && mainlinesensor==null)
+//			return;
+//		if(mainlinelink!=null  && mainlinesensor!=null)
+//			return;
 		
-		usesensor = mainlinesensor!=null;
+//		usesensor = mainlinesensor!=null;
 		
 		// need the sensor's link for target density
-		if(usesensor)
-			mainlinelink = mainlinesensor.getMyLink();
+//		if(usesensor)
+		mainlinelink = mainlinesensor.getMyLink();
 		
 		if(mainlinelink==null)
 			return;	
@@ -179,8 +176,8 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		
 		super.validate();
 		
-		// must have exactly one target
-		if(getTargets().size()!=1)
+		// must have exactly one actuator
+		if(getNumActuators()!=1)
 			BeatsErrorLog.addError("Numnber of targets for traffic responsive controller id=" + getId()+ " does not equal one.");
 
 		// bad mainline sensor id
@@ -196,11 +193,11 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 			BeatsErrorLog.addError("Invalid onramp link for traffic responsive controller id=" + getId()+ ".");
 
 		// both link and sensor feedback
-		if(hasmainlinelink && hasmainlinesensor)
-			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
+//		if(hasmainlinelink && hasmainlinesensor)
+//			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in traffic responsive controller id=" + getId()+".");
 
 		// sensor is disconnected
-		if(usesensor && mainlinesensor.getMyLink()==null)
+		if(mainlinesensor.getMyLink()==null)
 			BeatsErrorLog.addError("Mainline sensor is not connected to a link in traffic responsive controller id=" + getId()+ " ");
 
 		// no feedback
@@ -224,28 +221,28 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 		double mainlineflow=Double.POSITIVE_INFINITY;
 		// get mainline occ/spd/flow either from sensor or from link	
 		if (hasoccthres)
-			if(usesensor){
+//			if(usesensor){
 				mainlineocc = mainlinesensor.getOccupancy(0);			
-			}
-			else {
-				mainlineocc = mainlinelink.getTotalDensityInVeh(0)/mainlinelink.getDensityJamInVeh(0);
-			}
+//			}
+//			else {
+//				mainlineocc = mainlinelink.getTotalDensityInVeh(0)/mainlinelink.getDensityJamInVeh(0);
+//			}
 		
 		if (hasspeedthres)
-			if(usesensor){
+//			if(usesensor){
 				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
-			}
-			else {
-				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPMeter(0) / getMyScenario().getSimdtinseconds();
-			}
+//			}
+//			else {
+//				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPMeter(0) / getMyScenario().getSimdtinseconds();
+//			}
 		
 		if (hasflowthres)
-			if(usesensor){
+//			if(usesensor){
 				mainlineflow = mainlinesensor.getTotalFlowInVPS(0);
-			}
-			else {
-				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / getMyScenario().getSimdtinseconds();
-			}		
+//			}
+//			else {
+//				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / getMyScenario().getSimdtinseconds();
+//			}		
 		
 		// metering rate adjustments
 		while (trlevelindex >0 && (hasoccthres && mainlineocc<=trOccThresh[trlevelindex]) 

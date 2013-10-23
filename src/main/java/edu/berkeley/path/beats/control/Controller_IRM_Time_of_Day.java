@@ -78,18 +78,17 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	protected void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
-		if(jaxbc.getFeedbackElements()!=null)
-			return;				
+		if(jaxbc.getTargetActuators()==null || 
+				   jaxbc.getTargetActuators().getTargetActuator()==null ||
+				   jaxbc.getFeedbackSensors()==null ||
+				   jaxbc.getFeedbackSensors().getFeedbackSensor()==null )
+					return;			
 		
 		hasqueuesensor = false;
 		
 		// There should be only one target element, and it is the onramp
-		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+		if( jaxbc.getTargetActuators().getTargetActuator().size()==1){
+			edu.berkeley.path.beats.jaxb.TargetActuator s = jaxbc.getTargetActuators().getTargetActuator().get(0);
 			onramplink = getMyScenario().getLinkWithId(s.getId());	
 		}
 
@@ -102,8 +101,8 @@ public class Controller_IRM_Time_of_Day extends Controller {
 
 		super.validate();
 		
-		// must have exactly one target
-		if(getTargets().size()!=1)
+		// must have exactly one actuator
+		if(getNumActuators()!=1)
 			BeatsErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
 		
 		// bad queue sensor id

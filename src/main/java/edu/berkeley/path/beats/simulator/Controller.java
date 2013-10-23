@@ -450,15 +450,13 @@ public class Controller {
 		return myType;
 	}
 
-//   	/** Get list of controller targets  */
-//	public ArrayList<ScenarioElement> getTargets() {
-//		return targets;
-//	}
-//
-//   	/** Get list of controller feedback elements  */
-//	public ArrayList<ScenarioElement> getFeedbacks() {
-//		return feedbacks;
-//	}
+	public int getNumActuators() {
+		return actuators==null ? 0 : actuators.size();
+	}
+
+	public int getNumSensors() {
+		return sensors==null ? 0 : sensors.size();
+	}
 
    	/** Get the controller update period in [seconds]  */
 	public double getDtinseconds() {
