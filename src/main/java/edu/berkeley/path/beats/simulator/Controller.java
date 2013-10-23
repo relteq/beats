@@ -56,7 +56,6 @@ public class Controller {
 	protected Controller.Algorithm myType;
 	
 	/** List of scenario elements affected by this controller */
-	//private ArrayList<ScenarioElement> targets;
 	protected ArrayList<Actuator> actuators;
 	protected ArrayList<String> actuator_usage;
 	

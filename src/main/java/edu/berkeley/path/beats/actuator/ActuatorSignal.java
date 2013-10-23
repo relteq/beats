@@ -12,7 +12,6 @@ public class ActuatorSignal extends Actuator {
 		this.command = green_times;
 	}
 
-
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
@@ -20,7 +19,6 @@ public class ActuatorSignal extends Actuator {
 	public ActuatorSignal(Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
 		super(C);
 	}
-	
 	
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / deploy
