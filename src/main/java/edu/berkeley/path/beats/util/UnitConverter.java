@@ -413,9 +413,10 @@ public class UnitConverter {
 
 	private void process(FundamentalDiagram fd) {
 		fd.setFreeFlowSpeed(convertSpeed(fd.getFreeFlowSpeed()));		
-		fd.setCriticalSpeed(convertSpeed(fd.getCriticalSpeed()));
 		fd.setCongestionSpeed(convertSpeed(fd.getCongestionSpeed()));
 		fd.setCapacity(convertFlow(fd.getCapacity()));
+		if (null != fd.getCriticalSpeed())
+			fd.setCriticalSpeed(convertSpeed(fd.getCriticalSpeed()));
 		if (null != fd.getJamDensity())
 			fd.setJamDensity(convertDensity(fd.getJamDensity()));
 		if (Double.isNaN(fd.getCapacityDrop()))

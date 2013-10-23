@@ -159,7 +159,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		// check all demands have same length
 		for(BeatsTimeProfile d : demand_nominal)
-			if(d.getNumTime()!=profile_length){
+			if(d!=null && d.getNumTime()!=profile_length){
 				BeatsErrorLog.addError("In demand profile for link id=" + getLinkIdOrg() + ", not all demands have the same length.");
 				break;
 			}

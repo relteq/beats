@@ -53,66 +53,55 @@ final public class LinkCumulativeData {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 	
+	// densities ........................................................
+	
+	// average density over the output period for a given ensemble and vehicle type
 	public double getMeanDensityInVeh(int ensemble, int vehtypenum) {
 		return 0 == nsteps ? Double.NaN : density[ensemble][vehtypenum] / nsteps;
 	}
 
+	// average density[vehicle_type] over the output period for a given ensemble
+	public double[] getMeanDensityInVeh(int ensemble) {
+		return 0 == nsteps ? new double[nvehtype] : BeatsMath.times(density[ensemble], 1.0d / nsteps);
+	}
+	
+	// average density over the output period for a given ensemble and all vehicle types
 	public double getMeanTotalDensityInVeh(int ensemble) {
 		return 0 == nsteps ? Double.NaN : sum(density[ensemble]) / nsteps;
 	}
 
-	public double[] getMeanDensityInVeh(int ensemble) {
-		if (0 == nsteps)
-			return new double[nvehtype];
-		return BeatsMath.times(density[ensemble], 1.0d / nsteps);
-	}
+	// inflow ........................................................
 
+	// inflow accumulated over the output period for a given ensemble and vehicle type
 	public double getCumulativeInputFlowInVeh(int ensemble, int vehtypenum) {
 		return iflow[ensemble][vehtypenum];
 	}
 
+	// inflow[vehicle_type] accumulated over the output period for a given ensemble
 	public double[] getCumulativeInputFlowInveh(int ensemble) {
 		return iflow[ensemble];
 	}
 
+	// total inflow accumulated over the output period for a given ensemble
 	public double getCumulativeTotalInputFlowInVeh(int ensemble) {
 		return sum(iflow[ensemble]);
 	}
 
-	public double[] getMeanInputFlowInVeh(int ensemble) {
-		if (0 == nsteps)
-			return new double[nvehtype];
-		return BeatsMath.times(iflow[ensemble], 1.0d / nsteps);
-	}
-	
-	public double getMeanInputFlowInVeh(int ensemble, int vt_ind) {
-		return 0 == nsteps ? Double.NaN : iflow[ensemble][vt_ind] / nsteps;
-	}
+	// outflow ........................................................
 
+	// outflow accumulated over the output period for a given ensemble and vehicle type
 	public double getCumulativeOutputFlowInVeh(int ensemble, int vehtypenum) {
 		return oflow[ensemble][vehtypenum];
 	}
 
-	public double getCumulativeTotalOutputFlowInVeh(int ensemble) {
-		return sum(oflow[ensemble]);
-	}
-
+	// outflow[vehicle_type] accumulated over the output period for a given ensemble
 	public double[] getCumulativeOutputFlowInVeh(int ensemble) {
 		return oflow[ensemble];
 	}
-
-	public double getMeanOutputFlowInVeh(int ensemble, int vt_ind) {
-		return 0 == nsteps ? Double.NaN : oflow[ensemble][vt_ind] / nsteps;
-	}
-
-	public double getMeanTotalOutputFlowInVeh(int ensemble) {
-		return 0 == nsteps ? Double.NaN : sum(oflow[ensemble]) / nsteps;
-	}
-
-	public double[] getMeanOutputFlowInVeh(int ensemble) {
-		if (0 == nsteps)
-			return new double[nvehtype];
-		return BeatsMath.times(oflow[ensemble], 1.0d / nsteps);
+	
+	// total outflow accumulated over the output period for a given ensemble
+	public double getCumulativeTotalOutputFlowInVeh(int ensemble) {
+		return sum(oflow[ensemble]);
 	}
 
 	/////////////////////////////////////////////////////////////////////
