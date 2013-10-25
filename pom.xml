@@ -10,48 +10,8 @@
   <version>0.1-SNAPSHOT</version>
   <modelVersion>4.0.0</modelVersion>
 
-    <repositories>
-        <repository>
-            <id>scala</id>
-            <name>Scala Tools</name>
-            <url>http://scala-tools.org/repo-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jack-site</id>
-            <name>Jack's site</name>
-            <url>http://www3.decf.berkeley.edu/~jreilly/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>scala</id>
-            <name>Scala Tools</name>
-            <url>http://scala-tools.org/repo-releases/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
   <properties>
-      <scala.version>2.9.1</scala.version>
+      <scala.version>2.10.0</scala.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <torque.sql.dir>${project.build.directory}/generated-sql</torque.sql.dir>
   </properties>
@@ -76,110 +36,166 @@
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
         </configuration>
-      </plugin>	  
-      <plugin>
-        <groupId>org.jvnet.jaxb2.maven2</groupId>
-        <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.8.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generatePackage>edu.berkeley.path.beats.jaxb</generatePackage>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.torque</groupId>
-        <artifactId>torque-maven-plugin</artifactId>
-        <version>3.3</version>
-        <configuration>
-          <schemaDir>${basedir}/data</schemaDir>
-          <targetDatabase>derby</targetDatabase>
-          <useClasspath>true</useClasspath>
-        </configuration>
-        <executions>
-          <execution>
-            <id>om</id>
-            <phase>generate-sources</phase>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                </execution>
+            </executions>
             <configuration>
-              <targetPackage>edu.berkeley.path.beats.om</targetPackage>
+                <mainClass>edu.berkeley.path.beats.simulator.Runner</mainClass>
+                <arguments>
+                    <argument>/Users/jdr/Desktop/bla.xml</argument>
+                    <argument>1</argument>
+                    <argument>/Users/jdr/Desktop/output.xml</argument>
+                </arguments>
             </configuration>
-            <goals>
-              <goal>om</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>sql-derby</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <targetDatabase>derby</targetDatabase>
-              <outputDir>${torque.sql.dir}/derby</outputDir>
-            </configuration>
-            <goals>
-              <goal>sql</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>sql-postgres</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <targetDatabase>postgresql</targetDatabase>
-              <outputDir>${torque.sql.dir}/postgresql</outputDir>
-            </configuration>
-            <goals>
-              <goal>sql</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>sql-oracle</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <targetDatabase>oracle</targetDatabase>
-              <outputDir>${torque.sql.dir}/oracle</outputDir>
-            </configuration>
-            <goals>
-              <goal>sql</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>doc</id>
-            <phase>site</phase>
-            <goals>
-              <goal>documentation</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>edu.berkeley.path.beats.simulator.Runner</mainClass>
-              <addClasspath>true</addClasspath>
-			  <classpathPrefix>lib/</classpathPrefix>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
+        </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<includes>-->
+                        <!--<include>**/*Spec.class</include>-->
+                    <!--</includes>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <plugin>
+            <groupId>org.scala-tools</groupId>
+            <artifactId>maven-scala-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>compile</id>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                    <phase>compile</phase>
+                </execution>
+                <execution>
+                    <id>test-compile</id>
+                    <goals>
+                        <goal>testCompile</goal>
+                    </goals>
+                    <phase>test-compile</phase>
+                </execution>
+                <execution>
+                    <phase>process-resources</phase>
+                    <goals>
+                        <goal>compile</goal>
+                    </goals>
+                </execution>
+            </executions>
+            <version>2.15.2</version>
+        </plugin>
+        <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.8.2</version>
+                <executions>
+                  <execution>
+                    <goals>
+                      <goal>generate</goal>
+                    </goals>
+                    <configuration>
+                      <generatePackage>edu.berkeley.path.beats.jaxb</generatePackage>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>org.apache.torque</groupId>
+                <artifactId>torque-maven-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                  <schemaDir>${basedir}/data</schemaDir>
+                  <targetDatabase>derby</targetDatabase>
+                  <useClasspath>true</useClasspath>
+                </configuration>
+                <executions>
+                  <execution>
+                    <id>om</id>
+                    <phase>generate-sources</phase>
+                    <configuration>
+                      <targetPackage>edu.berkeley.path.beats.om</targetPackage>
+                    </configuration>
+                    <goals>
+                      <goal>om</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>sql-derby</id>
+                    <phase>generate-resources</phase>
+                    <configuration>
+                      <targetDatabase>derby</targetDatabase>
+                      <outputDir>${torque.sql.dir}/derby</outputDir>
+                    </configuration>
+                    <goals>
+                      <goal>sql</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>sql-postgres</id>
+                    <phase>generate-resources</phase>
+                    <configuration>
+                      <targetDatabase>postgresql</targetDatabase>
+                      <outputDir>${torque.sql.dir}/postgresql</outputDir>
+                    </configuration>
+                    <goals>
+                      <goal>sql</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>sql-oracle</id>
+                    <phase>generate-resources</phase>
+                    <configuration>
+                      <targetDatabase>oracle</targetDatabase>
+                      <outputDir>${torque.sql.dir}/oracle</outputDir>
+                    </configuration>
+                    <goals>
+                      <goal>sql</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>doc</id>
+                    <phase>site</phase>
+                    <goals>
+                      <goal>documentation</goal>
+                    </goals>
+                  </execution>
+                </executions>
+              </plugin>
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                  <archive>
+                    <manifest>
+                      <mainClass>edu.berkeley.path.beats.simulator.Runner</mainClass>
+                      <addClasspath>true</addClasspath>
+                      <classpathPrefix>lib/</classpathPrefix>
+                    </manifest>
+                  </archive>
+                </configuration>
+              </plugin>
 
-      <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/lib</outputDirectory>
-			  <!--<overWriteReleases>false</overWriteReleases>-->
+              <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <phase>package</phase>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                    </goals>
+                    <configuration>
+                      <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                      <!--<overWriteReleases>false</overWriteReleases>-->
 			  <!--<overWriteSnapshots>false</overWriteSnapshots>-->
 			  <!--<overWriteIfNewer>true</overWriteIfNewer>-->
             </configuration>
@@ -264,37 +280,6 @@
             </lifecycleMappingMetadata>
           </configuration>
         </plugin>
-		<!--
-          <plugin>
-              <groupId>org.scala-tools</groupId>
-              <artifactId>maven-scala-plugin</artifactId>
-
-              <executions>
-                  <execution>
-                      <id>compile</id>
-                      <goals>
-                          <goal>compile</goal>
-                      </goals>
-                      <phase>compile</phase>
-                  </execution>
-
-                  <execution>
-                      <id>test-compile</id>
-                      <goals>
-                          <goal>testCompile</goal>
-                      </goals>
-                      <phase>test-compile</phase>
-                  </execution>
-
-                  <execution>
-                      <phase>process-resources</phase>
-                      <goals>
-                          <goal>compile</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
-		  -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -339,6 +324,16 @@
       <artifactId>commons-cli</artifactId>
       <version>1.2</version>
     </dependency>
+      <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-compiler</artifactId>
+          <version>${scala.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.scala-lang</groupId>
+          <artifactId>scala-library</artifactId>
+          <version>${scala.version}</version>
+      </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
@@ -349,6 +344,17 @@
       <artifactId>junit</artifactId>
       <version>4.4</version>
     </dependency>
+      <dependency>
+          <groupId>
+              edu.berkeley.path
+          </groupId>
+          <artifactId>
+              ramp-metering
+          </artifactId>
+          <version>
+              0.1-SNAPSHOT
+          </version>
+      </dependency>
     <dependency>
       <groupId>org.jscience</groupId>
       <artifactId>jscience</artifactId>
@@ -379,18 +385,5 @@
       <artifactId>jettison</artifactId>
       <version>1.3.2</version>
     </dependency>	
-	<!--
-      <dependency>
-          <groupId>org.wsj</groupId>
-          <artifactId>adjoint_2.9.2</artifactId>
-          <version>1.0-SNAPSHOT</version>
-      </dependency>
-	  -->
-      <dependency>
-          <groupId>org.scala-lang</groupId>
-          <artifactId>scala-compiler</artifactId>
-          <version>${scala.version}</version>
-          <scope>compile</scope>
-      </dependency>
   </dependencies>
 </project>
