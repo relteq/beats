@@ -352,7 +352,7 @@
               ramp-metering
           </artifactId>
           <version>
-              0.1-SNAPSHOT
+              0.1.1-SNAPSHOT
           </version>
       </dependency>
     <dependency>

@@ -20,6 +20,7 @@ import edu.berkeley.path.ramp_metering.SimulationParameters
 import edu.berkeley.path.ramp_metering.BoundaryConditions
 import edu.berkeley.path.ramp_metering.FreewayScenario
 import edu.berkeley.path.ramp_metering.FundamentalDiagram
+import java.{lang, util}
 
 /**
  * Created with IntelliJ IDEA.
@@ -32,11 +33,12 @@ import edu.berkeley.path.ramp_metering.FundamentalDiagram
 object ScenarioConverter {
 
   def convertScenario(net: Network,
-                       fd: FundamentalDiagramSet,
-                       demand: DemandSet,
-                       splitRatios: SplitRatioSet,
-                       ics: InitialDensitySet,
-                       dt: Double): FreewayScenario = {
+                      fd: FundamentalDiagramSet,
+                      demand: DemandSet,
+                      splitRatios: SplitRatioSet,
+                      ics: InitialDensitySet,
+                      control: RampMeteringControlSet,
+                      dt: Double) = {
     val mainline = extractMainline(net)
     val mlNodes = mainline.map {
       _.getBegin_node
@@ -62,7 +64,7 @@ object ScenarioConverter {
       }
     }
     val freeway = Freeway(links.toIndexedSeq, onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
-    val policyParams = extractPolicyParameters(dt)
+    val policyParams = extractPolicyParameters(dt, control, onramps.values.toList)
     val indexedDemand = demand.getDemandProfile.map {
       profile => {
         net.getLinkWithId(profile.getLinkIdOrg) -> profile.getDemand.toList.head
@@ -104,12 +106,13 @@ object ScenarioConverter {
         }
       }.toIndexedSeq
     )
-    val simParams = SimulationParameters(bc, ic)
-    FreewayScenario(freeway, simParams, policyParams)
+    val index = control.control.toList.map{s => s.link -> (s.min_rate -> s.max_rate)}.toMap
+    val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onramps.values.map{index(_)}.toList)))
+    (FreewayScenario(freeway, simParams, policyParams), onramps.values)
   }
 
-  def extractPolicyParameters(dt: Double) = {
-    PolicyParameters(dt, -1)
+  def extractPolicyParameters(dt: Double, control: RampMeteringControlSet, onramps: List[Link]) = {
+    PolicyParameters(dt)
   }
 
   def extractMainline(net: Network) = {
@@ -151,5 +154,26 @@ object ScenarioConverter {
     }.filter {
       isMainlineSource _
     }.head
+  }
+
+  implicit def toDoubleList( lst: List[Double] ) =
+    seqAsJavaList( lst.map( i => i:java.lang.Double ) )
+}
+
+
+import ScenarioConverter.toDoubleList
+
+class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
+  def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
+    val (scen, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
+    val flux = AdjointRampMetering.controlledOutput(scen, new AdjointRampMetering(scen.fw)).fluxRamp.transpose
+    val set = new RampMeteringPolicySet
+    onramps.zip(flux).foreach{ case (or, fl) => {
+      val profile = new RampMeteringPolicyProfile
+      profile.sensorLink = or
+      profile.rampMeteringPolicy = fl.toList
+      set.profiles.add(profile)
+    }}
+    set
   }
 }
