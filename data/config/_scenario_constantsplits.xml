@@ -7,20 +7,28 @@
    <VehicleTypeSet project_id="-1" id="-1">
 		<vehicleType id="0" name="SOV" size_factor="1.0"/>					
    </VehicleTypeSet>  
-   
+ 
   <ControllerSet project_id="-1" id="-1">
     <controller dt="300" type="IRM_ALINEA" id="-1" enabled="true">
       <parameters>
         <parameter name="gain" value="10"/>
       </parameters>
-      <targetElements>
-        <scenarioElement id="-289" type="link"/>
-      </targetElements>
-      <feedbackElements>
-        <scenarioElement id="-1" type="link" usage="mainlinelink"/>
-      </feedbackElements>
+      <target_actuators>
+        <target_actuator id="-289"/>
+      </target_actuators>
+      <feedback_sensors>
+        <feedback_sensor id="-132" usage="mainline"/>
+      </feedback_sensors>
     </controller>
   </ControllerSet>
+  
+  <ActuatorSet id="0" project_id="0">
+	<actuator id="-289">
+		<scenarioElement id="-289" type="link"/>
+		<actuator_type id="0" name="ramp_meter"/>
+	</actuator>
+  </ActuatorSet>
+  
   <InitialDensitySet project_id="-1" id="-1" >
     <density id="-1" vehicle_type_id="0" link_id="-1">1.151128343</density>
     <density id="-1" vehicle_type_id="0" link_id="-2">2.323622691</density>
