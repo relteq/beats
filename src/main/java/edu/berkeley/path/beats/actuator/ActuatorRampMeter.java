@@ -24,6 +24,8 @@ public class ActuatorRampMeter extends Actuator {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
+	public ActuatorRampMeter(){}
+		
 	public ActuatorRampMeter(Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
 		
 		super(C);
@@ -31,10 +33,11 @@ public class ActuatorRampMeter extends Actuator {
 		max_rate_in_veh = Double.POSITIVE_INFINITY;
 		min_rate_in_veh = Double.NEGATIVE_INFINITY;
 		
+		Scenario myScenario = myController.getMyScenario();
+		Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
+
 		if(jaxbA.getParameters()!=null){
-			Scenario myScenario = myController.getMyScenario();
 			double dt = myScenario.getSimdtinseconds()/3600d;
-			Link myLink = myScenario.getLinkWithId(getScenarioElement().getId());
 			if(myLink!=null){
 				double lanes = myLink.get_Lanes();
 				for(Parameter p : jaxbA.getParameters().getParameter()){
