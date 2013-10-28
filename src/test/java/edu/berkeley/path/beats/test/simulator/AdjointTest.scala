@@ -20,28 +20,29 @@ import scala.collection.immutable.TreeMap
 class AdjointTest extends FunSuite with ShouldMatchers {
   val logger = Logger.getLogger(classOf[AdjointTest])
   test("woohoo") {
-    val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Desktop/bla.xml")
-
-    scenario.initialize(30, 0, 1000, 30, "xml", "hi", 1, 1)
-
+    val scenario = ObjectFactory.createAndLoadScenario("data/config/samitha1onramp.xml")
+//    val scenario = ObjectFactory.createAndLoadScenario("/Users/jdr/Desktop/bla.xml")
+    scenario.initialize(1, 0, 5, 1, "xml", "hi", 1, 1)
+//  scenario.initialize(30, 0, 1000, 30, "xml", "hi", 1, 1)
     val meters = {
-      val meters = new RampMeteringControlSet
-
-    val net = scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network]
-
-    val mainline = ScenarioConverter.extractMainline(net)
-    val mlNodes = mainline.map {
-      _.getBegin_node
-    }
-    TreeMap(ScenarioConverter.extractOnramps(net).map {
-      onramp => mlNodes.indexOf(onramp.getEnd_node) -> onramp
-    }: _*).values.foreach{or => {
-      val meter = new RampMeteringControl
-      meter.min_rate = 0.0
-      meter.max_rate = 1.0
-      meters.control.add(meter)
-    }}
-      meters
+      val mtrs = new RampMeteringControlSet
+      val net = scenario.getNetworkSet.getNetwork.get(0).asInstanceOf[Network]
+      val mainline = ScenarioConverter.extractMainline(net)
+      val mlNodes = mainline.map {
+        _.getBegin_node
+      }
+      TreeMap(ScenarioConverter.extractOnramps(net).map {
+        onramp => mlNodes.indexOf(onramp.getEnd_node) -> onramp
+      }: _*).values.foreach {
+        or => {
+          val meter = new RampMeteringControl
+          meter.min_rate = 0.0
+          meter.max_rate = 1.0
+          meter.link = or
+          mtrs.control.add(meter)
+        }
+      }
+      mtrs
     }
     val pm = new AdjointRampMeteringPolicyMaker
 

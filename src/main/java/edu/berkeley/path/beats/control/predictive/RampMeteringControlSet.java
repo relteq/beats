@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.control.predictive;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,4 +12,8 @@ import java.util.List;
  */
 public class RampMeteringControlSet {
     public List<RampMeteringControl> control;
+
+    public RampMeteringControlSet() {
+        control = new LinkedList<RampMeteringControl>();
+    }
 }

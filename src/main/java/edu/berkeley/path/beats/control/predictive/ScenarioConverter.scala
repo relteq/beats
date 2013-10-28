@@ -59,18 +59,18 @@ object ScenarioConverter {
           case Some(onramp) => fds(onramp).getCapacity
           case None => 0.0
         }
-        val p = 0.8
-        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity, fd.getCongestionSpeed), link.getLength, rmax, p)
+        val p = 4.0
+        FreewayLink(FundamentalDiagram(fd.getFreeFlowSpeed, fd.getCapacity, fd.getJamDensity), link.getLength, rmax, p)
       }
     }
     val freeway = Freeway(links.toIndexedSeq, onramps.keys.toIndexedSeq, offramps.keys.toIndexedSeq)
-    val policyParams = extractPolicyParameters(dt, control, onramps.values.toList)
+    val policyParams = extractPolicyParameters(dt)
     val indexedDemand = demand.getDemandProfile.map {
       profile => {
         net.getLinkWithId(profile.getLinkIdOrg) -> profile.getDemand.toList.head
       }
     }.toMap
-    val demands = (List(mainline.head) ++ onramps.values).map {
+    val demands = onramps.values.map {
       ramp => {
         indexedDemand(ramp).getContent.split(",").map {
           _.toDouble
@@ -107,11 +107,12 @@ object ScenarioConverter {
       }.toIndexedSeq
     )
     val index = control.control.toList.map{s => s.link -> (s.min_rate -> s.max_rate)}.toMap
-    val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onramps.values.map{index(_)}.toList)))
+    //val simParams = SimulationParameters(bc, ic, Some(MeterSpec(onramps.values.tail.map{index(_)}.toList)))
+    val simParams = SimulationParameters(bc, ic)
     (FreewayScenario(freeway, simParams, policyParams), onramps.values)
   }
 
-  def extractPolicyParameters(dt: Double, control: RampMeteringControlSet, onramps: List[Link]) = {
+  def extractPolicyParameters(dt: Double) = {
     PolicyParameters(dt)
   }
 
@@ -145,7 +146,7 @@ object ScenarioConverter {
   }
 
   def isMainlineSource(link: Link) = {
-    link.isSource && link.getLinkType.getName == "Freeway"
+    link.getLinkType.getName == "Freeway" && link.getBegin_node.getInput_link.toList.forall{_.getLinkType.getName != "Freeway"}
   }
 
   def extractMainlineSource(net: Network) = {

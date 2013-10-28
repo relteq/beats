@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.control.predictive;
 
 import edu.berkeley.path.beats.simulator.Link;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,6 +15,10 @@ import java.util.List;
 public class RampMeteringPolicyProfile {
     public Link sensorLink;
     public List<Double> rampMeteringPolicy;
+
+    public RampMeteringPolicyProfile() {
+        rampMeteringPolicy = new LinkedList<Double>();
+    }
 
     public void print() {
         System.out.println(sensorLink.getLinkName());
