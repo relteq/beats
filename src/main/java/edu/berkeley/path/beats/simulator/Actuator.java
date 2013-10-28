@@ -2,8 +2,10 @@ package edu.berkeley.path.beats.simulator;
 
 
 
-public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
+//public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
+public class Actuator {
 
+	protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
 	protected Controller myController;
 	protected InterfaceActuator implementor;
 	protected Object command;
@@ -16,8 +18,9 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	public Actuator (){
 	}
 	
-	public Actuator (Controller C){
-		myController = C;
+	public Actuator (Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+		this.jaxbA = jaxbA;
+		this.myController = C;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -35,6 +38,6 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 		return;
 	}
 	
-	protected void deploy(){};
+	protected void deploy(){};	
 	
 }

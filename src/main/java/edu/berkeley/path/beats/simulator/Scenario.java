@@ -83,7 +83,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private double global_demand_knob;	// scale factor for all demands
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events	
-	private SensorList sensorlist = new SensorList();
+	private SensorSet sensorset = new SensorSet();
 	private boolean started_writing;
 
 	private String configfilename;
@@ -130,7 +130,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network) network).populate(this);
 
 		// sensors
-		sensorlist.populate(this);
+		sensorset.populate(this);
 		
 		// actuators
 		if(actuatorSet!=null)
@@ -187,7 +187,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network)network).validate();
 
 		// sensor list
-		S.sensorlist.validate();
+		S.sensorset.validate();
 
 		// validate actuators
 		if( S.actuatorSet!=null)
@@ -248,7 +248,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network)network).reset();
 		
 		// sensor list
-		sensorlist.reset();
+		sensorset.reset();
 
 		// reset actuators
 		if(actuatorSet!=null)
@@ -297,7 +297,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         		((FundamentalDiagramProfile) fdProfile).update();
     	
         // update sensor readings .......................
-    	sensorlist.update();
+    	sensorset.update();
 		
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
@@ -802,9 +802,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(long id) {
-		if(sensorlist==null)
+		if(sensorset==null)
 			return null;
-		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorlist.getSensors() ){
+		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
 			if(sensor.getId()==id)
 				return (Sensor) sensor;
 		}
@@ -992,7 +992,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	public void loadSensorData() throws BeatsException {
 
-		if(sensorlist.getSensors().isEmpty())
+		if(sensorset.getSensors().isEmpty())
 			return;
 		
 		if(sensor_data_loaded)
@@ -1003,7 +1003,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(Sensor sensor : sensorlist.getSensors()){
+		for(Sensor sensor : sensorset.getSensors()){
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -1029,7 +1029,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		P.Read5minData(data,datasources);
 		
 		// distribute data to sensors
-		for(Sensor sensor : sensorlist.getSensors()){
+		for(Sensor sensor : sensorset.getSensors()){
 			
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;

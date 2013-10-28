@@ -9,6 +9,7 @@ import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorRampMeter extends Actuator {
 	
+	private Link myLink;
 	private double max_rate_in_veh;
 	private double min_rate_in_veh;
 	
@@ -28,7 +29,7 @@ public class ActuatorRampMeter extends Actuator {
 		
 	public ActuatorRampMeter(Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
 		
-		super(C);
+		super(C,jaxbA);
 		
 		max_rate_in_veh = Double.POSITIVE_INFINITY;
 		min_rate_in_veh = Double.NEGATIVE_INFINITY;
