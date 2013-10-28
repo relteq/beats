@@ -3,13 +3,11 @@ package edu.berkeley.path.beats.actuator;
 import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorRampMeter extends Actuator {
 	
-	private Link myLink;
 	private double max_rate_in_veh;
 	private double min_rate_in_veh;
 	
@@ -27,18 +25,16 @@ public class ActuatorRampMeter extends Actuator {
 	
 	public ActuatorRampMeter(){}
 		
-	public ActuatorRampMeter(Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+	public ActuatorRampMeter(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
 		
-		super(C,jaxbA);
+		super(myScenario,jaxbA);
 		
 		max_rate_in_veh = Double.POSITIVE_INFINITY;
 		min_rate_in_veh = Double.NEGATIVE_INFINITY;
 		
-		Scenario myScenario = myController.getMyScenario();
-		Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
-
 		if(jaxbA.getParameters()!=null){
 			double dt = myScenario.getSimdtinseconds()/3600d;
+			Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
 			if(myLink!=null){
 				double lanes = myLink.get_Lanes();
 				for(Parameter p : jaxbA.getParameters().getParameter()){

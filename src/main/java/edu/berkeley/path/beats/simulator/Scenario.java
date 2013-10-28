@@ -84,6 +84,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events	
 	private SensorSet sensorset = new SensorSet();
+	private ActuatorSet actuatorset = new ActuatorSet();
 	private boolean started_writing;
 
 	private String configfilename;
@@ -133,9 +134,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		sensorset.populate(this);
 		
 		// actuators
-		if(actuatorSet!=null)
-			for( edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator() )
-				((Actuator) actuator).populate(this);
+		actuatorset.populate(this);
 		
 		// signals
 		if(signalSet!=null)
@@ -190,9 +189,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		S.sensorset.validate();
 
 		// validate actuators
-		if( S.actuatorSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Actuator actuator : S.actuatorSet.getActuator())
-				((Actuator)actuator).validate();
+		S.actuatorset.validate();
 		
 		// signal list
 		if(S.signalSet!=null)
@@ -251,9 +248,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		sensorset.reset();
 
 		// reset actuators
-		if(actuatorSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
-				((Actuator)actuator).reset();
+		actuatorset.reset();
 		
 		// signal list
 		if(signalSet!=null)
@@ -311,10 +306,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     		controllerset.update();
     	
     	// deploy actuators
-    	if(actuatorSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
-				((Actuator)actuator).deploy();
-
+    	actuatorset.deploy();
+    	
     	// update events
     	eventset.update();
     	
@@ -816,11 +809,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Actuator object.
 	 */
 	public Actuator getActuatorWithId(long id) {
-		if(getActuatorSet()==null)
+		if(actuatorset==null)
 			return null;
-		if(getActuatorSet().getActuator()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Actuator actuator : getActuatorSet().getActuator() ){
+		for(edu.berkeley.path.beats.simulator.Actuator actuator : actuatorset.getActuators() ){
 			if(actuator.getId()==id)
 				return (Actuator) actuator;
 		}

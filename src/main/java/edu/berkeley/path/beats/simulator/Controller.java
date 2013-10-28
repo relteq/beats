@@ -155,32 +155,12 @@ public class Controller {
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
 				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
-					Actuator jaxbA = getMyScenario().getActuatorWithId(ta.getId());
-					if(jaxbA!=null){
-						Actuator myActuator = null;
-						ActuatorType myActuatorType = Controller.map_algorithm_actuator.get(myType);
-						switch(myActuatorType){
-						case RAMP_METER:
-							myActuator = new ActuatorRampMeter(this,jaxbA);
-							break;
-						case CMS:
-							myActuator = new ActuatorCMS(this,jaxbA);
-							break;
-						case VSL:
-							myActuator = new ActuatorVSL(this,jaxbA);
-							break;
-						case SIGNAL:
-							myActuator = new ActuatorSignal(this,jaxbA);
-							break;
-						}
-						actuators.add(myActuator);
-						actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
-					}
+					actuators.add(getMyScenario().getActuatorWithId(ta.getId()));
+					actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
 				}
 			}
 
 			// read feedback sensors
-
 			sensors = new ArrayList<Sensor>();
 			sensor_usage = new ArrayList<String>();
 			if(jaxbC.getFeedbackSensors()!=null && jaxbC.getFeedbackSensors().getFeedbackSensor()!=null){

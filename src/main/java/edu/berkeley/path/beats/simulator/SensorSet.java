@@ -47,8 +47,6 @@ final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate(Scenario myScenario) {
-
-		//this.myScenario = myScenario;
 		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(myScenario.getSensorSet()!=null){
