@@ -120,17 +120,17 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	
 	@Override
 	protected void reset() {
-		super.reset();
-		todActivationIndx=0;
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=getMyScenario().getTimeStart())
-			todActivationIndx++;
-		setControl_maxflow(0, todMeteringRates_normalized[todActivationIndx]);
+//		super.reset();
+//		todActivationIndx=0;
+//		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=getMyScenario().getTimeStart())
+//			todActivationIndx++;
+//		setControl_maxflow(0, todMeteringRates_normalized[todActivationIndx]);
 	}
 
 	@Override
 	protected void update() {
-		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=getMyScenario().getCurrentTimeInSeconds())
-			setControl_maxflow(0, todMeteringRates_normalized[++todActivationIndx]);		
+//		while (todActivationIndx<todActivationTimes.length-1 && todActivationTimes[todActivationIndx+1] <=getMyScenario().getCurrentTimeInSeconds())
+//			setControl_maxflow(0, todMeteringRates_normalized[++todActivationIndx]);		
 	}
 
 	/////////////////////////////////////////////////////////////////////

@@ -40,7 +40,6 @@ public class Controller_IRM_Alinea extends Controller {
 	// sensors
 	private Sensor mainline_sensor;
 	private Link mainline_link;
-//	private Sensor queue_sensor;
 	
 	// actuator
 	private ActuatorRampMeter ramp_meter;
@@ -102,10 +101,6 @@ public class Controller_IRM_Alinea extends Controller {
 		ArrayList<Sensor> mainlinesensor_list = getSensorByUsage("mainline");
 		mainline_sensor = mainlinesensor_list.size()==1 ? mainlinesensor_list.get(0) : null;
 		mainline_link = mainline_sensor!=null ? mainline_sensor.getMyLink() : null;
-		
-		// assign queue sensor
-//		ArrayList<Sensor> queuesensor_list = getSensorByUsage("queue");
-//		queue_sensor = queuesensor_list.size()==1 ? queuesensor_list.get(0) : null;
 
 		// assign actuator
 		ramp_meter = actuators.size()==1 ? (ActuatorRampMeter)actuators.get(0) : null;

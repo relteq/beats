@@ -51,71 +51,71 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 	
 	protected void populate(Controller_SIG_Pretimed myController, Scenario myScenario, Controller_SIG_Pretimed.Plan plan) {
 		
-		this.myController = myController;
-		
-		this.setId(plan.getId());
-		
-		if (null != plan.getCycleLength())
-			_cyclelength = plan.getCycleLength().doubleValue();
-					
-		if (null != plan.getIntersection()) {
-			int numintersection = plan.getIntersection().size();
-			havesignaltarget = new boolean[numintersection];
-			intersplan = new Controller_SIG_Pretimed_IntersectionPlan[numintersection];
-			for(int i=0;i<intersplan.length;i++){
-
-				// check whether the signal is in the target list
-				Controller_SIG_Pretimed.Intersection intersection = plan.getIntersection().get(i);
-				Signal mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
-				if(mySignal==null)
-					continue;
-				boolean haveit = false;
-				for(Actuator act : myController.actuators){
-					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 && se.getId()==mySignal.getId() ){
-						haveit=true;
-					}
-				}
-				if(!haveit)
-					continue;				
-				intersplan[i] = new Controller_SIG_Pretimed_IntersectionPlan(this);
-				intersplan[i].populate(myScenario, intersection);
-			}
-		}
+//		this.myController = myController;
+//		
+//		this.setId(plan.getId());
+//		
+//		if (null != plan.getCycleLength())
+//			_cyclelength = plan.getCycleLength().doubleValue();
+//					
+//		if (null != plan.getIntersection()) {
+//			int numintersection = plan.getIntersection().size();
+//			havesignaltarget = new boolean[numintersection];
+//			intersplan = new Controller_SIG_Pretimed_IntersectionPlan[numintersection];
+//			for(int i=0;i<intersplan.length;i++){
+//
+//				// check whether the signal is in the target list
+//				Controller_SIG_Pretimed.Intersection intersection = plan.getIntersection().get(i);
+//				Signal mySignal = myScenario.getSignalWithNodeId(intersection.getNodeId());
+//				if(mySignal==null)
+//					continue;
+//				boolean haveit = false;
+//				for(Actuator act : myController.actuators){
+//					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 && se.getId()==mySignal.getId() ){
+//						haveit=true;
+//					}
+//				}
+//				if(!haveit)
+//					continue;				
+//				intersplan[i] = new Controller_SIG_Pretimed_IntersectionPlan(this);
+//				intersplan[i].populate(myScenario, intersection);
+//			}
+//		}
 		
 	}
 	
 	protected void validate(){
 		
-		if(myController==null)
-			BeatsErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
-		
-		// positive cycle
-		if(_cyclelength<=0)
-			BeatsErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
-		
-		// cycle length should be a multiple of controller dt
-		if(myController!=null)
-			if(!BeatsMath.isintegermultipleof(_cyclelength,myController.getDtinseconds()))
-				BeatsErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
-		
-		// plan includes all targets
-		boolean foundit;
-		if(myController!=null)
-			for(ScenarioElement se : myController.getTargets()){
-				foundit = false;
-				for(int i=0;i<intersplan.length;i++){
-					if(se.getId()==intersplan[i].mySignal.getId()){
-						foundit=true;
-						break;
-					}
-				}
-				if(!foundit)
-					BeatsErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
-			}
-		
-		// intersection plans
-		for(int i=0;i<intersplan.length;i++)
-			intersplan[i].validate(myController.getDtinseconds());
+//		if(myController==null)
+//			BeatsErrorLog.addError("Invalid controller for pretimed signal plan id=" + getId() + ".");
+//		
+//		// positive cycle
+//		if(_cyclelength<=0)
+//			BeatsErrorLog.addError("Non-positive cycle length in pretimed signal controller id=" + getId() + ".");
+//		
+//		// cycle length should be a multiple of controller dt
+//		if(myController!=null)
+//			if(!BeatsMath.isintegermultipleof(_cyclelength,myController.getDtinseconds()))
+//				BeatsErrorLog.addError("Cycle length is not an integer multiple of controller rate in pretimed signal controller id=" + getId()+ ".");
+//		
+//		// plan includes all targets
+//		boolean foundit;
+//		if(myController!=null)
+//			for(ScenarioElement se : myController.getTargets()){
+//				foundit = false;
+//				for(int i=0;i<intersplan.length;i++){
+//					if(se.getId()==intersplan[i].mySignal.getId()){
+//						foundit=true;
+//						break;
+//					}
+//				}
+//				if(!foundit)
+//					BeatsErrorLog.addError("Controller target (id="+se.getId()+") not found in pretimed signal plan id="+getId());
+//			}
+//		
+//		// intersection plans
+//		for(int i=0;i<intersplan.length;i++)
+//			intersplan[i].validate(myController.getDtinseconds());
 		
 	}
 

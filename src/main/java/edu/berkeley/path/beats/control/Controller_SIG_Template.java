@@ -41,18 +41,18 @@ public class Controller_SIG_Template extends Controller {
 		super.update();
 		
 		
-		ArrayList<Sensor> x = getSensorByUsage("queue_2");
-		AccumulationSensor bla = (AccumulationSensor) x.get(0);
-		ArrayList< time,queue > = bla.getQueueHistory()
-				bla.resetQueueHistory();
-		
-		.
-		.
-		.
-		.
-		
-		ActuatorSignal act = (ActuatorSignal) = this.actuators.get(0);
-		act.setGreenTimes(List<Double> green_times);
+//		ArrayList<Sensor> x = getSensorByUsage("queue_2");
+//		AccumulationSensor bla = (AccumulationSensor) x.get(0);
+//		ArrayList< time,queue > = bla.getQueueHistory()
+//				bla.resetQueueHistory();
+//		
+//		.
+//		.
+//		.
+//		.
+//		
+//		ActuatorSignal act = (ActuatorSignal) = this.actuators.get(0);
+//		act.setGreenTimes(List<Double> green_times);
 		
 		
 		

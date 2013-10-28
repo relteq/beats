@@ -39,9 +39,7 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	private Link mainlinelink = null;
 	private Sensor mainlinesensor = null;
 	private Sensor queuesensor = null;
-//	private boolean usesensor;
 	
-//	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
 	boolean hasmainlinesensor; 		// true if config file contains entry for mainlinesensor
 	boolean hasqueuesensor; 		// true if config file contains entry for queuesensor
 
@@ -216,47 +214,32 @@ public class Controller_IRM_Traffic_Responsive extends Controller {
 	@Override
 	protected void update() {
 		
-		double mainlineocc=Double.POSITIVE_INFINITY;
-		double mainlinespeed=Double.POSITIVE_INFINITY;
-		double mainlineflow=Double.POSITIVE_INFINITY;
-		// get mainline occ/spd/flow either from sensor or from link	
-		if (hasoccthres)
-//			if(usesensor){
-				mainlineocc = mainlinesensor.getOccupancy(0);			
-//			}
-//			else {
-//				mainlineocc = mainlinelink.getTotalDensityInVeh(0)/mainlinelink.getDensityJamInVeh(0);
-//			}
-		
-		if (hasspeedthres)
-//			if(usesensor){
-				mainlinespeed = mainlinesensor.getSpeedInMPS(0);
-//			}
-//			else {
-//				mainlinespeed = mainlinelink.getTotalOutflowInVeh(0) / mainlinelink.getTotalDensityInVPMeter(0) / getMyScenario().getSimdtinseconds();
-//			}
-		
-		if (hasflowthres)
-//			if(usesensor){
-				mainlineflow = mainlinesensor.getTotalFlowInVPS(0);
-//			}
-//			else {
-//				mainlineflow = mainlinelink.getTotalOutflowInVeh(0) / getMyScenario().getSimdtinseconds();
-//			}		
-		
-		// metering rate adjustments
-		while (trlevelindex >0 && (hasoccthres && mainlineocc<=trOccThresh[trlevelindex]) 
-				&& (hasspeedthres && mainlinespeed<=trSpeedThresh[trlevelindex])
-				&& (hasflowthres && mainlineflow<=trFlowThresh[trlevelindex]))
-			trlevelindex--;
-		
-		while (trlevelindex <trMeteringRates_normalized.length-1 &&
-				((hasoccthres && mainlineocc>trOccThresh[trlevelindex+1]) || 
-				(hasspeedthres && mainlinespeed>trSpeedThresh[trlevelindex])
-				|| (hasflowthres && mainlineflow>trFlowThresh[trlevelindex])))
-			trlevelindex++;
-		
-		setControl_maxflow(0, trMeteringRates_normalized[trlevelindex]);
+//		double mainlineocc=Double.POSITIVE_INFINITY;
+//		double mainlinespeed=Double.POSITIVE_INFINITY;
+//		double mainlineflow=Double.POSITIVE_INFINITY;
+//
+//		if (hasoccthres)
+//			mainlineocc = mainlinesensor.getOccupancy(0);			
+//		
+//		if (hasspeedthres)
+//			mainlinespeed = mainlinesensor.getSpeedInMPS(0);
+//		
+//		if (hasflowthres)
+//			mainlineflow = mainlinesensor.getTotalFlowInVPS(0);		
+//		
+//		// metering rate adjustments
+//		while (trlevelindex >0 && (hasoccthres && mainlineocc<=trOccThresh[trlevelindex]) 
+//				&& (hasspeedthres && mainlinespeed<=trSpeedThresh[trlevelindex])
+//				&& (hasflowthres && mainlineflow<=trFlowThresh[trlevelindex]))
+//			trlevelindex--;
+//		
+//		while (trlevelindex <trMeteringRates_normalized.length-1 &&
+//				((hasoccthres && mainlineocc>trOccThresh[trlevelindex+1]) || 
+//				(hasspeedthres && mainlinespeed>trSpeedThresh[trlevelindex])
+//				|| (hasflowthres && mainlineflow>trFlowThresh[trlevelindex])))
+//			trlevelindex++;
+//		
+//		setControl_maxflow(0, trMeteringRates_normalized[trlevelindex]);
 
 	}
 
