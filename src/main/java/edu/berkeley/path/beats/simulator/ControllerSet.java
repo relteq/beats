@@ -100,7 +100,7 @@ final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
 		// This is not added to the list of active controllers, because it is always active, thought we may need to change that.
 		// We also validate each controller for its internal paramters.
 		for(Controller controller : controllers){			
-			if (controller.getActivationTimes()==null)
+			if (controller.getActivationTimes().isEmpty())
 				if (!controller.register()){
 					BeatsErrorLog.addError("Controller registration failure, controller " + controller.getId());
 					return false;

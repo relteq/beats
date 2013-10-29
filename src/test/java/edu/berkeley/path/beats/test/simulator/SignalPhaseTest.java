@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.test.simulator;
 import static org.junit.Assert.*;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.Defaults;
@@ -11,6 +12,7 @@ import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Signal.NEMA;
 import edu.berkeley.path.beats.simulator.SignalPhase;
 
+@Ignore("redo signals")
 public class SignalPhaseTest {
 
 	private static SignalPhase signalphase;
@@ -29,8 +31,6 @@ public class SignalPhaseTest {
 		double endtime = 300;
 		int numEnsemble = 1;
 		scenario.initialize(timestep,starttime,endtime,numEnsemble);
-		
-		
 		signalphase = scenario.getSignalWithId(-12).getPhaseByNEMA(NEMA._2);
 	}
 	
@@ -48,7 +48,7 @@ public class SignalPhaseTest {
 	public void test_getMingreen() {
 		assertEquals(signalphase.getMingreen(),0.0,1e-4);
 	}
-	
+
 	@Test
 	public void test_getMyNEMA() {
 		assertEquals(signalphase.getNEMA().compareTo(NEMA._2),0);
