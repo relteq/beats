@@ -225,8 +225,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				totaloutflow = Math.min( totaloutflow , myCapacityProfile.getCurrentValue() );
 
 			// flow controller
-if(id==-6)
-System.out.println(this.getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\tLink: " +totaloutflow +"\t"+external_max_flow);
 			totaloutflow = Math.min( totaloutflow , external_max_flow );   
 
 			// flow uncertainty model
