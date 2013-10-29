@@ -1,19 +1,16 @@
 package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.ActuatorType;
-import edu.berkeley.path.beats.jaxb.DisplayPosition;
 import edu.berkeley.path.beats.jaxb.Parameters;
 import edu.berkeley.path.beats.jaxb.ScenarioElement;
 import edu.berkeley.path.beats.jaxb.Table;
-
-
 
 //public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 public class Actuator {
 
 	protected Scenario myScenario;
 	protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
-	protected InterfaceActuator implementor;
+	protected ActuatorImplementation implementor;
 	protected Object command;
 	
 	public static enum Type	{ ramp_meter,
@@ -32,6 +29,10 @@ public class Actuator {
 	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
 		this.myScenario = myScenario;
 		this.jaxbA = jaxbA;
+		if(jaxbA.getScenarioElement().getType().compareToIgnoreCase("link")==0){
+			Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
+			implementor = new ActuatorImplementation(myLink);
+		}
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -43,6 +44,8 @@ public class Actuator {
 	}
 
 	protected void validate() {
+		if(implementor.getLink()==null)
+			BeatsErrorLog.addError("Bad link reference in actuator id="+getId());
 	}
 
 	protected void reset() throws BeatsException {

@@ -4,7 +4,6 @@ import java.util.List;
 
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorSignal extends Actuator {

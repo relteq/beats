@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -45,28 +44,9 @@ import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
-import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
-/** Load, manipulate, and run scenarios. 
- * <p>
- * A scenario is a collection of,
- * <ul>
- * <li> networks (nodes, links, sensors, and signals), </li>
- * <li> network connections, </li>
- * <li> initial conditions, </li>
- * <li> weaving factor profiles, </li>
- * <li> split ratio profiles, </li>
- * <li> downstream boundary conditions, </li> 
- * <li> events, </li>
- * <li> controllers, </li>
- * <li> fundamental diagram profiles, </li>
- * <li> destination networks, and </li>
- * <li> demand profiles. </li>
-*  </ul>
- * @author Gabriel Gomes (gomes@path.berkeley.edu)
-*/
 @SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 

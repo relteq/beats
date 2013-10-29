@@ -378,7 +378,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// controller registration .........................................
 	
 	public void set_external_max_flow(double value){
-		external_max_flow = value;
+		external_max_flow = value;		
 	}
 	
 	public void set_external_max_speed(double value){

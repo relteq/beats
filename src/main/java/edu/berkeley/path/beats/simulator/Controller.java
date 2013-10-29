@@ -33,10 +33,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
-import edu.berkeley.path.beats.actuator.ActuatorSignal;
-import edu.berkeley.path.beats.actuator.ActuatorVSL;
 import edu.berkeley.path.beats.jaxb.FeedbackSensor;
 import edu.berkeley.path.beats.jaxb.TargetActuator;
 

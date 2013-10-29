@@ -2,7 +2,7 @@ package edu.berkeley.path.beats.actuator;
 
 import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.simulator.Actuator;
-import edu.berkeley.path.beats.simulator.BeatsException;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 
@@ -12,7 +12,7 @@ public class ActuatorRampMeter extends Actuator {
 	private double min_rate_in_veh;
 	
 	public void setMeteringRateInVeh(Double rate){
-		this.command = rate;
+		this.command = rate;		
 	}
 
 	public void setMeteringRateInVPH(Double rate){
@@ -26,11 +26,18 @@ public class ActuatorRampMeter extends Actuator {
 	public ActuatorRampMeter(){}
 		
 	public ActuatorRampMeter(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
-		
 		super(myScenario,jaxbA);
+	}
+	
+	/////////////////////////////////////////////////////////////////////
+	// populate / validate / reset / deploy
+	/////////////////////////////////////////////////////////////////////
+
+	@Override
+	protected void populate(Object jaxbobject) {
 		
 		max_rate_in_veh = Double.POSITIVE_INFINITY;
-		min_rate_in_veh = Double.NEGATIVE_INFINITY;
+		min_rate_in_veh = 0d;
 		
 		if(jaxbA.getParameters()!=null){
 			double dt = myScenario.getSimdtinseconds()/3600d;
@@ -46,23 +53,17 @@ public class ActuatorRampMeter extends Actuator {
 			}	
 		}
 	}
-	
-	/////////////////////////////////////////////////////////////////////
-	// populate / validate / reset / deploy
-	/////////////////////////////////////////////////////////////////////
-
-	@Override
-	protected void populate(Object jaxbobject) {
-		return;
-	}
 
 	@Override
 	protected void validate() {
-	}
+		if(max_rate_in_veh<0)
+			BeatsErrorLog.addError("Negative max rate in ramp metering actuator id="+getId());
 
-	@Override
-	protected void reset() throws BeatsException {
-		return;
+		if(min_rate_in_veh<0)
+			BeatsErrorLog.addError("Negative min rate in ramp metering actuator id="+getId());
+		
+		if(max_rate_in_veh<min_rate_in_veh)
+			BeatsErrorLog.addError("max rate less than min rate in actuator id="+getId());
 	}
 
 	@Override

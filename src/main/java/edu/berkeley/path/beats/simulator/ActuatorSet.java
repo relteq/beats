@@ -2,11 +2,9 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-import edu.berkeley.path.beats.jaxb.SensorType;
 import edu.berkeley.path.beats.jaxb.ActuatorType;
 
 public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
-
 
 	private ArrayList<Actuator> actuators = new ArrayList<Actuator>();
 
@@ -38,7 +36,7 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 					continue;
 				}
 				
-				// generate sensor
+				// generate actuator
 				if(myType!=null){
 					Actuator A = ObjectFactory.createActuatorFromJaxb(myScenario,jaxba,myType);
 					if(A!=null)
