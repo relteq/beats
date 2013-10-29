@@ -264,10 +264,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 			// flow controller
 			if(myFlowController!=null && myFlowController.isIson()){
-				control_maxflow = myFlowController.getControl_maxflow(control_maxflow_index);
-				
-System.out.println(this.myNetwork.getMyScenario().getCurrentTimeInSeconds() +"\t"+ control_maxflow);
-				
+				control_maxflow = myFlowController.getControl_maxflow(control_maxflow_index);				
 				totaloutflow = Math.min( totaloutflow , control_maxflow );
 			}    
 

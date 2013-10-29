@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.Defaults;
@@ -15,6 +16,7 @@ import edu.berkeley.path.beats.simulator.Signal.Command;
 import edu.berkeley.path.beats.simulator.Signal.NEMA;
 import edu.berkeley.path.beats.simulator.SignalPhase;
 
+@Ignore("redo signals")
 public class SignalTest {
 
 	private static Signal signal;

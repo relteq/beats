@@ -28,13 +28,13 @@ public class BrokenScenarioTest {
 													"_scenario_constantsplits",
 													"_smalltest_multipletypes",
 		 											 "_scenario_2009_02_12",
-													 "Albany-and-Berkeley",
 													 "testfwy2",
 													 "testfwy_w",
 													 "test_event"
 													 };
 	
-	private static String[] broken_config_names = { "_smalltest_nocontrol_broken"};
+	private static String[] broken_config_names = { "_smalltest_nocontrol_broken, " +
+													"Albany-and-Berkeley"};
 
 	/**
 	 * Lists working configuration files
