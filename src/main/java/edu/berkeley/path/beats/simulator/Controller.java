@@ -56,15 +56,8 @@ public class Controller {
 	protected ArrayList<String> actuator_usage;
 	
 	/** List of scenario elements that provide input to this controller */
-	//private ArrayList<ScenarioElement> feedbacks;
 	protected ArrayList<Sensor> sensors;
 	protected ArrayList<String> sensor_usage;
-	
-	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
-//	protected double [] control_maxflow;
-	
-	/** Maximum flow for link targets, in normalized units. Indexed by target.  */
-//	private double [] control_maxspeed;
 	
 	/** Controller update period in seconds */
 	protected double dtinseconds;
@@ -167,13 +160,7 @@ public class Controller {
 			}
 
 	 }
-
-//	 protected Controller(ArrayList<ScenarioElement> targets){
-//		 this.targets = targets;
-//		 this.control_maxflow  = new Double [targets.size()];
-//		 this.control_maxspeed = new Double [targets.size()];
-//	 }
-
+	 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
@@ -213,10 +200,6 @@ public class Controller {
 		// check that type was read correctly
 		if(myType==null)
 			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
-		
-		// check that the target is valid
-//		if(targets==null)
-//			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
@@ -395,14 +378,6 @@ public class Controller {
 		return myScenario;
 	}
 
-//	public double getControl_maxflow(int index) {
-//		return control_maxflow[index];
-//	}
-//
-//	public double getControl_maxspeed(int index) {
-//		return control_maxspeed[index];
-//	}
-
 	public int getSamplesteps() {
 		return samplesteps;
 	}
@@ -469,14 +444,6 @@ public class Controller {
 	protected edu.berkeley.path.beats.jaxb.Controller getJaxbController() {
 		return jaxbController;
 	}
-
-//	protected void setControl_maxflow(int index, double control_maxflow) {
-//		this.control_maxflow[index] = control_maxflow;
-//	}
-//
-//	protected void setControl_maxspeed(int index, double control_maxspeed) {
-//		this.control_maxspeed[index] = control_maxspeed;
-//	}
 
 	protected void setIson(boolean ison) {
 		this.ison = ison;
@@ -546,8 +513,6 @@ public class Controller {
 			compare = ((Double) this.getEndtime()).compareTo((Double) that.getEndtime());
 				
 			return compare;
-				
-				
 		}
 		
 	}

@@ -106,10 +106,7 @@ public class Controller_IRM_Alinea extends Controller {
 		ramp_meter = actuators.size()==1 ? (ActuatorRampMeter)actuators.get(0) : null;
 		
 		// get reference to onramp link
-		if(ramp_meter!=null && ramp_meter.getScenarioElement()!=null)
-			onramp_link = myScenario.getLinkWithId(ramp_meter.getScenarioElement().getId());
-		else
-			onramp_link = null;
+		onramp_link = ramp_meter!=null ? ramp_meter.getLink() : null;
 		
 		// read parameters
 		target_density_given = false;

@@ -1,11 +1,5 @@
 package edu.berkeley.path.beats.simulator;
 
-import edu.berkeley.path.beats.jaxb.ActuatorType;
-import edu.berkeley.path.beats.jaxb.Parameters;
-import edu.berkeley.path.beats.jaxb.ScenarioElement;
-import edu.berkeley.path.beats.jaxb.Table;
-
-//public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 public class Actuator {
 
 	protected Scenario myScenario;
@@ -53,26 +47,6 @@ public class Actuator {
 	}
 	
 	protected void deploy(){};	
-
-	/////////////////////////////////////////////////////////////////////
-	// jaxb interface
-	/////////////////////////////////////////////////////////////////////
-
-    public ScenarioElement getScenarioElement() {
-        return jaxbA.getScenarioElement();
-    }
-
-    public Parameters getParameters() {
-        return jaxbA.getParameters();
-    }
-
-    public Table getTable() {
-        return jaxbA.getTable();
-    }
-
-    public ActuatorType getActuatorType() {
-        return jaxbA.getActuatorType();
-    }
 
     public long getId() {
         return jaxbA.getId();

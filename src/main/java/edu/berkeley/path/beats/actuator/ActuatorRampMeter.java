@@ -8,11 +8,16 @@ import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorRampMeter extends Actuator {
 	
+	private Link myLink;
 	private double max_rate_in_veh;
 	private double min_rate_in_veh;
 	
 	public void setMeteringRateInVeh(Double rate){
-		this.command = rate;		
+		this.command = rate;
+System.out.println(this.getLink().getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\tActuator: " + command.toString());
+		
+
+
 	}
 
 	public void setMeteringRateInVPH(Double rate){
@@ -38,24 +43,24 @@ public class ActuatorRampMeter extends Actuator {
 		
 		max_rate_in_veh = Double.POSITIVE_INFINITY;
 		min_rate_in_veh = 0d;
-		
-		if(jaxbA.getParameters()!=null){
+		myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
+
+		if(myLink!=null && jaxbA.getParameters()!=null){
 			double dt = myScenario.getSimdtinseconds()/3600d;
-			Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
-			if(myLink!=null){
-				double lanes = myLink.get_Lanes();
-				for(Parameter p : jaxbA.getParameters().getParameter()){
-					if(p.getName().compareTo("max_rate_in_vphpl")==0)
-						max_rate_in_veh = Double.parseDouble(p.getValue())*dt*lanes;
-					if(p.getName().compareTo("max_rate_in_vphpl")==0)
-						min_rate_in_veh = Double.parseDouble(p.getValue())*dt*lanes;
-				}
+			double lanes = myLink.get_Lanes();
+			for(Parameter p : jaxbA.getParameters().getParameter()){
+				if(p.getName().compareTo("max_rate_in_vphpl")==0)
+					max_rate_in_veh = Double.parseDouble(p.getValue())*dt*lanes;
+				if(p.getName().compareTo("max_rate_in_vphpl")==0)
+					min_rate_in_veh = Double.parseDouble(p.getValue())*dt*lanes;
 			}	
 		}
 	}
 
 	@Override
 	protected void validate() {
+		if(myLink==null)
+			BeatsErrorLog.addError("Bad link id in ramp metering actuator id="+getId());
 		if(max_rate_in_veh<0)
 			BeatsErrorLog.addError("Negative max rate in ramp metering actuator id="+getId());
 
@@ -69,6 +74,10 @@ public class ActuatorRampMeter extends Actuator {
 	@Override
 	public void deploy() {
 		this.implementor.deploy_metering_rate((Double) command);
+	}
+	
+	public Link getLink(){
+		return myLink;
 	}
 
 }
