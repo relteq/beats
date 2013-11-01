@@ -13,7 +13,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface RampMeteringPolicyMaker {
-
+    // dt should be same across all passed in objects (universal simulation dt)
     RampMeteringPolicySet givePolicy(Network net,
                                      FundamentalDiagramSet fd,
                                      DemandSet demand,

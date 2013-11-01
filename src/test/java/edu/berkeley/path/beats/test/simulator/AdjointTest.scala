@@ -37,7 +37,7 @@ class AdjointTest extends FunSuite with ShouldMatchers {
         or => {
           val meter = new RampMeteringControl
           meter.min_rate = 0.0
-          meter.max_rate = 1.0
+          meter.max_rate = 0.00001
           meter.link = or
           mtrs.control.add(meter)
         }

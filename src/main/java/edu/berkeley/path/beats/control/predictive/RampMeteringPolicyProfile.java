@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class RampMeteringPolicyProfile {
     public Link sensorLink;
-    public List<Double> rampMeteringPolicy;
+    public List<Double> rampMeteringPolicy; // vehicles / (unit time), each element per simulation timestep
 
     public RampMeteringPolicyProfile() {
         rampMeteringPolicy = new LinkedList<Double>();
