@@ -27,6 +27,7 @@
 package edu.berkeley.path.beats.util;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 import javax.measure.quantity.Duration;
 import javax.measure.quantity.Length;
@@ -338,24 +339,27 @@ public class UnitConverter {
 	}
 
 	private void process(Table table) {
-		if (null == table) return;
-		javax.measure.converter.UnitConverter conv[] = new javax.measure.converter.UnitConverter[table.getColumnNames().getColumnName().size()];
-		int colnum = 0;
-		for (ColumnName colname : table.getColumnNames().getColumnName()) {
-			if (colname.getName().equals("MeteringRates") || colname.getName().equals("FlowThresholds"))
-				conv[colnum] = fconv;
-			else if (colname.getName().equals("SpeedThresholds"))
-				conv[colnum] = sconv;
-			else
-				conv[colnum] = null;
-			++colnum;
-		}
+		if (null == table) 
+			return;
+		
+		// column id/name map
+		HashMap<Long,String> column_id_to_name = new HashMap<Long,String>();
+		for(ColumnName cn : table.getColumnNames().getColumnName())
+			column_id_to_name.put(cn.getId(), cn.getName());
+		
+		// go through rows
 		for (Row row : table.getRow()) {
-			java.util.ListIterator<String> citer = row.getColumn().listIterator();
-			for (colnum = 0; citer.hasNext(); ++colnum) {
-				String value = citer.next();
-				if (null != conv[colnum])
-					citer.set(convert(new BigDecimal(value), conv[colnum]).toPlainString());
+			for(Column c : row.getColumn()){
+				String value = c.getContent();
+				String colname = column_id_to_name.get(c.getId());
+				String newvalue;
+				if (colname.equals("MeteringRates") || colname.equals("FlowThresholds"))
+					newvalue = convert(new BigDecimal(value), fconv).toPlainString();
+				else if (colname.equals("SpeedThresholds"))
+					newvalue = convert(new BigDecimal(value), sconv).toPlainString();
+				else
+					newvalue = value;
+				c.setContent(newvalue);
 			}
 		}
 	}

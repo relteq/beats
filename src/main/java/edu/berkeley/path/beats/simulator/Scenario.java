@@ -132,6 +132,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		// sensors
 		sensorlist.populate(this);
 		
+		// actuators
+		if(actuatorSet!=null)
+			for( edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator() )
+				((Actuator) actuator).populate(this);
+		
 		// signals
 		if(signalSet!=null)
 			for(edu.berkeley.path.beats.jaxb.Signal signal : signalSet.getSignal())
@@ -183,6 +188,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 		// sensor list
 		S.sensorlist.validate();
+
+		// validate actuators
+		if( S.actuatorSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Actuator actuator : S.actuatorSet.getActuator())
+				((Actuator)actuator).validate();
 		
 		// signal list
 		if(S.signalSet!=null)
@@ -233,11 +243,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		clock.reset();
 		
 		// reset network
-		for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
-			((Network)network).reset();
+		if(networkSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Network network : networkSet.getNetwork())
+				((Network)network).reset();
 		
 		// sensor list
 		sensorlist.reset();
+
+		// reset actuators
+		if(actuatorSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
+				((Actuator)actuator).reset();
 		
 		// signal list
 		if(signalSet!=null)
@@ -293,6 +309,11 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         // update controllers
     	if(global_control_on)
     		controllerset.update();
+    	
+    	// deploy actuators
+    	if(actuatorSet!=null)
+			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
+				((Actuator)actuator).deploy();
 
     	// update events
     	eventset.update();
@@ -372,18 +393,18 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	    populate();
 
 	    // register signals with their targets ..................................
-	    boolean registersuccess = true;
-		if(getSignalSet()!=null)
-	    	for(edu.berkeley.path.beats.jaxb.Signal signal: getSignalSet().getSignal())
-	    		registersuccess &= ((Signal)signal).register();
-	    if(!registersuccess){
-	    	throw new BeatsException("Signal registration failure");
-	    }
-
-	    if(getControllerset()!=null)
-	    	if(!getControllerset().register()){
-	    		throw new BeatsException("Controller registration failure");
-		    }
+//	    boolean registersuccess = true;
+//		if(getSignalSet()!=null)
+//	    	for(edu.berkeley.path.beats.jaxb.Signal signal: getSignalSet().getSignal())
+//	    		registersuccess &= ((Signal)signal).register();
+//	    if(!registersuccess){
+//	    	throw new BeatsException("Signal registration failure");
+//	    }
+//
+//	    if(getControllerset()!=null)
+//	    	if(!getControllerset().register()){
+//	    		throw new BeatsException("Controller registration failure");
+//		    }
 
 	    // print messages and clear before validation
 		if (BeatsErrorLog.hasmessage()) {
@@ -790,6 +811,22 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return null;
 	}
 
+	/** Get actuator with given id.
+	 * @param id String id of the actuator.
+	 * @return Actuator object.
+	 */
+	public Actuator getActuatorWithId(long id) {
+		if(getActuatorSet()==null)
+			return null;
+		if(getActuatorSet().getActuator()==null)
+			return null;
+		for(edu.berkeley.path.beats.jaxb.Actuator actuator : getActuatorSet().getActuator() ){
+			if(actuator.getId()==id)
+				return (Actuator) actuator;
+		}
+		return null;
+	}
+	
 	/** Get signal with given id.
 	 * @param id String id of the signal.
 	 * @return Signal object.

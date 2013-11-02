@@ -41,15 +41,7 @@ public class LinkTest {
 
 	@Test
 	public void test_getMyType() {
-		assertTrue(link.getMyType().compareTo(Link.Type.freeway)==0);
-	}
-
-	@Test
-	public void test_isFreewayType() {
-		assertTrue(Link.isFreewayType(link));
-		
-		// edge case
-		assertFalse(Link.isFreewayType(null));
+		assertTrue(link.isFreeway());
 	}
 
 	@Test

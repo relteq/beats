@@ -26,6 +26,9 @@
 
 package edu.berkeley.path.beats.control;
 
+import java.util.ArrayList;
+
+import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -34,28 +37,27 @@ import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 
 public class Controller_IRM_Alinea extends Controller {
 
-	private Link onramplink = null;
-	private Link mainlinelink = null;
-	private Sensor mainlinesensor = null;
-	private Sensor queuesensor = null;
-	private double gain_normalized;			// [-]
+	// sensors
+	private Sensor mainline_sensor;
+	private Link mainline_link;
+//	private Sensor queue_sensor;
 	
-	private boolean targetdensity_given; 	// true if the user specifies the target density in the configuration file.
+	// actuator
+	private ActuatorRampMeter ramp_meter;
+	private Link onramp_link;
+	
+	// parameters
+	private double gain_normalized;			// [-]
+	private boolean target_density_given; 	// true if the user specifies the target density in the configuration file.
 											// In this case the this value is used and kept constant
 											// Otherwise it is assigned the critical density, which may change with fd profile.  
+	private double target_vehicles;			// [veh/meter/lane]
 	
-	private double targetvehicles;			// [veh/meter/lane]
-	private boolean usesensor;
-	
-	boolean hasmainlinelink;		// true if config file contains entry for mainlinelink
-	boolean hasmainlinesensor; 		// true if config file contains entry for mainlinesensor
-	boolean hasqueuesensor; 		// true if config file contains entry for queuesensor
-
 	/////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Alinea(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+	public Controller_IRM_Alinea(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
 		super(myScenario,c,myType);
 	}
 
@@ -96,92 +98,48 @@ public class Controller_IRM_Alinea extends Controller {
 
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
-		if(jaxbc.getFeedbackElements()==null)
-			return;
-		if(jaxbc.getFeedbackElements().getScenarioElement()==null)
-			return;
+		// assign mainline sensor and link
+		ArrayList<Sensor> mainlinesensor_list = getSensorByUsage("mainline");
+		mainline_sensor = mainlinesensor_list.size()==1 ? mainlinesensor_list.get(0) : null;
+		mainline_link = mainline_sensor!=null ? mainline_sensor.getMyLink() : null;
 		
-		hasmainlinelink = false;
-		hasmainlinesensor = false;
-		hasqueuesensor = false;
-		
-		// There should be only one target element, and it is the onramp
-		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
-			onramplink = getMyScenario().getLinkWithId(s.getId());	
-		}
-		
-		// Feedback elements can be "mainlinesensor","mainlinelink", and "queuesensor"
-		if(!jaxbc.getFeedbackElements().getScenarioElement().isEmpty()){
-			
-			for(edu.berkeley.path.beats.jaxb.ScenarioElement s:jaxbc.getFeedbackElements().getScenarioElement()){
-				
-				if(s.getUsage()==null)
-					return;
-				
-				if( s.getUsage().equalsIgnoreCase("mainlinesensor") &&
-				    s.getType().equalsIgnoreCase("sensor") && mainlinesensor==null){
-					mainlinesensor=getMyScenario().getSensorWithId(s.getId());
-					hasmainlinesensor = true;
-				}
+		// assign queue sensor
+//		ArrayList<Sensor> queuesensor_list = getSensorByUsage("queue");
+//		queue_sensor = queuesensor_list.size()==1 ? queuesensor_list.get(0) : null;
 
-				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
-					s.getType().equalsIgnoreCase("link") && mainlinelink==null){
-					mainlinelink=getMyScenario().getLinkWithId(s.getId());
-					hasmainlinelink = true;
-				}
-
-				if( s.getUsage().equalsIgnoreCase("queuesensor") &&
-					s.getType().equalsIgnoreCase("sensor")  && queuesensor==null){
-					queuesensor=getMyScenario().getSensorWithId(s.getId());
-					hasqueuesensor = true;
-				}				
-			}
-		}
+		// assign actuator
+		ramp_meter = actuators.size()==1 ? (ActuatorRampMeter)actuators.get(0) : null;
 		
-//		// abort unless there is either one mainline link or one mainline sensor
-//		if(mainlinelink==null && mainlinesensor==null)
-//			return;
-//		if(mainlinelink!=null  && mainlinesensor!=null)
-//			return;
-		
-		usesensor = mainlinesensor!=null;
-		
-		// need the sensor's link for target density
-		if(usesensor)
-			mainlinelink = mainlinesensor.getMyLink();
-		
-//		if(mainlinelink==null)
-//			return;
+		// get reference to onramp link
+		if(ramp_meter!=null && ramp_meter.getScenarioElement()!=null)
+			onramp_link = myScenario.getLinkWithId(ramp_meter.getScenarioElement().getId());
+		else
+			onramp_link = null;
 		
 		// read parameters
+		target_density_given = false;
 		double gain_in_mps = 50.0 * 1609.344 / 3600.0; // [meters/second]
-		targetdensity_given = false;
 		if(jaxbc.getParameters()!=null)
 			for(edu.berkeley.path.beats.jaxb.Parameter p : jaxbc.getParameters().getParameter()){
 				if(p.getName().equals("gain")){
 					try {
 						gain_in_mps = Double.parseDouble(p.getValue());
 					} catch (NumberFormatException e) {
-						gain_in_mps = 0d;
+						gain_in_mps = Double.NaN;
 					}
 				}
 				if(p.getName().equals("targetdensity")){
-					if(mainlinelink!=null){
-						targetvehicles = Double.parseDouble(p.getValue());   // [in veh/meter/lane]
-						targetvehicles *= mainlinelink.get_Lanes() * mainlinelink.getLengthInMeters();		// now in [veh]
-						targetdensity_given = true;
+					if(mainline_link!=null){
+						target_vehicles = Double.parseDouble(p.getValue());   // [in veh/meter/lane]
+						target_vehicles *= mainline_link.get_Lanes() * mainline_link.getLengthInMeters();		// now in [veh]
+						target_density_given = true;
 					}
 				}
 			}	
 		
 		// normalize the gain
-		if(mainlinelink!=null)
-			gain_normalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainlinelink.getLengthInMeters();
+		if(mainline_link!=null)
+			gain_normalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainline_link.getLengthInMeters();
 	}
 	
 	@Override
@@ -189,57 +147,29 @@ public class Controller_IRM_Alinea extends Controller {
 		
 		super.validate();
 
-		// must have exactly one target
-		if(getTargets().size()!=1)
-			BeatsErrorLog.addError("Numnber of targets for Alinea controller id=" + getId()+ " does not equal one.");
-
-		// bad mainline sensor id
-		if(hasmainlinesensor && mainlinesensor==null)
-			BeatsErrorLog.addError("Bad mainline sensor id in Alinea controller id=" + getId()+".");
-
-		// bad queue sensor id
-		if(hasqueuesensor && queuesensor==null)
-			BeatsErrorLog.addError("Bad queue sensor id in Alinea controller id=" + getId()+".");
-		
-		// both link and sensor feedback
-		if(hasmainlinelink && hasmainlinesensor)
-			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in Alinea controller id=" + getId()+".");
-		
-		// sensor is disconnected
-		if(usesensor && mainlinesensor.getMyLink()==null)
-			BeatsErrorLog.addError("Mainline sensor is not connected to a link in Alinea controller id=" + getId()+ " ");
-		
-		// no feedback
-		if(mainlinelink==null)
-			BeatsErrorLog.addError("Invalid mainline link for Alinea controller id=" + getId()+ ".");
-		
-		// Target link id not found, or number of targets not 1.
-		if(onramplink==null)
-			BeatsErrorLog.addError("Invalid onramp link for Alinea controller id=" + getId()+ ".");
-			
-		// negative gain
-		if(mainlinelink!=null && gain_normalized<=0f)
-			BeatsErrorLog.addError("Non-positiva gain for Alinea controller id=" + getId()+ ".");
-		
+		// null checks
+		if(mainline_sensor==null)
+			BeatsErrorLog.addError("Bad mainline sensor.");
+		if(ramp_meter==null)
+			BeatsErrorLog.addError("Bad actuator.");
+		if(onramp_link==null)
+			BeatsErrorLog.addError("Actuator link id is incorrect.");
 	}
 
 	@Override
 	protected void update() {
 		
 		// get mainline density either from sensor or from link
-		double mainlinevehicles;		// [veh]
-		if(usesensor)
-			mainlinevehicles = mainlinesensor.getTotalDensityInVeh(0);
-		else
-			mainlinevehicles = mainlinelink.getTotalDensityInVeh(0);
+		double mainlinevehicles = mainline_sensor.getTotalDensityInVeh(0);		// [veh]
 				
 		// need to read target density each time if not given
-		if(!targetdensity_given)
-			targetvehicles = mainlinelink.getDensityCriticalInVeh(0);
+		if(!target_density_given)
+			target_vehicles = mainline_link.getDensityCriticalInVeh(0);
 		
 		// metering rate
-		double maxflow = Math.max(Math.min(onramplink.getTotalOutflowInVeh(0) + gain_normalized*(targetvehicles-mainlinevehicles), 1705),0);
-		setControl_maxflow(0, maxflow);
+		ramp_meter.setMeteringRateInVeh(
+				Math.max(onramp_link.getTotalOutflowInVeh(0) + gain_normalized*(target_vehicles-mainlinevehicles),0)
+				);
 				
 	}
 
@@ -247,13 +177,13 @@ public class Controller_IRM_Alinea extends Controller {
 	// register / deregister
 	/////////////////////////////////////////////////////////////////////
 
-	@Override
-	protected boolean register() {
-		return registerFlowController(onramplink,0);
-	}
-	
-	protected boolean deregister() {
-		return deregisterFlowController(onramplink);
-	}
+//	@Override
+//	protected boolean register() {
+//		return registerFlowController(onramplink,0);
+//	}
+//	
+//	protected boolean deregister() {
+//		return deregisterFlowController(onramplink);
+//	}
 
 }

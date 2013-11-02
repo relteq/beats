@@ -70,7 +70,7 @@ public class Controller_SIG_Pretimed_Plan extends Controller_SIG_Pretimed.Plan {
 				if(mySignal==null)
 					continue;
 				boolean haveit = false;
-				for(ScenarioElement se : myController.getTargets()){
+				for(Actuator act : myController.actuators){
 					if( se.getMyType().compareTo(ScenarioElement.Type.signal)==0 && se.getId()==mySignal.getId() ){
 						haveit=true;
 					}

@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -60,7 +61,7 @@ public class Controller_SIG_Pretimed extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
 		super(myScenario,c,myType);
 	}
 	
@@ -81,11 +82,11 @@ public class Controller_SIG_Pretimed extends Controller {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 
 		// must have these
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
 
+		if(jaxbc.getTargetActuators()==null || 
+				   jaxbc.getTargetActuators().getTargetActuator()==null  )
+					return;			
+		
 		// check all tables
 		for (String table_name : new String[] {"Cycle Length", "Offsets", "Plan List", "Plan Sequence"})
 			if (null == getTables().get(table_name)) {
@@ -177,10 +178,10 @@ public class Controller_SIG_Pretimed extends Controller {
 			if (null == plansequence[i])
 				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 
-		// all targets are signals
-		for(ScenarioElement se: getTargets())
-			if(se.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
-				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
+//		// all targets are signals
+//		for(Actuator act: actuators)
+//			if(act.getMyType().compareTo(ScenarioElement.Type.signal)!=0)
+//				BeatsErrorLog.addError("UNDEFINED ERROR MESSAGE.");
 		
 		for (Controller_SIG_Pretimed_Plan pretimed_plan : plan.values())
 			pretimed_plan.validate();
@@ -213,40 +214,40 @@ public class Controller_SIG_Pretimed extends Controller {
 			process_stages(stage_tbl);
 		}
 		private void process_plans(Table tbl) {
-			for (int row = 0; row < tbl.getNoRows(); ++row)
-				plan_l.add(new Plan(tbl.getTableElement(row, "Plan ID"),
-						Double.parseDouble(tbl.getTableElement(row, "Cycle Length"))));
+//			for (int row = 0; row < tbl.getNoRows(); ++row)
+//				plan_l.add(new Plan(tbl.getTableElement(row, "Plan ID"),
+//						Double.parseDouble(tbl.getTableElement(row, "Cycle Length"))));
 		}
 		private void process_intersections(Table tbl) {
-			for (int row = 0; row < tbl.getNoRows(); ++row) {
-				String plan_id = tbl.getTableElement(row, "Plan ID");
-				Plan plan = getPlan(plan_id);
-				if (null == plan)
-					logger.error("Plan '" + plan_id + "' not found");
-				else{
-					long int_id = Long.parseLong(tbl.getTableElement(row, "Intersection"));
-					plan.addIntersection(new Intersection(int_id,Double.parseDouble(tbl.getTableElement(row, "Offset"))));
-				}
-			}
+//			for (int row = 0; row < tbl.getNoRows(); ++row) {
+//				String plan_id = tbl.getTableElement(row, "Plan ID");
+//				Plan plan = getPlan(plan_id);
+//				if (null == plan)
+//					logger.error("Plan '" + plan_id + "' not found");
+//				else{
+//					long int_id = Long.parseLong(tbl.getTableElement(row, "Intersection"));
+//					plan.addIntersection(new Intersection(int_id,Double.parseDouble(tbl.getTableElement(row, "Offset"))));
+//				}
+//			}
 		}
 		private void process_stages(Table tbl) {
-			for (int row = 0; row < tbl.getNoRows(); ++row) {
-				String plan_id = tbl.getTableElement(row, "Plan ID");
-				long node_id = Long.parseLong(tbl.getTableElement(row, "Intersection"));
-				Plan plan = getPlan(plan_id);
-				if (null == plan)
-					logger.error("Plan '" + plan_id + "' not found");
-				else {
-					Intersection intersection = plan.getIntersection(node_id);
-					if (null == intersection)
-						logger.error("Plan '" + plan_id + "': Intersection '" + node_id + "' not found");
-					else
-						intersection.addStage(new Stage(
-								tbl.getTableElement(row, "Movement A"),
-								tbl.getTableElement(row, "Movement B"),
-								Double.parseDouble(tbl.getTableElement(row, "Green Time"))));
-				}
-			}
+//			for (int row = 0; row < tbl.getNoRows(); ++row) {
+//				String plan_id = tbl.getTableElement(row, "Plan ID");
+//				long node_id = Long.parseLong(tbl.getTableElement(row, "Intersection"));
+//				Plan plan = getPlan(plan_id);
+//				if (null == plan)
+//					logger.error("Plan '" + plan_id + "' not found");
+//				else {
+//					Intersection intersection = plan.getIntersection(node_id);
+//					if (null == intersection)
+//						logger.error("Plan '" + plan_id + "': Intersection '" + node_id + "' not found");
+//					else
+//						intersection.addStage(new Stage(
+//								tbl.getTableElement(row, "Movement A"),
+//								tbl.getTableElement(row, "Movement B"),
+//								Double.parseDouble(tbl.getTableElement(row, "Green Time"))));
+//				}
+//			}
 		}
 		private Plan getPlan(String id) {
 			for (Plan plan : plan_l)
@@ -437,11 +438,11 @@ public class Controller_SIG_Pretimed extends Controller {
 		 * @param tbl the "Plan Sequence" table
 		 */
 		public PlanSequence(Table tbl) {
-			pr_l = new ArrayList<Controller_SIG_Pretimed.PlanRun>();
-			for (int i = 0; i < tbl.getNoRows(); ++i)
-				pr_l.add(new PlanRun(tbl.getTableElement(i, "Plan ID"),
-						Double.parseDouble(tbl.getTableElement(i, "Start Time"))));
-			java.util.Collections.sort(pr_l);
+//			pr_l = new ArrayList<Controller_SIG_Pretimed.PlanRun>();
+//			for (int i = 0; i < tbl.getNoRows(); ++i)
+//				pr_l.add(new PlanRun(tbl.getTableElement(i, "Plan ID"),
+//						Double.parseDouble(tbl.getTableElement(i, "Start Time"))));
+//			java.util.Collections.sort(pr_l);
 		}
 		/**
 		 * @return the plan reference list

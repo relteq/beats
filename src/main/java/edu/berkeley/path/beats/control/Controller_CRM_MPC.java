@@ -43,7 +43,7 @@ public class Controller_CRM_MPC extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_CRM_MPC(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+	public Controller_CRM_MPC(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
 		super(myScenario,c,myType);
 	}
 	
@@ -127,7 +127,7 @@ public class Controller_CRM_MPC extends Controller {
 		rampDemands = new HashMap<Long,Double[]>();
 		metering_rate = new HashMap<Long,Double[]>();
 		for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-			if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0) {
+			if( ((Link)link).isOnramp()) {
 				rampDemands.put(link.getId(), null);
 				metering_rate.put(link.getId(), null);
 			}
@@ -203,7 +203,7 @@ public class Controller_CRM_MPC extends Controller {
 			// copy ramp demands
 			DemandSet demand_set = (DemandSet) getMyScenario().getDemandSet();
 			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-				if( ((Link)link).getMyType().compareTo(Link.Type.onramp)==0){					
+				if( ((Link)link).isOnramp()){					
 					Double [] future_demands = BeatsFormatter.toDoubleArray(demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int));
 					rampDemands.put(link.getId(),future_demands);
 				}
@@ -227,8 +227,8 @@ public class Controller_CRM_MPC extends Controller {
 
 		// return the values corresponding to the current time
 		int time_index = BeatsMath.floor(time_since_last_opt/getDtinseconds());		
-		for(int i=0;i<getTargets().size();i++)
-			setControl_maxflow(i, metering_rate.get(getTargets().get(i).getId())[time_index]);
+		for(int i=0;i<actuators.size();i++)
+			setControl_maxflow(i, metering_rate.get(actuators.get(i).getId())[time_index]);
 	}
 	
 }

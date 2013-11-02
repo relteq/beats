@@ -33,28 +33,11 @@ import java.math.BigDecimal;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 public final class Link extends edu.berkeley.path.beats.jaxb.Link {
-
-	/** Type of link. */
-	public static enum Type	{ unspecified,
-						      freeway,
-						      HOV,
-						      HOT,
-						      onramp,
-						      offramp,
-						      freeway_connector,
-						      street,
-						      intersection_approach,
-						      heavy_vehicle,
-						      electric_toll}
 	
 	// does not change ....................................
-
 	private Network myNetwork;
 	private Node begin_node;
 	private Node end_node;
-
-	// link type
-	private Link.Type myType;
 
 	// link geometry
 	private double _lanes;							// [-]
@@ -66,12 +49,10 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	private FundamentalDiagramProfile myFDprofile;	// fundamental diagram profile (used to rescale future FDs upon lane change event)
 	private CapacityProfile myCapacityProfile; 		// capacity profile
 	private DemandProfile myDemandProfile;  		// demand profiles
-
-	// Controllers
-	private int control_maxflow_index;
-	private int control_maxspeed_index;
-	private Controller myFlowController;
-	private Controller mySpeedController;
+	
+	// Actuation
+	private double external_max_flow;
+	private double external_max_speed;
 	
 	// does change ........................................
 	
@@ -111,16 +92,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 		this.myNetwork = myNetwork;
 
-		// link type
-		if(getLinkType()==null)
-			this.myType = Link.Type.unspecified;
-		else
-			try {
-				this.myType = Link.Type.valueOf(getLinkType().getName());
-			} catch (Exception e) {
-				this.myType = Link.Type.unspecified;
-			}
-
 		// make network connections
 		begin_node = myNetwork.getNodeWithId(getBegin().getNodeId());
 		end_node = myNetwork.getNodeWithId(getEnd().getNodeId());
@@ -134,6 +105,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		// lanes and length
 		_lanes = getLanes();
 		_length = getLength();
+				
 	}
 
 	protected void validate() {
@@ -155,6 +127,9 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		resetLanes();		
 		resetState();
 		resetFD();
+		
+		this.external_max_flow = Double.POSITIVE_INFINITY;
+		this.external_max_speed = Double.POSITIVE_INFINITY;
 	}
 	
 	private void resetState() {
@@ -178,7 +153,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		spaceSupply 		= BeatsMath.zeros(n1);
 
 		return;
-
 	}
 
 	private void resetLanes(){
@@ -223,9 +197,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 		double totaldensity;
 		double totaloutflow;
-		double control_maxspeed;
-		double control_maxflow;
-
 		FundamentalDiagram FD;
 
 		for(int e=0;e<myNetwork.getMyScenario().getNumEnsemble();e++){
@@ -242,20 +213,11 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 			// compute total flow leaving the link in the absence of flow control
 			if( totaldensity < FD.getDensityCriticalInVeh() ){
-				if(mySpeedController!=null && mySpeedController.isIson()){
-					// speed control sets a bound on freeflow speed
-					control_maxspeed = mySpeedController.getControl_maxspeed(control_maxspeed_index);
-					totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),control_maxspeed);	
-				}
-				else
-					totaloutflow = totaldensity * FD.getVfNormalized();
+				totaloutflow = totaldensity * Math.min(FD.getVfNormalized(),external_max_speed);	
 			}
 			else{
 				totaloutflow = Math.max(FD._getCapacityInVeh()-FD._getCapacityDropInVeh(),0d);
-				if(mySpeedController!=null && mySpeedController.isIson()){	// speed controller
-					control_maxspeed = mySpeedController.getControl_maxspeed(control_maxspeed_index);
-					totaloutflow = Math.min(totaloutflow,control_maxspeed*FD.getDensityCriticalInVeh());
-				}
+				totaloutflow = Math.min(totaloutflow,external_max_speed*FD.getDensityCriticalInVeh());
 			}
 
 			// capacity profile
@@ -263,10 +225,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				totaloutflow = Math.min( totaloutflow , myCapacityProfile.getCurrentValue() );
 
 			// flow controller
-			if(myFlowController!=null && myFlowController.isIson()){
-				control_maxflow = myFlowController.getControl_maxflow(control_maxflow_index);
-				totaloutflow = Math.min( totaloutflow , control_maxflow );
-			}    
+			totaloutflow = Math.min( totaloutflow , external_max_flow );   
 
 			// flow uncertainty model
 			if(myNetwork.getMyScenario().isHas_flow_unceratinty()){
@@ -417,36 +376,44 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	// controller registration .........................................
-
-	protected boolean registerFlowController(Controller c,int index){
-		if(myFlowController!=null)
-			return false;
-		myFlowController = c;
-		control_maxflow_index = index;
-		return true;
+	
+	public void set_external_max_flow(double value){
+		external_max_flow = value;
+	}
+	
+	public void set_external_max_speed(double value){
+		external_max_speed = value;
 	}
 
-	protected boolean registerSpeedController(Controller c,int index){
-		if(mySpeedController!=null)
-			return false;
-		mySpeedController = c;
-		control_maxspeed_index = index;
-		return true;
-	}
+//	protected boolean registerFlowController(Controller c,int index){
+//		if(myFlowController!=null)
+//			return false;
+//		myFlowController = c;
+//		control_maxflow_index = index;
+//		return true;
+//	}
 
-	protected boolean deregisterFlowController(Controller c){
-		if(myFlowController!=c)
-			return false;
-		myFlowController = null;			
-		return true;
-	}
+//	protected boolean registerSpeedController(Controller c,int index){
+//		if(mySpeedController!=null)
+//			return false;
+//		mySpeedController = c;
+//		control_maxspeed_index = index;
+//		return true;
+//	}
 
-	protected boolean deregisterSpeedController(Controller c){
-		if(mySpeedController!=c)
-			return false;
-		mySpeedController = null;			
-		return true;
-	}
+//	protected boolean deregisterFlowController(Controller c){
+//		if(myFlowController!=c)
+//			return false;
+//		myFlowController = null;			
+//		return true;
+//	}
+
+//	protected boolean deregisterSpeedController(Controller c){
+//		if(mySpeedController!=c)
+//			return false;
+//		mySpeedController = null;			
+//		return true;
+//	}
 	
 	// initial condition ..................................................
 	protected void copy_state_to_initial_state(){
@@ -474,25 +441,30 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-	// Link type ........................
-
-	/** Type of the link */
-	public Link.Type getMyType() {
-		return myType;
+	public static boolean haveSameType(Link linkA,Link linkB){
+		String typeA = linkA.getType();
+		String typeB = linkB.getType();
+		if(typeA==null || typeB==null)
+			return false;
+		return typeA.equalsIgnoreCase(typeB);
+	}
+	
+	public String getType(){
+		if(getLinkType()==null)
+			return null;
+		if(getLinkType().getName()==null)
+			return null;
+		return getLinkType().getName();
+	}
+	
+	public boolean isOnramp(){
+		String name = getType();
+		return name==null ? null : name.compareToIgnoreCase("onramp")==0;
 	}
 
-	/** Evaluate whether a link is of the freeway type */
-	public static boolean isFreewayType(Link link){
-
-		if(link==null)
-			return false;
-
-		Link.Type linktype = link.getMyType();
-
-		return  linktype.compareTo(Link.Type.intersection_approach)!=0 &&
-				linktype.compareTo(Link.Type.offramp)!=0 &&
-				linktype.compareTo(Link.Type.onramp)!=0 &&
-				linktype.compareTo(Link.Type.street)!=0;		
+	public boolean isFreeway(){
+		String name = getType();
+		return name==null ? null : name.compareToIgnoreCase("freeway")==0;
 	}
 
 	// Link geometry ....................
@@ -902,11 +874,6 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 			return Double.NaN;
 		}
 	}
-
-	// Demand Profile ...................
-//	public DemandProfile getMyDemandProfile(){
-//		return myDemandProfile;
-//	}
 
 	/////////////////////////////////////////////////////////////////////
 	// private

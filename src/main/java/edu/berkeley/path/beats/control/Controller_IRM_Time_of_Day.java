@@ -51,7 +51,7 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Time_of_Day(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Type myType) {
+	public Controller_IRM_Time_of_Day(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
 		super(myScenario,c,myType);
 	}
 	
@@ -78,18 +78,17 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	protected void populate(Object jaxbobject) {
 		edu.berkeley.path.beats.jaxb.Controller jaxbc = (edu.berkeley.path.beats.jaxb.Controller) jaxbobject;
 		
-		if(jaxbc.getTargetElements()==null)
-			return;
-		if(jaxbc.getTargetElements().getScenarioElement()==null)
-			return;
-		if(jaxbc.getFeedbackElements()!=null)
-			return;				
+		if(jaxbc.getTargetActuators()==null || 
+				   jaxbc.getTargetActuators().getTargetActuator()==null ||
+				   jaxbc.getFeedbackSensors()==null ||
+				   jaxbc.getFeedbackSensors().getFeedbackSensor()==null )
+					return;			
 		
 		hasqueuesensor = false;
 		
 		// There should be only one target element, and it is the onramp
-		if(jaxbc.getTargetElements().getScenarioElement().size()==1){
-			edu.berkeley.path.beats.jaxb.ScenarioElement s = jaxbc.getTargetElements().getScenarioElement().get(0);
+		if( jaxbc.getTargetActuators().getTargetActuator().size()==1){
+			edu.berkeley.path.beats.jaxb.TargetActuator s = jaxbc.getTargetActuators().getTargetActuator().get(0);
 			onramplink = getMyScenario().getLinkWithId(s.getId());	
 		}
 
@@ -102,8 +101,8 @@ public class Controller_IRM_Time_of_Day extends Controller {
 
 		super.validate();
 		
-		// must have exactly one target
-		if(getTargets().size()!=1)
+		// must have exactly one actuator
+		if(getNumActuators()!=1)
 			BeatsErrorLog.addError("Numnber of targets for TOD controller id=" + getId()+ " does not equal one.");
 		
 		// bad queue sensor id
@@ -138,55 +137,54 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	// register / deregister
 	/////////////////////////////////////////////////////////////////////
 	
-	@Override
-	public boolean register() {
-		return registerFlowController(onramplink,0);
-	}
-
-	@Override
-	public boolean deregister() {
-		return deregisterFlowController(onramplink);
-	}
+//	@Override
+//	public boolean register() {
+//		return registerFlowController(onramplink,0);
+//	}
+//
+//	@Override
+//	public boolean deregister() {
+//		return deregisterFlowController(onramplink);
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////
 	
 	private void extractTable(){
-		if (null == table) {
-			istablevalid = false;
-			return;
-		}
-		
-		// read parameters from table, and also validate
-		
-		int timeIndx = table.getColumnNo("StartTime");
-		int rateIndx = table.getColumnNo("MeteringRates");
-		
-		
-		istablevalid=table.checkTable() && (table.getNoColumns()!=2? false:true) && (timeIndx!=-1) && (rateIndx!=-1);
-		
-		// need a valid table to parse
-		if (!istablevalid) 
-			return;
-		
-		
-		// read table, initialize values. 
-		todMeteringRates_normalized=new double[table.getNoRows()];
-		todActivationTimes=new double[table.getNoRows()];		
-		todActivationIndx=0;
-		
-		for (int i=0;i<table.getNoRows();i++){
-			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
-			todActivationTimes[i]=Double.parseDouble(table.getTableElement(i,timeIndx)); // in sec
-			// check that table values are valid.			
-			if ((i>0 && todActivationTimes[i]<=todActivationTimes[i-1])||(todMeteringRates_normalized[i]<0))
-				istablevalid=false;					
-		}			
-		
-		if (todActivationTimes[0]>this.getFirstStartTime())
-			istablevalid=false;
-		}
-	
+//		if (null == table) {
+//			istablevalid = false;
+//			return;
+//		}
+//		
+//		// read parameters from table, and also validate
+//		
+//		int timeIndx = table.getColumnNo("StartTime");
+//		int rateIndx = table.getColumnNo("MeteringRates");
+//		
+//		
+//		istablevalid=table.checkTable() && (table.getNoColumns()!=2? false:true) && (timeIndx!=-1) && (rateIndx!=-1);
+//		
+//		// need a valid table to parse
+//		if (!istablevalid) 
+//			return;
+//		
+//		
+//		// read table, initialize values. 
+//		todMeteringRates_normalized=new double[table.getNoRows()];
+//		todActivationTimes=new double[table.getNoRows()];		
+//		todActivationIndx=0;
+//		
+//		for (int i=0;i<table.getNoRows();i++){
+//			todMeteringRates_normalized[i] = Double.parseDouble(table.getTableElement(i,rateIndx)) * getMyScenario().getSimdtinseconds(); // in veh per sim step
+//			todActivationTimes[i]=Double.parseDouble(table.getTableElement(i,timeIndx)); // in sec
+//			// check that table values are valid.			
+//			if ((i>0 && todActivationTimes[i]<=todActivationTimes[i-1])||(todMeteringRates_normalized[i]<0))
+//				istablevalid=false;					
+//		}			
+//		
+//		if (todActivationTimes[0]>this.getFirstStartTime())
+//			istablevalid=false;
+	}
 	
 }

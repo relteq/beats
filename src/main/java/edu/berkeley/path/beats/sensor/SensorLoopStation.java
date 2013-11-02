@@ -81,23 +81,23 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 					this.VDS = Integer.parseInt(param.getValue());
 			}
 		
-		if (null != jaxbs.getTable()) {
-			if ("data_sources".equals(jaxbs.getTable().getName())) {
-				edu.berkeley.path.beats.simulator.Table table = new edu.berkeley.path.beats.simulator.Table(jaxbs.getTable());
-				final String[] colname = {"url", "format"};
-				int[] colnum = new int[2];
-				boolean colnotfound = false;
-				for (int i = 0; i < colname.length; ++i)
-					if (-1 == (colnum[i] = table.getColumnNo(colname[i]))) {
-						logger.warn("Column '" + colname[i] + "' not found");
-						colnotfound = true;
-					}
-				if (!colnotfound)
-					for (int i = 0; i < table.getNoRows(); ++i)
-						this._datasources.add(new DataSource(table.getTableElement(i, colnum[0]), table.getTableElement(i, colnum[1])));
-			} else
-				logger.warn("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
-		}
+//		if (null != jaxbs.getTable()) {
+//			if ("data_sources".equals(jaxbs.getTable().getName())) {
+//				edu.berkeley.path.beats.simulator.Table table = new edu.berkeley.path.beats.simulator.Table(jaxbs.getTable());
+//				final String[] colname = {"url", "format"};
+//				int[] colnum = new int[2];
+//				boolean colnotfound = false;
+//				for (int i = 0; i < colname.length; ++i)
+//					if (-1 == (colnum[i] = table.getColumnNo(colname[i]))) {
+//						logger.warn("Column '" + colname[i] + "' not found");
+//						colnotfound = true;
+//					}
+//				if (!colnotfound)
+//					for (int i = 0; i < table.getNoRows(); ++i)
+//						this._datasources.add(new DataSource(table.getTableElement(i, colnum[0]), table.getTableElement(i, colnum[1])));
+//			} else
+//				logger.warn("sensor " + jaxbs.getId() + ": table name: " + jaxbs.getTable().getName());
+//		}
 	}
 
 	@Override
