@@ -327,7 +327,7 @@
 	<xs:element name="scenarioElement"> 
 		<xs:complexType>
 			<xs:attribute name="id" type="xs:long" use="required" />
-			<xs:attribute name="usage" type="xs:string" use="optional" />
+			<!--<xs:attribute name="usage" type="xs:string" use="optional" />-->
 			<xs:attribute name="type" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
@@ -337,6 +337,7 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
+	
 				
   <!-- settings .................................................................. -->
 
@@ -834,9 +835,7 @@
         <xs:sequence>
           <xs:element ref="parameters" minOccurs="0" />
           <xs:element ref="display_position" minOccurs="0" />
-          <!-- <xs:element ref="targetElements" minOccurs="1" /> -->
 		  <xs:element ref="target_actuators" minOccurs="0" />
-          <!-- <xs:element ref="feedbackElements" minOccurs="0" /> -->
 		  <xs:element ref="feedback_sensors" minOccurs="0" />
           <xs:element ref="queue_controller" minOccurs="0" />
           <xs:element ref="ActivationIntervals" minOccurs="0" />
@@ -920,19 +919,7 @@
 						<xs:attribute name="usage" type="xs:string" use="optional" />
 					</xs:complexType>
 				</xs:element>
-				
-				
-				<!--
-			<xs:element name="feedbackElements">
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element ref="scenarioElement" minOccurs="0" maxOccurs="unbounded" />
-					</xs:sequence>
-				</xs:complexType>
-			</xs:element>
-	
--->				
-					  
+			  
   <!-- FundamentalDiagramSet .............................................. -->
 
 	<xs:element name="FundamentalDiagramSet">

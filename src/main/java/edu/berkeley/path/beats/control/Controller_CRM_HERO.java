@@ -47,10 +47,8 @@ public class Controller_CRM_HERO extends Controller {
 	private Sensor mainlineSensor = null;
 	private SensorLoopStation queueSensor = null;
 
-//	private boolean useMainlineSensor;
 	private boolean useQueueSensor;
 	
-//	boolean hasMainlineLink;		// true if config file contains entry for mainlinelink
 	boolean hasMainlineSensor; 		// true if config file contains entry for mainlinesensor
 	boolean hasQueueSensor; 		// true if config file contains entry for queuesensor
 	
@@ -65,9 +63,9 @@ public class Controller_CRM_HERO extends Controller {
 	private double queueCurrent;
     private double queueSum;            //Sum of queueCurrents of Hero Controllers in a Coordination String   		
 	
-	private double queueMin;                 // minimum desired queue length when a slave ramp [veh] 	
+	private double queueMin;            // minimum desired queue length when a slave ramp [veh] 	
 	
-	private double queueMax;                 //max admissible queue length of the HERO controlled ramp [veh/lane]   	
+	private double queueMax;            //max admissible queue length of the HERO controlled ramp [veh/lane]   	
 	private boolean queueMax_Given;
 	
     private double queueMaxSum;         //Sum of queueMax of Hero Controllers in a Coordination String 
@@ -136,7 +134,6 @@ public class Controller_CRM_HERO extends Controller {
 		   jaxbc.getFeedbackSensors().getFeedbackSensor()==null )
 			return;
 		
-//		hasMainlineLink = false;
 		hasMainlineSensor = false;
 		hasQueueSensor = false;
 		
@@ -160,12 +157,6 @@ public class Controller_CRM_HERO extends Controller {
 					hasMainlineSensor = true;
 				}
 
-//				if( s.getUsage().equalsIgnoreCase("mainlinelink") &&
-//					s.getType().equalsIgnoreCase("link") && mainlineLink==null){
-//					mainlineLink=getMyScenario().getLinkWithId(s.getId());
-//					hasMainlineLink = true;
-//				}
-
 				if( s.getUsage().equalsIgnoreCase("queuesensor") && queueSensor==null){
 					queueSensor=(SensorLoopStation)getMyScenario().getSensorWithId(s.getId());
 					hasQueueSensor = true;
@@ -176,16 +167,9 @@ public class Controller_CRM_HERO extends Controller {
 		// abort unless there is either one mainline link or one mainline sensor
 		if(mainlineSensor==null)
 			return;
-//		if(mainlineLink==null && mainlineSensor==null)
-//			return;
-//		if(mainlineLink!=null  && mainlineSensor!=null)
-//			return;
-		
-//		useMainlineSensor = mainlineSensor!=null;
 		
 		// need the sensor's link for target density
-//		if(useMainlineSensor)
-			mainlineLink = mainlineSensor.getMyLink();
+		mainlineLink = mainlineSensor.getMyLink();
 		
 		if(mainlineLink==null)
 			return;
@@ -200,7 +184,6 @@ public class Controller_CRM_HERO extends Controller {
 		
 		
 		// Read parameters
-				
 		double gain_in_mps = 50.0 * 1609.344 / 3600.0; // [meters/second]
 		targetDensity_Given = false;
 		minFlow_Given=false;
@@ -310,10 +293,6 @@ public class Controller_CRM_HERO extends Controller {
 		if(hasQueueSensor && queueSensor==null)
 			BeatsErrorLog.addError("Bad queue sensor id in HERO controller id=" + getId()+".");
 		
-		// both link and sensor feedback
-//		if(hasMainlineLink && hasMainlineSensor)
-//			BeatsErrorLog.addError("Both mainline link and mainline sensor are not allowed in HERO controller id=" + getId()+".");
-		
 		// Mainline sensor is disconnected
 		if(mainlineSensor.getMyLink()==null)
 			BeatsErrorLog.addError("Mainline sensor is not connected to a link in HERO controller id=" + getId()+ " ");
@@ -358,67 +337,64 @@ public class Controller_CRM_HERO extends Controller {
 			BeatsErrorLog.addError("Negative threshold value(s) for HERO controller id=" + getId()+ ".");
 		}
 		
-		
 	}
 
 	@Override
 	protected void update() {
 		
-		//HERO Controllers targetDensity, mainlineVehicles and queueCurrent Update (Only Executes once for the first Updated HERO Controller)
-		if(timeStep!= getMyScenario().getCurrentTimeStep() ){ 
-			timeStep=getMyScenario().getCurrentTimeStep();
-		
-			//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
-			updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax();
-			
-			//EVERY Tc SECONDS
-			for(Integer i=0; i< controllerList.size(); i++){
-				                                                        
-				//DEFINITION OF MASTER CONTROLLER
-				defineMasterController(i);
-			
-				//DISSOLUTION OF COORDINATION STRING
-				dissolveMasterController(i);
-				
-				//DEFINITION OF COORDINATION STRING
-				defineCoordinationString(i);
-				
-				//DEFINITION OF MINIMUM QUEUE
-				defineSlaveControllersMinimumQueue(i);
-
-				// ALINEA Ramp Metering Controller (EQUATION (1))
-				controllerList.get(i).flowAlinea = controllerList.get(i).onrampLink.getTotalOutflowInVeh(0)+ controllerList.get(i).alineaGainNormalized*
-						                           (controllerList.get(i).targetVehicles-controllerList.get(i).mainlineVehiclesCurrent);
-				
-				//Queue Controller (EQUATION (2))			
-				controllerList.get(i).flowQueue = ( -controllerList.get(i).queueControllerGainNormalized*
-						                          (controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
-						                          controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/ 
-						                          (controllerList.get(i).getDtinseconds()/controllerList.get(i).getMyScenario().getSimdtinseconds());
-		        //EQUATION (3) vs EQUATIONS(4) and(5)
-				if(controllerList.get(i).type.equals(status.MASTER)|| controllerList.get(i).type.equals(status.NOT_USED))
-					controllerList.get(i).flowHero=Math.max(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueue);
-				else{
-					controllerList.get(i).flowQueueMin =(-controllerList.get(i).queueMinControllerGainNormalized*
-							                             (controllerList.get(i).queueMin-controllerList.get(i).queueCurrent)+
-							                             controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/
-							                             (controllerList.get(i).getDtinseconds()/controllerList.get(i).getMyScenario().getSimdtinseconds());
-					
-					
-					controllerList.get(i).flowHero = Math.max(Math.min(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueueMin), controllerList.get(i).flowQueue);
-				} 
-				
-				//printSensorCumulativeInflowAndOutflow(i);
-				controllerList.get(i).queueSensor.resetCumulativeInflowInVeh();	
-				controllerList.get(i).queueSensor.resetCumulativeOutflowInVeh();	
-			}
-		}
-		
-		//DEFINITION OF HERO METERING RATE
-		flowControl_MaxFlow=Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
-		setControl_maxflow(0, flowControl_MaxFlow);
-		//printFlows(this);
-		//System.out.println(mainlineLink.getDensityJamInVPMPL(0));
+//		//HERO Controllers targetDensity, mainlineVehicles and queueCurrent Update (Only Executes once for the first Updated HERO Controller)
+//		if(timeStep!= getMyScenario().getCurrentTimeStep() ){ 
+//			timeStep=getMyScenario().getCurrentTimeStep();
+//		
+//			//Update queueCurrent, mainlineVehiclesCurrent and targetVehiclesList for All Controllers
+//			updateHeroControllerTargetVehiclesMainlineVehiclesCurrentQueueCurrentMaxFlowAndQueueMax();
+//			
+//			//EVERY Tc SECONDS
+//			for(Integer i=0; i< controllerList.size(); i++){
+//				                                                        
+//				//DEFINITION OF MASTER CONTROLLER
+//				defineMasterController(i);
+//			
+//				//DISSOLUTION OF COORDINATION STRING
+//				dissolveMasterController(i);
+//				
+//				//DEFINITION OF COORDINATION STRING
+//				defineCoordinationString(i);
+//				
+//				//DEFINITION OF MINIMUM QUEUE
+//				defineSlaveControllersMinimumQueue(i);
+//
+//				// ALINEA Ramp Metering Controller (EQUATION (1))
+//				controllerList.get(i).flowAlinea = controllerList.get(i).onrampLink.getTotalOutflowInVeh(0)+ controllerList.get(i).alineaGainNormalized*
+//						                           (controllerList.get(i).targetVehicles-controllerList.get(i).mainlineVehiclesCurrent);
+//				
+//				//Queue Controller (EQUATION (2))			
+//				controllerList.get(i).flowQueue = ( -controllerList.get(i).queueControllerGainNormalized*
+//						                          (controllerList.get(i).queueMax-controllerList.get(i).queueCurrent)+
+//						                          controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/ 
+//						                          (controllerList.get(i).getDtinseconds()/controllerList.get(i).getMyScenario().getSimdtinseconds());
+//		        //EQUATION (3) vs EQUATIONS(4) and(5)
+//				if(controllerList.get(i).type.equals(status.MASTER)|| controllerList.get(i).type.equals(status.NOT_USED))
+//					controllerList.get(i).flowHero=Math.max(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueue);
+//				else{
+//					controllerList.get(i).flowQueueMin =(-controllerList.get(i).queueMinControllerGainNormalized*
+//							                             (controllerList.get(i).queueMin-controllerList.get(i).queueCurrent)+
+//							                             controllerList.get(i).queueSensor.getCumulativeInflowInVeh(0) )/
+//							                             (controllerList.get(i).getDtinseconds()/controllerList.get(i).getMyScenario().getSimdtinseconds());
+//					
+//					
+//					controllerList.get(i).flowHero = Math.max(Math.min(controllerList.get(i).flowAlinea, controllerList.get(i).flowQueueMin), controllerList.get(i).flowQueue);
+//				} 
+//				
+//				//printSensorCumulativeInflowAndOutflow(i);
+//				controllerList.get(i).queueSensor.resetCumulativeInflowInVeh();	
+//				controllerList.get(i).queueSensor.resetCumulativeOutflowInVeh();	
+//			}
+//		}
+//		
+//		//DEFINITION OF HERO METERING RATE
+//		flowControl_MaxFlow=Math.max(Math.min(this.flowHero, this.maxFlow), this.minFlow);
+//		setControl_maxflow(0, flowControl_MaxFlow);
 	}	
 
 	/////////////////////////////////////////////////////////////////////

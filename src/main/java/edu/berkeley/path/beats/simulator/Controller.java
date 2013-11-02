@@ -33,10 +33,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
-import edu.berkeley.path.beats.actuator.ActuatorSignal;
-import edu.berkeley.path.beats.actuator.ActuatorVSL;
 import edu.berkeley.path.beats.jaxb.FeedbackSensor;
 import edu.berkeley.path.beats.jaxb.TargetActuator;
 
@@ -56,20 +52,12 @@ public class Controller {
 	protected Controller.Algorithm myType;
 	
 	/** List of scenario elements affected by this controller */
-	//private ArrayList<ScenarioElement> targets;
 	protected ArrayList<Actuator> actuators;
 	protected ArrayList<String> actuator_usage;
 	
 	/** List of scenario elements that provide input to this controller */
-	//private ArrayList<ScenarioElement> feedbacks;
 	protected ArrayList<Sensor> sensors;
 	protected ArrayList<String> sensor_usage;
-	
-	/** Maximum flow for link targets, in vehicles per simulation time period. Indexed by target.  */
-//	protected double [] control_maxflow;
-	
-	/** Maximum flow for link targets, in normalized units. Indexed by target.  */
-//	private double [] control_maxspeed;
 	
 	/** Controller update period in seconds */
 	protected double dtinseconds;
@@ -156,32 +144,12 @@ public class Controller {
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
 				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
-					Actuator jaxbA = getMyScenario().getActuatorWithId(ta.getId());
-					if(jaxbA!=null){
-						Actuator myActuator = null;
-						ActuatorType myActuatorType = Controller.map_algorithm_actuator.get(myType);
-						switch(myActuatorType){
-						case RAMP_METER:
-							myActuator = new ActuatorRampMeter(this,jaxbA);
-							break;
-						case CMS:
-							myActuator = new ActuatorCMS(this,jaxbA);
-							break;
-						case VSL:
-							myActuator = new ActuatorVSL(this,jaxbA);
-							break;
-						case SIGNAL:
-							myActuator = new ActuatorSignal(this,jaxbA);
-							break;
-						}
-						actuators.add(myActuator);
-						actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
-					}
+					actuators.add(getMyScenario().getActuatorWithId(ta.getId()));
+					actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
 				}
 			}
 
 			// read feedback sensors
-
 			sensors = new ArrayList<Sensor>();
 			sensor_usage = new ArrayList<String>();
 			if(jaxbC.getFeedbackSensors()!=null && jaxbC.getFeedbackSensors().getFeedbackSensor()!=null){
@@ -192,13 +160,7 @@ public class Controller {
 			}
 
 	 }
-
-//	 protected Controller(ArrayList<ScenarioElement> targets){
-//		 this.targets = targets;
-//		 this.control_maxflow  = new Double [targets.size()];
-//		 this.control_maxspeed = new Double [targets.size()];
-//	 }
-
+	 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset  / update
 	/////////////////////////////////////////////////////////////////////
@@ -238,10 +200,6 @@ public class Controller {
 		// check that type was read correctly
 		if(myType==null)
 			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
-		
-		// check that the target is valid
-//		if(targets==null)
-//			BeatsErrorLog.addError("Invalid target for controller id=" + getId());
 		
 		// check that sample dt is an integer multiple of network dt
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
@@ -420,14 +378,6 @@ public class Controller {
 		return myScenario;
 	}
 
-//	public double getControl_maxflow(int index) {
-//		return control_maxflow[index];
-//	}
-//
-//	public double getControl_maxspeed(int index) {
-//		return control_maxspeed[index];
-//	}
-
 	public int getSamplesteps() {
 		return samplesteps;
 	}
@@ -494,14 +444,6 @@ public class Controller {
 	protected edu.berkeley.path.beats.jaxb.Controller getJaxbController() {
 		return jaxbController;
 	}
-
-//	protected void setControl_maxflow(int index, double control_maxflow) {
-//		this.control_maxflow[index] = control_maxflow;
-//	}
-//
-//	protected void setControl_maxspeed(int index, double control_maxspeed) {
-//		this.control_maxspeed[index] = control_maxspeed;
-//	}
 
 	protected void setIson(boolean ison) {
 		this.ison = ison;
@@ -571,8 +513,6 @@ public class Controller {
 			compare = ((Double) this.getEndtime()).compareTo((Double) that.getEndtime());
 				
 			return compare;
-				
-				
 		}
 		
 	}

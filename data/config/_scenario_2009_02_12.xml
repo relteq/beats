@@ -15,7 +15,7 @@
         <scenarioElement id="-289" type="link"/>
       </targetElements>
       <feedbackElements>
-        <scenarioElement id="-1" type="link" usage="mainlinelink"/>
+        <scenarioElement id="-1" type="link" usage="mainline"/>
       </feedbackElements>
     </controller>
   </ControllerSet>

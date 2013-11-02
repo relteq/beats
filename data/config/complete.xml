@@ -181,6 +181,7 @@
       </LinkList>
     </network>
   </NetworkSet>
+  
   <SensorSet id="-1" project_id="-1">
    <sensor id="1" link_id="1">
       <display_position>
@@ -252,7 +253,13 @@
       </table>
       <sensor_type id="-1" name="loop"/>
    </sensor>
+  
+   <sensor id="3" link_id="2">
+      <sensor_type id="-1" name="loop"/>
+   </sensor>
+   
   </SensorSet>
+  
   <InitialDensitySet project_id="-1" id="-1" >
     <density id="-1" vehicle_type_id="0" link_id="1">2.0</density>
     <density id="-1" vehicle_type_id="0" link_id="2">2.0</density>
@@ -263,6 +270,7 @@
     <density id="-1" vehicle_type_id="0" link_id="7">2.0</density>
     <density id="-1" vehicle_type_id="0" link_id="100">2.0</density>
   </InitialDensitySet>
+  
   <SplitRatioSet project_id="-1" id="-1">
     <splitRatioProfile id="-1" dt="300" node_id="2">
       <splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
@@ -274,6 +282,7 @@
       <splitratio vehicle_type_id="0" link_in="4" link_out="5">1</splitratio>
     </splitRatioProfile>
   </SplitRatioSet>
+  
   <EventSet project_id="-1" id="-1">
     <event enabled="true" tstamp="4" type="fundamental_diagram" id="1">
       <targetElements>
@@ -288,6 +297,7 @@
       </parameters>
     </event>
   </EventSet>
+  
   <DemandSet id="-1" project_id="-1">
    <demandProfile dt="300" id="-1" knob="1" link_id_org="1">
       <demand vehicle_type_id="0">100</demand>
@@ -296,19 +306,28 @@
       <demand vehicle_type_id="0">400</demand>
    </demandProfile>
   </DemandSet>
+  
   <ControllerSet project_id="-1" id="-1">
     <controller dt="5" type="IRM_ALINEA" id="1" enabled="true">
       <parameters>
         <parameter name="gain" value="50"/>
       </parameters>
-      <targetElements>
-        <scenarioElement id="6" type="link"/>
-      </targetElements>
-      <feedbackElements>
-        <scenarioElement id="2" type="link" usage="mainlinelink"/>
-      </feedbackElements>
+      <target_actuators>
+        <target_actuator id="6"/>
+      </target_actuators>
+      <feedback_sensors>
+        <feedback_sensor id="3" usage="mainline"/>
+      </feedback_sensors>
     </controller>
   </ControllerSet>
+  
+  <ActuatorSet id="0" project_id="0">
+	<actuator id="6">
+		<scenarioElement id="6" type="link"/>
+		<actuator_type id="0" name="ramp_meter"/>
+	</actuator>
+  </ActuatorSet>
+  
   <FundamentalDiagramSet project_id="-1" id="-1">
     <fundamentalDiagramProfile id="-1" link_id="1">
       <fundamentalDiagram id="-1" capacity="1800" capacity_drop="0" congestion_speed="15" jam_density="150" free_flow_speed="60" critical_speed="60"/>

@@ -540,27 +540,27 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		
 		public PhaseController(Signal mySignal){
 			
-			super();
-			
-			int i,j;
-			
-			// populate target2index
-			int index = 0;
-			target2index = new HashMap<Link,Integer>();
-			for(i=0;i<mySignal.phase.length;i++)
-				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
-					target2index.put(mySignal.phase[i].getTargetlinks()[j],index++);
-			
-			// populate nema2indices
-			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
-			for(i=0;i<mySignal.phase.length;i++){
-				Integer [] indices = new Integer[mySignal.phase[i].getTargetlinks().length];
-				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
-					indices[j] = target2index.get(mySignal.phase[i].getTargetlinks()[j]);
-				nema2indices.put(mySignal.phase[i].getNEMA(),indices);
-			}
-			
-			control_maxflow = new double[target2index.size()];
+//			super();
+//			
+//			int i,j;
+//			
+//			// populate target2index
+//			int index = 0;
+//			target2index = new HashMap<Link,Integer>();
+//			for(i=0;i<mySignal.phase.length;i++)
+//				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
+//					target2index.put(mySignal.phase[i].getTargetlinks()[j],index++);
+//			
+//			// populate nema2indices
+//			nema2indices = new HashMap<Signal.NEMA,Integer[]>();
+//			for(i=0;i<mySignal.phase.length;i++){
+//				Integer [] indices = new Integer[mySignal.phase[i].getTargetlinks().length];
+//				for(j=0;j<mySignal.phase[i].getTargetlinks().length;j++)
+//					indices[j] = target2index.get(mySignal.phase[i].getTargetlinks()[j]);
+//				nema2indices.put(mySignal.phase[i].getNEMA(),indices);
+//			}
+//			
+//			control_maxflow = new double[target2index.size()];
 		}
 		
 		@Override 
@@ -587,27 +587,27 @@ public final class Signal extends edu.berkeley.path.beats.jaxb.Signal {
 		
 		protected void setPhaseColor(Signal.NEMA nema,Signal.BulbColor color){
 			
-			Integer [] indices = nema2indices.get(nema);
-			if(indices==null)
-				return;
-			
-			double maxflow;
-			switch(color){
-				case GREEN:
-				case YELLOW:
-					maxflow = Double.POSITIVE_INFINITY;
-					break;
-				case RED:
-				case DARK:
-					maxflow = 0d;
-					break;
-				default:
-					maxflow = 0d;
-					break;			
-			}
-			
-			for(Integer index:indices)
-				this.setControl_maxflow(index, maxflow);
+//			Integer [] indices = nema2indices.get(nema);
+//			if(indices==null)
+//				return;
+//			
+//			double maxflow;
+//			switch(color){
+//				case GREEN:
+//				case YELLOW:
+//					maxflow = Double.POSITIVE_INFINITY;
+//					break;
+//				case RED:
+//				case DARK:
+//					maxflow = 0d;
+//					break;
+//				default:
+//					maxflow = 0d;
+//					break;			
+//			}
+//			
+//			for(Integer index:indices)
+//				this.setControl_maxflow(index, maxflow);
 
 		}
 		

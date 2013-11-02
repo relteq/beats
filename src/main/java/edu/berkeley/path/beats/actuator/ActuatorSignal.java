@@ -4,7 +4,7 @@ import java.util.List;
 
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorSignal extends Actuator {
 
@@ -12,16 +12,13 @@ public class ActuatorSignal extends Actuator {
 		this.command = green_times;
 	}
 
-
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
 	
-	public ActuatorSignal(Controller C,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
-		super(C);
+	public ActuatorSignal(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+		super(myScenario,jaxbA);
 	}
-	
-	
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////

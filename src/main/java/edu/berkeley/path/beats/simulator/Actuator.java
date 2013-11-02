@@ -1,20 +1,32 @@
 package edu.berkeley.path.beats.simulator;
 
+public class Actuator {
 
-
-public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
-
-	protected Controller myController;
-	protected InterfaceActuator implementor;
+	protected Scenario myScenario;
+	protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
+	protected ActuatorImplementation implementor;
 	protected Object command;
+	
+	public static enum Type	{ ramp_meter,
+							  signalized_intersection,
+							  vsl,
+							  cms };
 	
 
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
+
+	public Actuator (){
+	}
 	
-	public Actuator (Controller C){
-		myController = C;
+	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+		this.myScenario = myScenario;
+		this.jaxbA = jaxbA;
+		if(jaxbA.getScenarioElement().getType().compareToIgnoreCase("link")==0){
+			Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
+			implementor = new ActuatorImplementation(myLink);
+		}
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -26,12 +38,18 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	}
 
 	protected void validate() {
+		if(implementor.getLink()==null)
+			BeatsErrorLog.addError("Bad link reference in actuator id="+getId());
 	}
 
 	protected void reset() throws BeatsException {
 		return;
 	}
 	
-	protected void deploy(){};
+	protected void deploy(){};	
+
+    public long getId() {
+        return jaxbA.getId();
+    }
 	
 }

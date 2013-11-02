@@ -44,12 +44,7 @@ public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements Inter
 	/** Current link where the sensor is located. */
 	private Link myLink = null;
 
-	/** Type of sensor.
-	 *
-	 * TMC = Traffic Message Channel.
-	 * This is a static way of reporting probe measurements
-	 * employed by INRIX, Navteq, etc.
-	 */
+	/** Type of sensor. */
 	public static enum Type	{  
 	/** see {@link ObjectFactory#createSensor_LoopStation} 	*/	loop }
 				   	   	       

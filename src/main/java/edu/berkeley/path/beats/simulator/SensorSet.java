@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.SensorType;
 
-final class SensorList extends edu.berkeley.path.beats.jaxb.SensorSet  {
+final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
 
 	private ArrayList<Sensor> sensors = new ArrayList<Sensor>();
 
@@ -47,8 +47,6 @@ final class SensorList extends edu.berkeley.path.beats.jaxb.SensorSet  {
 	/////////////////////////////////////////////////////////////////////
 	
 	protected void populate(Scenario myScenario) {
-
-		//this.myScenario = myScenario;
 		
 		// replace jaxb.Sensor with simulator.Sensor
 		if(myScenario.getSensorSet()!=null){

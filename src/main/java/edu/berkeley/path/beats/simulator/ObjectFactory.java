@@ -40,6 +40,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
+import edu.berkeley.path.beats.actuator.*;
 import edu.berkeley.path.beats.control.*;
 import edu.berkeley.path.beats.event.*;
 import edu.berkeley.path.beats.sensor.*;
@@ -159,6 +160,35 @@ final public class ObjectFactory {
 		}
 		S.populate(jaxbS);
 		return S;
+	}
+
+	protected static Actuator createActuatorFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,Actuator.Type myType) {	
+		if(myScenario==null)
+			return null;
+		Actuator A;
+		switch(myType){
+			case ramp_meter:
+				A = new ActuatorRampMeter(myScenario, jaxbA);
+				break;
+
+			case signalized_intersection:
+				A = new ActuatorSignal(myScenario, jaxbA);
+				break;
+
+			case vsl:
+				A = new ActuatorVSL(myScenario, jaxbA);
+				break;
+
+			case cms:
+				A = new ActuatorCMS(myScenario, jaxbA);
+				break;
+				
+			default:
+				A = null;
+				break;
+		}
+		A.populate(jaxbA);
+		return A;
 	}
 	
 	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){

@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -45,28 +44,9 @@ import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.jaxb.DemandProfile;
-import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
-/** Load, manipulate, and run scenarios. 
- * <p>
- * A scenario is a collection of,
- * <ul>
- * <li> networks (nodes, links, sensors, and signals), </li>
- * <li> network connections, </li>
- * <li> initial conditions, </li>
- * <li> weaving factor profiles, </li>
- * <li> split ratio profiles, </li>
- * <li> downstream boundary conditions, </li> 
- * <li> events, </li>
- * <li> controllers, </li>
- * <li> fundamental diagram profiles, </li>
- * <li> destination networks, and </li>
- * <li> demand profiles. </li>
-*  </ul>
- * @author Gabriel Gomes (gomes@path.berkeley.edu)
-*/
 @SuppressWarnings("restriction")
 public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
@@ -83,7 +63,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	private double global_demand_knob;	// scale factor for all demands
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events	
-	private SensorList sensorlist = new SensorList();
+	private SensorSet sensorset = new SensorSet();
+	private ActuatorSet actuatorset = new ActuatorSet();
 	private boolean started_writing;
 
 	private String configfilename;
@@ -130,12 +111,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network) network).populate(this);
 
 		// sensors
-		sensorlist.populate(this);
+		sensorset.populate(this);
 		
 		// actuators
-		if(actuatorSet!=null)
-			for( edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator() )
-				((Actuator) actuator).populate(this);
+		actuatorset.populate(this);
 		
 		// signals
 		if(signalSet!=null)
@@ -187,12 +166,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network)network).validate();
 
 		// sensor list
-		S.sensorlist.validate();
+		S.sensorset.validate();
 
 		// validate actuators
-		if( S.actuatorSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Actuator actuator : S.actuatorSet.getActuator())
-				((Actuator)actuator).validate();
+		S.actuatorset.validate();
 		
 		// signal list
 		if(S.signalSet!=null)
@@ -248,12 +225,10 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				((Network)network).reset();
 		
 		// sensor list
-		sensorlist.reset();
+		sensorset.reset();
 
 		// reset actuators
-		if(actuatorSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
-				((Actuator)actuator).reset();
+		actuatorset.reset();
 		
 		// signal list
 		if(signalSet!=null)
@@ -297,7 +272,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         		((FundamentalDiagramProfile) fdProfile).update();
     	
         // update sensor readings .......................
-    	sensorlist.update();
+    	sensorset.update();
 		
         // update signals ...............................
 		// NOTE: ensembles have not been implemented for signals. They do not apply
@@ -311,10 +286,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     		controllerset.update();
     	
     	// deploy actuators
-    	if(actuatorSet!=null)
-			for(edu.berkeley.path.beats.jaxb.Actuator actuator : actuatorSet.getActuator())
-				((Actuator)actuator).deploy();
-
+    	actuatorset.deploy();
+    	
     	// update events
     	eventset.update();
     	
@@ -802,9 +775,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Sensor object.
 	 */
 	public Sensor getSensorWithId(long id) {
-		if(sensorlist==null)
+		if(sensorset==null)
 			return null;
-		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorlist.getSensors() ){
+		for(edu.berkeley.path.beats.simulator.Sensor sensor : sensorset.getSensors() ){
 			if(sensor.getId()==id)
 				return (Sensor) sensor;
 		}
@@ -816,11 +789,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * @return Actuator object.
 	 */
 	public Actuator getActuatorWithId(long id) {
-		if(getActuatorSet()==null)
+		if(actuatorset==null)
 			return null;
-		if(getActuatorSet().getActuator()==null)
-			return null;
-		for(edu.berkeley.path.beats.jaxb.Actuator actuator : getActuatorSet().getActuator() ){
+		for(edu.berkeley.path.beats.simulator.Actuator actuator : actuatorset.getActuators() ){
 			if(actuator.getId()==id)
 				return (Actuator) actuator;
 		}
@@ -992,7 +963,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	public void loadSensorData() throws BeatsException {
 
-		if(sensorlist.getSensors().isEmpty())
+		if(sensorset.getSensors().isEmpty())
 			return;
 		
 		if(sensor_data_loaded)
@@ -1003,7 +974,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		ArrayList<String> uniqueurls  = new ArrayList<String>();
 		
 		// construct list of stations to extract from datafile 
-		for(Sensor sensor : sensorlist.getSensors()){
+		for(Sensor sensor : sensorset.getSensors()){
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;
 			SensorLoopStation S = (SensorLoopStation) sensor;
@@ -1029,7 +1000,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		P.Read5minData(data,datasources);
 		
 		// distribute data to sensors
-		for(Sensor sensor : sensorlist.getSensors()){
+		for(Sensor sensor : sensorset.getSensors()){
 			
 			if(sensor.getMyType().compareTo(Sensor.Type.loop)!=0)
 				continue;

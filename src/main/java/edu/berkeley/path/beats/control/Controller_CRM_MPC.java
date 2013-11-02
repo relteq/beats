@@ -186,49 +186,49 @@ public class Controller_CRM_MPC extends Controller {
 	@Override
 	protected void update() throws BeatsException {
 		
-		double time_current = getMyScenario().getCurrentTimeInSeconds();
-		double time_since_last_opt = time_current-time_last_opt;
-
-		// if it is time to optimize, update metering rate profile
-		if(BeatsMath.greaterorequalthan(time_since_last_opt,opt_period)){
-
-			// copy initial density
-			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-				initialDensity.put(link.getId(), ((Link)link).getTotalDensityInVeh(0));
-			
-			// copy split ratios
-			for(edu.berkeley.path.beats.jaxb.Node node : network.getListOfNodes())
-				splitRatios.put(node.getId(),null);
-	
-			// copy ramp demands
-			DemandSet demand_set = (DemandSet) getMyScenario().getDemandSet();
-			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
-				if( ((Link)link).isOnramp()){					
-					Double [] future_demands = BeatsFormatter.toDoubleArray(demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int));
-					rampDemands.put(link.getId(),future_demands);
-				}
-			
-			// call control algorithm
-			metering_rate = control_algorithm.compute(initialDensity,splitRatios, rampDemands, getMyScenario());
-			time_last_opt = time_current;
-			time_since_last_opt = 0;
-			
-			// check metering_rate is not null
-			if(metering_rate==null)
-				throw new BeatsException("Control algorithm returned null.");
-
-			// check lengths are correct
-			Iterator<Map.Entry<Long,Double[]>> it = metering_rate.entrySet().iterator();
-			while(it.hasNext())
-				if(it.next().getValue().length<opt_period_int)
-					throw new BeatsException("Control algorithm returned policy with incorrect number of targets.");
-			
-		}
-
-		// return the values corresponding to the current time
-		int time_index = BeatsMath.floor(time_since_last_opt/getDtinseconds());		
-		for(int i=0;i<actuators.size();i++)
-			setControl_maxflow(i, metering_rate.get(actuators.get(i).getId())[time_index]);
+//		double time_current = getMyScenario().getCurrentTimeInSeconds();
+//		double time_since_last_opt = time_current-time_last_opt;
+//
+//		// if it is time to optimize, update metering rate profile
+//		if(BeatsMath.greaterorequalthan(time_since_last_opt,opt_period)){
+//
+//			// copy initial density
+//			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
+//				initialDensity.put(link.getId(), ((Link)link).getTotalDensityInVeh(0));
+//			
+//			// copy split ratios
+//			for(edu.berkeley.path.beats.jaxb.Node node : network.getListOfNodes())
+//				splitRatios.put(node.getId(),null);
+//	
+//			// copy ramp demands
+//			DemandSet demand_set = (DemandSet) getMyScenario().getDemandSet();
+//			for(edu.berkeley.path.beats.jaxb.Link link : network.getListOfLinks())
+//				if( ((Link)link).isOnramp()){					
+//					Double [] future_demands = BeatsFormatter.toDoubleArray(demand_set.getFutureTotalDemandInVeh_NoNoise(link.getId(),opt_dt,opt_horizon_int));
+//					rampDemands.put(link.getId(),future_demands);
+//				}
+//			
+//			// call control algorithm
+//			metering_rate = control_algorithm.compute(initialDensity,splitRatios, rampDemands, getMyScenario());
+//			time_last_opt = time_current;
+//			time_since_last_opt = 0;
+//			
+//			// check metering_rate is not null
+//			if(metering_rate==null)
+//				throw new BeatsException("Control algorithm returned null.");
+//
+//			// check lengths are correct
+//			Iterator<Map.Entry<Long,Double[]>> it = metering_rate.entrySet().iterator();
+//			while(it.hasNext())
+//				if(it.next().getValue().length<opt_period_int)
+//					throw new BeatsException("Control algorithm returned policy with incorrect number of targets.");
+//			
+//		}
+//
+//		// return the values corresponding to the current time
+//		int time_index = BeatsMath.floor(time_since_last_opt/getDtinseconds());		
+//		for(int i=0;i<actuators.size();i++)
+//			setControl_maxflow(i, metering_rate.get(actuators.get(i).getId())[time_index]);
 	}
 	
 }
