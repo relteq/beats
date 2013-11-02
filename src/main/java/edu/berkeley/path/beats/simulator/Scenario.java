@@ -729,6 +729,25 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		return density;           
 		
 	}
+	
+
+	public double [][] getTotalDensity(long network_id){
+		Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] density = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+		int i,e;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			Link link = (Link) network.getLinkList().getLink().get(i);
+			for(e=0;e<getNumEnsemble();e++)
+				density[i][e] = link.getTotalDensityInVeh(e);
+		}
+		return density;           
+	}
+	
+	
+	
 
 	// object getters ........................................................
 

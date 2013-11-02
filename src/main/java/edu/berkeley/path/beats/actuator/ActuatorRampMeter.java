@@ -14,10 +14,6 @@ public class ActuatorRampMeter extends Actuator {
 	
 	public void setMeteringRateInVeh(Double rate){
 		this.command = rate;
-System.out.println(this.getLink().getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\tActuator: " + command.toString());
-		
-
-
 	}
 
 	public void setMeteringRateInVPH(Double rate){
