@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
@@ -225,6 +226,7 @@ public class ScenarioTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void test_getSignalWithId_getSignalWithNodeId() {
 		try {

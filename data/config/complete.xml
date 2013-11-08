@@ -201,19 +201,19 @@
       </parameters>
       <table name="data_sources">
          <column_names>
-            <column_name key="false" name="url"/>
-            <column_name key="false" name="dt"/>
-            <column_name key="false" name="format"/>
+            <column_name id="0" key="false" name="url"/>
+            <column_name id="0" key="false" name="dt"/>
+            <column_name id="0" key="false" name="format"/>
          </column_names>
          <row>
-            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
-            <column>300</column>
-            <column>PeMS Data Clearinghouse</column>
+            <column id="0">file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
+            <column id="0">300</column>
+            <column id="0">PeMS Data Clearinghouse</column>
          </row>
          <row>
-            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
-            <column>300</column>
-            <column>PeMS Data Clearinghouse</column>
+            <column id="0">file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
+            <column id="0">300</column>
+            <column id="0">PeMS Data Clearinghouse</column>
          </row>
       </table>
       <sensor_type id="-1" name="loop"/>
@@ -236,19 +236,19 @@
       </parameters>
       <table name="data_sources">
          <column_names>
-            <column_name key="false" name="url"/>
-            <column_name key="false" name="dt"/>
-            <column_name key="false" name="format"/>
+            <column_name id="0" key="false" name="url"/>
+            <column_name id="0" key="false" name="dt"/>
+            <column_name id="0" key="false" name="format"/>
          </column_names>
          <row>
-            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
-            <column>300</column>
-            <column>PeMS Data Clearinghouse</column>
+            <column id="0">file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_02.txt</column>
+            <column id="0">300</column>
+            <column id="0">PeMS Data Clearinghouse</column>
          </row>
          <row>
-            <column>file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
-            <column>300</column>
-            <column>PeMS Data Clearinghouse</column>
+            <column id="0">file:\\\C:\Users\gomes\TrafficData\PeMSDataClearingHouse_5min\d07_text_station_5min_2009_02_27.txt</column>
+            <column id="0">300</column>
+            <column id="0">PeMS Data Clearinghouse</column>
          </row>
       </table>
       <sensor_type id="-1" name="loop"/>
