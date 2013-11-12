@@ -28,8 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
-final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile {
-
+public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile {
 
 	// does not change ....................................
 	private Scenario myScenario;
@@ -160,5 +159,18 @@ final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.Funda
 			}
 		}
 	}
-	
+
+
+    /////////////////////////////////////////////////////////////////////
+    // public API
+    /////////////////////////////////////////////////////////////////////
+
+    public FundamentalDiagram getFDforTime(double time){
+        int profile_step = BeatsMath.floor(time-getStartTime() /getDt().floatValue());
+        profile_step = Math.max(profile_step,0);
+        profile_step = Math.min(profile_step,FD.size()-1);
+        return FD.get(profile_step);
+    }
+
+
 }

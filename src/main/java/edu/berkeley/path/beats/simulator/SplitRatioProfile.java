@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
+public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 
 	// does not change ...................................
 	private Scenario myScenario;
@@ -244,5 +244,14 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 		}
 		return X;
 	}
+
+    /////////////////////////////////////////////////////////////////////
+    // public API
+    /////////////////////////////////////////////////////////////////////
+
+    public double [] predict(long inlink_id,long outlink_id,int vt_index,double start_time,double time_step,int num_steps){
+        System.out.println("THIS IS NOT IMPLEMENTED!");
+        return null;
+    }
 
 }

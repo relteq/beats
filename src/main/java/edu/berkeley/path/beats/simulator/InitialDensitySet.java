@@ -33,7 +33,6 @@ package edu.berkeley.path.beats.simulator;
  */
 public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
 
-
 	// does not change ....................................
 	private Scenario myScenario;
 	private Link [] link;					// ordered array of references

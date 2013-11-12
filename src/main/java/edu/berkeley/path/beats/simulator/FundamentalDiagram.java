@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
+public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
 
 	// does not change ....................................
 	private Link myLink;
@@ -206,7 +206,6 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 
-
 	protected void set_capacity(double _capacity) {
 		this._capacity = _capacity;
 	}	
@@ -317,7 +316,7 @@ final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalD
 	}
 
  	// clone a fd
-	protected void copyfrom(edu.berkeley.path.beats.simulator.FundamentalDiagram that){
+	public void copyfrom(edu.berkeley.path.beats.simulator.FundamentalDiagram that){
 		if(that==null)
 			return;
 		this.myLink = that.myLink;

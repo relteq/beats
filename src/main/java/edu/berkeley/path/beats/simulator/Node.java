@@ -420,5 +420,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			return Double.NaN;
 		return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
+
+
+    public SplitRatioProfile getSplitRatioProfile(){
+        return mySplitRatioProfile;
+    }
 	
 }

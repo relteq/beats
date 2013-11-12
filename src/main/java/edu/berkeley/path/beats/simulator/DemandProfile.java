@@ -28,7 +28,6 @@ package edu.berkeley.path.beats.simulator;
 
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
-
 	// does not change ....................................
 	private Scenario myScenario;
 	private boolean isOrphan;
@@ -246,7 +245,11 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	/////////////////////////////////////////////////////////////////////
 	// private methods
 	/////////////////////////////////////////////////////////////////////
-	
+
+    private double applyKnob(final double demandvalue){
+        return demandvalue*myScenario.getGlobal_demand_knob()*_knob;
+    }
+
 	private double sample_finalTime_addNoise_applyKnob(int vtype_index){
 		return sample_KthTime_addNoise_applyKnob(profile_length-1,vtype_index);
 	}
@@ -270,69 +273,68 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		
 		return demandvalue;
 	}
-	
-	
+
+    private double addNoise(final double demandvalue){
+
+        double noisy_demand = demandvalue;
+
+        // use smallest between multiplicative and additive standard deviations
+        double std_dev_apply = Double.isInfinite(std_dev_mult) ? std_dev_add :
+                Math.min( noisy_demand*std_dev_mult , std_dev_add );
+
+        // sample the distribution
+        switch(myScenario.getUncertaintyModel()){
+
+            case uniform:
+                for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+                    noisy_demand += BeatsMath.sampleZeroMeanUniform(std_dev_apply);
+                break;
+
+            case gaussian:
+                for(int j=0;j<myScenario.getNumVehicleTypes();j++)
+                    noisy_demand += BeatsMath.sampleZeroMeanGaussian(std_dev_apply);
+                break;
+        }
+
+        // non-negativity
+        noisy_demand = Math.max(0.0,noisy_demand);
+
+        return noisy_demand;
+
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// public interface
 	/////////////////////////////////////////////////////////////////////
-	
-	
+
 	public double [] getCurrentValue(){
 		return current_sample;
 	}
 
-	public int getSamplesteps() {
-		return samplesteps;
-	}
-	
-	public double getTotalForStep(int step){
-		// hold last value
-		step = Math.min(step,profile_length-1);
-		double val=0;
-		for(BeatsTimeProfile p:demand_nominal)
-			if(p!=null)
-				val += p.get(step);
-		return val;
-	}
-	
-	protected int getProfile_length() {
-		return profile_length;
-	}
+    public double [] predictTotal(double start_time,double time_step,int num_steps){
 
-	protected int getStepinitial() {
-		return stepinitial;
-	}
+        double [] val = BeatsMath.zeros(num_steps);
 
-	protected double applyKnob(final double demandvalue){
-		return demandvalue*myScenario.getGlobal_demand_knob()*_knob;
-	}
-	
-	private double addNoise(final double demandvalue){
+        if(demand_nominal==null || demand_nominal.length==0)
+            return val;
 
- 		double noisy_demand = demandvalue;
- 		
-		// use smallest between multiplicative and additive standard deviations
-		double std_dev_apply = Double.isInfinite(std_dev_mult) ? std_dev_add : 
-															Math.min( noisy_demand*std_dev_mult , std_dev_add );
-		
-		// sample the distribution
-		switch(myScenario.getUncertaintyModel()){
-			
-		case uniform:
-			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-				noisy_demand += BeatsMath.sampleZeroMeanUniform(std_dev_apply);
-			break;
+        for(int i=0;i<num_steps;i++){
 
-		case gaussian:
-			for(int j=0;j<myScenario.getNumVehicleTypes();j++)
-				noisy_demand += BeatsMath.sampleZeroMeanGaussian(std_dev_apply);
-			break;
-		}
-		
-		// non-negativity
-		noisy_demand = Math.max(0.0,noisy_demand);
-		
-		return noisy_demand;
-		
-	}
+            // time in seconds after midnight
+            double time = start_time + i*time_step + 0.5*time_step;
+
+            // corresponfing profile step
+            int profile_step = BeatsMath.floor(time-getStartTime() /getDt().floatValue());
+            if(profile_step>=0){
+                profile_step = Math.min(profile_step,demand_nominal[0].getNumTime());
+                for(int x=0;x<demand_nominal.length;x++)
+                    val[i] +=  demand_nominal[x].get(profile_step);
+                val[i] = applyKnob(val[i]);
+            }
+
+        }
+        return val;
+    }
+
+
 }

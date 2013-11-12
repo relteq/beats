@@ -875,7 +875,16 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/////////////////////////////////////////////////////////////////////
+    public DemandProfile getDemandProfile(){
+        return myDemandProfile;
+    }
+
+    public FundamentalDiagramProfile getFundamentalDiagramProfile(){
+        return myFDprofile;
+    }
+
+
+        /////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////
 

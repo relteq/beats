@@ -14,7 +14,7 @@ public class BeatsFormatterTest {
 
 	@Test
 	public void test_csv_1D() {
-		Double [] V = {1d,2d,3d};
+		double [] V = {1d,2d,3d};
 		assertEquals(BeatsFormatter.csv(V, "z"),"1.0z2.0z3.0");
 		
 		// edge cases
@@ -24,7 +24,7 @@ public class BeatsFormatterTest {
 
 	@Test
 	public void test_csv_2D() {
-		Double [][] V = {{1d,2d,3d},{4d,5d},{7d,8d,9d}};		
+		double [][] V = {{1d,2d,3d},{4d,5d},{7d,8d,9d}};
 		assertEquals(BeatsFormatter.csv(V, ",",";"),"1.0,2.0,3.0;4.0,5.0;7.0,8.0,9.0");
 		
 		// edge cases

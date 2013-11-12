@@ -38,6 +38,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
@@ -518,7 +519,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-	// seriallization .................................................
+	// serialization .................................................
 	
 	/** Save the scenario to XML.
 	 * 
@@ -745,9 +746,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return density;           
 	}
-	
-	
-	
 
 	// object getters ........................................................
 
@@ -880,10 +878,28 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				return e;
 		}
 		return null;
-	}		
+	}
 
-	
-	/////////////////////////////////////////////////////////////////////
+    // state and bc getters .............................................
+
+//    public FundamentalDiagramSet getCurrentFundamentalDiagrams(){
+//        return null;
+//    }
+//
+//    public DemandSet getDemandsForLinkAndPeriod(double start_time,double end_time,double dt){
+//        return null;
+//    }
+//
+//    public SplitRatioSet getSplitRatiosForPeriod(double start_time,double end_time,double dt){
+//        return null;
+//    }
+//
+//    public InitialDensitySet getCurrentStateAsInitialDensitySet(int ensemble){
+//        return null;
+//    }
+
+
+    /////////////////////////////////////////////////////////////////////
 	// scenario modification
 	/////////////////////////////////////////////////////////////////////
 

@@ -33,8 +33,8 @@
       <parameters>
         <parameter name="policy" value="adjoint"/>
         <parameter name="dt_optimize" value="25"/>
-        <parameter name="opt_timestep" value="5"/>
-        <parameter name="opt_horizon" value="25"/>
+        <parameter name="policy_maker_timestep" value="5"/>
+        <parameter name="policy_maker_horizon" value="25"/>
       </parameters>
       <target_actuators>
         <target_actuator id="0" usage="onramp"/>
