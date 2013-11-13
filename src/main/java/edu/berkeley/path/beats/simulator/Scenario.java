@@ -431,7 +431,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				reset();
 				
 				// advance to end of simulation
-				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){					
+				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();

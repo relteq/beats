@@ -124,7 +124,19 @@ public class Controller_CRM_MPC extends Controller {
 		if(Double.isNaN(pm_horizon))
 			BeatsErrorLog.addError("Optimization horizon undefined.");
 
-		// opt_period is a multiple of dtinseconds
+        // opt_horizon is a multiple of pm_dt
+        if(!Double.isNaN(pm_horizon) && !BeatsMath.isintegermultipleof(pm_horizon, pm_dt))
+            BeatsErrorLog.addError("pm_horizon is a multiple of pm_dt.");
+
+        // opt_horizon is greater than opt_period
+        if(!Double.isNaN(pm_horizon) && !BeatsMath.greaterorequalthan(pm_horizon,pm_period) )
+            BeatsErrorLog.addError("pm_horizon is less than pm_period.");
+
+        // validations below this make sensor only in the context of a scenario
+        if(getMyScenario()==null)
+            return;
+
+        // opt_period is a multiple of dtinseconds
 		if(!BeatsMath.isintegermultipleof(pm_period,getDtinseconds()))
 			BeatsErrorLog.addError("pm_period is not a a multiple of dtinseconds.");
 
@@ -132,13 +144,6 @@ public class Controller_CRM_MPC extends Controller {
 		if(!BeatsMath.isintegermultipleof(getDtinseconds(), pm_dt))
 			BeatsErrorLog.addError("dtinseconds ("+getDtinseconds()+") is not a multiple of pm_dt ("+pm_dt+").");
 
-		// opt_horizon is a multiple of pm_dt
-		if(!Double.isNaN(pm_horizon) && !BeatsMath.isintegermultipleof(pm_horizon, pm_dt))
-			BeatsErrorLog.addError("pm_horizon is a multiple of pm_dt.");
-
-		// opt_horizon is greater than opt_period
-		if(!Double.isNaN(pm_horizon) && !BeatsMath.greaterorequalthan(pm_horizon,pm_period) )
-			BeatsErrorLog.addError("pm_horizon is less than pm_period.");
 	}
 
 	@Override

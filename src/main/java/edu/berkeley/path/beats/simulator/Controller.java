@@ -44,7 +44,7 @@ import edu.berkeley.path.beats.jaxb.TargetActuator;
 public class Controller {
 
 	/** Scenario that contains this controller */
-	protected Scenario myScenario;										       								       
+	protected Scenario myScenario;
 	
 	protected edu.berkeley.path.beats.jaxb.Controller jaxbController;
 										
@@ -196,11 +196,15 @@ public class Controller {
 	 * 
 	 */
 	protected void validate() {
-		
+
 		// check that type was read correctly
 		if(myType==null)
 			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
-		
+
+        // validations below this make sense only in the context of a scenario
+        if(myScenario==null)
+            return;
+
 		// check that sample dt is an integer multiple of network dt
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
 			BeatsErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
@@ -327,6 +331,9 @@ public class Controller {
    	 * @return A double with the start time for the controller. 
    	 */
 	protected double getFirstStartTime(){
+        // this should not be used if no scenario is defined
+        if(myScenario==null)
+            return Double.NaN;
 		double starttime=myScenario.getTimeStart();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
@@ -341,6 +348,8 @@ public class Controller {
    	 * @return A double with the end time for the controller. 
    	 */
 	protected double getlastEndTime(){
+        if(myScenario==null)
+            return Double.NaN;
 		double endtime=myScenario.getTimeEnd();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
