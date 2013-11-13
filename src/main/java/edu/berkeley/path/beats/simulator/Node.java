@@ -40,7 +40,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// connectivity
 	protected int nIn;
 	protected int nOut;
-	protected boolean istrivialsplit;
+
+    protected boolean istrivialsplit;
 	protected boolean isTerminal;
 
 	// link references
@@ -425,5 +426,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     public SplitRatioProfile getSplitRatioProfile(){
         return mySplitRatioProfile;
     }
-	
+
+    public boolean istrivialsplit() {
+        return istrivialsplit;
+    }
+
+
+
 }

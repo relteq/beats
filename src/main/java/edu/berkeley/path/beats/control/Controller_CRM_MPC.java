@@ -1,8 +1,10 @@
 package edu.berkeley.path.beats.control;
 
+import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.control.predictive.*;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.DemandProfile;
 import edu.berkeley.path.beats.simulator.DemandSet;
@@ -20,6 +22,7 @@ public class Controller_CRM_MPC extends Controller {
 
     // policy maker
     private RampMeteringPolicyMaker policy_maker;
+    private RampMeteringPolicySet policy;
     private RampMeteringControlSet controller_parameters;
     private Network network;
 
@@ -92,14 +95,22 @@ public class Controller_CRM_MPC extends Controller {
 
         pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
 
-        // auxiliary parameters
-		//opt_period_int = BeatsMath.round(opt_period/getDtinseconds());
-		//opt_horizon_int = BeatsMath.round(opt_horizon/getDtinseconds());
+        // assign network
+        network = (Network) myScenario.getNetworkSet().getNetwork().get(0);
 
-	}
+        // controller parameters
+        controller_parameters = new RampMeteringControlSet();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            if(L.isSource()){
+                RampMeteringControl con = new RampMeteringControl();
+                con.link = L;
+                con.max_rate = 900/3600;    // veh/sec
+                con.min_rate = 180/3600;    // veh/sec
+                controller_parameters.control.add(con);
+            }
+        }
 
-    protected void assign_network(Network net){
-        network = net;
     }
 
 	@Override
@@ -182,6 +193,9 @@ public class Controller_CRM_MPC extends Controller {
             for(edu.berkeley.path.beats.jaxb.Node jaxbN : network.getListOfNodes()){
                 Node N = (Node) jaxbN;
 
+                if(N.istrivialsplit())
+                    continue;
+
                 SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
                 split_ratio_set.getSplitRatioProfile().add(srp);
 
@@ -222,27 +236,33 @@ public class Controller_CRM_MPC extends Controller {
             }
 
 			// call policy maker
-            RampMeteringPolicySet policy = policy_maker.givePolicy(  network,
-                                                                     fd_set,
-                                                                     demand_set,
-                                                                     split_ratio_set,
-                                                                     init_dens_set,
-                                                                     controller_parameters,
-                                                                     pm_dt);
-
-            // check policy is not null
-            if(policy==null)
-                throw new BeatsException("Control algorithm returned null.");
+            policy = policy_maker.givePolicy( network,
+                                              fd_set,
+                                              demand_set,
+                                              split_ratio_set,
+                                              init_dens_set,
+                                              controller_parameters,
+                                              pm_dt);
 
             // update time keeper
 			time_last_opt = time_current;
+            time_since_last_opt = 0;
 
 		}
 
+        if(policy==null)
+            return;
+
 		// actuate
-//		int time_index = BeatsMath.floor(time_since_last_opt/getDtinseconds());
-//		for(int i=0;i<actuators.size();i++)
-//			setControl_maxflow(i, metering_rate.get(actuators.get(i).getId())[time_index]);
+		int time_index = BeatsMath.floor(time_since_last_opt/pm_dt);
+        for(RampMeteringPolicyProfile rmprofile : policy.profiles){
+            for(Actuator act : actuators){
+                ActuatorRampMeter this_actuator = (ActuatorRampMeter) act;
+                if(this_actuator.getLink().getId()==rmprofile.sensorLink.getId())
+                    this_actuator.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(time_index));
+            }
+        }
+
 	}
 
 }

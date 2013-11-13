@@ -23,7 +23,7 @@ public class PolicyMaker_Tester implements RampMeteringPolicyMaker {
                 RampMeteringPolicyProfile profile = new RampMeteringPolicyProfile();
                 profile.sensorLink = L;
                 for(int i=0;i<num_data;i++)
-                    profile.rampMeteringPolicy.add(100d);
+                    profile.rampMeteringPolicy.add(900d/3600d);
                 policy.profiles.add(profile);
             }
         }

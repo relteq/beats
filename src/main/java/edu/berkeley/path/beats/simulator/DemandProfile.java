@@ -323,10 +323,10 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
             // time in seconds after midnight
             double time = start_time + i*time_step + 0.5*time_step;
 
-            // corresponfing profile step
-            int profile_step = BeatsMath.floor(time-getStartTime() /getDt().floatValue());
+            // corresponding profile step
+            int profile_step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );
             if(profile_step>=0){
-                profile_step = Math.min(profile_step,demand_nominal[0].getNumTime());
+                profile_step = Math.min(profile_step,demand_nominal[0].getNumTime()-1);
                 for(int x=0;x<demand_nominal.length;x++)
                     val[i] +=  demand_nominal[x].get(profile_step);
                 val[i] = applyKnob(val[i]);

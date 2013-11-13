@@ -33,7 +33,7 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 	// does not change ....................................
 	private Scenario myScenario;
 	private Link myLink;
-	private double dtinseconds;			// not really necessary
+	private double dtinseconds;
 	private int samplesteps;
 	private ArrayList<FundamentalDiagram> FD;
 	private int stepinitial;
@@ -166,7 +166,7 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
     /////////////////////////////////////////////////////////////////////
 
     public FundamentalDiagram getFDforTime(double time){
-        int profile_step = BeatsMath.floor(time-getStartTime() /getDt().floatValue());
+        int profile_step = BeatsMath.floor( (time-getStartTime()) /dtinseconds);
         profile_step = Math.max(profile_step,0);
         profile_step = Math.min(profile_step,FD.size()-1);
         return FD.get(profile_step);
