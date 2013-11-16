@@ -5,7 +5,7 @@ public class Actuator {
 	protected Scenario myScenario;
 	protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
 	protected ActuatorImplementation implementor;
-	protected Object command;
+//	protected Object command;
 	
 	public static enum Type	{ ramp_meter,
 							  signalized_intersection,

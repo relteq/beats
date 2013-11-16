@@ -100,13 +100,12 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 		
 		isTerminal = nOut==0 || nIn==0;
+        istrivialsplit = nOut<=1;
+        hasSRprofile = false;
 
     	if(isTerminal)
     		return;
 
-		istrivialsplit = nOut==1;
-		hasSRprofile = false;
-		
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
 		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);

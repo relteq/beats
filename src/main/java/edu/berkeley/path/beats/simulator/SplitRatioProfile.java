@@ -257,6 +257,10 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 
         BeatsTimeProfile thisprofile = profile[in_index][out_index][vt_index];
 
+        // HACK!!!
+        if(thisprofile==null)
+            return null;
+
         for(int i=0;i<num_steps;i++){
 
             // time in seconds after midnight

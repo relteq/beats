@@ -2,12 +2,12 @@
 <scenario id="0" schemaVersion="2.0.2">
 
   <ControllerSet project_id="-1" id="-1">
-    <controller dt="5" id="0" name="MPC" type="CRM_MPC" enabled="true">
+    <controller dt="300" id="0" name="MPC" type="CRM_MPC" enabled="true">
       <parameters>
         <parameter name="policy" value="adjoint"/>
-        <parameter name="dt_optimize" value="25"/>
+        <parameter name="dt_optimize" value="300"/>
         <parameter name="policy_maker_timestep" value="5"/>
-        <parameter name="policy_maker_horizon" value="25"/>
+        <parameter name="policy_maker_horizon" value="3600"/>
       </parameters>
       <target_actuators>
         <target_actuator id="7" usage="onramp"/>
@@ -155,7 +155,8 @@
    </DemandSet>
    <SplitRatioSet id="0" project_id="0">
       <splitRatioProfile dt="30" id="1" node_id="3">
-         <splitratio link_in="3" link_out="6" vehicle_type_id="1">0.10000,0.20000,0.20000</splitratio>
+         <splitratio link_in="3" link_out="6" vehicle_type_id="1">0.1,0.2,0.2</splitratio>
+         <!--<splitratio link_in="3" link_out="4" vehicle_type_id="1">0.9,0.8,0.8</splitratio>-->
       </splitRatioProfile>
    </SplitRatioSet>
    <FundamentalDiagramSet id="0" project_id="0">

@@ -70,7 +70,7 @@ public class Controller_CRM_MPC extends Controller {
                     policy_maker = new PolicyMaker_Tester();
                     break;
 				case adjoint:
-					//policy_maker = new RampMeteringAdjoint();
+					policy_maker = new AdjointRampMeteringPolicyMaker();
 //					policy_maker = new ControllerAlgorithm_CRM_Adjoint();
 					break;
 //				case actm_lp:
@@ -105,8 +105,8 @@ public class Controller_CRM_MPC extends Controller {
             if(L.isSource()){
                 RampMeteringControl con = new RampMeteringControl();
                 con.link = L;
-                con.max_rate = 900/3600;    // veh/sec
-                con.min_rate = 180/3600;    // veh/sec
+                con.max_rate = 1;    // veh/sec
+                con.min_rate = 0;    // veh/sec
                 controller_parameters.control.add(con);
             }
         }
@@ -170,9 +170,14 @@ public class Controller_CRM_MPC extends Controller {
             // initial densities
             InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
             for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-                Density den = factory.createDensity();
-                den.setContent(String.format("%f",((Link) jaxbL).getTotalDensityInVeh(0)));
-                init_dens_set.getDensity().add(den);
+                Link L = (Link) jaxbL;
+                for(int v=0;v<myScenario.getNumVehicleTypes();v++){
+                    Density den = factory.createDensity();
+                    den.setLinkId(jaxbL.getId());
+                    den.setVehicleTypeId(myScenario.getVehicleTypeIdForIndex(v));
+                    den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
+                    init_dens_set.getDensity().add(den);
+                }
             }
 
             // demands
@@ -180,16 +185,22 @@ public class Controller_CRM_MPC extends Controller {
             for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
                 Link L = (Link) jaxbL;
                 if(L.isSource()){
+                    DemandProfile dem_profile = L.getDemandProfile();
 
                     // add demands to demand_set
                     DemandProfile dp = (DemandProfile) factory.createDemandProfile();
                     demand_set.getDemandProfile().add(dp);
-                    Demand dem = factory.createDemand();
-                    dp.getDemand().add(dem);
 
-                    // set values
                     dp.setLinkIdOrg(L.getId());
-                    dem.setContent(BeatsFormatter.csv(L.getDemandProfile().predictTotal(time_current, pm_dt, pm_horizon_steps), ","));
+                    dp.setDt(pm_dt);
+                    for(int v=0;v<myScenario.getNumVehicleTypes();v++){
+                        Demand dem = factory.createDemand();
+                        dp.getDemand().add(dem);
+
+                        // set values
+                        dem.setVehicleTypeId(myScenario.getVehicleTypeIdForIndex(v));
+                        dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, pm_dt, pm_horizon_steps), ","));
+                    }
                 }
             }
 
@@ -201,24 +212,33 @@ public class Controller_CRM_MPC extends Controller {
                 if(N.istrivialsplit())
                     continue;
 
+
+                SplitRatioProfile sr_profile = N.getSplitRatioProfile();
+
                 SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
                 split_ratio_set.getSplitRatioProfile().add(srp);
 
+                srp.setDt(pm_dt);
+                srp.setNodeId(N.getId());
                 for(Input in : N.getInputs().getInput()){
                     for(Output out : N.getOutputs().getOutput()){
-                        for(int vt_index=0;vt_index<myScenario.getNumVehicleTypes();vt_index++)    {
+                        for(int v=0;v<myScenario.getNumVehicleTypes();v++)    {
 
                             Splitratio splitratio = factory.createSplitratio();
-                            srp.getSplitratio().add(splitratio);
 
                             // set values
                             splitratio.setLinkIn(in.getLinkId());
                             splitratio.setLinkOut(out.getLinkId());
-                            splitratio.setVehicleTypeId(myScenario.getVehicleTypeSet().getVehicleType().get(vt_index).getId());
-                            double [] sr = N.getSplitRatioProfile().predict(
+                            splitratio.setVehicleTypeId(myScenario.getVehicleTypeIdForIndex(v));
+                            double [] sr = sr_profile.predict(
                                     in.getLinkId(),
                                     out.getLinkId(),
-                                    vt_index,time_current, pm_dt, pm_horizon_steps);
+                                    v,time_current, pm_dt, pm_horizon_steps);
+
+                            if(sr==null)
+                                continue;
+
+                            srp.getSplitratio().add(splitratio);
                             splitratio.setContent(BeatsFormatter.csv(sr, ","));
                         }
                     }
@@ -240,14 +260,31 @@ public class Controller_CRM_MPC extends Controller {
                 fdp.getFundamentalDiagram().add(fd);
             }
 
+//            Scenario x = new Scenario();
+//            NetworkSet netset = new NetworkSet();
+//            netset.getNetwork().add(network);
+//            x.setNetworkSet(netset);
+//            x.setInitialDensitySet(init_dens_set);
+//            x.setDemandSet(demand_set);
+//            x.setSplitRatioSet(split_ratio_set);
+//            x.setFundamentalDiagramSet(fd_set);
+//            x.saveToXML("C:\\Users\\gomes\\workspace_L0\\beats\\data\\config\\x.xml");
+
+
+            System.out.println("Calling policy maker at "+myScenario.getCurrentTimeInSeconds());
+
 			// call policy maker
-            policy = policy_maker.givePolicy( network,
-                                              fd_set,
-                                              demand_set,
-                                              split_ratio_set,
-                                              init_dens_set,
-                                              controller_parameters,
-                                              pm_dt);
+            policy = policy_maker.givePolicy( network,                  // SI units
+                                              fd_set,                   // SI units
+                                              demand_set,               // SI units
+                                              split_ratio_set,          // SI units
+                                              init_dens_set,            // SI units
+                                              controller_parameters,    // SI units
+                                              pm_dt);                   // SI units
+
+            policy.print();
+
+            System.out.println("Policy maker done");
 
             // update time keeper
 			time_last_opt = time_current;
@@ -264,7 +301,7 @@ public class Controller_CRM_MPC extends Controller {
             for(Actuator act : actuators){
                 ActuatorRampMeter this_actuator = (ActuatorRampMeter) act;
                 if(this_actuator.getLink().getId()==rmprofile.sensorLink.getId())
-                    this_actuator.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(time_index));
+                    this_actuator.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(time_index)*3600d  );
             }
         }
 

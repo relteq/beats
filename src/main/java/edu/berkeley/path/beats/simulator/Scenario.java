@@ -89,7 +89,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
 
-	protected Scenario(){}
+	public Scenario(){}
 		
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -645,6 +645,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				return i;
 		return -1;
 	}
+
+    public long getVehicleTypeIdForIndex(int index){
+        if(getVehicleTypeSet()==null)
+            return 0;
+        if(getVehicleTypeSet().getVehicleType()==null)
+            return 0;
+        return getVehicleTypeSet().getVehicleType().get(index).getId();
+    }
 	
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 

@@ -40,7 +40,10 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	private double _capacity;   		// [veh] 
 	private double _capacityDrop;     	// [veh] 
 	private double density_critical;	// [veh]
-	
+
+    private double conv_spd;
+    private double conv_dty;
+
 	/////////////////////////////////////////////////////////////////////
 	// construction 
 	/////////////////////////////////////////////////////////////////////
@@ -70,8 +73,21 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	    _w 				  = Double.NaN; 
 	    std_dev_capacity  = Double.NaN;
 	    density_critical  = Double.NaN;
-	    
-	    if(myLink==null)
+
+
+        this.setOrder(jaxbfd.getOrder());
+        this.setCapacity(jaxbfd.getCapacity());
+        this.setCapacityDrop(jaxbfd.getCapacityDrop());
+        this.setStdDevCapacity(jaxbfd.getStdDevCapacity());
+        this.setFreeFlowSpeed(jaxbfd.getFreeFlowSpeed());
+        this.setCongestionSpeed(jaxbfd.getCongestionSpeed());
+        this.setCriticalSpeed(jaxbfd.getCriticalSpeed());
+        this.setStdDevFreeFlowSpeed(jaxbfd.getStdDevFreeFlowSpeed());
+        this.setStdDevCongestionSpeed(jaxbfd.getStdDevCongestionSpeed());
+        this.setJamDensity(jaxbfd.getJamDensity());
+        this.setTransitionDensity(jaxbfd.getTransitionDensity());
+
+        if(myLink==null)
 	    	return;
 	    
 	    // procedure for determining fd parameters.
@@ -83,12 +99,14 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 	    // record jaxbfd values and undefined parameters
 	    int nummissing = 0;
 	    boolean missing_capacity, missing_vf, missing_w, missing_densityJam;
-	    double value;
 	    double simDtInSeconds = myLink.getMyNetwork().getMyScenario().getSimdtinseconds();
-	    
+
+        conv_spd = simDtInSeconds / myLink.getLengthInMeters();
+        conv_dty = lanes * myLink.getLengthInMeters();
+        double conv_flw = conv_spd*conv_dty;
+
 		if(!Double.isNaN(jaxbfd.getCapacity())){
-			value = jaxbfd.getCapacity();			// [veh/second/lane]
-			_capacity = value * lanes * simDtInSeconds;
+			_capacity = jaxbfd.getCapacity() * conv_flw;
 			missing_capacity = false;
 		} 
 		else{
@@ -97,8 +115,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		}
 	    
 		if(!Double.isNaN(jaxbfd.getFreeFlowSpeed())){
-			value = jaxbfd.getFreeFlowSpeed();		// [meters/second]
-			_vf = value * simDtInSeconds / myLink.getLengthInMeters();
+			_vf = jaxbfd.getFreeFlowSpeed() * conv_spd;
 			missing_vf = false;
 		} 
 		else{
@@ -107,8 +124,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		}
 	
 		if(!Double.isNaN(jaxbfd.getCongestionSpeed())){
-			value = jaxbfd.getCongestionSpeed();		// [meters/second]
-			_w = value * simDtInSeconds / myLink.getLengthInMeters();
+			_w = jaxbfd.getCongestionSpeed() * conv_spd;
 			missing_w = false;
 		} 
 		else{
@@ -117,8 +133,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		}
 	
 		if(jaxbfd.getJamDensity()!=null){
-			value = jaxbfd.getJamDensity().doubleValue();		// [veh/meter/lane]
-			_densityJam = value * lanes * myLink.getLengthInMeters();
+			_densityJam = jaxbfd.getJamDensity().doubleValue() * conv_dty;
 			missing_densityJam = false;
 		} 
 		else{
@@ -128,22 +143,22 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 
 		// in order, check for missing values and fill in until we are able to make triangle
 		if(missing_capacity && nummissing>1){
-			_capacity = Defaults.capacity * lanes * simDtInSeconds;
+			_capacity = Defaults.capacity * conv_flw;
 			nummissing--;
 		}
 
 		if(missing_vf && nummissing>1){
-			_vf = Defaults.vf * simDtInSeconds / myLink.getLengthInMeters();
+			_vf = Defaults.vf * conv_spd;
 			nummissing--;
 		}
 
 		if(missing_w && nummissing>1){
-			_w = Defaults.w * simDtInSeconds / myLink.getLengthInMeters();
+			_w = Defaults.w * conv_spd;
 			nummissing--;
 		}
 
 		if(missing_densityJam && nummissing>1){
-			_densityJam = Defaults.densityJam * lanes * myLink.getLengthInMeters();
+			_densityJam = Defaults.densityJam * conv_dty;
 			nummissing--;
 		}
 	    
@@ -154,33 +169,35 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		// if there is one missing, compute it with triangular assumption
 		
 		if(nummissing==1){
-			if(missing_capacity)
+			if(missing_capacity){
 				_capacity = _densityJam / (1.0/_vf + 1.0/_w);
-			if(missing_vf)
+                setCapacity(_capacity/conv_flw);
+            }
+			if(missing_vf){
 				_vf = 1.0 / ( _densityJam/_capacity - 1.0/_w );
-			if(missing_w)
+                setFreeFlowSpeed(_vf/conv_spd);
+            }
+			if(missing_w){
 				_w = 1.0 / ( _densityJam/_capacity - 1.0/_vf );
-			if(missing_densityJam)
+                setCongestionSpeed(_w/conv_spd);
+            }
+			if(missing_densityJam){
 				_densityJam = _capacity*(1.0/_vf + 1.0/_w);
+                setJamDensity(_densityJam/conv_dty);
+            }
 		}
 		
 		// set capacity drop and capacity uncertainty
-		if(jaxbfd.getStdDevCapacity()!=null){
-			value = jaxbfd.getStdDevCapacity().doubleValue();	// [veh/second/lane]
-			std_dev_capacity = value * lanes * simDtInSeconds;
-		}
-		else{
+		if(jaxbfd.getStdDevCapacity()!=null)
+			std_dev_capacity = jaxbfd.getStdDevCapacity().doubleValue() * conv_flw;
+		else
 			std_dev_capacity = 0.0;
-		}
-		
-		if(!Double.isNaN(jaxbfd.getCapacityDrop())){
-			value = jaxbfd.getCapacityDrop();		// [veh/second/lane]
-			_capacityDrop = value * lanes * simDtInSeconds;
-		} 
-		else{
-			_capacityDrop = Defaults.capacityDrop * lanes * simDtInSeconds;
-		}
-        
+
+		if(!Double.isNaN(jaxbfd.getCapacityDrop()))
+			_capacityDrop = jaxbfd.getCapacityDrop() * conv_flw;
+		else
+			_capacityDrop = Defaults.capacityDrop * conv_flw;
+
 		// set critical density
 		density_critical = _capacity/_vf;
 	}
@@ -192,7 +209,7 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		this.myLink = myLink;
 		this.lanes = myLink.get_Lanes();
 		_densityJam 	  = Double.NaN;  
-	    _capacity  = Double.NaN;
+	    _capacity         = Double.NaN;
 		_capacityDrop 	  = Double.NaN; 
 	    _vf 			  = Double.NaN; 
 	    _w 				  = Double.NaN; 
@@ -328,7 +345,20 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		this.density_critical = that.density_critical;
 		this.lanes = that.lanes;
 		this.std_dev_capacity = that.std_dev_capacity;
-	}	
+
+        this.setOrder(that.getOrder());
+        this.setCapacity(that.getCapacity());
+        this.setCapacityDrop(that.getCapacityDrop());
+        this.setStdDevCapacity(that.getStdDevCapacity());
+        this.setFreeFlowSpeed(that.getFreeFlowSpeed());
+        this.setCongestionSpeed(that.getCongestionSpeed());
+        this.setCriticalSpeed(that.getCriticalSpeed());
+        this.setStdDevFreeFlowSpeed(that.getStdDevFreeFlowSpeed());
+        this.setStdDevCongestionSpeed(that.getStdDevCongestionSpeed());
+        this.setJamDensity(that.getJamDensity());
+        this.setTransitionDensity(that.getTransitionDensity());
+
+    }
 	
 	protected void reset(Scenario.UncertaintyType uncertaintyModel){
 		if(myLink==null)
@@ -391,5 +421,45 @@ public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.Funda
 		if(_w>1)
 			BeatsErrorLog.addError("CFL condition violated, FD for link " + myLink.getId() + " has w=" + _w);
 	}
+
+
+    /////////////////////////////////////////////////////////////////////
+    // JAXB overrides
+    /////////////////////////////////////////////////////////////////////
+
+
+
+//    @Override
+//    public double getCapacity() {
+//        if(_capacity>0)
+//            return _capacity / (conv_spd*conv_dty);  		// [veh]
+//        else
+//            return capacity;
+//    }
+//
+//    @Override
+//    public double getCapacityDrop() {
+//        return _capacityDrop / (conv_spd*conv_dty);    // [veh]
+//    }
+//
+//    @Override
+//    public Double getStdDevCapacity() {
+//        return std_dev_capacity / (conv_spd*conv_dty);    // [veh]
+//    }
+//
+//    @Override
+//    public double getFreeFlowSpeed() {
+//        return _vf / conv_spd;    // [-]
+//    }
+//
+//    @Override
+//    public double getCongestionSpeed() {
+//        return _w / conv_spd;    // [-]
+//    }
+//
+//    @Override
+//    public Double getJamDensity() {
+//        return _densityJam / conv_dty;    // [veh]
+//    }
 
 }

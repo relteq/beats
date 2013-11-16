@@ -311,7 +311,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		return current_sample;
 	}
 
-    public double [] predictTotal(double start_time,double time_step,int num_steps){
+    public double [] predict_in_VPS(int vehicle_type_index, double start_time, double time_step, int num_steps){
 
         double [] val = BeatsMath.zeros(num_steps);
 
@@ -327,9 +327,9 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
             int profile_step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );
             if(profile_step>=0){
                 profile_step = Math.min(profile_step,demand_nominal[0].getNumTime()-1);
-                for(int x=0;x<demand_nominal.length;x++)
-                    val[i] +=  demand_nominal[x].get(profile_step);
+                val[i] =  demand_nominal[vehicle_type_index].get(profile_step);
                 val[i] = applyKnob(val[i]);
+                val[i] /= myScenario.getSimdtinseconds();
             }
 
         }

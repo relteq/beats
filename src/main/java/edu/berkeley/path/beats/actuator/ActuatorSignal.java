@@ -8,8 +8,10 @@ import edu.berkeley.path.beats.simulator.Scenario;
 
 public class ActuatorSignal extends Actuator {
 
+    private List<Double> green_times;
+
 	public void setGreenTimes(List<Double> green_times){
-		this.command = green_times;
+		this.green_times = green_times;
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -39,7 +41,7 @@ public class ActuatorSignal extends Actuator {
 
 	@Override
 	public void deploy() {
-		this.implementor.deploy_green_times((List<Double>) command);
+		this.implementor.deploy_green_times(green_times);
 	}
 
 }
