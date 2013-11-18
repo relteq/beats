@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -16,6 +17,7 @@ import edu.berkeley.path.beats.simulator.ScenarioValidationError;
 import edu.berkeley.path.beats.simulator.BeatsException;
 
 @RunWith(Parameterized.class)
+@Ignore
 public class BrokenScenarioTest {
 	
 	/** configuration file name suffix */
@@ -32,8 +34,8 @@ public class BrokenScenarioTest {
 													 "test_event"
 													 };
 	
-	private static String[] broken_config_names = { "_smalltest_nocontrol_broken, " +
-													"Albany-and-Berkeley"};
+//	private static String[] broken_config_names = { "_smalltest_nocontrol_broken, " +
+//													"Albany-and-Berkeley"};
 
 	/**
 	 * Lists working configuration files
@@ -49,16 +51,16 @@ public class BrokenScenarioTest {
 		return res;
 	}
 
-	@Parameters
-	public static Vector<Object[]> getBrokenConfigs() {
-		Vector<Object[]> res = new Vector<Object[]>();
-		for(String name : broken_config_names){
-			File file = new File("data" + File.separator + "config" + File.separator + name + CONF_SUFFIX);
-			if(file.exists())
-				res.add(new Object[] {file});
-		}
-		return res;
-	}
+//	@Parameters
+//	public static Vector<Object[]> getBrokenConfigs() {
+//		Vector<Object[]> res = new Vector<Object[]>();
+//		for(String name : broken_config_names){
+//			File file = new File("data" + File.separator + "config" + File.separator + name + CONF_SUFFIX);
+//			if(file.exists())
+//				res.add(new Object[] {file});
+//		}
+//		return res;
+//	}
 
 	/**
 	 * Prepares a testing environment
