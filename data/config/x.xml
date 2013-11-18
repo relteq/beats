@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <scenario id="0" schemaVersion="2.0.2">
+
+  <settings>
+    <units>SI</units>
+  </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+       <vehicleType id="1" name="car" size_factor="1.0"/>
+   </VehicleTypeSet>  
+
     <NetworkSet project_id="0" id="0">
         <network id="0" name="test_network">
             <NodeList>
