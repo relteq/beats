@@ -25,6 +25,7 @@ public class Controller_CRM_MPC extends Controller {
     private RampMeteringPolicySet policy;
     private RampMeteringControlSet controller_parameters;
     private Network network;
+    private FundamentalDiagramSet constant_fd_set; // used by scenario-less act 2 runner;
 
 	// parameters
 	private double pm_period;		  // [sec] period for calling the policy maker
@@ -43,9 +44,10 @@ public class Controller_CRM_MPC extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_CRM_MPC(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c, Controller.Algorithm myType) {
-		super(myScenario,c,myType);
-	}
+//	public Controller_CRM_MPC(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c, Controller.Algorithm myType) {
+//		super(myScenario,c,myType);
+//	}
+
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset
@@ -58,20 +60,19 @@ public class Controller_CRM_MPC extends Controller {
 		edu.berkeley.path.beats.simulator.Parameters params = (edu.berkeley.path.beats.simulator.Parameters) getJaxbController().getParameters();
 		policy_maker = null;
 		if (null != params && params.has("policy")){
-            PolicyMakerType myType;
+            PolicyMakerType myPMType;
 	    	try {
-				myType = PolicyMakerType.valueOf(params.get("policy").toLowerCase());
+				myPMType = PolicyMakerType.valueOf(params.get("policy").toLowerCase());
 			} catch (IllegalArgumentException e) {
-				myType = PolicyMakerType.NULL;
+				myPMType = PolicyMakerType.NULL;
 			}
 
-			switch(myType){
+			switch(myPMType){
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
 				case adjoint:
 					policy_maker = new AdjointRampMeteringPolicyMaker();
-//					policy_maker = new ControllerAlgorithm_CRM_Adjoint();
 					break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
@@ -95,8 +96,9 @@ public class Controller_CRM_MPC extends Controller {
 
         pm_horizon_steps = BeatsMath.round(pm_horizon/pm_dt);
 
-        // assign network
-        network = (Network) myScenario.getNetworkSet().getNetwork().get(0);
+        // assign network (it will already be assigned if controller is scenario-less)
+        if(network==null && myScenario!=null)
+            network = (Network) myScenario.getNetworkSet().getNetwork().get(0);
 
         // controller parameters
         controller_parameters = new RampMeteringControlSet();
@@ -160,143 +162,37 @@ public class Controller_CRM_MPC extends Controller {
 	protected void update() throws BeatsException {
 
 		double time_current = getMyScenario().getCurrentTimeInSeconds();
-		double time_since_last_opt = time_current-time_last_opt;
 
 		// if it is time to optimize, update metering rate profile
-		if(BeatsMath.greaterorequalthan(time_since_last_opt, pm_period)){
+		if(BeatsMath.greaterorequalthan(time_current-time_last_opt, pm_period)){
 
-            JaxbObjectFactory factory = new JaxbObjectFactory();
-
-            // initial densities
-            InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
-            for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-                Link L = (Link) jaxbL;
-                for(int v=0;v<myScenario.getNumVehicleTypes();v++){
-                    Density den = factory.createDensity();
-                    den.setLinkId(jaxbL.getId());
-                    den.setVehicleTypeId(myScenario.getVehicleTypeIdForIndex(v));
-                    den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
-                    init_dens_set.getDensity().add(den);
-                }
-            }
-
-            // demands
-            DemandSet demand_set = (DemandSet) factory.createDemandSet();
-            for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-                Link L = (Link) jaxbL;
-                if(L.isSource()){
-                    DemandProfile dem_profile = L.getDemandProfile();
-
-                    // add demands to demand_set
-                    DemandProfile dp = (DemandProfile) factory.createDemandProfile();
-                    demand_set.getDemandProfile().add(dp);
-
-                    dp.setLinkIdOrg(L.getId());
-                    dp.setDt(pm_dt);
-                    for(int v=0;v<myScenario.getNumVehicleTypes();v++){
-                        Demand dem = factory.createDemand();
-                        dp.getDemand().add(dem);
-
-                        // set values
-                        dem.setVehicleTypeId(myScenario.getVehicleTypeIdForIndex(v));
-                        dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, pm_dt, pm_horizon_steps), ","));
-                    }
-                }
-            }
-
-            // split ratios
-            SplitRatioSet split_ratio_set = (SplitRatioSet) factory.createSplitRatioSet();
-            for(edu.berkeley.path.beats.jaxb.Node jaxbN : network.getListOfNodes()){
-                Node N = (Node) jaxbN;
-
-                if(N.istrivialsplit())
-                    continue;
-
-
-                SplitRatioProfile sr_profile = N.getSplitRatioProfile();
-
-                SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
-                split_ratio_set.getSplitRatioProfile().add(srp);
-
-                srp.setDt(pm_dt);
-                srp.setNodeId(N.getId());
-                for(Input in : N.getInputs().getInput()){
-                    for(Output out : N.getOutputs().getOutput()){
-                        for(int v=0;v<myScenario.getNumVehicleTypes();v++)    {
-
-                            Splitratio splitratio = factory.createSplitratio();
-
-                            // set values
-                            splitratio.setLinkIn(in.getLinkId());
-                            splitratio.setLinkOut(out.getLinkId());
-                            splitratio.setVehicleTypeId(myScenario.getVehicleTypeIdForIndex(v));
-                            double [] sr = sr_profile.predict(
-                                    in.getLinkId(),
-                                    out.getLinkId(),
-                                    v,time_current, pm_dt, pm_horizon_steps);
-
-                            if(sr==null)
-                                continue;
-
-                            srp.getSplitratio().add(splitratio);
-                            splitratio.setContent(BeatsFormatter.csv(sr, ","));
-                        }
-                    }
-                }
-            }
-
-            // fundamental diagrams
-            FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
-            for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-                Link L = (Link) jaxbL;
-                FundamentalDiagramProfile fdp = (FundamentalDiagramProfile) factory.createFundamentalDiagramProfile();
-                fd_set.getFundamentalDiagramProfile().add(fdp);
-
-                // set values
-                fdp.setLinkId(L.getId());
-                FundamentalDiagram fd = (FundamentalDiagram) factory.createFundamentalDiagram();
-                fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
-                fd.setOrder(0);
-                fdp.getFundamentalDiagram().add(fd);
-            }
-
-//            Scenario x = new Scenario();
-//            NetworkSet netset = new NetworkSet();
-//            netset.getNetwork().add(network);
-//            x.setNetworkSet(netset);
-//            x.setInitialDensitySet(init_dens_set);
-//            x.setDemandSet(demand_set);
-//            x.setSplitRatioSet(split_ratio_set);
-//            x.setFundamentalDiagramSet(fd_set);
-//            x.saveToXML("C:\\Users\\gomes\\workspace_L0\\beats\\data\\config\\x.xml");
-
-
-            System.out.println("Calling policy maker at "+myScenario.getCurrentTimeInSeconds());
-
-			// call policy maker
-            policy = policy_maker.givePolicy( network,                  // SI units
-                                              fd_set,                   // SI units
-                                              demand_set,               // SI units
-                                              split_ratio_set,          // SI units
-                                              init_dens_set,            // SI units
-                                              controller_parameters,    // SI units
-                                              pm_dt);                   // SI units
-
-            policy.print();
-
-            System.out.println("Policy maker done");
+			// call policy maker (everything in SI units)
+            policy = policy_maker.givePolicy( network,
+                                              myScenario.gather_current_fds(time_current),
+                                              myScenario.predict_demands(time_current,pm_dt,pm_horizon_steps),
+                                              myScenario.predict_split_ratios(time_current,pm_dt,pm_horizon_steps),
+                                              myScenario.gather_current_densities(),
+                                              controller_parameters,
+                                              pm_dt);
 
             // update time keeper
 			time_last_opt = time_current;
-            time_since_last_opt = 0;
-
 		}
 
+        // .....
+        send_policy_to_actuators(time_current);
+
+	}
+
+    /////////////////////////////////////////////////////////////////////
+    // private
+    /////////////////////////////////////////////////////////////////////
+
+    public void send_policy_to_actuators(double time_current){
         if(policy==null)
             return;
-
-		// actuate
-		int time_index = BeatsMath.floor(time_since_last_opt/pm_dt);
+        double time_since_last_pm_call = time_current-time_last_opt;
+        int time_index = BeatsMath.floor(time_since_last_pm_call/pm_dt);
         for(RampMeteringPolicyProfile rmprofile : policy.profiles){
             for(Actuator act : actuators){
                 ActuatorRampMeter this_actuator = (ActuatorRampMeter) act;
@@ -304,7 +200,35 @@ public class Controller_CRM_MPC extends Controller {
                     this_actuator.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(time_index)*3600d  );
             }
         }
+    }
 
-	}
+    /////////////////////////////////////////////////////////////////////
+    // Act 2 api
+    /////////////////////////////////////////////////////////////////////
+
+    public Controller_CRM_MPC(edu.berkeley.path.beats.jaxb.Controller c,Network network,FundamentalDiagramSet fd_set){
+        super(null,c,Algorithm.CRM_MPC);
+        this.ison = true;
+        this.network = network;
+        this.constant_fd_set = fd_set;
+        this.populate(null);
+    }
+
+    public void update_and_send_policy_to_actuators(double time_current,DemandSet demand_set,SplitRatioSet split_ratio_set,InitialDensitySet init_dens_set){
+
+        policy = policy_maker.givePolicy( network,
+                                          constant_fd_set,
+                                          demand_set,
+                                          split_ratio_set,
+                                          init_dens_set,
+                                          controller_parameters,
+                                          pm_dt);
+
+        // update time keeper
+        time_last_opt = time_current;
+
+        send_policy_to_actuators(time_current);
+    }
+
 
 }

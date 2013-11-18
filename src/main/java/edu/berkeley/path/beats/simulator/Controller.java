@@ -119,11 +119,10 @@ public class Controller {
 			this.myScenario = myScenario;
 			this.myType = myType;
 			this.jaxbController = jaxbC;
-			this.ison = false; //c.isEnabled(); 
+			this.ison = false;
 			this.activationTimes=new ArrayList<ActivationTimes>();
-			dtinseconds = jaxbC.getDt();		// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());		
-			
+			this.dtinseconds = jaxbC.getDt();		// assume given in seconds
+
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
 			for (edu.berkeley.path.beats.jaxb.Table table : jaxbC.getTable()) {
@@ -138,8 +137,14 @@ public class Controller {
 					if(tinterval!=null)
 						activationTimes.add(new ActivationTimes(tinterval.getStartTime(),tinterval.getEndTime()));
 			Collections.sort(activationTimes);
-			
-			// read target actuators
+
+            // below this does not apply for scenario-less controllers  ..............................
+            if(myScenario==null)
+                return;
+
+            samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+
+            // read target actuators
 			actuators = new ArrayList<Actuator>();
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
