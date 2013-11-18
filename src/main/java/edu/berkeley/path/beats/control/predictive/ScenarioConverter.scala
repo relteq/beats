@@ -177,11 +177,9 @@ where the first ramp must exist at the beginning of the network and the horizont
 class AdjointRampMeteringPolicyMaker extends RampMeteringPolicyMaker {
   def givePolicy(net: Network, fd: FundamentalDiagramSet, demand: DemandSet, splitRatios: SplitRatioSet, ics: InitialDensitySet, control: RampMeteringControlSet, dt: lang.Double): RampMeteringPolicySet = {
     val (scen, onramps) = ScenarioConverter.convertScenario(net, fd, demand, splitRatios, ics, control, dt)
-    println(scen.simParams.meterSpec)
-    println(AdjointRampMetering.noControlCost(scen))
     val flux = AdjointRampMetering.controlledOutput(scen, new AdjointRampMetering(scen.fw)).fluxRamp.transpose
     val set = new RampMeteringPolicySet
-    onramps.zip(flux).foreach{ case (or, fl) => {
+    scen.fw.onramps.tail.map{flux(_)}.zip(onramps.tail).foreach{ case (fl, or) => {
       val profile = new RampMeteringPolicyProfile
       profile.sensorLink = or
       profile.rampMeteringPolicy = fl.toList
