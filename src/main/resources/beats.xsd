@@ -462,9 +462,9 @@
 					use the negative of the adjacent through movement (e.g. nema="-2" moves with nema="2" -->
 					<xs:attribute name="nema" type="xs:integer" use="required" />
 					<xs:attribute name="protected" type="xs:boolean" use="required" />
-					<xs:attribute name="permissive" type="xs:boolean" use="required" />
-					<xs:attribute name="lag" type="xs:boolean" use="required" />
-					<xs:attribute name="recall" type="xs:boolean" use="required" />
+					<xs:attribute name="permissive" type="xs:boolean" use="optional" default="false"/>
+					<xs:attribute name="lag" type="xs:boolean" use="optional" default="false"/>
+					<xs:attribute name="recall" type="xs:boolean" use="optional" default="false"/>
 					
 					<!-- the following are in units of time as set in settings.units -->
 					<xs:attribute name="yellow_time" type="xs:double" use="required" />
@@ -845,7 +845,7 @@
 				<xs:attribute name="type" use="required">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:pattern value="IRM_ALINEA|IRM_TOD|IRM_TOS|CRM_SWARM|CRM_HERO|CRM_MPC|VSL_TOD|SIG_Pretimed|SIG_Actuated"/>
+							<xs:pattern value="IRM_ALINEA|IRM_TOD|IRM_TOS|CRM_SWARM|CRM_HERO|CRM_MPC|VSL_TOD|SIG_Pretimed|SIG_Actuated|SIG_MaxPressure"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>

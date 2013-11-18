@@ -83,13 +83,13 @@ public class Controller {
 	 * <li> SIG, signal control (intersections) </li>
 	 * </ul>
 	 */
-	public static enum Algorithm {  
-	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_ALINEA,
-	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
-	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
-      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
-      /** see {@link ObjectFactory#createController_CRM_MPC}				*/ 	CRM_MPC,
-      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed }
+	public static enum Algorithm {  IRM_ALINEA,
+                                    IRM_TOD,
+                                    IRM_TOS,
+                                    CRM_HERO,
+                                    CRM_MPC,
+                                    SIG_Pretimed,
+                                    SIG_MaxPressure }
 
 	public static enum ActuatorType { 
 		RAMP_METER,

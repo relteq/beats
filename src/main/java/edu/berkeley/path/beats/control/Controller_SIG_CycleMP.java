@@ -3,14 +3,26 @@ package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 
 public class Controller_SIG_CycleMP extends Controller {
 
 	// controller specific variables defined here
-	
-	
-	// assign values to your controller-specific variables
+
+    /////////////////////////////////////////////////////////////////////
+    // Construction
+    /////////////////////////////////////////////////////////////////////
+
+    public Controller_SIG_CycleMP(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
+        super(myScenario,c,myType);
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // populate / validate / reset  / update
+    /////////////////////////////////////////////////////////////////////
+
+    // assign values to your controller-specific variables
 	@Override
 	protected void populate(Object jaxbobject) {
 		super.populate(jaxbobject);
@@ -34,10 +46,10 @@ public class Controller_SIG_CycleMP extends Controller {
 	@Override
 	protected void update() throws BeatsException {
 		super.update();
-		
-	
-		
-		
+
+
+
+
         // replace these with calls to sensor
         int[] inputCounts = {6,7,3} ;
         int[] outputCounts = {6,3,8,7} ;
