@@ -61,8 +61,8 @@ public class Controller_SIG_Pretimed extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
-		super(myScenario,c,myType);
+	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c) {
+		super(myScenario,c,Algorithm.SIG_Pretimed);
 	}
 	
 //	public Controller_SIG_Pretimed(Scenario myScenario) {

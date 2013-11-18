@@ -51,8 +51,8 @@ public class Controller_IRM_Time_of_Day extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Time_of_Day(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
-		super(myScenario,c,myType);
+	public Controller_IRM_Time_of_Day(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c) {
+		super(myScenario,c,Algorithm.IRM_TOD);
 	}
 	
 //	public Controller_IRM_Time_of_Day(Scenario myScenario,Link onramplink,Sensor queuesensor,Table todtable){
