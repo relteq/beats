@@ -65,10 +65,10 @@ public class Act2Runner {
                 controller.send_policy_to_actuators(time_current);
             }
 
-            // deploy the actuation ..............
-            if( (run_time%actuator_deploy_period)==0){
-                controller.deploy_actuators();
-            }
+//            // deploy the actuation ..............
+//            if( (run_time%actuator_deploy_period)==0){
+//                controller.deploy_actuators();
+//            }
 
             // update time .....................
             time_current += dt;
