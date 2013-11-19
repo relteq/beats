@@ -16,7 +16,7 @@ public class ActuatorImplementation implements InterfaceActuator {
 	
 	@Override
 	public void deploy_metering_rate_in_vph(Double metering_rate_in_vph) {
-		myLink.set_external_max_flow(metering_rate_in_vph);
+		myLink.set_external_max_flow_in_vph(metering_rate_in_vph);
 	}
 
 	@Override
