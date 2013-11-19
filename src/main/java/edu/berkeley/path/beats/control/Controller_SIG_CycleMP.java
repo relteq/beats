@@ -1,12 +1,24 @@
 package edu.berkeley.path.beats.control;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.Math;
+
+import edu.berkeley.path.beats.jaxb.Phase;
+import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Controller;
+import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Sensor;
+import edu.berkeley.path.beats.simulator.Signal;
+import edu.berkeley.path.beats.simulator.SignalPhase;
 
 public class Controller_SIG_CycleMP extends Controller {
 
+	private double cycle_length;
+	
 	// controller specific variables defined here
 	
 	
@@ -35,27 +47,59 @@ public class Controller_SIG_CycleMP extends Controller {
 	protected void update() throws BeatsException {
 		super.update();
 		
-	
+		//pull signal, node info
+		Signal mySignal = (Signal) getActuatorByUsage("signal").get(0);
+		Node myNode = mySignal.getNode();
 		
+		//get link index information from node
+		Link [] inputLinks = myNode.getInput_link();
+		Link [] outputLinks = myNode.getOutput_link();
+		int nInputs = inputLinks.length;
+        int nOutputs = outputLinks.length;
 		
-        // replace these with calls to sensor
-        int[] inputCounts = {6,7,3} ;
-        int[] outputCounts = {6,3,8,7} ;
-        float[][] splits = {{.5f,.5f,0f,0f},{.4f,.2f,.3f,.1f},{0f,.5f,.1f,.4f}};
-        float[] satFlows = {2,3,3};
-        int[][] controlMat = {{0,0,1},{1,1,0},{0,1,0},{1,0,1}};
+        //get sat flow information from links
+		float[] satFlows = new float[nInputs];
+		for(int i=0;i<nInputs;i++){satFlows[i] = (int) inputLinks[i].getCapacityInVeh(0);}
+		
+		//get counts from links (no sensor needed)
+		int[] inputCounts = new int[nInputs];
+        int[] outputCounts = new int[nOutputs];
+		for(int i=0;i<nInputs;i++){inputCounts[i]=(int) Math.round(inputLinks[i].getTotalDensityInVeh(0));}
+		for(int j=0;j<nOutputs;j++){inputCounts[j]=(int) Math.round(outputLinks[j].getTotalDensityInVeh(0));}
+		
+		// get splits from node
+        double[][] splits = new double[nInputs][nOutputs];        
+		for(int i=0;i<nInputs;i++){
+			for(int j=0;j<nOutputs;j++){
+				splits[i][j]=myNode.getSplitRatio(i, j, 0);
+			}
+		}
+		
+        // construct binary "control matrix" of size nStagesxnInputs
+        List<Phase> sigPhases = mySignal.getPhase(); //i think this is not right! 
+        
+        int nStages = sigPhases.size();
+        int[][] controlMat = new int [nStages][nInputs];
+        
+        
+        mySignal.
+        for(Stage aStage : stages){
+        	SignalPhase aPhase = mySignal.getPhaseByNEMA(aStage.nema1);
+        	Link [] targetlinks = aPhase.getTargetlinks();
+        	int phaseLink = (int) targetlinks[0].getId();	
+        }
+        int nStages = controlMat.length;
+
+        
         
         //these are internal, don't need to change
-        int nInputs = inputCounts.length;
-        int nOutputs = outputCounts.length;
-        int nStages = controlMat.length;
-        float[] weights;
-        float[] pressures;
+        double[] weights;
+        double[] pressures;
         int mpStage;
         
         //calculate SIMPLE weights
-        //later this will be changed, to calculate max/min/average/etc weights. 
-        weights = new float [nInputs];
+        //later this will be changed, to calculate max/min/average/etc weights, and to include minimum green time constraints. 
+        weights = new double [nInputs];
         for (int i=0; i<nInputs; i++){
         	weights[i]=inputCounts[i];
         	for (int e=0; e<nOutputs; e++){

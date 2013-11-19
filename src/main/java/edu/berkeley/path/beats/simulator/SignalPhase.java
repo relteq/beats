@@ -394,7 +394,7 @@ final public class SignalPhase {
 		this.permithold = permithold;
 	}
 
-	protected Link[] getTargetlinks() {
+	public Link[] getTargetlinks() {
 		return targetlinks;
 	}
 
