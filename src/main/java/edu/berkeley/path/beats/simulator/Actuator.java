@@ -51,5 +51,21 @@ public class Actuator {
     public long getId() {
         return jaxbA.getId();
     }
-	
+
+//    public String getScenarioElementType() {
+//        return jaxbA.getScenarioElement().getType();
+//    }
+//
+//    public long getScenarioElementId() {
+//        return jaxbA.getScenarioElement().getId();
+//    }
+
+    public Signal getSignal(){
+        ScenarioElement se = (ScenarioElement) jaxbA.getScenarioElement();
+        if(se.getMyType().compareTo(ScenarioElement.Type.signal)==0)
+            return (Signal) se.getReference();
+        else
+            return null;
+    }
+
 }
