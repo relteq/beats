@@ -94,6 +94,10 @@ final public class ObjectFactory {
 			case SIG_Pretimed:
 				C = new Controller_SIG_Pretimed(myScenario, jaxbC, myType);
 				break;
+
+            case SIG_MaxPressure:
+                C = new Controller_SIG_CycleMP(myScenario, jaxbC, myType);
+                break;
 				
 			default:
 				C = null;
@@ -101,7 +105,6 @@ final public class ObjectFactory {
 		}
 		C.populate(jaxbC);
 		return C;
-
 	}
 
 	protected static Event createEventFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType) {	
