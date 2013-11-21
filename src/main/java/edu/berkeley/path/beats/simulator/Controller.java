@@ -44,7 +44,7 @@ import edu.berkeley.path.beats.jaxb.TargetActuator;
 public class Controller {
 
 	/** Scenario that contains this controller */
-	protected Scenario myScenario;										       								       
+	protected Scenario myScenario;
 	
 	protected edu.berkeley.path.beats.jaxb.Controller jaxbController;
 										
@@ -119,11 +119,10 @@ public class Controller {
 			this.myScenario = myScenario;
 			this.myType = myType;
 			this.jaxbController = jaxbC;
-			this.ison = false; //c.isEnabled(); 
+			this.ison = false;
 			this.activationTimes=new ArrayList<ActivationTimes>();
-			dtinseconds = jaxbC.getDt();		// assume given in seconds
-			samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());		
-			
+			this.dtinseconds = jaxbC.getDt();		// assume given in seconds
+
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
 			for (edu.berkeley.path.beats.jaxb.Table table : jaxbC.getTable()) {
@@ -138,8 +137,14 @@ public class Controller {
 					if(tinterval!=null)
 						activationTimes.add(new ActivationTimes(tinterval.getStartTime(),tinterval.getEndTime()));
 			Collections.sort(activationTimes);
-			
-			// read target actuators
+
+            // below this does not apply for scenario-less controllers  ..............................
+            if(myScenario==null)
+                return;
+
+            samplesteps = BeatsMath.round(dtinseconds/myScenario.getSimdtinseconds());
+
+            // read target actuators
 			actuators = new ArrayList<Actuator>();
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
@@ -196,11 +201,15 @@ public class Controller {
 	 * 
 	 */
 	protected void validate() {
-		
+
 		// check that type was read correctly
 		if(myType==null)
 			BeatsErrorLog.addError("Controller with id=" + getId() + " has the wrong type.");
-		
+
+        // validations below this make sense only in the context of a scenario
+        if(myScenario==null)
+            return;
+
 		// check that sample dt is an integer multiple of network dt
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
 			BeatsErrorLog.addError("Time step for controller id=" +getId() + " is not a multiple of the simulation time step.");
@@ -327,6 +336,9 @@ public class Controller {
    	 * @return A double with the start time for the controller. 
    	 */
 	protected double getFirstStartTime(){
+        // this should not be used if no scenario is defined
+        if(myScenario==null)
+            return Double.NaN;
 		double starttime=myScenario.getTimeStart();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)
@@ -341,6 +353,8 @@ public class Controller {
    	 * @return A double with the end time for the controller. 
    	 */
 	protected double getlastEndTime(){
+        if(myScenario==null)
+            return Double.NaN;
 		double endtime=myScenario.getTimeEnd();
 		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
 			if (ActTimesIndex == 0)

@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
+final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update

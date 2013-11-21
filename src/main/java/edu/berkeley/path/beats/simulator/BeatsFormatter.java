@@ -39,7 +39,7 @@ import java.util.StringTokenizer;
  */
 final public class BeatsFormatter {
 
-	public static String csv(Double [] V,String delim){
+	public static String csv(double [] V,String delim){
 		String str="";
 		if(V==null)
 			return str;
@@ -55,7 +55,7 @@ final public class BeatsFormatter {
 		return str;
 	}
 
-	public static String csv(Double [][] V,String delim1,String delim2){
+	public static String csv(double [][] V,String delim1,String delim2){
 		String str="";
 		if(V==null)
 			return str;

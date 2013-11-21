@@ -61,7 +61,16 @@ final public class Parameters extends edu.berkeley.path.beats.jaxb.Parameters {
 	/////////////////////////////////////////////////////////////////////
 	// public API
 	/////////////////////////////////////////////////////////////////////
-	
+
+    public double readParameter(String name,double def){
+        double val = def;
+        if (has(name)){
+            String str = get(name);
+            val = str==null ? def : Double.parseDouble(str);
+        }
+        return val;
+    }
+
 	/**
 	 * Tests whether a parameter with the given name exists
 	 * @param name

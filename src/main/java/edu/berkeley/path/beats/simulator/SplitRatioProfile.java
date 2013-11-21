@@ -26,14 +26,15 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
+public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
 
 	// does not change ...................................
 	private Scenario myScenario;
 	private Node myNode;
-	private double dtinseconds;				// not really necessary
+	private double dtinseconds;
 	private int samplesteps;
 	private int laststep;
+    private double start_time;
 	private BeatsTimeProfile [][][] profile; 	// profile[i][j][v] is the split ratio profile for
 												// input link i, output link j, vehicle type v.
 	
@@ -80,7 +81,6 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 			}
 		}
 		
-//		profile = new Double2DMatrix[myNode.getnIn()][myNode.getnOut()];
 		profile = new BeatsTimeProfile[myNode.getnIn()][myNode.getnOut()][myScenario.getNumVehicleTypes()];
 		int in_index,out_index,vt_index;
 		laststep = 0;
@@ -97,23 +97,19 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 				
 		// inform the node
 		myNode.setMySplitRatioProfile(this);
-		
-	}
+
+        // start_time
+        if( Double.isInfinite(getStartTime()))
+            start_time = 0d;
+        else
+            start_time = getStartTime();	// assume given in seconds
+
+    }
 
 	protected void reset() {
-		
-		// read start time, convert to stepinitial
-		double starttime;
-		if( Double.isInfinite(getStartTime()))
-			starttime = 0d;
-		else
-			starttime = getStartTime();	// assume given in seconds
-		
-		stepinitial = BeatsMath.round((starttime-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
-
+		stepinitial = BeatsMath.round((start_time-myScenario.getTimeStart())/myScenario.getSimdtinseconds());
 		isdone = false;
 		currentSplitRatio = new Double3DMatrix(myNode.getnIn(),myNode.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-
 	}
 
 	protected void validate() {
@@ -244,5 +240,39 @@ final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioPro
 		}
 		return X;
 	}
+
+    /////////////////////////////////////////////////////////////////////
+    // public API
+    /////////////////////////////////////////////////////////////////////
+
+    public double [] predict(long inlink_id,long outlink_id,int vt_index,double start,double time_step,int num_steps){
+
+        int in_index = myNode.getInputLinkIndex(inlink_id);
+        int out_index = myNode.getOutputLinkIndex(outlink_id);
+
+        if(in_index<0 || out_index<0)
+            return null;
+
+        double [] val = BeatsMath.zeros(num_steps);
+
+        BeatsTimeProfile thisprofile = profile[in_index][out_index][vt_index];
+
+        // HACK!!!
+        if(thisprofile==null)
+            return null;
+
+        for(int i=0;i<num_steps;i++){
+
+            // time in seconds after midnight
+            double time = start + i*time_step + 0.5*time_step;
+
+            // corresponding profile step
+            int profile_step = BeatsMath.floor( (time-start_time)/dtinseconds );
+            profile_step = Math.max(profile_step,0);
+            profile_step = Math.min(profile_step,thisprofile.getNumTime()-1);
+            val[i] = thisprofile.get(profile_step);
+        }
+        return val;
+    }
 
 }

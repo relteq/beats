@@ -45,8 +45,8 @@
             <parameters>
                 <parameter name="policy" value="fake"/>
                 <parameter name="dt_optimize" value="1200"/>
-                <parameter name="opt_timestep" value="10"/>
-                <parameter name="opt_horizon" value="10"/>
+                <parameter name="policy_maker_timestep" value="10"/>
+                <parameter name="policy_maker_horizon" value="10"/>
             </parameters>
             <display_position>
                 <point lat="37.8491120765346" lng="-122.298152446747"/>

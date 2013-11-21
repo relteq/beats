@@ -84,47 +84,45 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 	
-	public double[] getFutureTotalDemandInVeh_NoNoise(long link_id,double dt_in_seconds,int num_steps) throws BeatsException{
-		
-		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))
-			throw new BeatsException("dt_in_seconds must be an integer multiple of simulation dt.");
-		
-		// demand profile for this link
-		DemandProfile dp = link_id_to_demandprofile.get(link_id);
-
-		if(dp==null)
-			throw new BeatsException("requested demand for non-existent link.");
-		
-		// simulation dt per output dt
-		int num_times_per_sample = BeatsMath.round(dt_in_seconds / myScenario.getSimdtinseconds());
-
-		// current simulation time step
-		int current_step = myScenario.getClock().getCurrentstep();
-		
-		// return value
-		double [] X = new double [num_steps];
-
-		int n,j,k,step;
-		double nth_demand;
-		for(n=0;n<num_steps;n++){
-			nth_demand = 0d;
-			for(j=0;j<myScenario.getNumVehicleTypes();j++) {
-				for(k=0;k<num_times_per_sample;k++){
-					if(dp.getSamplesteps()>0)
-						step = BeatsMath.floor((current_step-dp.getStepinitial())/((float)dp.getSamplesteps()));
-					else
-						step = 0;
-					step = Math.min(step,dp.getProfile_length()-1);
-					double x = dp.getTotalForStep(step);
-					x = dp.applyKnob(x);
-					nth_demand += x;
-					current_step++;
-				}
-			}
-			X[n] = nth_demand;
-		}
-		
-		return X;
-	}
+//	public double[] getFutureTotalDemandInVeh_NoNoise(long link_id,double dt_in_seconds,int num_steps) throws BeatsException{
+//
+//		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))
+//			throw new BeatsException("dt_in_seconds must be an integer multiple of simulation dt.");
+//
+//		// demand profile for this link
+//		DemandProfile dp = link_id_to_demandprofile.get(link_id);
+//
+//		if(dp==null)
+//			throw new BeatsException("requested demand for non-existent link.");
+//
+//		// simulation dt per output dt
+//		int num_times_per_sample = BeatsMath.round(dt_in_seconds / myScenario.getSimdtinseconds());
+//
+//		// current simulation time step
+//		int current_step = myScenario.getClock().getCurrentstep();
+//
+//		// return value
+//		double [] X = new double [num_steps];
+//
+//		int n,k,step;
+//		double nth_demand;
+//		for(n=0;n<num_steps;n++){
+//			nth_demand = 0d;
+//            for(k=0;k<num_times_per_sample;k++){
+//                if(dp.getSamplesteps()>0)
+//                    step = BeatsMath.floor((current_step-dp.getStepinitial())/((float)dp.getSamplesteps()));
+//                else
+//                    step = 0;
+//                step = Math.min(step,dp.getProfile_length()-1);
+//                double x = dp.getTotalForStep(step);
+//                x = dp.applyKnob(x);
+//                nth_demand += x;
+//                current_step++;
+//            }
+//			X[n] = nth_demand;
+//		}
+//
+//		return X;
+//	}
 	
 }
