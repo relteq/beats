@@ -1,24 +1,21 @@
 package edu.berkeley.path.beats.control;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.lang.Math;
 
 import edu.berkeley.path.beats.jaxb.Phase;
-import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Sensor;
-import edu.berkeley.path.beats.simulator.Signal;
+import edu.berkeley.path.beats.simulator.Stage;
 import edu.berkeley.path.beats.simulator.SignalPhase;
 
 public class Controller_SIG_CycleMP extends Controller_SIG {
 
-	private double cycle_length;
+    private Node myNode;
 	
 	// controller specific variables defined here
 
@@ -38,6 +35,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	@Override
 	protected void populate(Object jaxbobject) {
 		super.populate(jaxbobject);
+        myNode = myScenario.getNodeWithId(mySignal.getNodeId());
 	}
 
 	// validate the controller parameters.
@@ -58,11 +56,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	@Override
 	protected void update() throws BeatsException {
 		super.update();
-		
-		//pull signal, node info
-//		Signal mySignal = (Signal) getActuatorByUsage("signal").get(0);
-		Node myNode = null;
-		
+
 		//get link index information from node
 		Link [] inputLinks = myNode.getInput_link();
 		Link [] outputLinks = myNode.getOutput_link();
@@ -71,12 +65,19 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 		
         //get sat flow information from links
 		float[] satFlows = new float[nInputs];
-		for(int i=0;i<nInputs;i++){satFlows[i] = (int) inputLinks[i].getCapacityInVeh(0);}
+		for(int i=0;i<nInputs;i++){
+            satFlows[i] = (int) inputLinks[i].getCapacityInVeh(0);
+        }
+
 		//get counts from links (no sensor needed)
 		int[] inputCounts = new int[nInputs];
         int[] outputCounts = new int[nOutputs];
-		for(int i=0;i<nInputs;i++){inputCounts[i]=(int) Math.round(inputLinks[i].getTotalDensityInVeh(0));}
-		for(int j=0;j<nOutputs;j++){inputCounts[j]=(int) Math.round(outputLinks[j].getTotalDensityInVeh(0));}
+		for(int i=0;i<nInputs;i++){
+            inputCounts[i]=(int) Math.round(inputLinks[i].getTotalDensityInVeh(0));
+        }
+		for(int j=0;j<nOutputs;j++){
+            inputCounts[j]=(int) Math.round(outputLinks[j].getTotalDensityInVeh(0));
+        }
 
 		// get splits from node
         double[][] splits = new double[nInputs][nOutputs];        
@@ -92,17 +93,13 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         int nStages = sigPhases.size();
         int[][] controlMat = new int [nStages][nInputs];
         
-        
-//        mySignal.
-//        for(Stage aStage : stages){
-//        	SignalPhase aPhase = mySignal.getPhaseByNEMA(aStage.nema1);
-//        	Link [] targetlinks = aPhase.getTargetlinks();
-//        	int phaseLink = (int) targetlinks[0].getId();
-//        }
-//        int nStages = controlMat.length;
+        for(Stage aStage : stages){
+        	SignalPhase aPhase = mySignal.getPhaseByNEMA(aStage.movA);
+        	Link [] targetlinks = aPhase.getTargetlinks();
+        	int phaseLink = (int) targetlinks[0].getId();
+        }
 
-        
-        
+
         //these are internal, don't need to change
         double[] weights;
         double[] pressures;
@@ -120,22 +117,20 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         }
         	
         //calculate pressure for all stages
-//        pressures = new float [nStages];
-//        for (int s=0; s<nStages;s++){
-//        	pressures[s] = 0;
-//        	for (int i=0; i<nInputs; i++){
-//        		pressures[s] += controlMat[s][i]*weights[i]*satFlows[i];
-//        	}
-//        	//System.out.println("pressures for stage "+s+": "+pressures[s]);
-//        }
-//
-//        //determine max pressure stage
-//        mpStage = 0;
-//        for (int s=1;s<nStages;s++){
-//        	if (pressures[s]>pressures[mpStage]){mpStage = s;}
-//        }
-        //System.out.println("max pressure stage: "+ mpStage);
-		
+        pressures = new float [nStages];
+        for (int s=0; s<nStages;s++){
+        	pressures[s] = 0;
+        	for (int i=0; i<nInputs; i++){
+        		pressures[s] += controlMat[s][i]*weights[i]*satFlows[i];
+        	}
+        	//System.out.println("pressures for stage "+s+": "+pressures[s]);
+        }
+
+        //determine max pressure stage
+        mpStage = 0;
+        for (int s=1;s<nStages;s++){
+        	if (pressures[s]>pressures[mpStage]){mpStage = s;}
+        }
 		
 //		ArrayList<Sensor> x = getSensorByUsage("queue_2");
 //		AccumulationSensor bla = (AccumulationSensor) x.get(0);
