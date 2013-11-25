@@ -1,6 +1,5 @@
 package edu.berkeley.path.beats.control;
 
-
 import java.util.List;
 import java.lang.Math;
 
@@ -16,6 +15,8 @@ import edu.berkeley.path.beats.simulator.SignalPhase;
 public class Controller_SIG_CycleMP extends Controller_SIG {
 
     private Node myNode;
+
+    public double [] portion_of_cycle;          // [sums to 1] in the order of stages.
 	
 	// controller specific variables defined here
 
@@ -56,6 +57,21 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	@Override
 	protected void update() throws BeatsException {
 		super.update();
+
+        for(Stage s:stages){
+
+
+            Link [] inlinksA = s.phaseA.getTargetlinks();
+            Link [] inlinksB = s.phaseB.getTargetlinks();
+
+
+            inlinksA[0].getTotalDensityInVeh()
+
+
+        }
+
+
+
 
 		//get link index information from node
 		Link [] inputLinks = myNode.getInput_link();

@@ -51,7 +51,7 @@ public class Controller_SIG extends Controller {
                 List<Column> c = myTable.getRow().get(i).getColumn();
                 Signal.NEMA movA = Signal.NEMA.valueOf(c.get(0).getContent());
                 Signal.NEMA movB = Signal.NEMA.valueOf(c.get(1).getContent());
-                stages[i] = new Stage(movA,movB);
+                stages[i] = new Stage(mySignal,movA,movB);
             }
         }
 

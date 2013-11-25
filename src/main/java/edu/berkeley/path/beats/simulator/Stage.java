@@ -12,9 +12,14 @@ public class Stage {
     public Signal.NEMA movA;
     public Signal.NEMA movB;
 
-    public Stage(Signal.NEMA movA,Signal.NEMA movB){
+    public SignalPhase phaseA;
+    public SignalPhase phaseB;
+
+    public Stage(Signal mySignal,Signal.NEMA movA,Signal.NEMA movB){
         this.movA = movA;
         this.movB = movB;
+        this.phaseA = mySignal.getPhaseByNEMA(movA);
+        this.phaseB = mySignal.getPhaseByNEMA(movB);
     }
 
 }
