@@ -62,7 +62,7 @@ public class Actuator {
 
     public Signal getSignal(){
         ScenarioElement se = (ScenarioElement) jaxbA.getScenarioElement();
-        if(se.getMyType().compareTo(ScenarioElement.Type.signal)==0)
+        if(se.getType().compareTo("signal")==0)
             return (Signal) se.getReference();
         else
             return null;
