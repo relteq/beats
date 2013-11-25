@@ -12,4 +12,9 @@ public class Stage {
     public Signal.NEMA movA;
     public Signal.NEMA movB;
 
+    public Stage(Signal.NEMA movA,Signal.NEMA movB){
+        this.movA = movA;
+        this.movB = movB;
+    }
+
 }

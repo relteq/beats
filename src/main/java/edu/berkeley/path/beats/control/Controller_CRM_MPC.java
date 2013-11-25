@@ -71,9 +71,9 @@ public class Controller_CRM_MPC extends Controller {
                 case tester:
                     policy_maker = new PolicyMaker_Tester();
                     break;
-				case adjoint:
-					policy_maker = new AdjointRampMeteringPolicyMaker();
-					break;
+//				case adjoint:
+//					policy_maker = new AdjointRampMeteringPolicyMaker();
+//					break;
 //				case actm_lp:
 //                    policy_maker = new PolicyMaker_CRM_ACTM_LP();
 //					break;
