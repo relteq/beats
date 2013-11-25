@@ -38,12 +38,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import edu.berkeley.path.beats.jaxb.*;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
 import edu.berkeley.path.beats.data.DataFileReader;
 import edu.berkeley.path.beats.data.FiveMinuteData;
-import edu.berkeley.path.beats.jaxb.DemandProfile;
+//import edu.berkeley.path.beats.jaxb.DemandProfile;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
@@ -88,7 +89,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// protected constructor
 	/////////////////////////////////////////////////////////////////////
 
-	protected Scenario(){}
+	public Scenario(){}
 		
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
@@ -349,7 +350,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	 * Converts units to SI, populates the scenario,
 	 * registers signals and controllers,
 	 * and validates the scenario.
-	 * @param S a scenario
 	 * @return the updated scenario or null if an error occurred
 	 * @throws BeatsException
 	 */
@@ -430,7 +430,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				reset();
 				
 				// advance to end of simulation
-				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){					
+				while( advanceNSteps_internal(1,runParam.writefiles,outputwriter,runParam.t_start_output) ){
 				}
 			} finally {
 				if (null != outputwriter) outputwriter.close();
@@ -518,7 +518,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	// public API
 	/////////////////////////////////////////////////////////////////////
 
-	// seriallization .................................................
+	// serialization .................................................
 	
 	/** Save the scenario to XML.
 	 * 
@@ -644,6 +644,14 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				return i;
 		return -1;
 	}
+
+    public long getVehicleTypeIdForIndex(int index){
+        if(getVehicleTypeSet()==null)
+            return 0;
+        if(getVehicleTypeSet().getVehicleType()==null)
+            return 0;
+        return getVehicleTypeSet().getVehicleType().get(index).getId();
+    }
 	
 	/** Size of the simulation time step in seconds.
 	 * @return Simulation time step in seconds. 
@@ -745,9 +753,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 		}
 		return density;           
 	}
-	
-	
-	
 
 	// object getters ........................................................
 
@@ -880,10 +885,28 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				return e;
 		}
 		return null;
-	}		
+	}
 
-	
-	/////////////////////////////////////////////////////////////////////
+    // state and bc getters .............................................
+
+//    public FundamentalDiagramSet getCurrentFundamentalDiagrams(){
+//        return null;
+//    }
+//
+//    public DemandSet getDemandsForLinkAndPeriod(double start_time,double end_time,double dt){
+//        return null;
+//    }
+//
+//    public SplitRatioSet getSplitRatiosForPeriod(double start_time,double end_time,double dt){
+//        return null;
+//    }
+//
+//    public InitialDensitySet getCurrentStateAsInitialDensitySet(int ensemble){
+//        return null;
+//    }
+
+
+    /////////////////////////////////////////////////////////////////////
 	// scenario modification
 	/////////////////////////////////////////////////////////////////////
 
@@ -938,43 +961,43 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	
 	// override a profile ...............................................	
 	
-	/** Add a demand profile to the scenario. If a profile already exists for the 
-	 * origin link, then replace it.
-	 * @throws BeatsException 
-	 */
-	public void addDemandProfile(edu.berkeley.path.beats.simulator.DemandProfile dem) throws BeatsException  {
-		
-		if(scenario_locked)
-			throw new BeatsException("Cannot modify the scenario while it is locked.");
-
-		if(demandSet==null){
-			demandSet = new edu.berkeley.path.beats.jaxb.DemandSet();
-			@SuppressWarnings("unused")
-			List<DemandProfile> temp = demandSet.getDemandProfile(); // artifficially initialize the profile			
-		}
-		
-		// validate the profile
-		BeatsErrorLog.clearErrorMessage();
-		dem.validate();
-		if(BeatsErrorLog.haserror())
-			throw new BeatsException(BeatsErrorLog.format());
-		
-		// replace an existing profile
-		boolean foundit = false;
-		for(int i=0;i<demandSet.getDemandProfile().size();i++){
-			edu.berkeley.path.beats.jaxb.DemandProfile d = demandSet.getDemandProfile().get(i);
-			if(d.getLinkIdOrg()==dem.getLinkIdOrg()){
-				demandSet.getDemandProfile().set(i,dem);
-				foundit = true;
-				break;
-			}
-		}
-		
-		// or add a new one
-		if(!foundit)
-			demandSet.getDemandProfile().add(dem);
-
-	}
+//	/** Add a demand profile to the scenario. If a profile already exists for the
+//	 * origin link, then replace it.
+//	 * @throws BeatsException
+//	 */
+//	public void addDemandProfile(edu.berkeley.path.beats.simulator.DemandProfile dem) throws BeatsException  {
+//
+//		if(scenario_locked)
+//			throw new BeatsException("Cannot modify the scenario while it is locked.");
+//
+//		if(demandSet==null){
+//			demandSet = new edu.berkeley.path.beats.jaxb.DemandSet();
+//			@SuppressWarnings("unused")
+//			List<DemandProfile> temp = (List<DemandProfile>) demandSet.getDemandProfile(); // artifficially initialize the profile
+//		}
+//
+//		// validate the profile
+//		BeatsErrorLog.clearErrorMessage();
+//		dem.validate();
+//		if(BeatsErrorLog.haserror())
+//			throw new BeatsException(BeatsErrorLog.format());
+//
+//		// replace an existing profile
+//		boolean foundit = false;
+//		for(int i=0;i<demandSet.getDemandProfile().size();i++){
+//			edu.berkeley.path.beats.jaxb.DemandProfile d = demandSet.getDemandProfile().get(i);
+//			if(d.getLinkIdOrg()==dem.getLinkIdOrg()){
+//				demandSet.getDemandProfile().set(i,dem);
+//				foundit = true;
+//				break;
+//			}
+//		}
+//
+//		// or add a new one
+//		if(!foundit)
+//			demandSet.getDemandProfile().add(dem);
+//
+//	}
 	
 	/////////////////////////////////////////////////////////////////////
 	// calibration
@@ -1375,5 +1398,122 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public void setUncertaintyModel(String uncertaintyModel) {
 		this.uncertaintyModel = Scenario.UncertaintyType.valueOf(uncertaintyModel);
 	}
-	
+
+
+    /////////////////////////////////////////////////////////////////////
+    // predictors
+    /////////////////////////////////////////////////////////////////////
+
+
+    public InitialDensitySet gather_current_densities(){
+
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            for(int v=0;v<getNumVehicleTypes();v++){
+                Density den = factory.createDensity();
+                den.setLinkId(jaxbL.getId());
+                den.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
+                init_dens_set.getDensity().add(den);
+            }
+        }
+        return init_dens_set;
+    }
+
+    public SplitRatioSet predict_split_ratios(double time_current,double sample_dt,int horizon_steps){
+
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        SplitRatioSet split_ratio_set = (SplitRatioSet) factory.createSplitRatioSet();
+        for(edu.berkeley.path.beats.jaxb.Node jaxbN : network.getListOfNodes()){
+            Node N = (Node) jaxbN;
+
+            if(N.istrivialsplit())
+                continue;
+
+            SplitRatioProfile sr_profile = N.getSplitRatioProfile();
+
+            SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
+            split_ratio_set.getSplitRatioProfile().add(srp);
+
+            srp.setDt(sample_dt);
+            srp.setNodeId(N.getId());
+            for(Input in : N.getInputs().getInput()){
+                for(Output out : N.getOutputs().getOutput()){
+                    for(int v=0;v<getNumVehicleTypes();v++)    {
+
+                        Splitratio splitratio = factory.createSplitratio();
+
+                        // set values
+                        splitratio.setLinkIn(in.getLinkId());
+                        splitratio.setLinkOut(out.getLinkId());
+                        splitratio.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                        double [] sr = sr_profile.predict(
+                                in.getLinkId(),
+                                out.getLinkId(),
+                                v,time_current, sample_dt, horizon_steps);
+
+                        if(sr==null)
+                            continue;
+
+                        srp.getSplitratio().add(splitratio);
+                        splitratio.setContent(BeatsFormatter.csv(sr, ","));
+                    }
+                }
+            }
+        }
+        return split_ratio_set;
+    }
+
+    public FundamentalDiagramSet gather_current_fds(double time_current){
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        FundamentalDiagramSet fd_set = factory.createFundamentalDiagramSet();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            FundamentalDiagramProfile fdp = (FundamentalDiagramProfile) factory.createFundamentalDiagramProfile();
+            fd_set.getFundamentalDiagramProfile().add(fdp);
+
+            // set values
+            fdp.setLinkId(L.getId());
+            FundamentalDiagram fd = (FundamentalDiagram) factory.createFundamentalDiagram();
+            fd.copyfrom(L.getFundamentalDiagramProfile().getFDforTime(time_current));
+            fd.setOrder(0);
+            fdp.getFundamentalDiagram().add(fd);
+        }
+        return fd_set;
+    }
+
+    public DemandSet predict_demands(double time_current,double sample_dt,int horizon_steps){
+
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+
+        DemandSet demand_set = (DemandSet) factory.createDemandSet();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            if(L.isSource()){
+                DemandProfile dem_profile = L.getDemandProfile();
+
+                // add demands to demand_set
+                DemandProfile dp = (DemandProfile) factory.createDemandProfile();
+                demand_set.getDemandProfile().add(dp);
+
+                dp.setLinkIdOrg(L.getId());
+                dp.setDt(sample_dt);
+                for(int v=0;v<getNumVehicleTypes();v++){
+                    edu.berkeley.path.beats.jaxb.Demand dem = factory.createDemand();
+                    dp.getDemand().add(dem);
+
+                    // set values
+                    dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, sample_dt, horizon_steps), ","));
+                }
+            }
+        }
+        return demand_set;
+    }
 }

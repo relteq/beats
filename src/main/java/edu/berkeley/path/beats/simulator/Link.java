@@ -225,7 +225,7 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 				totaloutflow = Math.min( totaloutflow , myCapacityProfile.getCurrentValue() );
 
 			// flow controller
-			totaloutflow = Math.min( totaloutflow , external_max_flow );   
+			totaloutflow = Math.min( totaloutflow , external_max_flow );
 
 			// flow uncertainty model
 			if(myNetwork.getMyScenario().isHas_flow_unceratinty()){
@@ -377,8 +377,8 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 
 	// controller registration .........................................
 	
-	public void set_external_max_flow(double value){
-		external_max_flow = value;		
+	public void set_external_max_flow_in_vph(double value){
+		external_max_flow = value*getMyNetwork().getMyScenario().getSimdtinseconds()/3600d;
 	}
 	
 	public void set_external_max_speed(double value){
@@ -875,7 +875,16 @@ public final class Link extends edu.berkeley.path.beats.jaxb.Link {
 		}
 	}
 
-	/////////////////////////////////////////////////////////////////////
+    public DemandProfile getDemandProfile(){
+        return myDemandProfile;
+    }
+
+    public FundamentalDiagramProfile getFundamentalDiagramProfile(){
+        return myFDprofile;
+    }
+
+
+        /////////////////////////////////////////////////////////////////////
 	// private
 	/////////////////////////////////////////////////////////////////////
 

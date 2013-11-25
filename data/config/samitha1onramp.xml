@@ -10,18 +10,21 @@
    </VehicleTypeSet>  
 
   <InitialDensitySet project_id="-1" id="-1" >
-    <density id="-1" vehicle_type_id="0" link_id="-1">0.18</density>
-    <density id="-1" vehicle_type_id="0" link_id="-2">0.04</density>
-    <density id="-1" vehicle_type_id="0" link_id="1">0.18</density>
+    <density id="-1" vehicle_type_id="0" link_id="-1">.9</density>
+    <density id="-1" vehicle_type_id="0" link_id="-2">.2</density>
+    <density id="-1" vehicle_type_id="0" link_id="1">0.9</density>
     <density id="-1" vehicle_type_id="0" link_id="2">0.00</density>
   </InitialDensitySet>
 
+  <SplitRatioSet  id="-1" project_id="-1">
+  </SplitRatioSet>
+
   <DemandSet id="-1" project_id="-1">
    <demandProfile dt="5" id="-1" link_id_org="-2">
-      <demand vehicle_type_id="0">0</demand>
+      <demand vehicle_type_id="0">0,0,0,0,0</demand>
    </demandProfile>
    <demandProfile dt="5" id="-1" link_id_org="-1">
-      <demand vehicle_type_id="0">0.18,0</demand>
+      <demand vehicle_type_id="0">0.9,0,0,0,0</demand>
    </demandProfile>
   </DemandSet>
 
@@ -30,8 +33,8 @@
       <parameters>
         <parameter name="policy" value="adjoint"/>
         <parameter name="dt_optimize" value="25"/>
-        <parameter name="opt_timestep" value="5"/>
-        <parameter name="opt_horizon" value="25"/>
+        <parameter name="policy_maker_timestep" value="5"/>
+        <parameter name="policy_maker_horizon" value="25"/>
       </parameters>
       <target_actuators>
         <target_actuator id="0" usage="onramp"/>
@@ -63,18 +66,18 @@
   <FundamentalDiagramSet project_id="-1" id="-1">
 
     <fundamentalDiagramProfile id="-1" link_id="-1">
-      <fundamentalDiagram id="-1" capacity=".2" congestion_speed="1" jam_density="100" free_flow_speed=".2" />
+      <fundamentalDiagram id="-1" capacity="1" congestion_speed="1" jam_density="100" free_flow_speed="1" />
     </fundamentalDiagramProfile>
     
     <fundamentalDiagramProfile id="-1" link_id="-2">
-      <fundamentalDiagram id="-1" capacity=".2" congestion_speed="1" jam_density="100" free_flow_speed=".2"/>
+      <fundamentalDiagram id="-1" capacity="1" congestion_speed="1" jam_density="100" free_flow_speed="1"/>
     </fundamentalDiagramProfile>
 
     <fundamentalDiagramProfile id="-1" link_id="1">
-      <fundamentalDiagram id="-1" capacity=".18" congestion_speed="1" jam_density=".36" free_flow_speed="1" />
+      <fundamentalDiagram id="-1" capacity=".9" congestion_speed="1" jam_density="1.8" free_flow_speed="1" />
     </fundamentalDiagramProfile>
     <fundamentalDiagramProfile id="-1" link_id="2">
-      <fundamentalDiagram id="-1" capacity=".2" congestion_speed="1" jam_density=".4" free_flow_speed="1" />
+      <fundamentalDiagram id="-1" capacity="1" congestion_speed="1" jam_density="2" free_flow_speed="1" />
     </fundamentalDiagramProfile>
   </FundamentalDiagramSet>
   
@@ -110,7 +113,7 @@
             <output link_id="1"/>            
           </outputs>
           <inputs>
-            <input link_id="-1"/>            
+            <input link_id="-1"/>
           </inputs>
         </node>
 
@@ -125,28 +128,28 @@
         </node>
       </NodeList>
       <LinkList>
-        <link id="-1" lanes="1" length="5" >
-          <link_type id="-1" name="onramp"/>
+        <link id="-1" lanes="1" length="1" >
+          <link_type id="-1" name="On-Ramp"/>
           <begin node_id="-1"/>
           <end node_id="1"/>
           <dynamics type="CTM"/>
         </link>
-        <link id="-2" lanes="1" length="5" >
-          <link_type id="-1" name="onramp"/>
+        <link id="-2" lanes="1" length="1" >
+          <link_type id="-1" name="On-Ramp"/>
           <begin node_id="-2"/>
           <end node_id="2"/>
           <dynamics type="CTM"/>
         </link>
 
-        <link id="1" lanes="1" length="5" >
-          <link_type id="-1" name="freeway"/>
+        <link id="1" lanes="1" length="1" >
+          <link_type id="-1" name="Freeway"/>
           <begin node_id="1"/>
           <end node_id="2"/>
           <dynamics type="CTM"/>
         </link>
 
-        <link id="2" lanes="1" length="5" >
-          <link_type id="-1" name="freeway"/>
+        <link id="2" lanes="1" length="1" >
+          <link_type id="-1" name="Freeway"/>
           <begin node_id="2"/>
           <end node_id="-3"/>
           <dynamics type="CTM"/>

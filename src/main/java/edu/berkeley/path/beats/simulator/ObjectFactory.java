@@ -72,28 +72,32 @@ final public class ObjectFactory {
 		Controller C;
 		switch(myType){
 			case IRM_ALINEA:
-				C = new Controller_IRM_Alinea(myScenario, jaxbC, myType);
+				C = new Controller_IRM_Alinea(myScenario, jaxbC);
 				break;
 				
 			case IRM_TOD:
-				C = new Controller_IRM_Time_of_Day(myScenario, jaxbC, myType);
+				C = new Controller_IRM_Time_of_Day(myScenario, jaxbC);
 				break;
 				
 			case IRM_TOS:
-				C = new Controller_IRM_Traffic_Responsive(myScenario, jaxbC, myType);
+				C = new Controller_IRM_Traffic_Responsive(myScenario, jaxbC);
 				break;
 				
 			case CRM_HERO:
-				C = new Controller_CRM_HERO(myScenario, jaxbC, myType);
+				C = new Controller_CRM_HERO(myScenario, jaxbC);
 				break;
 
 			case CRM_MPC:
-				C = new Controller_CRM_MPC(myScenario, jaxbC, myType);
+				C = new Controller_CRM_MPC(myScenario, jaxbC);
 				break;
 				
 			case SIG_Pretimed:
-				C = new Controller_SIG_Pretimed(myScenario, jaxbC, myType);
+				C = new Controller_SIG_Pretimed(myScenario, jaxbC);
 				break;
+
+            case SIG_MaxPressure:
+                C = new Controller_SIG_CycleMP(myScenario, jaxbC, myType);
+                break;
 				
 			default:
 				C = null;
@@ -101,7 +105,6 @@ final public class ObjectFactory {
 		}
 		C.populate(jaxbC);
 		return C;
-
 	}
 
 	protected static Event createEventFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Event jaxbE,Event.Type myType) {	

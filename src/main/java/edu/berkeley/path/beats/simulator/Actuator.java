@@ -5,7 +5,7 @@ public class Actuator {
 	protected Scenario myScenario;
 	protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
 	protected ActuatorImplementation implementor;
-	protected Object command;
+//	protected Object command;
 	
 	public static enum Type	{ ramp_meter,
 							  signalized_intersection,
@@ -51,5 +51,21 @@ public class Actuator {
     public long getId() {
         return jaxbA.getId();
     }
-	
+
+//    public String getScenarioElementType() {
+//        return jaxbA.getScenarioElement().getType();
+//    }
+//
+//    public long getScenarioElementId() {
+//        return jaxbA.getScenarioElement().getId();
+//    }
+
+    public Signal getSignal(){
+        ScenarioElement se = (ScenarioElement) jaxbA.getScenarioElement();
+        if(se.getMyType().compareTo(ScenarioElement.Type.signal)==0)
+            return (Signal) se.getReference();
+        else
+            return null;
+    }
+
 }

@@ -56,8 +56,8 @@ public class Controller_IRM_Alinea extends Controller {
 	// Construction
 	/////////////////////////////////////////////////////////////////////
 
-	public Controller_IRM_Alinea(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c,Controller.Algorithm myType) {
-		super(myScenario,c,myType);
+	public Controller_IRM_Alinea(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c) {
+		super(myScenario,c,Algorithm.IRM_ALINEA);
 	}
 
 //	public Controller_IRM_Alinea(Scenario myScenario,Link onramplink,Link mainlinelink,Sensor mainlinesensor,Sensor queuesensor,double gain_in_mps){

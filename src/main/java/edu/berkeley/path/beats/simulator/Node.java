@@ -40,7 +40,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// connectivity
 	protected int nIn;
 	protected int nOut;
-	protected boolean istrivialsplit;
+
+    protected boolean istrivialsplit;
 	protected boolean isTerminal;
 
 	// link references
@@ -99,13 +100,12 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 		
 		isTerminal = nOut==0 || nIn==0;
+        istrivialsplit = nOut<=1;
+        hasSRprofile = false;
 
     	if(isTerminal)
     		return;
 
-		istrivialsplit = nOut==1;
-		hasSRprofile = false;
-		
 		// initialize the split ratio matrix
 		// NOTE: SHOULD THIS GO IN RESET?
 		splitratio_selected = new Double3DMatrix(nIn,nOut,myNetwork.getMyScenario().getNumVehicleTypes(),0d);
@@ -420,5 +420,16 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			return Double.NaN;
 		return splitratio_selected.get(inLinkInd, outLinkInd, vehTypeInd);
 	}
-	
+
+
+    public SplitRatioProfile getSplitRatioProfile(){
+        return mySplitRatioProfile;
+    }
+
+    public boolean istrivialsplit() {
+        return istrivialsplit;
+    }
+
+
+
 }
