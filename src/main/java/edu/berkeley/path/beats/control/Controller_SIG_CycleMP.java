@@ -81,7 +81,7 @@ public class Controller_SIG_CycleMP extends Controller {
         int nStages = sigPhases.size();
         int[][] controlMat = new int [nStages][nInputs];
         
-        
+  
         mySignal.
         for(Stage aStage : stages){
         	SignalPhase aPhase = mySignal.getPhaseByNEMA(aStage.nema1);
