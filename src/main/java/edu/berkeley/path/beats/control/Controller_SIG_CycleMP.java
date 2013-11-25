@@ -87,21 +87,12 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 		}
 		
         // construct binary "control matrix" of size nStagesxnInputs
-        List<Phase> sigPhases = mySignal.getPhase(); //i think this is not right! 
+        List<sigStage> stages = mySignal.getStages(); //this or equivalent is not yet implemented!!
         
-        int nStages = sigPhases.size();
+        int nStages = stages.size();
         int[][] controlMat = new int [nStages][nInputs];
-        
-<<<<<<< HEAD
   
-        mySignal.
-        for(Stage aStage : stages){
-        	SignalPhase aPhase = mySignal.getPhaseByNEMA(aStage.nema1);
-        	Link [] targetlinks = aPhase.getTargetlinks();
-        	int phaseLink = (int) targetlinks[0].getId();	
-        }
-        int nStages = controlMat.length;
-=======
+        
         
 //        mySignal.
 //        for(Stage aStage : stages){
@@ -110,7 +101,6 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 //        	int phaseLink = (int) targetlinks[0].getId();
 //        }
 //        int nStages = controlMat.length;
->>>>>>> calpath/maxp
 
         
         
