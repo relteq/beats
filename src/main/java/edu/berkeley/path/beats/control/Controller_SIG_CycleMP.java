@@ -1,24 +1,18 @@
 package edu.berkeley.path.beats.control;
 
-import java.util.List;
 import java.lang.Math;
 
-import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.Stage;
-import edu.berkeley.path.beats.simulator.SignalPhase;
 
 public class Controller_SIG_CycleMP extends Controller_SIG {
 
     private Node myNode;
-
-    public double [] portion_of_cycle;          // [sums to 1] in the order of stages.
-	
-	// controller specific variables defined here
+    public double [] cycle_splits;          // [sums to 1] in the order of stages.
+	    
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -58,27 +52,34 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 	protected void update() throws BeatsException {
 		super.update();
 
-        for(Stage s:stages){
-
-
-            Link [] inlinksA = s.phaseA.getTargetlinks();
-            Link [] inlinksB = s.phaseB.getTargetlinks();
-
-
-            inlinksA[0].getTotalDensityInVeh()
-
-
-        }
-
-
-
-
 		//get link index information from node
 		Link [] inputLinks = myNode.getInput_link();
 		Link [] outputLinks = myNode.getOutput_link();
 		int nInputs = inputLinks.length;
         int nOutputs = outputLinks.length;
 		
+        //construct control matrices
+        int nStages = stages.length;
+        int[][] controlMat = new int [nStages][nInputs]; // initializes to filled with 0
+        for(int s=0; s<nStages; s++){
+        	for (Link a: stages[s].phaseA.getTargetlinks()){
+        		for (int i=0;i<nInputs;i++){
+        			if (inputLinks[i].getId()==a.getId()){
+        				controlMat[s][i]=1;
+        				break;
+        			}
+        		}
+        	}
+        	for (Link b: stages[s].phaseB.getTargetlinks()){
+        		for (int i=0;i<nInputs;i++){
+        			if (inputLinks[i].getId()==b.getId()){
+        				controlMat[s][i]=1;
+        				break;
+        			}
+        		}
+        	}
+        }
+        
         //get sat flow information from links
 		float[] satFlows = new float[nInputs];
 		for(int i=0;i<nInputs;i++){
@@ -103,20 +104,6 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 			}
 		}
 		
-        // construct binary "control matrix" of size nStagesxnInputs
-        List<sigStage> stages = mySignal.getStages(); //this or equivalent is not yet implemented!!
-        
-        int nStages = stages.size();
-        int[][] controlMat = new int [nStages][nInputs];
-  
-        
-        for(Stage aStage : stages){
-        	SignalPhase aPhase = mySignal.getPhaseByNEMA(aStage.movA);
-        	Link [] targetlinks = aPhase.getTargetlinks();
-        	int phaseLink = (int) targetlinks[0].getId();
-        }
-
-
         //these are internal, don't need to change
         double[] weights;
         double[] pressures;
@@ -130,17 +117,15 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         	for (int e=0; e<nOutputs; e++){
         		weights[i]-=splits[i][e]*outputCounts[e];
         	}
-        	//System.out.println("weights for link "+i+": "+weights[i]);
         }
         	
         //calculate pressure for all stages
-        pressures = new float [nStages];
+        pressures = new double [nStages];
         for (int s=0; s<nStages;s++){
         	pressures[s] = 0;
         	for (int i=0; i<nInputs; i++){
         		pressures[s] += controlMat[s][i]*weights[i]*satFlows[i];
         	}
-        	//System.out.println("pressures for stage "+s+": "+pressures[s]);
         }
 
         //determine max pressure stage
@@ -149,22 +134,6 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         	if (pressures[s]>pressures[mpStage]){mpStage = s;}
         }
 		
-//		ArrayList<Sensor> x = getSensorByUsage("queue_2");
-//		AccumulationSensor bla = (AccumulationSensor) x.get(0);
-//		ArrayList< time,queue > = bla.getQueueHistory()
-//				bla.resetQueueHistory();
-//		
-//		.
-//		.
-//		.
-//		.
-//		
-//		ActuatorSignal act = (ActuatorSignal) = this.actuators.get(0);
-//		act.setGreenTimes(List<Double> green_times);
-		
-		
-		
 	}
-
 
 }
