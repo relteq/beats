@@ -104,14 +104,10 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
 			}
 		}
 		
-        //these are internal, don't need to change
-        double[] weights;
-        double[] pressures;
-        int mpStage;
         
         //calculate SIMPLE weights
         //later this will be changed, to calculate max/min/average/etc weights, and to include minimum green time constraints. 
-        weights = new double [nInputs];
+        double[] weights = new double [nInputs];
         for (int i=0; i<nInputs; i++){
         	weights[i]=inputCounts[i];
         	for (int e=0; e<nOutputs; e++){
@@ -120,7 +116,7 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         }
         	
         //calculate pressure for all stages
-        pressures = new double [nStages];
+        double[] pressures = new double [nStages];
         for (int s=0; s<nStages;s++){
         	pressures[s] = 0;
         	for (int i=0; i<nInputs; i++){
@@ -129,10 +125,14 @@ public class Controller_SIG_CycleMP extends Controller_SIG {
         }
 
         //determine max pressure stage
-        mpStage = 0;
+        int mpStage = 0;
         for (int s=1;s<nStages;s++){
         	if (pressures[s]>pressures[mpStage]){mpStage = s;}
         }
+   
+        //calculate cycle_splits for signal cycle
+        cycle_splits = new double[nStages];
+        cycle_splits[mpStage]=1;
 		
 	}
 
