@@ -168,22 +168,23 @@ final public class ObjectFactory {
 	protected static Actuator createActuatorFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,Actuator.Type myType) {	
 		if(myScenario==null)
 			return null;
-		Actuator A;
-		switch(myType){
+		Actuator A = null;
+        InterfaceActuator imp = new BeatsActuatorImplementation(jaxbA,myScenario);
+        switch(myType){
 			case ramp_meter:
-				A = new ActuatorRampMeter(myScenario, jaxbA);
+				A = new ActuatorRampMeter(myScenario,jaxbA,imp);
 				break;
 
 			case signalized_intersection:
-				A = new ActuatorSignal(myScenario, jaxbA);
+				//A = new ActuatorSignal(myScenario, jaxbA);
 				break;
 
 			case vsl:
-				A = new ActuatorVSL(myScenario, jaxbA);
+				//A = new ActuatorVSL(myScenario, jaxbA);
 				break;
 
 			case cms:
-				A = new ActuatorCMS(myScenario, jaxbA);
+				//A = new ActuatorCMS(myScenario, jaxbA);
 				break;
 				
 			default:
@@ -193,7 +194,7 @@ final public class ObjectFactory {
 		A.populate(jaxbA);
 		return A;
 	}
-	
+
 	protected static ScenarioElement createScenarioElementFromJaxb(Scenario myScenario,edu.berkeley.path.beats.jaxb.ScenarioElement jaxbS){
 		if(myScenario==null)
 			return null;

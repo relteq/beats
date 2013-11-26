@@ -1,12 +1,13 @@
 package edu.berkeley.path.beats.simulator;
 
-public class Actuator {
+public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
+
+    public enum Implementation {beats,aimsun};
+    protected InterfaceActuator implementor;
 
 	protected Scenario myScenario;
-	protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
-	protected ActuatorImplementation implementor;
-//	protected Object command;
-	
+	//protected edu.berkeley.path.beats.jaxb.Actuator jaxbA;
+
 	public static enum Type	{ ramp_meter,
 							  signalized_intersection,
 							  vsl,
@@ -20,13 +21,18 @@ public class Actuator {
 	public Actuator (){
 	}
 	
-	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
-		this.myScenario = myScenario;
-		this.jaxbA = jaxbA;
-		if(jaxbA.getScenarioElement().getType().compareToIgnoreCase("link")==0){
-			Link myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
-			implementor = new ActuatorImplementation(myLink);
-		}
+	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,InterfaceActuator act_implementor){
+
+        this.myScenario = myScenario;
+        //this.jaxbA = jaxbA;
+        this.implementor = act_implementor;
+
+        // copy jaxb data
+        setId(jaxbA.getId());
+        setScenarioElement(jaxbA.getScenarioElement());
+        setParameters(jaxbA.getParameters());
+        setActuatorType(jaxbA.getActuatorType());
+        setTable(jaxbA.getTable());
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -38,8 +44,8 @@ public class Actuator {
 	}
 
 	protected void validate() {
-		if(implementor.getLink()==null)
-			BeatsErrorLog.addError("Bad link reference in actuator id="+getId());
+//		if(implementor.getLink()==null)
+//			BeatsErrorLog.addError("Bad link reference in actuator id="+getId());
 	}
 
 	protected void reset() throws BeatsException {
@@ -48,8 +54,12 @@ public class Actuator {
 	
 	protected void deploy(){};	
 
-    public long getId() {
-        return jaxbA.getId();
+//    public long getId() {
+//        return jaxbA.getId();
+//    }
+
+    public InterfaceActuator get_implementor(){
+        return implementor;
     }
 
 //    public String getScenarioElementType() {

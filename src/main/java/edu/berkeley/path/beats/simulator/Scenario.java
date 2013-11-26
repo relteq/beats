@@ -817,7 +817,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 			return null;
 		for(edu.berkeley.path.beats.simulator.Actuator actuator : actuatorset.getActuators() ){
 			if(actuator.getId()==id)
-				return (Actuator) actuator;
+				return actuator;
 		}
 		return null;
 	}

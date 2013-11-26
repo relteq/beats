@@ -1,10 +1,7 @@
 package edu.berkeley.path.beats.actuator;
 
 import edu.berkeley.path.beats.jaxb.Parameter;
-import edu.berkeley.path.beats.simulator.Actuator;
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.*;
 
 public class ActuatorRampMeter extends Actuator {
 
@@ -28,13 +25,26 @@ public class ActuatorRampMeter extends Actuator {
 	/////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
-	
-	public ActuatorRampMeter(){}
-		
-	public ActuatorRampMeter(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
-		super(myScenario,jaxbA);
-	}
-	
+
+    public ActuatorRampMeter(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,InterfaceActuator act_implementor){
+
+        super(myScenario,jaxbA,act_implementor);
+
+        int num_lanes_in_link = 1;      // WHAT TO DO WITH THIS???
+
+        max_rate_in_vph = Double.POSITIVE_INFINITY;
+        min_rate_in_vph = 0d;
+
+        if(getParameters()!=null){
+            for(Parameter p : getParameters().getParameter()){
+                if(p.getName().compareTo("max_rate_in_vphpl")==0)
+                    max_rate_in_vph = Double.parseDouble(p.getValue())*num_lanes_in_link;
+                if(p.getName().compareTo("min_rate_in_vphpl")==0)
+                    min_rate_in_vph = Double.parseDouble(p.getValue())*num_lanes_in_link;
+            }
+        }
+    }
+
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset / deploy
 	/////////////////////////////////////////////////////////////////////
@@ -44,11 +54,11 @@ public class ActuatorRampMeter extends Actuator {
 		
 		max_rate_in_vph = Double.POSITIVE_INFINITY;
 		min_rate_in_vph = 0d;
-		myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
+		myLink = myScenario.getLinkWithId(getScenarioElement().getId());
 
-		if(myLink!=null && jaxbA.getParameters()!=null){
+		if(myLink!=null && getParameters()!=null){
 			double lanes = myLink.get_Lanes();
-			for(Parameter p : jaxbA.getParameters().getParameter()){
+			for(Parameter p : getParameters().getParameter()){
 				if(p.getName().compareTo("max_rate_in_vphpl")==0)
 					max_rate_in_vph = Double.parseDouble(p.getValue())*lanes;
 				if(p.getName().compareTo("max_rate_in_vphpl")==0)
