@@ -9,8 +9,8 @@ public class ActuatorCMS extends Actuator {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 
-	public ActuatorCMS(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
-		super(myScenario,jaxbA);
-	}
+//	public ActuatorCMS(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+//		super(myScenario,jaxbA);
+//	}
 	
 }

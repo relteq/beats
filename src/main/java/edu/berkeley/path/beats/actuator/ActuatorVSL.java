@@ -9,8 +9,8 @@ public class ActuatorVSL extends Actuator {
 	// construction
 	/////////////////////////////////////////////////////////////////////
 
-	public ActuatorVSL(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
-		super(myScenario,jaxbA);
-	}
+//	public ActuatorVSL(Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA){
+//		super(myScenario,jaxbA);
+//	}
 	
 }
