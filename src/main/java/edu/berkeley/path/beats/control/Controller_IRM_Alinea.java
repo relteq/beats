@@ -103,7 +103,7 @@ public class Controller_IRM_Alinea extends Controller {
 		mainline_link = mainline_sensor!=null ? mainline_sensor.getMyLink() : null;
 
 		// assign actuator
-		ramp_meter = actuators.size()==1 ? (ActuatorRampMeter)actuators.get(0) : null;
+		ramp_meter = actuators.size()==1 ? (ActuatorRampMeter) actuators.get(0) : null;
 		
 		// get reference to onramp link
 		onramp_link = ramp_meter!=null ? ramp_meter.getLink() : null;

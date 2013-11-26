@@ -1,13 +1,18 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.jaxb.ScenarioElement;
+
 import java.util.List;
 
-public class ActuatorImplementation implements InterfaceActuator {
+public class BeatsActuatorImplementation implements InterfaceActuator {
 
 	private Link myLink;
-	
-	public ActuatorImplementation(Link myLink){
-		this.myLink = myLink;
+
+	public BeatsActuatorImplementation(edu.berkeley.path.beats.jaxb.Actuator parent,Object context){
+        ScenarioElement se = parent.getScenarioElement();
+        if(se.getType().compareTo("link")==0)
+            myLink = ((Scenario) context).getLinkWithId(se.getId());
 	}
 	
 	public Link getLink(){
@@ -33,5 +38,6 @@ public class ActuatorImplementation implements InterfaceActuator {
 	public void deploy_vsl_speed() {
 		// TODO Auto-generated method stub
 	}
+
 
 }

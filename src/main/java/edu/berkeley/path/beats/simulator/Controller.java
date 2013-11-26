@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.jaxb.FeedbackSensor;
@@ -43,71 +44,44 @@ import edu.berkeley.path.beats.jaxb.TargetActuator;
  */
 public class Controller {
 
-	/** Scenario that contains this controller */
 	protected Scenario myScenario;
-	
 	protected edu.berkeley.path.beats.jaxb.Controller jaxbController;
-										
-	/** Controller type. */
 	protected Controller.Algorithm myType;
-	
-	/** List of scenario elements affected by this controller */
 	protected ArrayList<Actuator> actuators;
 	protected ArrayList<String> actuator_usage;
-	
-	/** List of scenario elements that provide input to this controller */
 	protected ArrayList<Sensor> sensors;
 	protected ArrayList<String> sensor_usage;
-	
-	/** Controller update period in seconds */
 	protected double dtinseconds;
-	
-	/** Controller update period in number of simulation steps */
 	protected int samplesteps;
-	
-	/** On/off switch for this controller */
 	protected boolean ison;
-	
-	/** Activation times for this controller */
 	protected ArrayList<ActivationTimes> activationTimes;
-	
-	/** Tables of parameters. */
 	protected java.util.Map<String, Table> tables;
-	
-	/** Controller algorithm. The three-letter prefix indicates the broad class of the 
-	 * controller.  
-	 * <ul>
-	 * <li> IRM, isolated ramp metering </li>
-	 * <li> CRM, coordinated ramp metering </li>
-	 * <li> VSL, variable speed limits </li>
-	 * <li> SIG, signal control (intersections) </li>
-	 * </ul>
-	 */
-	public static enum Algorithm {  
-	  /** see {@link ObjectFactory#createController_IRM_Alinea} 			*/ 	IRM_ALINEA,
-	  /** see {@link ObjectFactory#createController_IRM_Time_of_Day} 		*/ 	IRM_TOD,
-	  /** see {@link ObjectFactory#createController_IRM_Traffic_Responsive}	*/ 	IRM_TOS,
-      /** see {@link ObjectFactory#createController_CRM_HERO}				*/ 	CRM_HERO,
-      /** see {@link ObjectFactory#createController_CRM_MPC}				*/ 	CRM_MPC,
-      /** see {@link ObjectFactory#createController_SIG_Pretimed}			*/ 	SIG_Pretimed }
 
-	public static enum ActuatorType { 
-		RAMP_METER,
-		CMS,
-		VSL,
-		SIGNAL
+	public static enum Algorithm {
+        IRM_ALINEA,
+        IRM_TOD,
+        IRM_TOS,
+        CRM_HERO,
+        CRM_MPC,
+        SIG_Pretimed }
+
+    public static enum ActuatorType {
+		ramp_meter,
+		cms,
+		vsl,
+		signal
 	}
 	
     public static final Map<Algorithm, ActuatorType> map_algorithm_actuator = new HashMap<Algorithm, ActuatorType>();
     static {
-    	map_algorithm_actuator.put( Algorithm.IRM_ALINEA , ActuatorType.RAMP_METER);
-    	map_algorithm_actuator.put( Algorithm.IRM_TOD 		, ActuatorType.RAMP_METER );
-    	map_algorithm_actuator.put( Algorithm.IRM_TOS 		, ActuatorType.RAMP_METER );
-    	map_algorithm_actuator.put( Algorithm.CRM_HERO 		, ActuatorType.RAMP_METER );
-    	map_algorithm_actuator.put( Algorithm.CRM_MPC 		, ActuatorType.RAMP_METER );
-    	map_algorithm_actuator.put( Algorithm.SIG_Pretimed  , ActuatorType.SIGNAL );
+    	map_algorithm_actuator.put( Algorithm.IRM_ALINEA , ActuatorType.ramp_meter);
+    	map_algorithm_actuator.put( Algorithm.IRM_TOD 		, ActuatorType.ramp_meter );
+    	map_algorithm_actuator.put( Algorithm.IRM_TOS 		, ActuatorType.ramp_meter );
+    	map_algorithm_actuator.put( Algorithm.CRM_HERO 		, ActuatorType.ramp_meter );
+    	map_algorithm_actuator.put( Algorithm.CRM_MPC 		, ActuatorType.ramp_meter );
+    	map_algorithm_actuator.put( Algorithm.SIG_Pretimed  , ActuatorType.signal );
     }
-    
+
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -122,6 +96,9 @@ public class Controller {
 			this.ison = false;
 			this.activationTimes=new ArrayList<ActivationTimes>();
 			this.dtinseconds = jaxbC.getDt();		// assume given in seconds
+
+            // keep jaxb info
+
 
 			// Copy tables
 			tables = new java.util.HashMap<String, Table>();
@@ -149,7 +126,7 @@ public class Controller {
 			actuator_usage = new ArrayList<String>();
 			if(jaxbC.getTargetActuators()!=null && jaxbC.getTargetActuators().getTargetActuator()!=null){
 				for(TargetActuator ta : jaxbC.getTargetActuators().getTargetActuator()){
-					actuators.add(getMyScenario().getActuatorWithId(ta.getId()));
+                    actuators.add(myScenario.getActuatorWithId(ta.getId()));
 					actuator_usage.add(ta.getUsage()==null ? "" : ta.getUsage());
 				}
 			}
@@ -244,8 +221,7 @@ public class Controller {
 	 * 
 	 * <p> All controllers must register with their targets in order to be allowed to
 	 * manipulate them. This is to prevent clashes, in which two or 
-	 * more controllers access the same variable. Use 
-	 * {@link Controller#registerFlowController} {@link Controller#registerSpeedController} to register. 
+	 * more controllers access the same variable.
 	 * The return value of these methods indicates whether the registration was successful.
 	 * 
 	 * @return <code>true</code> if the controller successfully registered with all of its targets; 
@@ -258,8 +234,7 @@ public class Controller {
 	/** Deregister the controller with its targets. 
 	 * 
 	 * <p> All controllers must deregister with their targets when they are no longer active
-	 *  This is to prevent clashes, in which two or more controllers access the same variable at different simulation periods 
-	 * . Use {@link Controller#deregisterFlowController} {@link Controller#deregisterSpeedController} to register. 
+	 *  This is to prevent clashes, in which two or more controllers access the same variable at different simulation periods
 	 * The return value of these methods indicates whether the deregistration was successful.
 	 * 
 	 * @return <code>true</code> if the controller successfully registered with all of its targets; 

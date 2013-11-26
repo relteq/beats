@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.simulator;
 
 import java.util.ArrayList;
 
+import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.jaxb.ActuatorType;
 
 public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
@@ -25,7 +26,7 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 		// replace jaxb.Actuator with simulator.Actuator
 		if(myScenario.getActuatorSet()!=null){
 			for(edu.berkeley.path.beats.jaxb.Actuator jaxba : myScenario.getActuatorSet().getActuator()) {
-				
+
 				// assign type
 				Actuator.Type myType = null;
 		    	try {
@@ -35,10 +36,9 @@ public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
 				} catch (IllegalArgumentException e) {
 					continue;
 				}
-				
-				// generate actuator
+                // generate actuator
 				if(myType!=null){
-					Actuator A = ObjectFactory.createActuatorFromJaxb(myScenario,jaxba,myType);
+                    Actuator A = ObjectFactory.createActuatorFromJaxb(myScenario,jaxba,myType);
 					if(A!=null)
 						actuators.add(A);
 				}		    	

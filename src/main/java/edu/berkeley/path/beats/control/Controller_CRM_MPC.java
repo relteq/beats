@@ -2,43 +2,40 @@ package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.control.predictive.*;
-import edu.berkeley.path.beats.jaxb.*;
+import edu.berkeley.path.beats.jaxb.ScenarioElement;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.DemandProfile;
-import edu.berkeley.path.beats.simulator.DemandSet;
-import edu.berkeley.path.beats.simulator.FundamentalDiagram;
-import edu.berkeley.path.beats.simulator.FundamentalDiagramProfile;
-import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Network;
-import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SplitRatioProfile;
-import edu.berkeley.path.beats.simulator.SplitRatioSet;
+
+import java.util.HashMap;
 
 public class Controller_CRM_MPC extends Controller {
+
 
     // policy maker
     private RampMeteringPolicyMaker policy_maker;
     private RampMeteringPolicySet policy;
     private RampMeteringControlSet controller_parameters;
-    private Network network;
-    private FundamentalDiagramSet constant_fd_set; // used by scenario-less act 2 runner;
+    private HashMap<Long,Actuator> link_actuator_map;
 
-	// parameters
+    private edu.berkeley.path.beats.simulator.Network network;
+
+    // parameters
 	private double pm_period;		  // [sec] period for calling the policy maker
 	private double pm_horizon;		  // [sec] policy maker time horizon
     private double pm_dt;		 	  // [sec] internal time step for the policy maker
 
+    // variable
+    private double time_last_opt;     // [sec] time of last policy maker call
+
+    private static enum PolicyMakerType {tester,adjoint,NULL}
+
+
     // derived
     private int pm_horizon_steps;     // pm_horizon/pm_dt
-
-	// variable
-	private double time_last_opt;     // [sec] time of last policy maker call
-
-	private static enum PolicyMakerType {tester,adjoint,actm_lp,NULL}
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
@@ -47,7 +44,6 @@ public class Controller_CRM_MPC extends Controller {
 	public Controller_CRM_MPC(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(myScenario,c,Algorithm.CRM_MPC);
 	}
-
 
 	/////////////////////////////////////////////////////////////////////
 	// populate / validate / reset
@@ -82,6 +78,15 @@ public class Controller_CRM_MPC extends Controller {
 			}
 		}
 
+
+        // link->actuator map
+        link_actuator_map = new HashMap<Long,Actuator>();
+        for(Actuator act : actuators){
+            ScenarioElement se = act.getScenarioElement();
+            if(se.getType().compareTo("link")==0)
+                link_actuator_map.put(new Long(se.getId()),act);
+        }
+
 		// read timing parameters
         if(params!=null){
             pm_period = params.readParameter("dt_optimize",getDtinseconds());
@@ -102,7 +107,7 @@ public class Controller_CRM_MPC extends Controller {
 
         // controller parameters
         controller_parameters = new RampMeteringControlSet();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getLinkList().getLink()){
             Link L = (Link) jaxbL;
             if(L.isSource()){
                 RampMeteringControl con = new RampMeteringControl();
@@ -184,51 +189,18 @@ public class Controller_CRM_MPC extends Controller {
 
 	}
 
-    /////////////////////////////////////////////////////////////////////
-    // private
-    /////////////////////////////////////////////////////////////////////
-
     public void send_policy_to_actuators(double time_current){
         if(policy==null)
             return;
         double time_since_last_pm_call = time_current-time_last_opt;
-        int time_index = BeatsMath.floor(time_since_last_pm_call/pm_dt);
+        int time_index = (int) (time_since_last_pm_call/pm_dt);
         for(RampMeteringPolicyProfile rmprofile : policy.profiles){
-            for(Actuator act : actuators){
-                ActuatorRampMeter this_actuator = (ActuatorRampMeter) act;
-                if(this_actuator.getLink().getId()==rmprofile.sensorLink.getId())
-                    this_actuator.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(time_index)*3600d  );
+            ActuatorRampMeter act = (ActuatorRampMeter) link_actuator_map.get(rmprofile.sensorLink.getId());
+            if(act!=null){
+                int clipped_time_index = Math.min(time_index,rmprofile.rampMeteringPolicy.size()-1);
+                act.setMeteringRateInVPH( rmprofile.rampMeteringPolicy.get(clipped_time_index)*3600d);
             }
         }
     }
-
-    /////////////////////////////////////////////////////////////////////
-    // Act 2 api
-    /////////////////////////////////////////////////////////////////////
-
-    public Controller_CRM_MPC(edu.berkeley.path.beats.jaxb.Controller c,Network network,FundamentalDiagramSet fd_set){
-        super(null,c,Algorithm.CRM_MPC);
-        this.ison = true;
-        this.network = network;
-        this.constant_fd_set = fd_set;
-        this.populate(null);
-    }
-
-    public void update_and_send_policy_to_actuators(double time_current,DemandSet demand_set,SplitRatioSet split_ratio_set,InitialDensitySet init_dens_set){
-
-        policy = policy_maker.givePolicy( network,
-                                          constant_fd_set,
-                                          demand_set,
-                                          split_ratio_set,
-                                          init_dens_set,
-                                          controller_parameters,
-                                          pm_dt);
-
-        // update time keeper
-        time_last_opt = time_current;
-
-        send_policy_to_actuators(time_current);
-    }
-
 
 }
